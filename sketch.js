@@ -10,7 +10,7 @@ let params = {
 };
 
 function preload() {
-  table = loadTable('InSPIRE_data.csv', 'csv', 'header');
+  table = loadTable('result.csv', 'csv', 'header');
 }
 
 function setup() {
