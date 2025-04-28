@@ -1,2 +1,2 @@
-# geometric-energy
+# Energetic Geometry
 Art &amp; Technology capstone project
