@@ -2,7 +2,7 @@
 let table;
 
 function preload() {
-  table = loadTable('agrivoltaicsFULL_DATASET.csv', 'csv', 'header');
+  table = loadTable('inspire-agrivoltaics-20250529.csv', 'csv', 'header');
 }
 
 // Verifying Structure
