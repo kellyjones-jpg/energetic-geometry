@@ -8,9 +8,13 @@ function preload() {
 // Verifying Structure
 function setup() {
   noCanvas();
-  print('Rows:', table.getRowCount());
-  print('Columns:', table.getColumnCount());
-  print('Column Headers:', table.columns);
+  if (table) {
+    print('Rows:', table.getRowCount());
+    print('Columns:', table.getColumnCount());
+    print('Column Headers:', table.columns);
+  } else {
+    print('Error: Table not loaded');
+  }
 }
 
 // Accessing Attributes
