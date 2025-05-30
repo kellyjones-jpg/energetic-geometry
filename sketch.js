@@ -37,12 +37,3 @@ function setup() {
     createDiv(siteInfo);
   }
 }
-
-// Accessing Attributes
-for (let i = 0; i < table.getRowCount(); i++) {
-    let name = table.getString(i, 'Name');
-    let activity = table.getString(i, 'Agrivoltaic Activities');
-    // Access other fields...
-    print(`${name} | ${activity}`);
-  }
-}
