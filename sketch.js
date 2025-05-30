@@ -1,11 +1,9 @@
-// Loading the Dataset
 let table;
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
 }
 
-// Verifying Structure
 function setup() {
   noCanvas();
 
