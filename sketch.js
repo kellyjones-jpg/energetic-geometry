@@ -1,6 +1,10 @@
 let table;
 let entries = [];
 let antonFont;
+let cols = 4;
+let tileHeight = 150;
+let rows = ceil(entries.length / cols);
+let canvasHeight = rows * tileHeight;
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
@@ -8,13 +12,8 @@ function preload() {
 }
 
 function setup() {
-  noCanvas();
-  textFont(antonFont);
-  textSize(14);
-  textAlign(LEFT, TOP);
-  rectMode(CORNER);
-
- for (let i = 0; i < table.getRowCount(); i++) {
+  // First, parse all entries from the table
+  for (let i = 0; i < table.getRowCount(); i++) {
     let name = table.getString(i, 'Name');
     let activityStr = table.getString(i, 'Agrivoltaic Activities');
     let activities = activityStr.split(/,\s*/);
@@ -24,6 +23,23 @@ function setup() {
       activities
     });
   }
+
+  // Determine number of columns and calculate required rows and canvas height
+  let cols = 4;
+  let tileHeight = 150;
+  let rows = ceil(entries.length / cols);
+  let canvasHeight = rows * tileHeight;
+
+  // Create a canvas that fits all the entries
+  createCanvas(1200, canvasHeight);
+  noLoop();
+
+  // Set text and layout styles
+  textFont(antonFont);
+  textSize(14);
+  textAlign(LEFT, TOP);
+  rectMode(CORNER);
+  noStroke();
 }
 
 function draw() {
