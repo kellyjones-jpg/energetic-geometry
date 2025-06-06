@@ -1,10 +1,6 @@
 let table;
 let entries = [];
 let antonFont;
-let cols = 4;
-let tileHeight = 150;
-let rows = ceil(entries.length / cols);
-let canvasHeight = rows * tileHeight;
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
