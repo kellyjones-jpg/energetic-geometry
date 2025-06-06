@@ -1,10 +1,8 @@
 let table;
 let entries = [];
-let antonFont;
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
-  antonFont = loadFont('https://fonts.gstatic.com/s/anton/v25/1Ptgg87LROyAm3Kz-C8CSKlvPfE.woff2');
 }
 
 function setup() {
