@@ -14,7 +14,6 @@ function setup() {
   textSize(14);
   textAlign(LEFT, TOP);
   rectMode(CORNER);
-  noStroke();
 
   for (let i = 0; i < table.getRowCount(); i++) {
     let name = table.getString(i, 'Name');
@@ -33,7 +32,7 @@ function draw() {
   let cols = 4;
   let w = width / cols;
   let h = 150;
-
+  
   for (let i = 0; i < entries.length; i++) {
     let x = (i % cols) * w;
     let y = floor(i / cols) * h;
@@ -46,9 +45,9 @@ function draw() {
       rect(x, y, w, h - 40);
     }
 
-    fill(20); // Near black for text
-    text(entry.name, x + 10, y + h - 35);
-    text("Activities: " + entry.activities.join(', '), x + 10, y + h - 20);
+    fill(0);
+    text(entry.name, x + 5, y + h - 35);
+    text("Activities: " + entry.activities.join(', '), x + 5, y + h - 20);
   }
 }
 
@@ -78,6 +77,6 @@ function getActivityColor(activity) {
     case 'greenhouse':
       return color('#F2D43D');
     default:
-      return color(180);
+      return color(200); // fallback gray
   }
 }
