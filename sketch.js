@@ -1,13 +1,16 @@
 let table;
 let entries = [];
+let antonFont;
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
+  antonFont = loadFont('fonts/Anton-Regular.ttf'); // make sure this matches your file path
 }
 
 function setup() {
   createCanvas(1200, 800);
   noLoop();
+  textFont(antonFont);
   textSize(14);
   textAlign(LEFT, TOP);
   rectMode(CORNER);
@@ -67,14 +70,14 @@ function drawCheckerboard(x, y, w, h, activities) {
 function getActivityColor(activity) {
   switch (activity.trim().toLowerCase()) {
     case 'crop production':
-      return color('#DA1E37'); // Bold red
+      return color('#DA1E37');
     case 'habitat':
-      return color('#0A0A0A'); // Near-black
+      return color('#0A0A0A');
     case 'grazing':
-      return color('#007CBE'); // Blue
+      return color('#007CBE');
     case 'greenhouse':
-      return color('#F2D43D'); // Yellow
+      return color('#F2D43D');
     default:
-      return color(180); // Neutral fallback
+      return color(180);
   }
 }
