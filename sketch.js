@@ -4,7 +4,7 @@ let antonFont;
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
-  antonFont = loadFont('fonts/Anton-Regular.ttf'); // make sure this matches your file path
+  antonFont = loadFont('fonts/anton-regular.ttf'); 
 }
 
 function setup() {
