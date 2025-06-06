@@ -1,16 +1,20 @@
 let table;
 let entries = [];
+let antonFont;
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
+  antonFont = loadFont('https://fonts.gstatic.com/s/anton/v25/1Ptgg87LROyAm3Kz-C8CSKlvPfE.woff2');
 }
 
 function setup() {
   createCanvas(1200, 800);
   noLoop();
-  textFont('Arial', 12);
+  textFont(antonFont);
+  textSize(14);
   textAlign(LEFT, TOP);
   rectMode(CORNER);
+  noStroke();
 
   for (let i = 0; i < table.getRowCount(); i++) {
     let name = table.getString(i, 'Name');
@@ -29,7 +33,7 @@ function draw() {
   let cols = 4;
   let w = width / cols;
   let h = 150;
-  
+
   for (let i = 0; i < entries.length; i++) {
     let x = (i % cols) * w;
     let y = floor(i / cols) * h;
@@ -42,9 +46,9 @@ function draw() {
       rect(x, y, w, h - 40);
     }
 
-    fill(0);
-    text(entry.name, x + 5, y + h - 35);
-    text("Activities: " + entry.activities.join(', '), x + 5, y + h - 20);
+    fill(20); // Near black for text
+    text(entry.name, x + 10, y + h - 35);
+    text("Activities: " + entry.activities.join(', '), x + 10, y + h - 20);
   }
 }
 
@@ -66,14 +70,14 @@ function drawCheckerboard(x, y, w, h, activities) {
 function getActivityColor(activity) {
   switch (activity.trim().toLowerCase()) {
     case 'crop production':
-      return color('#DA1E37');
+      return color('#DA1E37'); // Bold red
     case 'habitat':
-      return color('#0A0A0A');
+      return color('#0A0A0A'); // Near-black
     case 'grazing':
-      return color('#007CBE');
+      return color('#007CBE'); // Blue
     case 'greenhouse':
-      return color('#F2D43D');
+      return color('#F2D43D'); // Yellow
     default:
-      return color(200); // fallback gray
+      return color(180); // Neutral fallback
   }
 }
