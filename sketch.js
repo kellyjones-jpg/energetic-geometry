@@ -15,7 +15,7 @@ function setup() {
   textAlign(LEFT, TOP);
   rectMode(CORNER);
 
-  for (let i = 0; i < table.getRowCount(); i++) {
+ for (let i = 0; i < table.getRowCount(); i++) {
     let name = table.getString(i, 'Name');
     let activityStr = table.getString(i, 'Agrivoltaic Activities');
     let activities = activityStr.split(/,\s*/);
