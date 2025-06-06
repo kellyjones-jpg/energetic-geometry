@@ -22,7 +22,7 @@ function setup() {
 
   // Determine number of columns and calculate required rows and canvas height
   let cols = 6;
-  let tileHeight = 450;
+  let tileHeight = 250;
   let rows = ceil(entries.length / cols);
   let canvasHeight = rows * tileHeight;
 
@@ -32,7 +32,7 @@ function setup() {
 
   // Set text and layout styles
   textFont(antonFont);
-  textSize(14);
+  textSize(24);
   textAlign(LEFT, TOP);
   rectMode(CORNER);
   noStroke();
@@ -42,7 +42,7 @@ function draw() {
   background(243,232,205);
   let cols = 6;
   let w = width / cols;
-  let h = 450;
+  let h = 250;
   
   for (let i = 0; i < entries.length; i++) {
     let x = (i % cols) * w;
