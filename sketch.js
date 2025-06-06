@@ -39,10 +39,10 @@ function setup() {
 }
 
 function draw() {
-  background(255);
-  let cols = 4;
+  background(243,232,205);
+  let cols = 6;
   let w = width / cols;
-  let h = 150;
+  let h = 450;
   
   for (let i = 0; i < entries.length; i++) {
     let x = (i % cols) * w;
