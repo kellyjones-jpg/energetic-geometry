@@ -63,8 +63,8 @@ function draw() {
 }
 
 function drawCheckerboard(x, y, w, h, activities) {
-  let cols = 4;
-  let rows = 4;
+  let cols = 6;
+  let rows = 6;
   let cw = w / cols;
   let ch = h / rows;
 
