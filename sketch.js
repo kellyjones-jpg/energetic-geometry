@@ -8,7 +8,6 @@ function preload() {
 function setup() {
   createCanvas(1200, 800);
   noLoop();
-  textFont(antonFont);
   textSize(14);
   textAlign(LEFT, TOP);
   rectMode(CORNER);
