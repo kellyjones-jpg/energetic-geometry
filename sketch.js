@@ -1,71 +1,79 @@
 let table;
+let entries = [];
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
 }
 
 function setup() {
-  noCanvas();
+  createCanvas(1200, 800);
+  noLoop();
+  textFont('Arial', 12);
+  textAlign(LEFT, TOP);
+  rectMode(CORNER);
 
   for (let i = 0; i < table.getRowCount(); i++) {
     let name = table.getString(i, 'Name');
     let activityStr = table.getString(i, 'Agrivoltaic Activities');
-    let activities = activityStr.split(/,\s*/); // handle combined activities
-    let systemSize = table.getString(i, 'System Size');
-    let siteSize = table.getString(i, 'Site Size');
-    let year = table.getString(i, 'Year Installed');
-    let tech = table.getString(i, 'PV Technology');
-    let arrayType = table.getString(i, 'Type Of Array');
-    let habitat = table.getString(i, 'Habitat Type');
-    let crops = table.getString(i, 'Crop Types');
-    let animals = table.getString(i, 'Animal Type');
+    let activities = activityStr.split(/,\s*/);
 
-    let div = createDiv();
-    div.style('padding', '10px');
-    div.style('color', '#fff');
-    div.style('margin', '10px 0');
-    div.style('font-family', 'Arial, sans-serif');
+    entries.push({
+      name,
+      activities
+    });
+  }
+}
 
-    if (activities.length > 1) {
-      // Checkerboard: use linear gradient
-      let colors = activities.map(getActivityColor);
-      let gradient = `repeating-linear-gradient(
-        45deg,
-        ${colors[0]} 0 20px,
-        ${colors[1 % colors.length]} 20px 40px
-      )`;
-      div.style('background', gradient);
+function draw() {
+  background(255);
+  let cols = 4;
+  let w = width / cols;
+  let h = 150;
+  
+  for (let i = 0; i < entries.length; i++) {
+    let x = (i % cols) * w;
+    let y = floor(i / cols) * h;
+    let entry = entries[i];
+
+    if (entry.activities.length > 1) {
+      drawCheckerboard(x, y, w, h - 40, entry.activities);
     } else {
-      div.style('background-color', getActivityColor(activities[0]));
+      fill(getActivityColor(entry.activities[0]));
+      rect(x, y, w, h - 40);
     }
 
-    let content = `
-      <strong>${name}</strong><br>
-      Activities: ${activityStr}<br>
-      System Size: ${systemSize}<br>
-      Site Size: ${siteSize}<br>
-      Year Installed: ${year}<br>
-      PV Tech: ${tech}<br>
-      Array Type: ${arrayType}<br>
-      Habitat: ${habitat}<br>
-      Crops: ${crops}<br>
-      Animals: ${animals}<br>
-    `;
-    div.html(content);
+    fill(0);
+    text(entry.name, x + 5, y + h - 35);
+    text("Activities: " + entry.activities.join(', '), x + 5, y + h - 20);
+  }
+}
+
+function drawCheckerboard(x, y, w, h, activities) {
+  let cols = 4;
+  let rows = 4;
+  let cw = w / cols;
+  let ch = h / rows;
+
+  for (let i = 0; i < cols; i++) {
+    for (let j = 0; j < rows; j++) {
+      let index = (i + j) % activities.length;
+      fill(getActivityColor(activities[index]));
+      rect(x + i * cw, y + j * ch, cw, ch);
+    }
   }
 }
 
 function getActivityColor(activity) {
   switch (activity.trim().toLowerCase()) {
     case 'crop production':
-      return '#DA1E37'; // Suprematism red
+      return color('#DA1E37');
     case 'habitat':
-      return '#0A0A0A'; // Op Art black
+      return color('#0A0A0A');
     case 'grazing':
-      return '#007CBE'; // Suprematism blue
+      return color('#007CBE');
     case 'greenhouse':
-      return '#F2D43D'; // Op Art yellow
+      return color('#F2D43D');
     default:
-      return '#888'; // fallback gray
+      return color(200); // fallback gray
   }
 }
