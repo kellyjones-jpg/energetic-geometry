@@ -25,8 +25,8 @@ function setup() {
   }
 
   // Determine number of columns and calculate required rows and canvas height
-  let cols = 4;
-  let tileHeight = 150;
+  let cols = 6;
+  let tileHeight = 450;
   let rows = ceil(entries.length / cols);
   let canvasHeight = rows * tileHeight;
 
