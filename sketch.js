@@ -27,7 +27,7 @@ function setup() {
   let canvasHeight = rows * tileHeight;
 
   // Create a canvas that fits all the entries
-  createCanvas(1200, canvasHeight);
+  createCanvas(1650, canvasHeight);
   noLoop();
 
   // Set text and layout styles
