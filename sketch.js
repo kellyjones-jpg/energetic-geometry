@@ -32,7 +32,7 @@ function setup() {
 
   // Set text and layout styles
   textFont(antonFont);
-  textSize(24);
+  textSize(18);
   textAlign(LEFT, TOP);
   rectMode(CORNER);
   noStroke();
