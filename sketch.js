@@ -39,11 +39,12 @@ function setup() {
 }
 
 function draw() {
-  background(243,232,205);
+  background(243, 232, 205);
   let cols = 6;
   let w = width / cols;
   let h = 250;
-  
+  let padding = 12; // padding around text inside the tile
+
   for (let i = 0; i < entries.length; i++) {
     let x = (i % cols) * w;
     let y = floor(i / cols) * h;
@@ -56,9 +57,14 @@ function draw() {
       rect(x, y, w, h - 40);
     }
 
+    // Draw a light background for the text area
+    fill(255, 245); // semi-transparent white
+    rect(x, y + h - 40, w, 40);
+
+    // Text with margin
     fill(0);
-    text(entry.name, x + 5, y + h - 35);
-    text("Activities: " + entry.activities.join(', '), x + 5, y + h - 20);
+    text(entry.name, x + padding, y + h - 35);
+    text("Activities: " + entry.activities.join(', '), x + padding, y + h - 20);
   }
 }
 
