@@ -31,7 +31,7 @@ function setup() {
 
   createCanvas(1650, canvasHeight);
   textFont(antonFont);
-  textSize(18);
+  textSize(16);
   textAlign(LEFT, TOP);
   rectMode(CORNER);
   noLoop();
@@ -75,6 +75,21 @@ function draw() {
         scale(1, -1);
       }
     }
+
+    function getActivityColor(activity) {
+  switch (activity.trim().toLowerCase()) {
+    case 'crop production':
+      return color('#DA1E37');
+    case 'habitat':
+      return color('#0A0A0A');
+    case 'grazing':
+      return color('#007CBE');
+    case 'greenhouse':
+      return color('#F2D43D');
+    default:
+      return color(200); // fallback gray
+  }
+}
 
     drawHabitatShape(-shapeSize / 2, -shapeSize / 2, shapeSize, entry.habitat);
     pop();
