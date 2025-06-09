@@ -43,7 +43,7 @@ function draw() {
   let cols = 6;
   let w = width / cols;
   let h = 250;
-  let padding = 18; // padding around text inside the tile
+  let padding = 28; // padding around text inside the tile
 
   for (let i = 0; i < entries.length; i++) {
     let x = (i % cols) * w;
