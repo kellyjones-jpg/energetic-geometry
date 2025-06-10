@@ -1,4 +1,4 @@
-# Energetic Geometry
+# Energetic Geometry (In Progress...)
 
 An interactive web-based visualization platform that reimagines agrivoltaics through a lens of scalability, accessibility, and longevity. Drawing inspiration from Suprematism and Op Art, the project transforms complex environmental data into dynamic geometric forms and optical illusions using p5.js.
 
