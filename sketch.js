@@ -16,7 +16,7 @@ function setup() {
     let pvTech = table.getString(i, 'PV Technology') || '';
     let animalTypeStr = table.getString(i, 'Animal Type') || '';
     let animalType = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
-    let cropTypeStr = table.getString(i, 'Crop Type') || '';
+    let cropTypeStr = table.getString(i, 'Crop Types') || '';
     let cropType = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
 
     entries.push({
