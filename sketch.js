@@ -102,6 +102,50 @@ function draw() {
   }
 }
 
+const cropVisualGroups = {
+  // Row Crops
+  "hay": "row",
+  "alfalfa": "row",
+  "corn": "row",
+  "soy": "row",
+  "spring wheat": "row",
+  "grain and specialty crops": "row",
+  "saffron": "row",
+
+  // Tree Crops
+  "grapes": "tree",
+  "persimmons": "tree",
+  "blueberries": "tree",
+  "peaches": "tree",
+  "pears": "tree",
+  "apples": "tree",
+  "kiwis": "tree",
+  "native berry plants": "tree",
+
+  // Vine Crops
+  "tomatoes": "vine",
+  "peppers": "vine",
+  "squash": "vine",
+  "zucchini": "vine",
+  "cucurbits & solanaceous crops": "vine",
+  "eggplant": "vine",
+
+  // Forage Crops
+  "leafy greens": "forage",
+  "herbs": "forage",
+  "mixed vegetables": "forage",
+  "broccoli": "forage",
+  "kale": "forage",
+  "cabbage": "forage",
+  "lettuce": "forage",
+  "radish": "forage",
+  "daikon": "forage",
+  "beets": "forage",
+  "carrots": "forage",
+  "parsley": "forage",
+  "berries": "forage",
+};
+
 function drawCropEdgeStyle(cropType, x, y, size) {
   push();
   translate(x, y);
@@ -115,10 +159,18 @@ function drawCropEdgeStyle(cropType, x, y, size) {
     return;
   }
 
-  switch (cropType.trim().toLowerCase()) {
-    case 'row crops':
-      stroke('#DA1E37'); // Suprematist bold red
-      // sharper jagged edges for Op Art zigzag effect
+  let group = cropVisualGroups[cropType.trim().toLowerCase()];
+  if (!group) {
+    // default fallback
+    stroke(0, 50);
+    ellipse(0, 0, size * 0.7);
+    pop();
+    return;
+  }
+
+  switch (group) {
+    case 'row':
+      stroke('#DA1E37'); // Suprematist red
       beginShape();
       let steps = 36;
       for (let i = 0; i <= steps; i++) {
@@ -129,9 +181,8 @@ function drawCropEdgeStyle(cropType, x, y, size) {
       endShape(CLOSE);
       break;
 
-    case 'tree crops':
+    case 'tree':
       stroke('#0057B7'); // Suprematist blue
-      // smooth wavy circle
       beginShape();
       for (let a = 0; a <= TWO_PI; a += 0.1) {
         let r = size * 0.5 + 10 * sin(5 * a);
@@ -140,8 +191,8 @@ function drawCropEdgeStyle(cropType, x, y, size) {
       endShape(CLOSE);
       break;
 
-    case 'vine crops':
-      stroke('#000000'); // Black for strong Op Art contrast
+    case 'vine':
+      stroke('#000000'); // Op Art black dots
       strokeWeight(3);
       let dots = 24;
       for (let i = 0; i < dots; i++) {
@@ -152,8 +203,8 @@ function drawCropEdgeStyle(cropType, x, y, size) {
       }
       break;
 
-    case 'forage crops':
-      stroke('#000000'); // Black dashed for Op Art style
+    case 'forage':
+      stroke('#000000'); // Op Art black dashed
       strokeWeight(2);
       let circumference = TWO_PI * size * 0.5;
       let dashLength = 10;
@@ -173,6 +224,7 @@ function drawCropEdgeStyle(cropType, x, y, size) {
 
   pop();
 }
+
 
 
 // Draw different line styles based on Animal Type
