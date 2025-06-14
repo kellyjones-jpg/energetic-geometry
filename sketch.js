@@ -1,11 +1,9 @@
 let table;
 let entries = [];
-let antonFont;
 let tooltipEntry = null;
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
-  antonFont = loadFont('fonts/anton-regular.ttf'); 
 }
 
 function setup() {
@@ -30,7 +28,7 @@ function setup() {
   let canvasHeight = rows * tileHeight;
 
   createCanvas(1650, canvasHeight);
-  textFont(antonFont);
+  textFont('Helvetica');
   textSize(16);
   textAlign(LEFT, TOP);
   rectMode(CORNER);
@@ -57,10 +55,13 @@ function draw() {
 
     // Set color from activity
     if (entry.activities.length === 1) {
-      fill(getActivityColor(entry.activities[0]));
+    fill(getActivityColor(entry.activities[0]));
     } else {
-      fill(255);
+      let pattern = createPattern(entry.activities, shapeSize);
+      imageMode(CENTER);
+      image(pattern, 0, 0); // Will be drawn from center after translate()
     }
+
 
     // Draw habitat shape with PV orientation
     let shapeSize = min(w, h - 40) * 0.6;
@@ -142,6 +143,32 @@ function drawHexagon(x, y, radius) {
     vertex(vx, vy);
   }
   endShape(CLOSE);
+}
+
+
+function createPattern(activities, size) {
+  let pg = createGraphics(size, size);
+  pg.noStroke();
+
+  if (activities.length === 2) {
+    let c1 = getActivityColor(activities[0]);
+    let c2 = getActivityColor(activities[1]);
+    pg.fill(c1);
+    pg.triangle(0, 0, size, 0, 0, size);
+    pg.fill(c2);
+    pg.triangle(size, size, size, 0, 0, size);
+  } else {
+    let cellSize = size / activities.length;
+    for (let i = 0; i < activities.length; i++) {
+      for (let j = 0; j < activities.length; j++) {
+        let index = (i + j) % activities.length;
+        pg.fill(getActivityColor(activities[index]));
+        pg.rect(i * cellSize, j * cellSize, cellSize, cellSize);
+      }
+    }
+  }
+
+  return pg;
 }
 
 function drawTooltip(entry) {
