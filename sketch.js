@@ -42,7 +42,7 @@ function setup() {
 }
 
 function draw() {
-  background(255);
+  background(243, 232, 205);
   let cols = 6;
   let w = width / cols;
   let h = 250;
@@ -84,7 +84,7 @@ function draw() {
     pop();
 
     // Footer labels
-    fill(255);
+    fill(255, 245);
     noStroke();
     rect(x, y + h - 40, w, 40);
 
@@ -231,8 +231,8 @@ function drawCropEdgeStyle(cropType, arrayType, x, y, size) {
 
 function drawArrayOverlay(arrayType, size) {
   push();
-  stroke(0); // black for strong contrast
-  strokeWeight(1); // slightly bolder for visibility
+  strokeWeight(0.5);
+  stroke(0, 50); // subtle overlay tone
   noFill();
 
   switch ((arrayType || '').trim().toLowerCase()) {
