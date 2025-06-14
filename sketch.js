@@ -13,12 +13,14 @@ function setup() {
     let activities = activityStr.split(/,\s*/);
     let habitat = table.getString(i, 'Habitat Type');
     let pvTech = table.getString(i, 'PV Technology');
+    let animalType = table.getString(i, 'Animal Type');  // NEW: read animal type
 
     entries.push({
       name,
       activities,
       habitat,
-      pvTech
+      pvTech,
+      animalType   // NEW: include in entry object
     });
   }
 
@@ -66,7 +68,10 @@ function draw() {
       drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
     }
 
-    // 3. Draw PV Tech smaller overlay shape
+    // 3. Draw animal type line overlay (NEW)
+    drawAnimalLine(entry.animalType, 0, 0, shapeSize);
+
+    // 4. Draw PV Tech smaller overlay shape
     drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
 
     pop();
@@ -78,8 +83,8 @@ function draw() {
 
     fill(0);
     textSize(14);
-    text(entry.name, x + padding, y + h - 35);
-    text("Habitat: " + entry.habitat, x + padding, y + h - 55);
+    text(entry.name, x + padding, y + h - 55);
+    text("Habitat: " + entry.habitat, x + padding, y + h - 35);
     text("Activities: " + entry.activities.join(', '), x + padding, y + h - 20);
 
     if (mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h - 40) {
@@ -92,7 +97,108 @@ function draw() {
   }
 }
 
-// Draw habitat shape with solid fill
+// Draw different line styles based on Animal Type
+function drawAnimalLine(animalType, x, y, size) {
+  let style = getLineStyle(animalType);
+  stroke(style.color);
+  strokeWeight(style.weight);
+  noFill();
+
+  switch (style.type) {
+    case 'wavy':
+      drawWavyLine(x, y, size);
+      break;
+
+    case 'dashed':
+      drawDashedLine(x, y, size);
+      break;
+
+    case 'bezier':
+      drawBezierLine(x, y, size);
+      break;
+
+    case 'straight':
+      line(x - size / 2, y, x + size / 2, y);
+      break;
+
+    case 'textured':
+      drawTexturedLine(x, y, size);
+      break;
+
+    default:
+      // fallback straight line
+      line(x - size / 2, y, x + size / 2, y);
+  }
+}
+
+// Map Animal Type to line style properties
+function getLineStyle(animalType) {
+  if (!animalType) return { type: 'straight', weight: 1, color: color('#0A0A0A88') }; // semi-transparent black
+
+  switch (animalType.trim().toLowerCase()) {
+    case 'sheep':
+      return { type: 'wavy', weight: 2, color: color('#DA1E37CC') }; // suprematist red
+    case 'llamas & alpacas':
+      return { type: 'dashed', weight: 2, color: color('#0057B7CC') }; // suprematist blue
+    case 'horse':
+      return { type: 'bezier', weight: 3, color: color('#FFD700CC') }; // suprematist yellow
+    case 'cows':
+      return { type: 'straight', weight: 5, color: color('#000000BB') }; // bold black
+    case 'cattle':
+      return { type: 'textured', weight: 3, color: color('#FFFFFF88') }; // white, semi-transparent
+    default:
+      return { type: 'straight', weight: 1, color: color('#1E90FFAA') }; // op art blue fallback
+  }
+}
+
+// Wavy line: sinusoidal wave along the horizontal axis
+function drawWavyLine(x, y, length) {
+  noFill();
+  beginShape();
+  let amplitude = 5;
+  let waves = 6;
+  for (let i = 0; i <= waves; i++) {
+    let px = x - length / 2 + (length / waves) * i;
+    let py = y + sin(i * TWO_PI / waves) * amplitude;
+    vertex(px, py);
+  }
+  endShape();
+}
+
+// Dashed line: repeated short dashes with gaps
+function drawDashedLine(x, y, length) {
+  let dashLength = 10;
+  let gapLength = 7;
+  let startX = x - length / 2;
+  let endX = x + length / 2;
+  for (let px = startX; px < endX; px += dashLength + gapLength) {
+    line(px, y, px + dashLength, y);
+  }
+}
+
+// Bezier curved line with smooth S shape
+function drawBezierLine(x, y, length) {
+  noFill();
+  bezier(
+    x - length / 2, y,
+    x - length / 4, y - length / 3,
+    x + length / 4, y + length / 3,
+    x + length / 2, y
+  );
+}
+
+// Textured line: short broken segments with jitter
+function drawTexturedLine(x, y, length) {
+  let segmentLength = 6;
+  let gap = 4;
+  let startX = x - length / 2;
+  let endX = x + length / 2;
+  for (let px = startX; px < endX; px += segmentLength + gap) {
+    let jitterY = random(-2, 2);
+    line(px, y + jitterY, px + segmentLength, y + jitterY);
+  }
+}
+
 function drawHabitatShape(habitat, x, y, size, colorVal) {
   push();
   translate(x, y);
@@ -101,7 +207,6 @@ function drawHabitatShape(habitat, x, y, size, colorVal) {
 
   switch (habitat?.trim().toLowerCase()) {
     case 'pollinator':
-      // Hexagon
       beginShape();
       for (let i = 0; i < 6; i++) {
         let angle = TWO_PI / 6 * i - PI / 2;
@@ -126,18 +231,15 @@ function drawHabitatShape(habitat, x, y, size, colorVal) {
   pop();
 }
 
-// Checkerboard pattern overlay inside habitat shape
 function drawCheckerboardPattern(activities, habitat, x, y, size) {
   push();
   translate(x, y);
 
-  let gridCount = 6; // 6x6 grid
+  let gridCount = 6;
   let cellSize = size / gridCount;
 
-  // Map activities to their colors
   let activityColors = activities.map(act => getActivityColor(act));
 
-  // If only one color, add a semi-transparent white for contrast
   if (activityColors.length === 1) {
     activityColors.push(color(255, 100));
   }
@@ -145,7 +247,6 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
   let colorA = activityColors[0];
   let colorB = activityColors[1];
 
-  // Draw checkerboard squares
   for (let row = 0; row < gridCount; row++) {
     for (let col = 0; col < gridCount; col++) {
       let isAlt = (row + col) % 2 === 0;
@@ -161,7 +262,6 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
     }
   }
 
-  // Draw outline on top for clean edges
   noFill();
   stroke(0, 80);
   strokeWeight(1.5);
@@ -170,35 +270,27 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
   pop();
 }
 
-
-// Returns true if a point (px, py) is inside the habitat shape boundary
 function isPointInHabitatShape(habitat, px, py, size) {
   switch (habitat?.trim().toLowerCase()) {
     case 'pollinator':
-      // Hexagon check - point in regular hexagon centered at 0,0 with radius size*0.5
       return pointInHexagon(px, py, size * 0.5);
     case 'native grasses':
-      // Vertical rectangle centered at 0,0 width=size*0.3, height=size
       return (abs(px) <= size * 0.15 && abs(py) <= size * 0.5);
     case 'naturalized':
-      // Circle radius = size/2
       return (px * px + py * py <= (size / 2) * (size / 2));
     default:
-      // fallback circle smaller
       return (px * px + py * py <= (size * 0.25) * (size * 0.25));
   }
 }
 
-// Point-in-hexagon function for regular hexagon centered at 0,0, radius r
 function pointInHexagon(px, py, r) {
   px = abs(px);
   py = abs(py);
 
-  if (px > r * 0.8660254 || py > r * 0.5 + r * 0.288675) return false; // quick bounding box fail
+  if (px > r * 0.8660254 || py > r * 0.5 + r * 0.288675) return false;
   return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
 }
 
-// Draw habitat shape outline with no fill
 function drawHabitatOutline(habitat, x, y, size) {
   push();
   translate(x, y);
@@ -268,15 +360,15 @@ function drawPVShape(pvTech, x, y, size, baseColor) {
 function getActivityColor(activity) {
   switch (activity.trim().toLowerCase()) {
     case 'crop production':
-      return color('#DA1E37'); // red
+      return color('#DA1E37');
     case 'habitat':
-      return color('#0A0A0A'); // near black
+      return color('#0A0A0A');
     case 'grazing':
-      return color('#007CBE'); // blue
+      return color('#007CBE');
     case 'greenhouse':
-      return color('#F2D43D'); // yellow
+      return color('#F2D43D');
     default:
-      return color(150); // grey fallback
+      return color(150);
   }
 }
 
@@ -285,7 +377,8 @@ function drawTooltip(entry) {
     "Name: " + entry.name,
     "Habitat: " + entry.habitat,
     "Activities: " + entry.activities.join(', '),
-    "PV Tech: " + entry.pvTech
+    "PV Tech: " + entry.pvTech,
+    "Animal Type: " + (entry.animalType || "N/A") // NEW: show animal type in tooltip
   ];
 
   textSize(14);
