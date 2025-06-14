@@ -131,19 +131,45 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
   push();
   translate(x, y);
 
-  // Define grid size for checkerboard squares
   let gridCount = 6; // 6x6 grid
   let cellSize = size / gridCount;
 
-  // Create two contrasting colors for pattern
-  let baseColor = getActivityColor(activities[0]);
-  let altColor = color(255);
-  // For dark base color, use black alt color for contrast
-  if (brightness(baseColor) < 50) {
-    altColor = color(255);
-  } else {
-    altColor = color(0, 50); // black with some transparency
+  // Map all activities to their colors
+  let activityColors = activities.map(act => getActivityColor(act));
+
+  // If only one activity color, fallback to two-tone with slight transparency for contrast
+  if (activityColors.length === 1) {
+    activityColors.push(color(255, 100)); // semi-transparent white for contrast
   }
+
+  // For more than two, just use first two for checkerboard simplicity
+  let colorA = activityColors[0];
+  let colorB = activityColors[1];
+
+  // Draw pattern squares alternating colorA and colorB
+  for (let row = 0; row < gridCount; row++) {
+    for (let col = 0; col < gridCount; col++) {
+      let isAlt = (row + col) % 2 === 0;
+      fill(isAlt ? colorA : colorB);
+      noStroke();
+
+      let cx = col * cellSize - size / 2 + cellSize / 2;
+      let cy = row * cellSize - size / 2 + cellSize / 2;
+
+      if (isPointInHabitatShape(habitat, cx, cy, size)) {
+        rect(cx, cy, cellSize, cellSize);
+      }
+    }
+  }
+
+  // Draw outline on top to keep shape edges clean
+  noFill();
+  stroke(0, 80);
+  strokeWeight(1.5);
+  drawHabitatOutline(habitat, 0, 0, size);
+
+  pop();
+}
 
   // Draw pattern squares with alternating colors
   for (let row = 0; row < gridCount; row++) {
