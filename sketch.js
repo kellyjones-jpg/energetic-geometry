@@ -508,7 +508,8 @@ function drawTooltip(entry) {
     "Habitat: " + entry.habitat,
     "Activities: " + entry.activities.join(', '),
     "PV Tech: " + entry.pvTech,
-    "Animal Type: " + (entry.animalType || "N/A") // NEW: show animal type in tooltip
+    "Animal Type: " + entry.animalType.join(', '),
+    "Crop Type: " + entry.cropType.join(', '),
   ];
 
   textSize(14);
