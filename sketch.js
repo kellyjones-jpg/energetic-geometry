@@ -15,7 +15,6 @@ function setup() {
     let pvTech = table.getString(i, 'PV Technology') || '';
     let animalType = table.getString(i, 'Animal Type') || '';
     let cropType = table.getString(i, 'Crop Types') || '';
-    let arrayType = table.getString(i, 'Type Of Array') || '';
 
     entries.push({
       name,
@@ -23,8 +22,7 @@ function setup() {
       habitat,
       pvTech,
       animalType,
-      cropType,
-      arrayType
+      cropType
     });
   }
 
@@ -148,13 +146,11 @@ const cropVisualGroups = {
   "berries": "forage",
 };
 
-function drawCropEdgeStyle(cropType, arrayType, x, y, size) {
+function drawCropEdgeStyle(cropType, x, y, size) {
   push();
   translate(x, y);
   noFill();
   strokeWeight(2);
-
-  drawArrayOverlay(arrayType, size);
 
   if (!cropType) {
     stroke(0, 50);
@@ -229,48 +225,7 @@ function drawCropEdgeStyle(cropType, arrayType, x, y, size) {
   pop();
 }
 
-function drawArrayOverlay(arrayType, size) {
-  push();
-  strokeWeight(0.5);
-  stroke(0, 50); // subtle overlay tone
-  noFill();
 
-  switch ((arrayType || '').trim().toLowerCase()) {
-    case 'fixed':
-      // Crosshatch grid
-      let spacing = 8;
-      for (let i = -size/2; i <= size/2; i += spacing) {
-        line(i, -size/2, i, size/2);
-        line(-size/2, i, size/2, i);
-      }
-      break;
-
-    case 'single-axis tracking':
-      // Isometric-style grid (angled lines)
-      let isoSpacing = 10;
-      for (let i = -size; i <= size; i += isoSpacing) {
-        line(i, -size, i + size, size);
-        line(i + size, -size, i, size);
-      }
-      break;
-
-    case 'dual-axis tracking':
-      // Dotted matrix
-      let dotSpacing = 10;
-      for (let x = -size/2; x <= size/2; x += dotSpacing) {
-        for (let y = -size/2; y <= size/2; y += dotSpacing) {
-          point(x, y);
-        }
-      }
-      break;
-
-    default:
-      // No overlay
-      break;
-  }
-
-  pop();
-}
 
 // Draw different line styles based on Animal Type
 function drawAnimalLine(animalType, x, y, size) {
