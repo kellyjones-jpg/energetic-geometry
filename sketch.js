@@ -23,7 +23,8 @@ function setup() {
       habitat,
       pvTech,
       animalType,
-      cropType
+      cropType,
+      arrayType
     });
   }
 
