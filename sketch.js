@@ -57,14 +57,37 @@ function draw() {
     translate(x + w / 2, y + (h - 40) / 2);
 
     let baseColor = getActivityColor(entry.activities[0]);
-    if (entry.activities.length === 1) {
-      drawPVShape(entry.pvTech, 0, 0, shapeSize, baseColor);
-    } else {
-      drawSuprematistOverlay(entry.activities, shapeSize);
-      drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
+
+    // Determine habitat color
+    let habitatColor = color(100);
+    switch (entry.habitat?.trim().toLowerCase()) {
+      case 'pollinator':
+        habitatColor = color('#FFC30B'); // yellow
+        break;
+      case 'native grasses':
+        habitatColor = color('#4CAF50'); // green
+        break;
+      case 'naturalized':
+        habitatColor = color('#1E90FF'); // blue
+        break;
+      default:
+        habitatColor = baseColor;
     }
+
+    // 1. Draw habitat shape
+    drawHabitatShape(entry.habitat, 0, 0, shapeSize, habitatColor);
+
+    // 2. Suprematist overlay if multiple activities
+    if (entry.activities.length > 1) {
+      drawSuprematistOverlay(entry.activities, shapeSize);
+    }
+
+    // 3. Overlay PV tech shape
+    drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
+
     pop();
 
+    // Footer label box
     fill(255, 245);
     noStroke();
     rect(x, y + h - 40, w, 40);
@@ -83,6 +106,42 @@ function draw() {
   if (tooltipEntry) {
     drawTooltip(tooltipEntry);
   }
+}
+
+function drawHabitatShape(habitat, x, y, size, colorVal) {
+  push();
+  translate(x, y);
+  fill(colorVal);
+  noStroke();
+
+  switch (habitat?.trim().toLowerCase()) {
+    case 'pollinator':
+      // Hexagon
+      beginShape();
+      for (let i = 0; i < 6; i++) {
+        let angle = TWO_PI / 6 * i - PI / 2;
+        vertex(cos(angle) * size * 0.5, sin(angle) * size * 0.5);
+      }
+      endShape(CLOSE);
+      break;
+
+    case 'native grasses':
+      // Vertical slender rectangle
+      rectMode(CENTER);
+      rect(0, 0, size * 0.3, size);
+      break;
+
+    case 'naturalized':
+      // Circle
+      ellipse(0, 0, size, size);
+      break;
+
+    default:
+      // Fallback shape
+      ellipse(0, 0, size * 0.5);
+  }
+
+  pop();
 }
 
 function drawPVShape(pvTech, x, y, size, colorVal) {
@@ -120,13 +179,14 @@ function drawPVShape(pvTech, x, y, size, colorVal) {
 }
 
 function drawSuprematistOverlay(activities, size) {
-  let center = size / 2;
   for (let i = 0; i < activities.length; i++) {
     push();
     rotate(radians(30 * i));
     fill(getActivityColor(activities[i]));
+    drawingContext.globalAlpha = 0.5;
     rectMode(CENTER);
     rect(0, 0, size * 0.6 - i * 10, size * 0.2);
+    drawingContext.globalAlpha = 1;
     pop();
   }
 }
