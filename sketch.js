@@ -7,14 +7,14 @@ function preload() {
 }
 
 function setup() {
-  for (let i = 0; i < table.getRowCount(); i++) {
-    let name = table.getString(i, 'Name');
-    let activityStr = table.getString(i, 'Agrivoltaic Activities');
-    let activities = activityStr.split(/,\s*/);
-    let habitat = table.getString(i, 'Habitat Type');
-    let pvTech = table.getString(i, 'PV Technology');
-    let animalType = table.getString(i, 'Animal Type'); 
-    let cropType = table.getString(i, 'Crop Type');
+    for (let i = 0; i < table.getRowCount(); i++) {
+    let name = table.getString(i, 'Name') || '';
+    let activityStr = table.getString(i, 'Agrivoltaic Activities') || '';
+    let activities = activityStr ? activityStr.split(/,\s*/) : [];
+    let habitat = table.getString(i, 'Habitat Type') || '';
+    let pvTech = table.getString(i, 'PV Technology') || '';
+    let animalType = table.getString(i, 'Animal Type') || '';
+    let cropType = table.getString(i, 'Crop Type') || '';
 
     entries.push({
       name,
