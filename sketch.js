@@ -14,12 +14,7 @@ function setup() {
     let habitat = table.getString(i, 'Habitat Type');
     let pvTech = table.getString(i, 'PV Technology');
 
-    entries.push({
-      name,
-      activities,
-      habitat,
-      pvTech
-    });
+    entries.push({ name, activities, habitat, pvTech });
   }
 
   let cols = 6;
@@ -58,36 +53,25 @@ function draw() {
 
     let baseColor = getActivityColor(entry.activities[0]);
 
-    // Determine habitat color
-    let habitatColor = color(100);
-    switch (entry.habitat?.trim().toLowerCase()) {
-      case 'pollinator':
-        habitatColor = color('#FFC30B'); // yellow
-        break;
-      case 'native grasses':
-        habitatColor = color('#4CAF50'); // green
-        break;
-      case 'naturalized':
-        habitatColor = color('#1E90FF'); // blue
-        break;
-      default:
-        habitatColor = baseColor;
-    }
+    // Determine habitat shape color
+    let habitatColor = getHabitatColor(entry.habitat);
 
-    // 1. Draw habitat shape
-    drawHabitatShape(entry.habitat, 0, 0, shapeSize, habitatColor);
-
-    // 2. Suprematist overlay if multiple activities
+    // --- Suprematist Overlays ---
     if (entry.activities.length > 1) {
       drawSuprematistOverlay(entry.activities, shapeSize);
     }
 
-    // 3. Overlay PV tech shape
-    drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
+    // --- Habitat Shape ---
+    drawHabitatShape(entry.habitat, 0, 0, shapeSize, habitatColor);
+
+    // --- PV Technology Shape Overlay ---
+    if (entry.pvTech) {
+      drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
+    }
 
     pop();
 
-    // Footer label box
+    // Footer info area
     fill(255, 245);
     noStroke();
     rect(x, y + h - 40, w, 40);
@@ -116,7 +100,6 @@ function drawHabitatShape(habitat, x, y, size, colorVal) {
 
   switch (habitat?.trim().toLowerCase()) {
     case 'pollinator':
-      // Hexagon
       beginShape();
       for (let i = 0; i < 6; i++) {
         let angle = TWO_PI / 6 * i - PI / 2;
@@ -126,19 +109,16 @@ function drawHabitatShape(habitat, x, y, size, colorVal) {
       break;
 
     case 'native grasses':
-      // Vertical slender rectangle
       rectMode(CENTER);
       rect(0, 0, size * 0.3, size);
       break;
 
     case 'naturalized':
-      // Circle
       ellipse(0, 0, size, size);
       break;
 
     default:
-      // Fallback shape
-      ellipse(0, 0, size * 0.5);
+      ellipse(0, 0, size * 0.5); // fallback
   }
 
   pop();
@@ -194,15 +174,28 @@ function drawSuprematistOverlay(activities, size) {
 function getActivityColor(activity) {
   switch (activity.trim().toLowerCase()) {
     case 'crop production':
-      return color('#DA1E37');
+      return color('#DA1E37'); // Red
     case 'habitat':
-      return color('#0A0A0A');
+      return color('#0A0A0A'); // Black
     case 'grazing':
-      return color('#007CBE');
+      return color('#007CBE'); // Blue
     case 'greenhouse':
-      return color('#F2D43D');
+      return color('#F2D43D'); // Yellow
     default:
-      return color(200);
+      return color(180); // Neutral gray
+  }
+}
+
+function getHabitatColor(habitat) {
+  switch (habitat?.trim().toLowerCase()) {
+    case 'pollinator':
+      return color('#FFC30B'); // Golden Yellow
+    case 'native grasses':
+      return color('#4CAF50'); // Green
+    case 'naturalized':
+      return color('#1E90FF'); // Blue
+    default:
+      return color(120); // fallback gray
   }
 }
 
