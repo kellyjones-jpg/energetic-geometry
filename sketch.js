@@ -11,12 +11,13 @@ function setup() {
     let name = table.getString(i, 'Name') || '';
     let activityStr = table.getString(i, 'Agrivoltaic Activities') || '';
     let activities = activityStr ? activityStr.split(/,\s*/) : [];
-    let habitat = table.getString(i, 'Habitat Type') || '';
+    let habitatStr = table.getString(i, 'Habitat Type') || '';
+    let habitat = habitatStr ? habitatStr.split(/,\s*/) : [];
     let pvTech = table.getString(i, 'PV Technology') || '';
     let animalTypeStr = table.getString(i, 'Animal Type') || '';
-    let animalTypes = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
+    let animalType = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
     let cropTypeStr = table.getString(i, 'Crop Type') || '';
-    let cropTypes = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
+    let cropType = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
 
     entries.push({
       name,
@@ -65,7 +66,9 @@ function draw() {
     let baseColor = getActivityColor(entry.activities[0]);
 
     // Draw habitat shape filled with base color
+    if (entry.habitat.length > 1) 
     drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
+    }
 
     // If combined activities, overlay checkerboard pattern
     if (entry.activities.length > 1) {
@@ -73,12 +76,12 @@ function draw() {
     }
 
     // Draw crop type edge style overlay
-    if (entry.cropTypes.length > 0) {
+    if (entry.cropType.length > 0) {
     drawCropEdgeStyle(entry.cropTypes[0], 0, 0, shapeSize);
     }
     
     // Draw animal type line overlay
-    if (entry.animalTypes.length > 0) {
+    if (entry.animalType.length > 0) {
     drawAnimalLine(entry.animalType, 0, 0, shapeSize);
     }
 
