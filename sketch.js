@@ -14,7 +14,12 @@ function setup() {
     let habitat = table.getString(i, 'Habitat Type');
     let pvTech = table.getString(i, 'PV Technology');
 
-    entries.push({ name, activities, habitat, pvTech });
+    entries.push({
+      name,
+      activities,
+      habitat,
+      pvTech
+    });
   }
 
   let cols = 6;
@@ -51,27 +56,23 @@ function draw() {
     push();
     translate(x + w / 2, y + (h - 40) / 2);
 
+    // Use the first activity's color for habitat shape fill
     let baseColor = getActivityColor(entry.activities[0]);
 
-    // Determine habitat shape color
-    let habitatColor = getHabitatColor(entry.habitat);
+    // 1. Draw habitat shape with activity color
+    drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
 
-    // --- Suprematist Overlays ---
+    // 2. Draw Suprematist overlays for combined activities (beyond the first)
     if (entry.activities.length > 1) {
       drawSuprematistOverlay(entry.activities, shapeSize);
     }
 
-    // --- Habitat Shape ---
-    drawHabitatShape(entry.habitat, 0, 0, shapeSize, habitatColor);
-
-    // --- PV Technology Shape Overlay ---
-    if (entry.pvTech) {
-      drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
-    }
+    // 3. Draw PV Technology smaller overlay shape
+    drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
 
     pop();
 
-    // Footer info area
+    // Footer label box
     fill(255, 245);
     noStroke();
     rect(x, y + h - 40, w, 40);
@@ -100,6 +101,7 @@ function drawHabitatShape(habitat, x, y, size, colorVal) {
 
   switch (habitat?.trim().toLowerCase()) {
     case 'pollinator':
+      // Hexagon
       beginShape();
       for (let i = 0; i < 6; i++) {
         let angle = TWO_PI / 6 * i - PI / 2;
@@ -109,49 +111,53 @@ function drawHabitatShape(habitat, x, y, size, colorVal) {
       break;
 
     case 'native grasses':
+      // Vertical slender rectangle
       rectMode(CENTER);
       rect(0, 0, size * 0.3, size);
       break;
 
     case 'naturalized':
+      // Circle
       ellipse(0, 0, size, size);
       break;
 
     default:
-      ellipse(0, 0, size * 0.5); // fallback
+      // Fallback circle smaller
+      ellipse(0, 0, size * 0.5);
   }
 
   pop();
 }
 
-function drawPVShape(pvTech, x, y, size, colorVal) {
+function drawPVShape(pvTech, x, y, size, baseColor) {
   push();
   translate(x, y);
-  fill(colorVal);
   noStroke();
 
   switch (pvTech?.trim().toLowerCase()) {
     case 'monofacial':
+      fill(baseColor);
       rotate(radians(-30));
       rectMode(CENTER);
       rect(0, 0, size, size * 0.3);
       break;
 
     case 'bifacial':
-      fill(lerpColor(colorVal, color(255), 0.3));
+      fill(lerpColor(baseColor, color(255), 0.3));
       rectMode(CENTER);
       rect(0, -size * 0.2, size * 0.4, size * 0.3);
       rect(0, size * 0.2, size * 0.4, size * 0.3);
       break;
 
     case 'translucent':
-      fill(colorVal.levels[0], colorVal.levels[1], colorVal.levels[2], 80);
+      fill(baseColor.levels[0], baseColor.levels[1], baseColor.levels[2], 80);
       for (let i = 0; i < 3; i++) {
         ellipse(0, 0, size * 0.8 - i * 10, size * 0.8 - i * 10);
       }
       break;
 
     default:
+      fill(baseColor);
       ellipse(0, 0, size * 0.6);
   }
 
@@ -159,43 +165,36 @@ function drawPVShape(pvTech, x, y, size, colorVal) {
 }
 
 function drawSuprematistOverlay(activities, size) {
+  push();
+  rectMode(CENTER);
+  noStroke();
+
+  // Draw semi-transparent stripes layered with rotation and offset
   for (let i = 0; i < activities.length; i++) {
+    let c = getActivityColor(activities[i]);
+    c.setAlpha(90);
+    fill(c);
     push();
-    rotate(radians(30 * i));
-    fill(getActivityColor(activities[i]));
-    drawingContext.globalAlpha = 0.5;
-    rectMode(CENTER);
-    rect(0, 0, size * 0.6 - i * 10, size * 0.2);
-    drawingContext.globalAlpha = 1;
+    rotate(radians(i * 25));
+    rect(0, 0, size * 0.7 - i * 10, size * 0.2);
     pop();
   }
+
+  pop();
 }
 
 function getActivityColor(activity) {
   switch (activity.trim().toLowerCase()) {
     case 'crop production':
-      return color('#DA1E37'); // Red
+      return color('#DA1E37'); // red
     case 'habitat':
-      return color('#0A0A0A'); // Black
+      return color('#0A0A0A'); // near black
     case 'grazing':
-      return color('#007CBE'); // Blue
+      return color('#007CBE'); // blue
     case 'greenhouse':
-      return color('#F2D43D'); // Yellow
+      return color('#F2D43D'); // yellow
     default:
-      return color(180); // Neutral gray
-  }
-}
-
-function getHabitatColor(habitat) {
-  switch (habitat?.trim().toLowerCase()) {
-    case 'pollinator':
-      return color('#FFC30B'); // Golden Yellow
-    case 'native grasses':
-      return color('#4CAF50'); // Green
-    case 'naturalized':
-      return color('#1E90FF'); // Blue
-    default:
-      return color(120); // fallback gray
+      return color(150); // grey fallback
   }
 }
 
