@@ -56,23 +56,22 @@ function draw() {
     push();
     translate(x + w / 2, y + (h - 40) / 2);
 
-    // Use the first activity's color for habitat shape fill
     let baseColor = getActivityColor(entry.activities[0]);
 
-    // 1. Draw habitat shape with activity color
+    // 1. Draw habitat shape filled with base color
     drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
 
-    // 2. Draw Suprematist overlays for combined activities (beyond the first)
+    // 2. If combined activities, overlay checkerboard pattern
     if (entry.activities.length > 1) {
-      drawSuprematistOverlay(entry.activities, shapeSize);
+      drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
     }
 
-    // 3. Draw PV Technology smaller overlay shape
+    // 3. Draw PV Tech smaller overlay shape
     drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
 
     pop();
 
-    // Footer label box
+    // Footer labels
     fill(255, 245);
     noStroke();
     rect(x, y + h - 40, w, 40);
@@ -93,6 +92,7 @@ function draw() {
   }
 }
 
+// Draw habitat shape with solid fill
 function drawHabitatShape(habitat, x, y, size, colorVal) {
   push();
   translate(x, y);
@@ -111,18 +111,122 @@ function drawHabitatShape(habitat, x, y, size, colorVal) {
       break;
 
     case 'native grasses':
-      // Vertical slender rectangle
       rectMode(CENTER);
       rect(0, 0, size * 0.3, size);
       break;
 
     case 'naturalized':
-      // Circle
       ellipse(0, 0, size, size);
       break;
 
     default:
-      // Fallback circle smaller
+      ellipse(0, 0, size * 0.5);
+  }
+
+  pop();
+}
+
+// Checkerboard pattern overlay inside habitat shape
+function drawCheckerboardPattern(activities, habitat, x, y, size) {
+  push();
+  translate(x, y);
+
+  // Define grid size for checkerboard squares
+  let gridCount = 6; // 6x6 grid
+  let cellSize = size / gridCount;
+
+  // Create two contrasting colors for pattern
+  let baseColor = getActivityColor(activities[0]);
+  let altColor = color(255);
+  // For dark base color, use black alt color for contrast
+  if (brightness(baseColor) < 50) {
+    altColor = color(255);
+  } else {
+    altColor = color(0, 50); // black with some transparency
+  }
+
+  // Draw pattern squares with alternating colors
+  for (let row = 0; row < gridCount; row++) {
+    for (let col = 0; col < gridCount; col++) {
+      // Alternate color for checkerboard
+      let isAlt = (row + col) % 2 === 0;
+
+      fill(isAlt ? baseColor : altColor);
+      noStroke();
+
+      // Calculate cell center
+      let cx = col * cellSize - size / 2 + cellSize / 2;
+      let cy = row * cellSize - size / 2 + cellSize / 2;
+
+      // Check if cell center is inside habitat shape boundary
+      if (isPointInHabitatShape(habitat, cx, cy, size)) {
+        rect(cx, cy, cellSize, cellSize);
+      }
+    }
+  }
+
+  // Draw habitat shape outline on top to clean edges
+  noFill();
+  stroke(0, 80);
+  strokeWeight(1.5);
+  drawHabitatOutline(habitat, 0, 0, size);
+
+  pop();
+}
+
+// Returns true if a point (px, py) is inside the habitat shape boundary
+function isPointInHabitatShape(habitat, px, py, size) {
+  switch (habitat?.trim().toLowerCase()) {
+    case 'pollinator':
+      // Hexagon check - point in regular hexagon centered at 0,0 with radius size*0.5
+      return pointInHexagon(px, py, size * 0.5);
+    case 'native grasses':
+      // Vertical rectangle centered at 0,0 width=size*0.3, height=size
+      return (abs(px) <= size * 0.15 && abs(py) <= size * 0.5);
+    case 'naturalized':
+      // Circle radius = size/2
+      return (px * px + py * py <= (size / 2) * (size / 2));
+    default:
+      // fallback circle smaller
+      return (px * px + py * py <= (size * 0.25) * (size * 0.25));
+  }
+}
+
+// Point-in-hexagon function for regular hexagon centered at 0,0, radius r
+function pointInHexagon(px, py, r) {
+  px = abs(px);
+  py = abs(py);
+
+  if (px > r * 0.8660254 || py > r * 0.5 + r * 0.288675) return false; // quick bounding box fail
+  return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
+}
+
+// Draw habitat shape outline with no fill
+function drawHabitatOutline(habitat, x, y, size) {
+  push();
+  translate(x, y);
+  noFill();
+
+  switch (habitat?.trim().toLowerCase()) {
+    case 'pollinator':
+      beginShape();
+      for (let i = 0; i < 6; i++) {
+        let angle = TWO_PI / 6 * i - PI / 2;
+        vertex(cos(angle) * size * 0.5, sin(angle) * size * 0.5);
+      }
+      endShape(CLOSE);
+      break;
+
+    case 'native grasses':
+      rectMode(CENTER);
+      rect(0, 0, size * 0.3, size);
+      break;
+
+    case 'naturalized':
+      ellipse(0, 0, size, size);
+      break;
+
+    default:
       ellipse(0, 0, size * 0.5);
   }
 
@@ -159,25 +263,6 @@ function drawPVShape(pvTech, x, y, size, baseColor) {
     default:
       fill(baseColor);
       ellipse(0, 0, size * 0.6);
-  }
-
-  pop();
-}
-
-function drawSuprematistOverlay(activities, size) {
-  push();
-  rectMode(CENTER);
-  noStroke();
-
-  // Draw semi-transparent stripes layered with rotation and offset
-  for (let i = 0; i < activities.length; i++) {
-    let c = getActivityColor(activities[i]);
-    c.setAlpha(90);
-    fill(c);
-    push();
-    rotate(radians(i * 25));
-    rect(0, 0, size * 0.7 - i * 10, size * 0.2);
-    pop();
   }
 
   pop();
