@@ -171,35 +171,6 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
 }
 
 
-  // Draw pattern squares with alternating colors
-  for (let row = 0; row < gridCount; row++) {
-    for (let col = 0; col < gridCount; col++) {
-      // Alternate color for checkerboard
-      let isAlt = (row + col) % 2 === 0;
-
-      fill(isAlt ? baseColor : altColor);
-      noStroke();
-
-      // Calculate cell center
-      let cx = col * cellSize - size / 2 + cellSize / 2;
-      let cy = row * cellSize - size / 2 + cellSize / 2;
-
-      // Check if cell center is inside habitat shape boundary
-      if (isPointInHabitatShape(habitat, cx, cy, size)) {
-        rect(cx, cy, cellSize, cellSize);
-      }
-    }
-  }
-
-  // Draw habitat shape outline on top to clean edges
-  noFill();
-  stroke(0, 80);
-  strokeWeight(1.5);
-  drawHabitatOutline(habitat, 0, 0, size);
-
-  pop();
-}
-
 // Returns true if a point (px, py) is inside the habitat shape boundary
 function isPointInHabitatShape(habitat, px, py, size) {
   switch (habitat?.trim().toLowerCase()) {
