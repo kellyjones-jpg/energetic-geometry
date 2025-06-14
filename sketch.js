@@ -7,17 +7,14 @@ function preload() {
 }
 
 function setup() {
-    for (let i = 0; i < table.getRowCount(); i++) {
+  for (let i = 0; i < table.getRowCount(); i++) {
     let name = table.getString(i, 'Name') || '';
     let activityStr = table.getString(i, 'Agrivoltaic Activities') || '';
     let activities = activityStr ? activityStr.split(/,\s*/) : [];
-    let habitatStr = table.getString(i, 'Habitat Type') || '';
-    let habitat = habitatStr ? habitatStr.split(/,\s*/) : [];
+    let habitat = table.getString(i, 'Habitat Type') || '';
     let pvTech = table.getString(i, 'PV Technology') || '';
-    let animalTypeStr = table.getString(i, 'Animal Type') || '';
-    let animalType = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
-    let cropTypeStr = table.getString(i, 'Crop Types') || '';
-    let cropType = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
+    let animalType = table.getString(i, 'Animal Type') || '';
+    let cropType = table.getString(i, 'Crop Types') || '';
 
     entries.push({
       name,
@@ -66,9 +63,7 @@ function draw() {
     let baseColor = getActivityColor(entry.activities[0]);
 
     // Draw habitat shape filled with base color
-    if (entry.habitat.length > 1) {
     drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
-    }
 
     // If combined activities, overlay checkerboard pattern
     if (entry.activities.length > 1) {
@@ -76,14 +71,10 @@ function draw() {
     }
 
     // Draw crop type edge style overlay
-    if (entry.cropType.length > 0) {
     drawCropEdgeStyle(entry.cropTypes[0], 0, 0, shapeSize);
-    }
     
     // Draw animal type line overlay
-    if (entry.animalType.length > 0) {
     drawAnimalLine(entry.animalType, 0, 0, shapeSize);
-    }
 
     // Draw PV Tech smaller overlay shape
     drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
