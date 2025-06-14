@@ -1,11 +1,9 @@
 let table;
 let entries = [];
-let helvetica;
 let tooltipEntry = null;
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
-  helvetica = loadFont('fonts/Helvetica.ttf');
 }
 
 function setup() {
@@ -30,7 +28,7 @@ function setup() {
   let canvasHeight = rows * tileHeight;
 
   createCanvas(1650, canvasHeight);
-  textFont(helvetica);
+  textFont('Helvetica');
   textSize(16);
   textAlign(LEFT, TOP);
   rectMode(CORNER);
