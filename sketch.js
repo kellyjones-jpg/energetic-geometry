@@ -84,7 +84,7 @@ function draw() {
     pop();
 
     // Footer labels
-    fill(255, 245);
+    fill(255);
     noStroke();
     rect(x, y + h - 40, w, 40);
 
