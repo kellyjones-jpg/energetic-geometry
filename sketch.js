@@ -48,26 +48,17 @@ function draw() {
     let y = floor(i / cols) * h;
     let entry = entries[i];
 
-    // Neutral tile background
+    // Tile background
     fill(243, 232, 205);
     stroke(220);
     rect(x, y, w, h - 40);
 
-    // Set color from activity
-    if (entry.activities.length === 1) {
-    fill(getActivityColor(entry.activities[0]));
-    } else {
-      let pattern = createPattern(entry.activities, shapeSize);
-      imageMode(CENTER);
-      image(pattern, 0, 0); // Will be drawn from center after translate()
-    }
-
-
-    // Draw habitat shape with PV orientation
     let shapeSize = min(w, h - 40) * 0.6;
+
     push();
     translate(x + w / 2, y + (h - 40) / 2);
 
+    // Orientation from PV Technology
     if (entry.pvTech) {
       let tech = entry.pvTech.trim().toLowerCase();
       if (tech === 'monofacial') {
@@ -77,25 +68,20 @@ function draw() {
       }
     }
 
-    function getActivityColor(activity) {
-  switch (activity.trim().toLowerCase()) {
-    case 'crop production':
-      return color('#DA1E37');
-    case 'habitat':
-      return color('#0A0A0A');
-    case 'grazing':
-      return color('#007CBE');
-    case 'greenhouse':
-      return color('#F2D43D');
-    default:
-      return color(200); // fallback gray
-  }
-}
+    let shapeType = getShapeType(entry.habitat);
 
-    drawHabitatShape(-shapeSize / 2, -shapeSize / 2, shapeSize, entry.habitat);
+    if (entry.activities.length === 1) {
+      fill(getActivityColor(entry.activities[0]));
+      drawHabitatShape(-shapeSize / 2, -shapeSize / 2, shapeSize, entry.habitat);
+    } else {
+      let patternImg = createPattern(entry.activities, shapeSize, shapeType);
+      imageMode(CENTER);
+      image(patternImg, 0, 0);
+    }
+
     pop();
 
-    // Draw text labels
+    // Text labels
     fill(255, 245);
     noStroke();
     rect(x, y + h - 40, w, 40);
@@ -106,13 +92,12 @@ function draw() {
     text(entry.name, x + padding, y + h - 35);
     text("Activities: " + entry.activities.join(', '), x + padding, y + h - 20);
 
-    // Check mouse hover for tooltip
+    // Tooltip detection
     if (mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h - 40) {
       tooltipEntry = { ...entry, x: mouseX, y: mouseY };
     }
   }
 
-  // Draw tooltip if hovering
   if (tooltipEntry) {
     drawTooltip(tooltipEntry);
   }
@@ -145,30 +130,75 @@ function drawHexagon(x, y, radius) {
   endShape(CLOSE);
 }
 
+function getActivityColor(activity) {
+  switch (activity.trim().toLowerCase()) {
+    case 'crop production':
+      return color('#DA1E37');
+    case 'habitat':
+      return color('#0A0A0A');
+    case 'grazing':
+      return color('#007CBE');
+    case 'greenhouse':
+      return color('#F2D43D');
+    default:
+      return color(200); // fallback gray
+  }
+}
 
-function createPattern(activities, size) {
-  let pg = createGraphics(size, size);
-  pg.noStroke();
+function getShapeType(habitat) {
+  switch (habitat.trim().toLowerCase()) {
+    case 'pollinator':
+      return 'hexagon';
+    case 'native grasses':
+    case 'naturalized':
+    default:
+      return 'ellipse';
+  }
+}
+
+function createPattern(activities, size, shapeType = 'ellipse') {
+  let pattern = createGraphics(size, size);
+  pattern.noStroke();
 
   if (activities.length === 2) {
+    // Diagonal split
     let c1 = getActivityColor(activities[0]);
     let c2 = getActivityColor(activities[1]);
-    pg.fill(c1);
-    pg.triangle(0, 0, size, 0, 0, size);
-    pg.fill(c2);
-    pg.triangle(size, size, size, 0, 0, size);
+    pattern.fill(c1);
+    pattern.triangle(0, 0, size, 0, 0, size);
+    pattern.fill(c2);
+    pattern.triangle(size, size, size, 0, 0, size);
   } else {
-    let cellSize = size / activities.length;
+    // Striped pattern
+    let stripeHeight = size / activities.length;
     for (let i = 0; i < activities.length; i++) {
-      for (let j = 0; j < activities.length; j++) {
-        let index = (i + j) % activities.length;
-        pg.fill(getActivityColor(activities[index]));
-        pg.rect(i * cellSize, j * cellSize, cellSize, cellSize);
-      }
+      pattern.fill(getActivityColor(activities[i]));
+      pattern.rect(0, i * stripeHeight, size, stripeHeight);
     }
   }
 
-  return pg;
+  // Create mask shape
+  let mask = createGraphics(size, size);
+  mask.background(0);
+  mask.noStroke();
+  mask.fill(255);
+
+  if (shapeType === 'hexagon') {
+    mask.beginShape();
+    for (let i = 0; i < 6; i++) {
+      let angle = TWO_PI / 6 * i;
+      let x = size / 2 + cos(angle) * size * 0.5;
+      let y = size / 2 + sin(angle) * size * 0.5;
+      mask.vertex(x, y);
+    }
+    mask.endShape(CLOSE);
+  } else {
+    mask.ellipse(size / 2, size / 2, size * 0.95, size * 0.95);
+  }
+
+  let finalPattern = pattern.get();
+  finalPattern.mask(mask.get());
+  return finalPattern;
 }
 
 function drawTooltip(entry) {
@@ -189,7 +219,6 @@ function drawTooltip(entry) {
   let x = entry.x + 15;
   let y = entry.y + 15;
 
-  // Prevent going off canvas
   if (x + w + 10 > width) x -= w + 30;
   if (y + h + 10 > height) y -= h + 30;
 
