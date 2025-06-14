@@ -40,7 +40,7 @@ function setup() {
 }
 
 function draw() {
-  background(243, 232, 205);
+  background(255);
   let cols = 6;
   let w = width / cols;
   let h = 250;
@@ -82,7 +82,7 @@ function draw() {
     pop();
 
     // Footer labels
-    fill(255, 245);
+    fill(255);
     noStroke();
     rect(x, y + h - 40, w, 40);
 
