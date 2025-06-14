@@ -71,7 +71,7 @@ function draw() {
     }
 
     // Draw crop type edge style overlay
-    drawCropEdgeStyle(entry.cropTypes[0], 0, 0, shapeSize);
+    drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
     
     // Draw animal type line overlay
     drawAnimalLine(entry.animalType, 0, 0, shapeSize);
