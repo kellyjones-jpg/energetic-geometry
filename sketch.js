@@ -42,7 +42,7 @@ function setup() {
 }
 
 function draw() {
-  background(243, 232, 205);
+  background(255);
   let cols = 6;
   let w = width / cols;
   let h = 250;
@@ -231,8 +231,8 @@ function drawCropEdgeStyle(cropType, arrayType, x, y, size) {
 
 function drawArrayOverlay(arrayType, size) {
   push();
-  strokeWeight(0.5);
-  stroke(0, 50); // subtle overlay tone
+  stroke(0); // black for strong contrast
+  strokeWeight(1); // slightly bolder for visibility
   noFill();
 
   switch ((arrayType || '').trim().toLowerCase()) {
