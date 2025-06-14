@@ -66,7 +66,7 @@ function draw() {
     let baseColor = getActivityColor(entry.activities[0]);
 
     // Draw habitat shape filled with base color
-    if (entry.habitat.length > 1) 
+    if (entry.habitat.length > 1) {
     drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
     }
 
