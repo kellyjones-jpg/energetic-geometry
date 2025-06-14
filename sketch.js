@@ -52,7 +52,7 @@ function draw() {
     let y = floor(i / cols) * h;
     let entry = entries[i];
 
-    fill(243, 232, 205);
+    fill(255);
     stroke(220);
     rect(x, y, w, h - 40);
 
