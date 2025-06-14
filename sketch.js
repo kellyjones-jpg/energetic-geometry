@@ -14,12 +14,7 @@ function setup() {
     let habitat = table.getString(i, 'Habitat Type');
     let pvTech = table.getString(i, 'PV Technology');
 
-    entries.push({
-      name,
-      activities,
-      habitat,
-      pvTech
-    });
+    entries.push({ name, activities, habitat, pvTech });
   }
 
   let cols = 6;
@@ -48,17 +43,14 @@ function draw() {
     let y = floor(i / cols) * h;
     let entry = entries[i];
 
-    // Tile background
     fill(243, 232, 205);
     stroke(220);
     rect(x, y, w, h - 40);
 
     let shapeSize = min(w, h - 40) * 0.6;
-
     push();
     translate(x + w / 2, y + (h - 40) / 2);
 
-    // Orientation from PV Technology
     if (entry.pvTech) {
       let tech = entry.pvTech.trim().toLowerCase();
       if (tech === 'monofacial') {
@@ -68,20 +60,14 @@ function draw() {
       }
     }
 
-    let shapeType = getShapeType(entry.habitat);
-
     if (entry.activities.length === 1) {
       fill(getActivityColor(entry.activities[0]));
       drawHabitatShape(-shapeSize / 2, -shapeSize / 2, shapeSize, entry.habitat);
     } else {
-      let patternImg = createPattern(entry.activities, shapeSize, shapeType);
-      imageMode(CENTER);
-      image(patternImg, 0, 0);
+      drawSuprematistOverlay(entry.activities, shapeSize);
     }
-
     pop();
 
-    // Text labels
     fill(255, 245);
     noStroke();
     rect(x, y + h - 40, w, 40);
@@ -92,7 +78,6 @@ function draw() {
     text(entry.name, x + padding, y + h - 35);
     text("Activities: " + entry.activities.join(', '), x + padding, y + h - 20);
 
-    // Tooltip detection
     if (mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h - 40) {
       tooltipEntry = { ...entry, x: mouseX, y: mouseY };
     }
@@ -100,6 +85,16 @@ function draw() {
 
   if (tooltipEntry) {
     drawTooltip(tooltipEntry);
+  }
+}
+
+function getActivityColor(activity) {
+  switch (activity.trim().toLowerCase()) {
+    case 'crop production': return color('#DA1E37');
+    case 'habitat': return color('#0A0A0A');
+    case 'grazing': return color('#007CBE');
+    case 'greenhouse': return color('#F2D43D');
+    default: return color(200);
   }
 }
 
@@ -123,82 +118,44 @@ function drawHexagon(x, y, radius) {
   beginShape();
   for (let i = 0; i < 6; i++) {
     let angle = TWO_PI / 6 * i;
-    let vx = x + cos(angle) * radius;
-    let vy = y + sin(angle) * radius;
-    vertex(vx, vy);
+    vertex(x + cos(angle) * radius, y + sin(angle) * radius);
   }
   endShape(CLOSE);
 }
 
-function getActivityColor(activity) {
-  switch (activity.trim().toLowerCase()) {
-    case 'crop production':
-      return color('#DA1E37');
-    case 'habitat':
-      return color('#0A0A0A');
-    case 'grazing':
-      return color('#007CBE');
-    case 'greenhouse':
-      return color('#F2D43D');
-    default:
-      return color(200); // fallback gray
-  }
-}
+function drawSuprematistOverlay(activities, size) {
+  let baseAngle = random(TWO_PI);
+  let offsetStep = PI / 6;
 
-function getShapeType(habitat) {
-  switch (habitat.trim().toLowerCase()) {
-    case 'pollinator':
-      return 'hexagon';
-    case 'native grasses':
-    case 'naturalized':
-    default:
-      return 'ellipse';
-  }
-}
+  for (let i = 0; i < activities.length; i++) {
+    let actColor = getActivityColor(activities[i]);
+    let shapeSize = size * random(0.2, 0.4);
+    let shapeOffset = p5.Vector.fromAngle(baseAngle + i * offsetStep).mult(size * 0.15);
 
-function createPattern(activities, size, shapeType = 'ellipse') {
-  let pattern = createGraphics(size, size);
-  pattern.noStroke();
+    push();
+    translate(shapeOffset.x, shapeOffset.y);
+    rotate(baseAngle + i * offsetStep);
+    fill(actColor.levels[0], actColor.levels[1], actColor.levels[2], 150);
+    noStroke();
 
-  if (activities.length === 2) {
-    // Diagonal split
-    let c1 = getActivityColor(activities[0]);
-    let c2 = getActivityColor(activities[1]);
-    pattern.fill(c1);
-    pattern.triangle(0, 0, size, 0, 0, size);
-    pattern.fill(c2);
-    pattern.triangle(size, size, size, 0, 0, size);
-  } else {
-    // Striped pattern
-    let stripeHeight = size / activities.length;
-    for (let i = 0; i < activities.length; i++) {
-      pattern.fill(getActivityColor(activities[i]));
-      pattern.rect(0, i * stripeHeight, size, stripeHeight);
+    switch (i % 3) {
+      case 0:
+        rectMode(CENTER);
+        rect(0, 0, shapeSize, shapeSize * 0.6);
+        break;
+      case 1:
+        ellipse(0, 0, shapeSize * 0.8, shapeSize * 0.8);
+        break;
+      case 2:
+        triangle(
+          -shapeSize / 2, shapeSize / 2,
+          0, -shapeSize / 2,
+          shapeSize / 2, shapeSize / 2
+        );
+        break;
     }
+    pop();
   }
-
-  // Create mask shape
-  let mask = createGraphics(size, size);
-  mask.background(0);
-  mask.noStroke();
-  mask.fill(255);
-
-  if (shapeType === 'hexagon') {
-    mask.beginShape();
-    for (let i = 0; i < 6; i++) {
-      let angle = TWO_PI / 6 * i;
-      let x = size / 2 + cos(angle) * size * 0.5;
-      let y = size / 2 + sin(angle) * size * 0.5;
-      mask.vertex(x, y);
-    }
-    mask.endShape(CLOSE);
-  } else {
-    mask.ellipse(size / 2, size / 2, size * 0.95, size * 0.95);
-  }
-
-  let finalPattern = pattern.get();
-  finalPattern.mask(mask.get());
-  return finalPattern;
 }
 
 function drawTooltip(entry) {
@@ -210,15 +167,10 @@ function drawTooltip(entry) {
   ];
 
   textSize(14);
-  let w = 0;
-  for (let line of textLines) {
-    w = max(w, textWidth(line));
-  }
+  let w = textLines.reduce((acc, line) => max(acc, textWidth(line)), 0);
   let h = textLines.length * 18 + 10;
-
   let x = entry.x + 15;
   let y = entry.y + 15;
-
   if (x + w + 10 > width) x -= w + 30;
   if (y + h + 10 > height) y -= h + 30;
 
