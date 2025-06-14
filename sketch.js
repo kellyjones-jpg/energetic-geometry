@@ -13,14 +13,16 @@ function setup() {
     let activities = activityStr.split(/,\s*/);
     let habitat = table.getString(i, 'Habitat Type');
     let pvTech = table.getString(i, 'PV Technology');
-    let animalType = table.getString(i, 'Animal Type');  // NEW: read animal type
+    let animalType = table.getString(i, 'Animal Type'); 
+    let cropType = table.getString(i, 'Crop Type');
 
     entries.push({
       name,
       activities,
       habitat,
       pvTech,
-      animalType   // NEW: include in entry object
+      animalType,
+      cropType
     });
   }
 
@@ -60,18 +62,21 @@ function draw() {
 
     let baseColor = getActivityColor(entry.activities[0]);
 
-    // 1. Draw habitat shape filled with base color
+    // Draw habitat shape filled with base color
     drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
 
-    // 2. If combined activities, overlay checkerboard pattern
+    // If combined activities, overlay checkerboard pattern
     if (entry.activities.length > 1) {
       drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
     }
 
-    // 3. Draw animal type line overlay (NEW)
+    // Draw crop type edge style overlay (NEW)
+    drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
+    
+    // Draw animal type line overlay (NEW)
     drawAnimalLine(entry.animalType, 0, 0, shapeSize);
 
-    // 4. Draw PV Tech smaller overlay shape
+    // Draw PV Tech smaller overlay shape
     drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
 
     pop();
@@ -96,6 +101,79 @@ function draw() {
     drawTooltip(tooltipEntry);
   }
 }
+
+function drawCropEdgeStyle(cropType, x, y, size) {
+  push();
+  translate(x, y);
+  noFill();
+  strokeWeight(2);
+
+  if (!cropType) {
+    stroke(0, 50);
+    ellipse(0, 0, size * 0.7);
+    pop();
+    return;
+  }
+
+  switch (cropType.trim().toLowerCase()) {
+    case 'row crops':
+      stroke('#DA1E37'); // Suprematist bold red
+      // sharper jagged edges for Op Art zigzag effect
+      beginShape();
+      let steps = 36;
+      for (let i = 0; i <= steps; i++) {
+        let angle = TWO_PI * i / steps;
+        let radius = size * 0.5 + (i % 2 === 0 ? 12 : -12);
+        vertex(cos(angle) * radius, sin(angle) * radius);
+      }
+      endShape(CLOSE);
+      break;
+
+    case 'tree crops':
+      stroke('#0057B7'); // Suprematist blue
+      // smooth wavy circle
+      beginShape();
+      for (let a = 0; a <= TWO_PI; a += 0.1) {
+        let r = size * 0.5 + 10 * sin(5 * a);
+        vertex(cos(a) * r, sin(a) * r);
+      }
+      endShape(CLOSE);
+      break;
+
+    case 'vine crops':
+      stroke('#000000'); // Black for strong Op Art contrast
+      strokeWeight(3);
+      let dots = 24;
+      for (let i = 0; i < dots; i++) {
+        let angle = TWO_PI * i / dots;
+        let px = cos(angle) * size * 0.5;
+        let py = sin(angle) * size * 0.5;
+        point(px, py);
+      }
+      break;
+
+    case 'forage crops':
+      stroke('#000000'); // Black dashed for Op Art style
+      strokeWeight(2);
+      let circumference = TWO_PI * size * 0.5;
+      let dashLength = 10;
+      let gapLength = 6;
+      let totalDashes = floor(circumference / (dashLength + gapLength));
+      for (let i = 0; i < totalDashes; i++) {
+        let startAngle = (i * (dashLength + gapLength)) / (size * 0.5);
+        let endAngle = startAngle + dashLength / (size * 0.5);
+        arc(0, 0, size, size, startAngle, endAngle);
+      }
+      break;
+
+    default:
+      stroke(0, 50);
+      ellipse(0, 0, size * 0.7);
+  }
+
+  pop();
+}
+
 
 // Draw different line styles based on Animal Type
 function drawAnimalLine(animalType, x, y, size) {
