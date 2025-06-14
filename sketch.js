@@ -13,8 +13,10 @@ function setup() {
     let activities = activityStr ? activityStr.split(/,\s*/) : [];
     let habitat = table.getString(i, 'Habitat Type') || '';
     let pvTech = table.getString(i, 'PV Technology') || '';
-    let animalType = table.getString(i, 'Animal Type') || '';
-    let cropType = table.getString(i, 'Crop Type') || '';
+    let animalTypeStr = table.getString(i, 'Animal Type') || '';
+    let animalTypes = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
+    let cropTypeStr = table.getString(i, 'Crop Type') || '';
+    let cropTypes = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
 
     entries.push({
       name,
@@ -70,11 +72,15 @@ function draw() {
       drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
     }
 
-    // Draw crop type edge style overlay (NEW)
-    drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
+    // Draw crop type edge style overlay
+    if (entry.cropTypes.length > 0) {
+    drawCropEdgeStyle(entry.cropTypes[0], 0, 0, shapeSize);
+    }
     
-    // Draw animal type line overlay (NEW)
+    // Draw animal type line overlay
+    if (entry.animalTypes.length > 0) {
     drawAnimalLine(entry.animalType, 0, 0, shapeSize);
+    }
 
     // Draw PV Tech smaller overlay shape
     drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
