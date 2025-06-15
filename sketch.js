@@ -18,7 +18,8 @@ function setup() {
     let activities = activityStr ? activityStr.split(/,\s*/) : [];
     let habitat = table.getString(i, 'Habitat Type') || '';
     let pvTech = table.getString(i, 'PV Technology') || '';
-    let animalType = table.getString(i, 'Animal Type') || '';
+    let animalTypeStr = table.getString(i, 'Animal Type') || '';
+    let animalType = animalTypeStr ? animalTypeStr.split(/,\\s*/) : [];
     let cropType = table.getString(i, 'Crop Types') || '';
     let year = table.getString(i, 'Year Installed') || 'Unknown';
 
