@@ -20,7 +20,7 @@ function setup() {
     let pvTech = table.getString(i, 'PV Technology') || '';
     let animalType = table.getString(i, 'Animal Type') || '';
     let cropType = table.getString(i, 'Crop Types') || '';
-    let year = table.getString(i, 'Installation Year') || 'Unknown';
+    let year = table.getString(i, 'Year Installed') || 'Unknown';
 
     let entry = {
       name,
