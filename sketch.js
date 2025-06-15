@@ -74,7 +74,6 @@ function draw() {
   let w = width / cols;
   let h = tileHeight;
   let padding = 28;
-  tooltipEntry = null;
 
   fill(0);
   textSize(24);
@@ -114,18 +113,35 @@ function draw() {
     fill(0);
     textSize(14);
     text(entry.name, x + padding, y + h - 55);
-    text("Habitat: " + entry.habitat, x + padding, y + h - 35);
-    text("Activities: " + entry.activities.join(', '), x + padding, y + h - 20);
-
-    if (mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h - 40) {
-      tooltipEntry = { ...entry, x: mouseX, y: mouseY };
-    }
   }
 
   if (tooltipEntry) {
     drawTooltip(tooltipEntry);
   }
 }
+
+function mouseMoved() {
+  let cols = 6;
+  let tileHeight = 250;
+  let yearEntries = entriesByYear[selectedYear] || [];
+  let w = width / cols;
+  let h = tileHeight;
+
+  tooltipEntry = null;
+
+  for (let i = 0; i < yearEntries.length; i++) {
+    let x = (i % cols) * w;
+    let y = floor(i / cols) * h;
+
+    if (mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h - 40) {
+      tooltipEntry = { ...yearEntries[i], x: mouseX, y: mouseY };
+      break; // Stop at the first match
+    }
+  }
+
+  redraw(); // Triggers canvas update only on mouse move
+}
+
 
 const cropVisualGroups = {
   // Row Crops
