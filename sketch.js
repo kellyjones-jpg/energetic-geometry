@@ -1,11 +1,10 @@
-// Updated sketch.js with timeline slider and dynamic year-based grouping
 let table;
 let entries = [];
 let entriesByYear = {};
 let yearSlider;
 let selectedYear;
 let availableYears = [];
-let tooltipEntry = null;
+let cnv;
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
@@ -19,9 +18,9 @@ function setup() {
     let habitat = table.getString(i, 'Habitat Type') || '';
     let pvTech = table.getString(i, 'PV Technology') || '';
     let animalTypeStr = table.getString(i, 'Animal Type') || '';
-    let animalType = animalTypeStr ? animalTypeStr.split(/,\\s*/) : [];
+    let animalType = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
     let cropTypeStr = table.getString(i, 'Crop Types') || '';
-    let cropType = String(cropTypeStr).split(/,\s*/)[0];
+    let cropType = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
     let year = table.getString(i, 'Year Installed') || 'Unknown';
 
     let entry = {
@@ -46,75 +45,80 @@ function setup() {
   selectedYear = availableYears[0];
 
   yearSlider = createSlider(0, availableYears.length - 1, 0);
-  yearSlider.position(20, 20);
   yearSlider.style('width', '400px');
   yearSlider.input(() => {
     selectedYear = availableYears[yearSlider.value()];
     redraw();
   });
 
-  createCanvas(1650, 800); // Temporary height, adjusted in draw()
+  cnv = createCanvas(windowWidth * 0.9, windowHeight * 0.8);
+  centerCanvas();
+  centerSlider();
+
   textFont('Helvetica');
   textSize(16);
-  textAlign(LEFT, TOP);
-  rectMode(CORNER);
+  textAlign(CENTER, CENTER);
+  rectMode(CENTER);
   noLoop();
 }
 
+function windowResized() {
+  resizeCanvas(windowWidth * 0.9, windowHeight * 0.8);
+  centerCanvas();
+  centerSlider();
+  redraw();
+}
+
+function centerCanvas() {
+  let x = (windowWidth - width) / 2;
+  let y = (windowHeight - height) / 2 - 30;
+  cnv.position(x, y);
+}
+
+function centerSlider() {
+  let sliderWidth = parseInt(yearSlider.style('width'));
+  let x = windowWidth / 2 - sliderWidth / 2;
+  let y = windowHeight - 60;
+  yearSlider.position(x, y);
+}
+
 function draw() {
-  let cols = 6;
-  let tileHeight = 250;
-  let yearEntries = entriesByYear[selectedYear] || [];
-  let rows = ceil(yearEntries.length / cols);
-  let canvasHeight = rows * tileHeight;
-
-  resizeCanvas(1650, canvasHeight);
   background(255);
-
-  let w = width / cols;
-  let h = tileHeight;
-  let padding = 28;
-
   fill(0);
   textSize(24);
-  textAlign(LEFT, CENTER);
-  text("Year: " + selectedYear, 440, 30);
+  textAlign(CENTER, TOP);
+  text("Year: " + selectedYear, width / 2, 30);
 
-  for (let i = 0; i < yearEntries.length; i++) {
-    let x = (i % cols) * w;
-    let y = floor(i / cols) * h;
-    let entry = yearEntries[i];
-
-    fill(255);
-    noStroke();
-    rect(x, y, w, h - 40);
-
-    let shapeSize = min(w, h - 40) * 0.6;
-    push();
-    translate(x + w / 2, y + (h - 40) / 2);
-
-    let baseColor = getActivityColor(entry.activities[0]);
-    drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
-
-    if (entry.activities.length > 1) {
-      drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
-    }
-
-    drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
-    drawAnimalLine(entry.animalType, 0, 0, shapeSize);
-    drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
-    pop();
-
-    // Footer labels
-    fill(255);
-    noStroke();
-    rect(x, y + h - 40, w, 40);
-
-    fill(0);
-    textSize(14);
-    text(entry.name, x + padding, y + h - 55);
+  let yearEntries = entriesByYear[selectedYear] || [];
+  if (yearEntries.length === 0) {
+    text("No data available for this year.", width / 2, height / 2);
+    return;
   }
 
+  let entry = yearEntries[0];
+  let centerX = width / 2;
+  let centerY = height / 2;
+  let shapeSize = min(width, height) * 0.4;
+
+  push();
+  translate(centerX, centerY);
+
+  let baseColor = getActivityColor(entry.activities[0]);
+  drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
+
+  if (entry.activities.length > 1) {
+    drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
+  }
+
+  drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
+  drawAnimalLine(entry.animalType, 0, 0, shapeSize);
+  drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
+  pop();
+
+  textSize(16);
+  textAlign(CENTER, TOP);
+  text(entry.name, centerX, height - 120);
+}
   if (tooltipEntry) {
     drawTooltip(tooltipEntry);
   }
@@ -145,13 +149,13 @@ function mousePressed() {
 function keyPressed() {
   if (!tooltipEntry) return;
 
-  // Example: press 'Escape' to close tooltip
+  // Press 'Escape' to close tooltip
   if (keyCode === ESCAPE) {
     tooltipEntry = null;
     redraw();
   }
 
-  // Optional: move between tiles with arrow keys (basic version)
+  // Move between tiles with arrow keys
   let yearEntries = entriesByYear[selectedYear];
   if (!yearEntries) return;
 
