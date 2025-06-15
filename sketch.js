@@ -6,170 +6,6 @@ let selectedYear;
 let availableYears = [];
 let cnv;
 
-function preload() {
-  table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
-}
-
-function setup() {
-  for (let i = 0; i < table.getRowCount(); i++) {
-    let name = table.getString(i, 'Name') || '';
-    let activityStr = table.getString(i, 'Agrivoltaic Activities') || '';
-    let activities = activityStr ? activityStr.split(/,\s*/) : [];
-    let habitat = table.getString(i, 'Habitat Type') || '';
-    let pvTech = table.getString(i, 'PV Technology') || '';
-    let animalTypeStr = table.getString(i, 'Animal Type') || '';
-    let animalType = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
-    let cropTypeStr = table.getString(i, 'Crop Types') || '';
-    let cropType = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
-    let year = table.getString(i, 'Year Installed') || 'Unknown';
-
-    let entry = {
-      name,
-      activities,
-      habitat,
-      pvTech,
-      animalType,
-      cropType,
-      year
-    };
-
-    entries.push(entry);
-
-    if (!entriesByYear[year]) {
-      entriesByYear[year] = [];
-    }
-    entriesByYear[year].push(entry);
-  }
-
-  availableYears = Object.keys(entriesByYear).sort();
-  selectedYear = availableYears[0];
-
-  yearSlider = createSlider(0, availableYears.length - 1, 0);
-  yearSlider.style('width', '400px');
-  yearSlider.input(() => {
-    selectedYear = availableYears[yearSlider.value()];
-    redraw();
-  });
-
-  cnv = createCanvas(windowWidth * 0.9, windowHeight * 0.8);
-  centerCanvas();
-  centerSlider();
-
-  textFont('Helvetica');
-  textSize(16);
-  textAlign(CENTER, CENTER);
-  rectMode(CENTER);
-  noLoop();
-}
-
-function windowResized() {
-  resizeCanvas(windowWidth * 0.9, windowHeight * 0.8);
-  centerCanvas();
-  centerSlider();
-  redraw();
-}
-
-function centerCanvas() {
-  let x = (windowWidth - width) / 2;
-  let y = (windowHeight - height) / 2 - 30;
-  cnv.position(x, y);
-}
-
-function centerSlider() {
-  let sliderWidth = parseInt(yearSlider.style('width'));
-  let x = windowWidth / 2 - sliderWidth / 2;
-  let y = windowHeight - 60;
-  yearSlider.position(x, y);
-}
-
-function draw() {
-  background(255);
-  fill(0);
-  textSize(24);
-  textAlign(CENTER, TOP);
-  text("Year: " + selectedYear, width / 2, 30);
-
-  let yearEntries = entriesByYear[selectedYear] || [];
-  if (yearEntries.length === 0) {
-    text("No data available for this year.", width / 2, height / 2);
-    return;
-  }
-
-  let entry = yearEntries[0];
-  let centerX = width / 2;
-  let centerY = height / 2;
-  let shapeSize = min(width, height) * 0.4;
-
-  push();
-  translate(centerX, centerY);
-
-  let baseColor = getActivityColor(entry.activities[0]);
-  drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
-
-  if (entry.activities.length > 1) {
-    drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
-  }
-
-  drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
-  drawAnimalLine(entry.animalType, 0, 0, shapeSize);
-  drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
-  pop();
-
-  textSize(16);
-  textAlign(CENTER, TOP);
-  text(entry.name, centerX, height - 120);
-}
-  if (tooltipEntry) {
-    drawTooltip(tooltipEntry);
-  }
-
-function mousePressed() {
-  let cols = 6;
-  let tileHeight = 250;
-  let yearEntries = entriesByYear[selectedYear] || [];
-  let w = width / cols;
-  let h = tileHeight;
-
-  tooltipEntry = null; // clear previous selection
-
-  for (let i = 0; i < yearEntries.length; i++) {
-    let x = (i % cols) * w;
-    let y = floor(i / cols) * h;
-
-    if (mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h - 40) {
-      tooltipEntry = { ...yearEntries[i], x: mouseX, y: mouseY };
-      break;
-    }
-  }
-
-  redraw();
-}
-
-function keyPressed() {
-  if (!tooltipEntry) return;
-
-  // Press 'Escape' to close tooltip
-  if (keyCode === ESCAPE) {
-    tooltipEntry = null;
-    redraw();
-  }
-
-  // Move between tiles with arrow keys
-  let yearEntries = entriesByYear[selectedYear];
-  if (!yearEntries) return;
-
-  let currentIndex = yearEntries.findIndex(e => e.name === tooltipEntry.name);
-  if (currentIndex === -1) return;
-
-  if (keyCode === RIGHT_ARROW && currentIndex < yearEntries.length - 1) {
-    tooltipEntry = { ...yearEntries[currentIndex + 1], x: 100, y: 100 };
-    redraw();
-  } else if (keyCode === LEFT_ARROW && currentIndex > 0) {
-    tooltipEntry = { ...yearEntries[currentIndex - 1], x: 100, y: 100 };
-    redraw();
-  }
-}
-
 const cropVisualGroups = {
   // Row Crops
   "hay": "row",
@@ -213,6 +49,217 @@ const cropVisualGroups = {
   "parsley": "forage",
   "berries": "forage",
 };
+
+function preload() {
+  table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
+}
+
+function setup() {
+  for (let i = 0; i < table.getRowCount(); i++) {
+    let name = table.getString(i, 'Name') || '';
+    let activityStr = table.getString(i, 'Agrivoltaic Activities') || '';
+    let activities = activityStr ? activityStr.split(/,\s*/) : [];
+    let habitat = table.getString(i, 'Habitat Type') || '';
+    let pvTech = table.getString(i, 'PV Technology') || '';
+    let animalTypeStr = table.getString(i, 'Animal Type') || '';
+    let animalType = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
+    let cropTypeStr = table.getString(i, 'Crop Types') || '';
+    let cropType = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
+    let year = table.getString(i, 'Year Installed') || 'Unknown';
+
+    let entry = {
+      name,
+      activities,
+      habitat,
+      pvTech,
+      animalType,
+      cropType,
+      year
+    };
+
+    entries.push(entry);
+
+    if (!entriesByYear[year]) {
+      entriesByYear[year] = [];
+    }
+    entriesByYear[year].push(entry);
+  }
+
+  availableYears = Object.keys(entriesByYear).sort();
+  selectedYear = availableYears[0];
+
+  yearSlider = createSlider(0, availableYears.length - 1, 0);
+  yearSlider.style('width', '400px');
+  yearSlider.input(() => {
+    selectedYear = availableYears[yearSlider.value()];
+    windowResized(); // triggers height adjustment
+  });
+
+  cnv = createCanvas(windowWidth * 0.9, windowHeight * 0.8);
+  centerCanvas();
+  centerSlider();
+
+  textFont('Helvetica');
+  textSize(16);
+  textAlign(CENTER, CENTER);
+  rectMode(CENTER);
+  noLoop();
+}
+
+function windowResized() {
+  let yearEntries = entriesByYear[selectedYear] || [];
+  let shapeSize = 150;
+  let padding = 60;
+  let totalHeight = 100 + yearEntries.length * (shapeSize + padding);
+
+  resizeCanvas(windowWidth * 0.9, max(windowHeight * 0.8, totalHeight));
+  centerCanvas();
+  centerSlider();
+  redraw();
+}
+
+function centerCanvas() {
+  let x = (windowWidth - width) / 2;
+  let y = (windowHeight - height) / 2 - 30;
+  cnv.position(x, y);
+}
+
+function centerSlider() {
+  let sliderWidth = parseInt(yearSlider.style('width'));
+  let x = windowWidth / 2 - sliderWidth / 2;
+  let y = windowHeight - 60;
+  yearSlider.position(x, y);
+}
+
+function draw() {
+  background(255);
+  fill(0);
+  textSize(24);
+  textAlign(CENTER, TOP);
+  text("Year: " + selectedYear, width / 2, 30);
+
+  let yearEntries = entriesByYear[selectedYear] || [];
+  if (yearEntries.length === 0) {
+    text("No data available for this year.", width / 2, height / 2);
+    return;
+  }
+
+  let padding = 60;
+  let shapeSize = 150;
+  let startY = 80;
+
+  for (let i = 0; i < yearEntries.length; i++) {
+    let entry = yearEntries[i];
+    let centerX = width / 2;
+    let centerY = startY + i * (shapeSize + padding);
+
+    push();
+    translate(centerX, centerY);
+
+    let baseColor = getActivityColor(entry.activities[0]);
+    drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
+
+    if (entry.activities.length > 1) {
+      drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
+    }
+
+    drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
+    drawAnimalLine(entry.animalType, 0, 0, shapeSize);
+    drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
+    pop();
+
+    // Labels
+    textSize(14);
+    textAlign(CENTER, TOP);
+    text(entry.name, centerX, centerY + shapeSize / 2 + 8);
+  }
+
+  if (tooltipEntry) {
+    drawTooltip(tooltipEntry);
+  }
+}
+
+function drawTooltip(entry) {
+  let textLines = [
+    "Name: " + entry.name,
+    "Habitat: " + entry.habitat,
+    "Activities: " + entry.activities.join(', '),
+    "PV Tech: " + entry.pvTech,
+    "Animal Type: " + entry.animalType.join(', '),
+    "Crop Type: " + (Array.isArray(entry.cropType) ? entry.cropType.join(', ') : String(entry.cropType))
+  ];
+
+  textSize(14);
+  let w = 0;
+  for (let line of textLines) {
+    w = max(w, textWidth(line));
+  }
+  let h = textLines.length * 18 + 10;
+
+  let x = entry.x + 15;
+  let y = entry.y + 15;
+
+  if (x + w + 10 > width) x -= w + 30;
+  if (y + h + 10 > height) y -= h + 30;
+
+  fill(255);
+  stroke(0);
+  strokeWeight(1);
+  rect(x, y, w + 10, h, 6);
+
+  noStroke();
+  fill(0);
+  for (let i = 0; i < textLines.length; i++) {
+    text(textLines[i], x + 5, y + 20 + i * 18 - 10);
+  }
+}
+
+function mousePressed() {
+  let yearEntries = entriesByYear[selectedYear] || [];
+  let shapeSize = 150;
+  let padding = 60;
+  let startY = 80;
+
+  tooltipEntry = null;
+
+  for (let i = 0; i < yearEntries.length; i++) {
+    let centerX = width / 2;
+    let centerY = startY + i * (shapeSize + padding);
+    let d = dist(mouseX, mouseY, centerX, centerY);
+
+    if (d < shapeSize / 2) {
+      tooltipEntry = { ...yearEntries[i], x: mouseX, y: mouseY };
+      break;
+    }
+  }
+
+  redraw();
+}
+
+function keyPressed() {
+  if (!tooltipEntry) return;
+
+  // Press 'Escape' to close tooltip
+  if (keyCode === ESCAPE) {
+    tooltipEntry = null;
+    redraw();
+  }
+
+  // Move between tiles with arrow keys
+  let yearEntries = entriesByYear[selectedYear];
+  if (!yearEntries) return;
+
+  let currentIndex = yearEntries.findIndex(e => e.name === tooltipEntry.name);
+  if (currentIndex === -1) return;
+
+  if (keyCode === RIGHT_ARROW && currentIndex < yearEntries.length - 1) {
+    tooltipEntry = { ...yearEntries[currentIndex + 1], x: 100, y: 100 };
+    redraw();
+  } else if (keyCode === LEFT_ARROW && currentIndex > 0) {
+    tooltipEntry = { ...yearEntries[currentIndex - 1], x: 100, y: 100 };
+    redraw();
+  }
+}
 
 function drawCropEdgeStyle(cropType, x, y, size) {
   push();
@@ -570,40 +617,5 @@ function getActivityColor(activity) {
       return color('#F2D43D');
     default:
       return color(150);
-  }
-}
-
-function drawTooltip(entry) {
-  let textLines = [
-    "Name: " + entry.name,
-    "Habitat: " + entry.habitat,
-    "Activities: " + entry.activities.join(', '),
-    "PV Tech: " + entry.pvTech,
-    "Animal Type: " + entry.animalType.join(', '),
-    "Crop Type: " + (Array.isArray(entry.cropType) ? entry.cropType.join(', ') : String(entry.cropType))
-  ];
-
-  textSize(14);
-  let w = 0;
-  for (let line of textLines) {
-    w = max(w, textWidth(line));
-  }
-  let h = textLines.length * 18 + 10;
-
-  let x = entry.x + 15;
-  let y = entry.y + 15;
-
-  if (x + w + 10 > width) x -= w + 30;
-  if (y + h + 10 > height) y -= h + 30;
-
-  fill(255);
-  stroke(0);
-  strokeWeight(1);
-  rect(x, y, w + 10, h, 6);
-
-  noStroke();
-  fill(0);
-  for (let i = 0; i < textLines.length; i++) {
-    text(textLines[i], x + 5, y + 20 + i * 18 - 10);
   }
 }
