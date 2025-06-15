@@ -170,7 +170,7 @@ function drawCropEdgeStyle(cropType, x, y, size) {
 
   switch (group) {
     case 'row':
-      stroke('#DA1E37'); // Suprematist red
+      stroke('#DA1E37'); // Suprematist red, energetic and central
       beginShape();
       let steps = 36;
       for (let i = 0; i <= steps; i++) {
@@ -182,7 +182,7 @@ function drawCropEdgeStyle(cropType, x, y, size) {
       break;
 
     case 'tree':
-      stroke('#0057B7'); // Suprematist blue
+      stroke('#1155CC'); // Ultramarine-style Suprematist blue, clear sky blue
       beginShape();
       for (let a = 0; a <= TWO_PI; a += 0.1) {
         let r = size * 0.5 + 10 * sin(5 * a);
@@ -192,7 +192,7 @@ function drawCropEdgeStyle(cropType, x, y, size) {
       break;
 
     case 'vine':
-      stroke('#000000'); // Op Art black dots
+      stroke('#6A0DAD'); // Vibrant violet, layered complexity like vines
       strokeWeight(3);
       let dots = 24;
       for (let i = 0; i < dots; i++) {
@@ -204,7 +204,7 @@ function drawCropEdgeStyle(cropType, x, y, size) {
       break;
 
     case 'forage':
-      stroke('#000000'); // Op Art black dashed
+      stroke('#B8860B'); // Earthy gold, dynamic ground coverage
       strokeWeight(2);
       let circumference = TWO_PI * size * 0.5;
       let dashLength = 10;
