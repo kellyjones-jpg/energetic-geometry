@@ -537,7 +537,7 @@ function drawTooltip(entry) {
     "Activities: " + entry.activities.join(', '),
     "PV Tech: " + entry.pvTech,
     "Animal Type: " + entry.animalType.join(', '),
-    "Crop Type: " + entry.cropType,
+    "Crop Type: " + (Array.isArray(entry.cropType) ? entry.cropType.join(', ') : String(entry.cropType))
   ];
 
   textSize(14);
