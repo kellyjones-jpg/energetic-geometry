@@ -1,5 +1,10 @@
+// Updated sketch.js with timeline slider and dynamic year-based grouping
 let table;
 let entries = [];
+let entriesByYear = {};
+let yearSlider;
+let selectedYear;
+let availableYears = [];
 let tooltipEntry = null;
 
 function preload() {
@@ -15,23 +20,38 @@ function setup() {
     let pvTech = table.getString(i, 'PV Technology') || '';
     let animalType = table.getString(i, 'Animal Type') || '';
     let cropType = table.getString(i, 'Crop Types') || '';
+    let year = table.getString(i, 'Installation Year') || 'Unknown';
 
-    entries.push({
+    let entry = {
       name,
       activities,
       habitat,
       pvTech,
       animalType,
-      cropType
-    });
+      cropType,
+      year
+    };
+
+    entries.push(entry);
+
+    if (!entriesByYear[year]) {
+      entriesByYear[year] = [];
+    }
+    entriesByYear[year].push(entry);
   }
 
-  let cols = 6;
-  let tileHeight = 250;
-  let rows = ceil(entries.length / cols);
-  let canvasHeight = rows * tileHeight;
+  availableYears = Object.keys(entriesByYear).sort();
+  selectedYear = availableYears[0];
 
-  createCanvas(1650, canvasHeight);
+  yearSlider = createSlider(0, availableYears.length - 1, 0);
+  yearSlider.position(20, 20);
+  yearSlider.style('width', '400px');
+  yearSlider.input(() => {
+    selectedYear = availableYears[yearSlider.value()];
+    redraw();
+  });
+
+  createCanvas(1650, 800); // Temporary height, adjusted in draw()
   textFont('Helvetica');
   textSize(16);
   textAlign(LEFT, TOP);
@@ -40,17 +60,29 @@ function setup() {
 }
 
 function draw() {
-  background(255);
   let cols = 6;
+  let tileHeight = 250;
+  let yearEntries = entriesByYear[selectedYear] || [];
+  let rows = ceil(yearEntries.length / cols);
+  let canvasHeight = rows * tileHeight;
+
+  resizeCanvas(1650, canvasHeight);
+  background(255);
+
   let w = width / cols;
-  let h = 250;
+  let h = tileHeight;
   let padding = 28;
   tooltipEntry = null;
 
-  for (let i = 0; i < entries.length; i++) {
+  fill(0);
+  textSize(24);
+  textAlign(LEFT, CENTER);
+  text("Year: " + selectedYear, 440, 30);
+
+  for (let i = 0; i < yearEntries.length; i++) {
     let x = (i % cols) * w;
     let y = floor(i / cols) * h;
-    let entry = entries[i];
+    let entry = yearEntries[i];
 
     fill(255);
     noStroke();
@@ -61,24 +93,15 @@ function draw() {
     translate(x + w / 2, y + (h - 40) / 2);
 
     let baseColor = getActivityColor(entry.activities[0]);
-
-    // Draw habitat shape filled with base color
     drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
 
-    // If combined activities, overlay checkerboard pattern
     if (entry.activities.length > 1) {
       drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
     }
 
-    // Draw crop type edge style overlay
     drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
-    
-    // Draw animal type line overlay
     drawAnimalLine(entry.animalType, 0, 0, shapeSize);
-
-    // Draw PV Tech smaller overlay shape
     drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
-
     pop();
 
     // Footer labels
