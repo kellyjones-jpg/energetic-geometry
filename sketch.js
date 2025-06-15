@@ -53,7 +53,7 @@ function draw() {
     let entry = entries[i];
 
     fill(255);
-    stroke(220);
+    noStroke();
     rect(x, y, w, h - 40);
 
     let shapeSize = min(w, h - 40) * 0.6;
