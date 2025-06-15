@@ -170,7 +170,7 @@ function drawCropEdgeStyle(cropType, x, y, size) {
 
   switch (group) {
     case 'row':
-      stroke('#DA1E37'); // Suprematist red, energetic and central
+      stroke('#008000'); // Classic green, flat and universal, but separate
       beginShape();
       let steps = 36;
       for (let i = 0; i <= steps; i++) {
