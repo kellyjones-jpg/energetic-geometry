@@ -122,7 +122,6 @@ function draw() {
   if (tooltipEntry) {
     drawTooltip(tooltipEntry);
   }
-}
 
 function mousePressed() {
   let cols = 6;
