@@ -287,9 +287,11 @@ function drawAnimalLine(animalType, x, y, size) {
 
 // Map Animal Type to line style properties
 function getLineStyle(animalType) {
-  if (!animalType) return { type: 'straight', weight: 1, color: color('#A1A1A1AA') }; // Cool medium gray, semi-transparent
+  let typeStr = (animalType || '').trim().toLowerCase();
 
-  switch (animalType.trim().toLowerCase()) {
+  if (!typeStr) return { type: 'straight', weight: 1, color: color('#A1A1A1AA') }; // Cool medium gray, semi-transparent
+
+  switch (typeStr) {
     case 'sheep':
       return { type: 'wavy', weight: 2, color: color('#E63946CC') }; // Suprematist-inspired crimson
     case 'llamas & alpacas':
