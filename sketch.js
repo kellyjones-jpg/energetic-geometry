@@ -287,7 +287,7 @@ function drawAnimalLine(animalType, x, y, size) {
 
 // Map Animal Type to line style properties
 function getLineStyle(animalType) {
-  let typeStr = (animalType || '').trim().toLowerCase();
+  let typeStr = String(animalType || '').trim().toLowerCase();
 
   if (!typeStr) return { type: 'straight', weight: 1, color: color('#A1A1A1AA') }; // Cool medium gray, semi-transparent
 
