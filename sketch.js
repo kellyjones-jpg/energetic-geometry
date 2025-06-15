@@ -19,9 +19,9 @@ function setup() {
     let habitat = table.getString(i, 'Habitat Type') || '';
     let pvTech = table.getString(i, 'PV Technology') || '';
     let animalTypeStr = table.getString(i, 'Animal Type') || '';
-    let animalType = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
+    let animalType = animalTypeStr ? animalTypeStr.split(/,\\s*/) : [];
     let cropTypeStr = table.getString(i, 'Crop Types') || '';
-    let cropType = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
+    let cropType = String(cropTypeStr).split(/,\s*/)[0];
     let year = table.getString(i, 'Year Installed') || 'Unknown';
 
     let entry = {
@@ -255,40 +255,36 @@ function drawCropEdgeStyle(cropType, x, y, size) {
 
 // Draw different line styles based on Animal Type
 function drawAnimalLine(animalType, x, y, size) {
-  if (!Array.isArray(animalType)) {
-  animalType = [animalType];
-}
-
-let angleStep = TWO_PI / animalType.length;
-for (let i = 0; i < animalType.length; i++) {
-  let style = getLineStyle(animalType[i]);
-  push();
-  rotate(i * angleStep); // spread them out if desired
+  let style = getLineStyle(animalType);
   stroke(style.color);
   strokeWeight(style.weight);
+  noFill();
 
   switch (style.type) {
     case 'wavy':
       drawWavyLine(x, y, size);
       break;
+
     case 'dashed':
       drawDashedLine(x, y, size);
       break;
+
     case 'bezier':
       drawBezierLine(x, y, size);
       break;
+
     case 'straight':
       line(x - size / 2, y, x + size / 2, y);
       break;
+
     case 'textured':
       drawTexturedLine(x, y, size);
       break;
+
     default:
+      // fallback straight line
       line(x - size / 2, y, x + size / 2, y);
   }
-
-  pop();
-}
 }
 
 // Map Animal Type to line style properties
@@ -540,8 +536,8 @@ function drawTooltip(entry) {
     "Habitat: " + entry.habitat,
     "Activities: " + entry.activities.join(', '),
     "PV Tech: " + entry.pvTech,
-    "Animal Type: " + (Array.isArray(entry.animalType) ? entry.animalType.join(', ') : String(entry.animalType)),
-    "Crop Type: " + (Array.isArray(entry.cropType) ? entry.cropType.join(', ') : String(entry.cropType)),
+    "Animal Type: " + entry.animalType.join(', '),
+    "Crop Type: " + entry.cropType.join(', '),
   ];
 
   textSize(14);
