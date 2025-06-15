@@ -20,7 +20,8 @@ function setup() {
     let pvTech = table.getString(i, 'PV Technology') || '';
     let animalTypeStr = table.getString(i, 'Animal Type') || '';
     let animalType = animalTypeStr ? animalTypeStr.split(/,\\s*/) : [];
-    let cropType = table.getString(i, 'Crop Types') || '';
+    let cropTypeStr = table.getString(i, 'Crop Types') || '';
+    let cropType = String(cropTypeStr).split(/,\s*/)[0];
     let year = table.getString(i, 'Year Installed') || 'Unknown';
 
     let entry = {
@@ -183,7 +184,8 @@ function drawCropEdgeStyle(cropType, x, y, size) {
     return;
   }
 
-  let group = cropVisualGroups[cropType.trim().toLowerCase()];
+  let cleanCrop = String(cropType || '').trim().toLowerCase();
+  let group = cropVisualGroups[cleanCrop];
   if (!group) {
     // default fallback
     stroke(0, 50);
