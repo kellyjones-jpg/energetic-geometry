@@ -263,21 +263,21 @@ function drawAnimalLine(animalType, x, y, size) {
 
 // Map Animal Type to line style properties
 function getLineStyle(animalType) {
-  if (!animalType) return { type: 'straight', weight: 1, color: color('#0A0A0A88') }; // semi-transparent black
+  if (!animalType) return { type: 'straight', weight: 1, color: color('#A1A1A1AA') }; // Cool medium gray, semi-transparent
 
   switch (animalType.trim().toLowerCase()) {
     case 'sheep':
-      return { type: 'wavy', weight: 2, color: color('#DA1E37CC') }; // suprematist red
+      return { type: 'wavy', weight: 2, color: color('#E63946CC') }; // Suprematist-inspired crimson
     case 'llamas & alpacas':
-      return { type: 'dashed', weight: 2, color: color('#0057B7CC') }; // suprematist blue
+      return { type: 'dashed', weight: 2, color: color('#3A0CA3CC') }; // Deep violet-blue
     case 'horse':
-      return { type: 'bezier', weight: 3, color: color('#FFD700CC') }; // suprematist yellow
+      return { type: 'bezier', weight: 3, color: color('#FF6700CC') }; // Vivid orange
     case 'cows':
-      return { type: 'straight', weight: 5, color: color('#000000BB') }; // bold black
+      return { type: 'straight', weight: 5, color: color('#222222DD') }; // Rich charcoal
     case 'cattle':
-      return { type: 'textured', weight: 3, color: color('#FFFFFF88') }; // white, semi-transparent
+      return { type: 'textured', weight: 3, color: color('#E5E5E5BB') }; // Light neutral gray
     default:
-      return { type: 'straight', weight: 1, color: color('#1E90FFAA') }; // op art blue fallback
+      return { type: 'straight', weight: 1, color: color('#20C997AA') }; // Minty green-teal Op Art tone
   }
 }
 
