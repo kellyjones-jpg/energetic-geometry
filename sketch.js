@@ -120,14 +120,14 @@ function draw() {
   }
 }
 
-function mouseMoved() {
+function mousePressed() {
   let cols = 6;
   let tileHeight = 250;
   let yearEntries = entriesByYear[selectedYear] || [];
   let w = width / cols;
   let h = tileHeight;
 
-  tooltipEntry = null;
+  tooltipEntry = null; // clear previous selection
 
   for (let i = 0; i < yearEntries.length; i++) {
     let x = (i % cols) * w;
@@ -135,13 +135,37 @@ function mouseMoved() {
 
     if (mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h - 40) {
       tooltipEntry = { ...yearEntries[i], x: mouseX, y: mouseY };
-      break; // Stop at the first match
+      break;
     }
   }
 
-  redraw(); // Triggers canvas update only on mouse move
+  redraw();
 }
 
+function keyPressed() {
+  if (!tooltipEntry) return;
+
+  // Example: press 'Escape' to close tooltip
+  if (keyCode === ESCAPE) {
+    tooltipEntry = null;
+    redraw();
+  }
+
+  // Optional: move between tiles with arrow keys (basic version)
+  let yearEntries = entriesByYear[selectedYear];
+  if (!yearEntries) return;
+
+  let currentIndex = yearEntries.findIndex(e => e.name === tooltipEntry.name);
+  if (currentIndex === -1) return;
+
+  if (keyCode === RIGHT_ARROW && currentIndex < yearEntries.length - 1) {
+    tooltipEntry = { ...yearEntries[currentIndex + 1], x: 100, y: 100 };
+    redraw();
+  } else if (keyCode === LEFT_ARROW && currentIndex > 0) {
+    tooltipEntry = { ...yearEntries[currentIndex - 1], x: 100, y: 100 };
+    redraw();
+  }
+}
 
 const cropVisualGroups = {
   // Row Crops
