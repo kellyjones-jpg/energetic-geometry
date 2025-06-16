@@ -139,9 +139,14 @@ function draw() {
   textAlign(CENTER, TOP);
   text("Year: " + selectedYear, width / 2, 30);
 
+  // Get all entries for selected year
   let yearEntries = entriesByYear[selectedYear] || [];
-  if (yearEntries.length === 0) {
-    text("No data available for this year.", width / 2, height / 2);
+
+  // ✅ Filter only entries with non-empty Habitat Type
+  let visibleEntries = yearEntries.filter(e => e.habitat && e.habitat.trim() !== '');
+
+  if (visibleEntries.length === 0) {
+    text("No habitat-tagged sites available for this year.", width / 2, height / 2);
     return;
   }
 
@@ -149,8 +154,8 @@ function draw() {
   let shapeSize = 150;
   let startY = 80;
 
-  for (let i = 0; i < yearEntries.length; i++) {
-    let entry = yearEntries[i];
+  for (let i = 0; i < visibleEntries.length; i++) {
+    let entry = visibleEntries[i];
     let centerX = width / 2;
     let centerY = startY + i * (shapeSize + padding);
 
