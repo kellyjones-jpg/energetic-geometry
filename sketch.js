@@ -5,6 +5,7 @@ let yearSlider;
 let selectedYear;
 let availableYears = [];
 let cnv;
+let tooltipEntry = null; 
 
 const cropVisualGroups = {
   // Row Crops
