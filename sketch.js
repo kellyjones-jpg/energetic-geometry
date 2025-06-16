@@ -139,14 +139,10 @@ function draw() {
   textAlign(CENTER, TOP);
   text("Year: " + selectedYear, width / 2, 30);
 
-  // Get all entries for selected year
   let yearEntries = entriesByYear[selectedYear] || [];
 
-  // ✅ Filter only entries with non-empty Habitat Type
-  let visibleEntries = yearEntries.filter(e => e.habitat && e.habitat.trim() !== '');
-
-  if (visibleEntries.length === 0) {
-    text("No habitat-tagged sites available for this year.", width / 2, height / 2);
+  if (yearEntries.length === 0) {
+    text("No data available for this year.", width / 2, height / 2);
     return;
   }
 
@@ -154,24 +150,60 @@ function draw() {
   let shapeSize = 150;
   let startY = 80;
 
-  for (let i = 0; i < visibleEntries.length; i++) {
-    let entry = visibleEntries[i];
+  for (let i = 0; i < yearEntries.length; i++) {
+    let entry = yearEntries[i];
     let centerX = width / 2;
     let centerY = startY + i * (shapeSize + padding);
 
     push();
     translate(centerX, centerY);
 
-    let baseColor = getActivityColor(entry.activities[0]);
-    drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
+    let baseColor = getActivityColor(entry.activities?.[0] || '');
 
-    if (entry.activities.length > 1) {
-      drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
+    // Habitat shape (only if valid)
+    if (entry.habitat && entry.habitat.trim() !== '') {
+      drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
     }
 
-    drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
-    drawAnimalLine(entry.animalType, 0, 0, shapeSize);
-    drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
+    // Activities treatment
+    if (Array.isArray(entry.activities) && entry.activities.length > 0) {
+      if (entry.activities.length === 1) {
+        // Single activity: solid color ring
+        noFill();
+        stroke(getActivityColor(entry.activities[0]));
+        strokeWeight(6);
+        ellipse(0, 0, shapeSize * 0.9);
+      } else if (entry.activities.length === 2) {
+        // Two activities: checkerboard overlay
+        drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
+      } else {
+        // Three or more: radiating suprematist-style wedges
+        let angleStep = TWO_PI / entry.activities.length;
+        for (let j = 0; j < entry.activities.length; j++) {
+          let startAngle = j * angleStep;
+          let endAngle = startAngle + angleStep;
+          fill(getActivityColor(entry.activities[j]));
+          noStroke();
+          arc(0, 0, shapeSize * 0.85, shapeSize * 0.85, startAngle, endAngle, PIE);
+        }
+      }
+    }
+
+    // Crop edge (only if cropType exists)
+    if (entry.cropType && entry.cropType.length > 0) {
+      drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
+    }
+
+    // Animal line (only if animalType exists)
+    if (entry.animalType && entry.animalType.length > 0) {
+      drawAnimalLine(entry.animalType, 0, 0, shapeSize);
+    }
+
+    // PV shape (only if pvTech exists)
+    if (entry.pvTech && entry.pvTech.trim() !== '') {
+      drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
+    }
+
     pop();
 
     // Labels
