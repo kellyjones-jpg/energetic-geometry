@@ -177,7 +177,7 @@ function draw() {
         // Two activities: checkerboard overlay
         drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
       } else {
-        // Three or more: radiating suprematist-style wedges
+        // Three or more: suprematist-style wedges
         let angleStep = TWO_PI / entry.activities.length;
         for (let j = 0; j < entry.activities.length; j++) {
           let startAngle = j * angleStep;
