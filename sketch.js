@@ -165,30 +165,6 @@ function draw() {
       drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
     }
 
-    // Activities treatment
-    if (Array.isArray(entry.activities) && entry.activities.length > 0) {
-      if (entry.activities.length === 1) {
-        // Single activity: solid color ring
-        noFill();
-        stroke(getActivityColor(entry.activities[0]));
-        strokeWeight(6);
-        ellipse(0, 0, shapeSize * 0.9);
-      } else if (entry.activities.length === 2) {
-        // Two activities: checkerboard overlay
-        drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
-      } else {
-        // Three or more: suprematist-style wedges
-        let angleStep = TWO_PI / entry.activities.length;
-        for (let j = 0; j < entry.activities.length; j++) {
-          let startAngle = j * angleStep;
-          let endAngle = startAngle + angleStep;
-          fill(getActivityColor(entry.activities[j]));
-          noStroke();
-          arc(0, 0, shapeSize * 0.85, shapeSize * 0.85, startAngle, endAngle, PIE);
-        }
-      }
-    }
-
     // Crop edge (only if cropType exists)
     if (entry.cropType && entry.cropType.length > 0) {
       drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
@@ -485,37 +461,35 @@ function drawTexturedLine(x, y, length) {
   }
 }
 
-function drawHabitatShape(habitat, x, y, size, colorVal) {
+function drawHabitatShape(habitat, x, y, size, baseColor) {
   push();
   translate(x, y);
-  fill(colorVal);
   noStroke();
+  fill(baseColor); // apply activity-based color
 
-  switch (habitat?.trim().toLowerCase()) {
+  switch (habitat.trim().toLowerCase()) {
     case 'pollinator':
-      beginShape();
-      for (let i = 0; i < 6; i++) {
-        let angle = TWO_PI / 6 * i - PI / 2;
-        vertex(cos(angle) * size * 0.5, sin(angle) * size * 0.5);
-      }
-      endShape(CLOSE);
+      ellipse(0, 0, size * 0.9);
       break;
-
-    case 'native grasses':
+    case 'pasture':
       rectMode(CENTER);
-      rect(0, 0, size * 0.3, size);
+      rect(0, 0, size * 0.9, size * 0.9);
       break;
-
-    case 'naturalized':
-      ellipse(0, 0, size, size);
+    case 'range':
+      triangle(
+        -size * 0.45, size * 0.45,
+         size * 0.45, size * 0.45,
+         0, -size * 0.5
+      );
       break;
-
+    // Add more habitat shapes if needed
     default:
-      ellipse(0, 0, size * 0.5);
+      ellipse(0, 0, size * 0.9); // fallback shape (can skip if not wanted)
   }
 
   pop();
 }
+
 
 function drawCheckerboardPattern(activities, habitat, x, y, size) {
   push();
