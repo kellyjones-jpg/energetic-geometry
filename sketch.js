@@ -165,6 +165,30 @@ function draw() {
       drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
     }
 
+    // Activities treatment
+    if (Array.isArray(entry.activities) && entry.activities.length > 0) {
+      if (entry.activities.length === 1) {
+        // Single activity: solid color ring
+        noFill();
+        stroke(getActivityColor(entry.activities[0]));
+        strokeWeight(6);
+        ellipse(0, 0, shapeSize * 0.9);
+      } else if (entry.activities.length === 2) {
+        // Two activities: checkerboard overlay
+        drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
+      } else {
+        // Three or more: suprematist-style wedges
+        let angleStep = TWO_PI / entry.activities.length;
+        for (let j = 0; j < entry.activities.length; j++) {
+          let startAngle = j * angleStep;
+          let endAngle = startAngle + angleStep;
+          fill(getActivityColor(entry.activities[j]));
+          noStroke();
+          arc(0, 0, shapeSize * 0.85, shapeSize * 0.85, startAngle, endAngle, PIE);
+        }
+      }
+    }
+
     // Crop edge (only if cropType exists)
     if (entry.cropType && entry.cropType.length > 0) {
       drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
@@ -290,13 +314,6 @@ function drawCropEdgeStyle(cropType, x, y, size) {
 
   let cleanCrop = String(cropType || '').trim().toLowerCase();
   let group = cropVisualGroups[cleanCrop];
-  if (!group) {
-    // default fallback
-    stroke(0, 50);
-    ellipse(0, 0, size * 0.7);
-    pop();
-    return;
-  }
 
   switch (group) {
     case 'row':
@@ -346,7 +363,6 @@ function drawCropEdgeStyle(cropType, x, y, size) {
         arc(0, 0, size, size, startAngle, endAngle);
       }
       break;
-  }
 
   pop();
 }
@@ -380,6 +396,7 @@ function drawAnimalLine(animalType, x, y, size) {
     case 'textured':
       drawTexturedLine(x, y, size);
       break;
+
   }
 }
 
@@ -451,14 +468,14 @@ function drawTexturedLine(x, y, length) {
   }
 }
 
-function drawHabitatShape(habitat, x, y, size, baseColor) {
+function drawHabitatShape(habitat, x, y, size, colorVal) {
   push();
   translate(x, y);
+  fill(colorVal);
   noStroke();
-  fill(baseColor); // apply activity-based color
 
-  switch (habitat.trim().toLowerCase()) {
-        case 'pollinator':
+  switch (habitat?.trim().toLowerCase()) {
+    case 'pollinator':
       beginShape();
       for (let i = 0; i < 6; i++) {
         let angle = TWO_PI / 6 * i - PI / 2;
@@ -475,11 +492,11 @@ function drawHabitatShape(habitat, x, y, size, baseColor) {
     case 'naturalized':
       ellipse(0, 0, size, size);
       break;
+
   }
 
   pop();
 }
-
 
 function drawCheckerboardPattern(activities, habitat, x, y, size) {
   push();
@@ -593,7 +610,6 @@ function drawPVShape(pvTech, x, y, size, baseColor) {
         ellipse(0, 0, size * 0.8 - i * 10, size * 0.8 - i * 10);
       }
       break;
-  }
 
   pop();
 }
