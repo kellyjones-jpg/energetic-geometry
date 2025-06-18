@@ -346,10 +346,6 @@ function drawCropEdgeStyle(cropType, x, y, size) {
         arc(0, 0, size, size, startAngle, endAngle);
       }
       break;
-
-    default:
-      stroke(0, 50);
-      ellipse(0, 0, size * 0.7);
   }
 
   pop();
@@ -597,10 +593,6 @@ function drawPVShape(pvTech, x, y, size, baseColor) {
         ellipse(0, 0, size * 0.8 - i * 10, size * 0.8 - i * 10);
       }
       break;
-
-    default:
-      fill(baseColor);
-      ellipse(0, 0, size * 0.6);
   }
 
   pop();
@@ -616,7 +608,5 @@ function getActivityColor(activity) {
       return color('#007CBE');
     case 'greenhouse':
       return color('#F2D43D');
-    default:
-      return color(150);
   }
 }
