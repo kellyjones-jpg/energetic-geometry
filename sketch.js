@@ -161,9 +161,17 @@ function draw() {
     let baseColor = getActivityColor(entry.activities?.[0] || '');
 
     // Habitat shape (only if valid)
-    if (entry.habitat && entry.habitat.trim() !== '') {
-      drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
-    }
+ let habitatList = entry.habitat.split(/,\s*/);
+if (habitatList.length > 0) {
+  for (let j = 0; j < habitatList.length; j++) {
+    let rotation = radians(15 * j);
+    push();
+    rotate(rotation);
+    drawHabitatShape(habitatList[j], 0, 0, shapeSize, color(0, 80 + j * 50)); // semi-transparent overlay
+    pop();
+  }
+}
+
 
     // Activities treatment
     if (Array.isArray(entry.activities) && entry.activities.length > 0) {
@@ -220,7 +228,7 @@ function draw() {
 function drawTooltip(entry) {
   let textLines = [
     "Name: " + entry.name,
-    "Habitat: " + entry.habitat,
+    "Habitat: " + entry.habitat.join(', '),
     "Activities: " + entry.activities.join(', '),
     "PV Tech: " + entry.pvTech,
     "Animal Type: " + entry.animalType.join(', '),
