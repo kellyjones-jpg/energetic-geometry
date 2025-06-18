@@ -577,7 +577,6 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
 
 
 function drawCheckerboardPattern(activities, shapeType, x, y, size) {
-  let pattern = createGraphics(size, size);
   let gridCount = 6;
   let cellSize = size / gridCount;
 
@@ -587,56 +586,60 @@ function drawCheckerboardPattern(activities, shapeType, x, y, size) {
   let colorA = activityColors[0];
   let colorB = activityColors[1];
 
-  pattern.noStroke();
-
+  // Step 1: Draw checkerboard pattern to graphics
+  let patternGfx = createGraphics(size, size);
+  patternGfx.noStroke();
   for (let row = 0; row < gridCount; row++) {
     for (let col = 0; col < gridCount; col++) {
-      pattern.fill((row + col) % 2 === 0 ? colorA : colorB);
-      pattern.rect(col * cellSize, row * cellSize, cellSize, cellSize);
+      patternGfx.fill((row + col) % 2 === 0 ? colorA : colorB);
+      patternGfx.rect(col * cellSize, row * cellSize, cellSize, cellSize);
     }
   }
 
-  // Create a mask shape that matches the habitat or line
-  let mask = createGraphics(size, size);
-  mask.translate(size / 2, size / 2);
-  mask.noStroke();
-  mask.fill(255); // white = visible area in mask
+  // Step 2: Draw shape mask
+  let maskGfx = createGraphics(size, size);
+  maskGfx.translate(size / 2, size / 2);
+  maskGfx.noStroke();
+  maskGfx.fill(255); // white shows through mask
 
   if (Array.isArray(shapeType) && shapeType.length > 0) {
     for (let i = 0; i < shapeType.length; i++) {
       let shape = shapeType[i]?.trim().toLowerCase();
-      mask.push();
-      mask.rotate(radians(i * 15));
+      maskGfx.push();
+      maskGfx.rotate(radians(i * 15));
       switch (shape) {
         case 'pollinator':
-          mask.beginShape();
+          maskGfx.beginShape();
           for (let j = 0; j < 6; j++) {
             let angle = TWO_PI / 6 * j - PI / 2;
             let vx = cos(angle) * size * 0.25;
             let vy = sin(angle) * size * 0.25;
-            mask.vertex(vx, vy);
+            maskGfx.vertex(vx, vy);
           }
-          mask.endShape(CLOSE);
+          maskGfx.endShape(CLOSE);
           break;
         case 'native grasses':
-          mask.rectMode(CENTER);
-          mask.rect(0, 0, size * 0.15, size * 0.5);
+          maskGfx.rectMode(CENTER);
+          maskGfx.rect(0, 0, size * 0.15, size * 0.5);
           break;
         case 'naturalized':
-          mask.ellipse(0, 0, size * 0.5);
+          maskGfx.ellipse(0, 0, size * 0.5);
           break;
       }
-      mask.pop();
+      maskGfx.pop();
     }
   }
 
-  // Apply mask to pattern
-  pattern.mask(mask);
+  // Step 3: Convert patternGfx and maskGfx to p5.Image
+  let patternImg = patternGfx.get();
+  let maskImg = maskGfx.get();
+  patternImg.mask(maskImg); // this now works
 
-  // Draw the result centered at (x, y)
+  // Step 4: Draw the masked pattern at (x, y)
   imageMode(CENTER);
-  image(pattern, x, y);
+  image(patternImg, x, y);
 }
+
 
 
 function isPointInHabitatShape(habitat, px, py, size) {
