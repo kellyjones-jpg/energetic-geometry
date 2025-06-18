@@ -181,14 +181,15 @@ function draw() {
 
   // Activities
   if (Array.isArray(entry.activities) && entry.activities.length > 0) {
-    if (entry.activities.length === 1) {
-      noFill();
-      stroke(getActivityColor(entry.activities[0]));
-      strokeWeight(6);
-      ellipse(0, 0, shapeSize * 0.9);
-    } else if (entry.activities.length === 2) {
+   if (entry.activities.length === 1) {
+  // color passed to Habitat Shape fill already — do nothing here
+    }
+    else if (entry.activities.length === 2) {
+      // overlay pattern using both colors
       drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
-    } else {
+    }
+    else {
+      // suprematist-style wedges over the Habitat shape
       let angleStep = TWO_PI / entry.activities.length;
       for (let j = 0; j < entry.activities.length; j++) {
         let startAngle = j * angleStep;
