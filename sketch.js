@@ -60,7 +60,8 @@ function setup() {
     let name = table.getString(i, 'Name') || '';
     let activityStr = table.getString(i, 'Agrivoltaic Activities') || '';
     let activities = activityStr ? activityStr.split(/,\s*/) : [];
-    let habitat = table.getString(i, 'Habitat Type') || '';
+    let habitatStr = table.getString(i, 'Habitat Type') || '';
+    let habitat = habitatStr ? habitatStr.split(/,\s*/) : [];
     let pvTech = table.getString(i, 'PV Technology') || '';
     let animalTypeStr = table.getString(i, 'Animal Type') || '';
     let animalType = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
