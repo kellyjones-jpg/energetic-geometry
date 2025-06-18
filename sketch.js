@@ -208,11 +208,18 @@ function draw() {
     }
 
     // PV shape (only if pvTech exists)
-    if (entry.pvTech && entry.pvTech.trim() !== '') {
-      drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
-    }
+      let pvOrientation = getPVOrientation(entry.pvTech);
 
-    pop();
+      // Save context before applying rotation
+      push();
+
+      pop();
+
+      // Apply PV-based orientation
+      if (pvOrientation !== 'radial') {
+        rotate(pvOrientation);
+      }
+
 
     // Labels
     textSize(14);
@@ -629,40 +636,19 @@ function pointInHexagon(px, py, r) {
 
 
 
-function drawPVShape(pvTech, x, y, size, baseColor) {
-  push();
-  translate(x, y);
-  noStroke();
-
+function getPVOrientation(pvTech) {
   switch (pvTech?.trim().toLowerCase()) {
     case 'monofacial':
-      fill(baseColor);
-      rotate(radians(-30));
-      rectMode(CENTER);
-      rect(0, 0, size, size * 0.3);
-      break;
-
+      return radians(-30); // Tilted downward or flat
     case 'bifacial':
-      fill(lerpColor(baseColor, color(255), 0.3));
-      rectMode(CENTER);
-      rect(0, -size * 0.2, size * 0.4, size * 0.3);
-      rect(0, size * 0.2, size * 0.4, size * 0.3);
-      break;
-
+      return radians(90);  // Vertical or symmetric
     case 'translucent':
-      fill(baseColor.levels[0], baseColor.levels[1], baseColor.levels[2], 80);
-      for (let i = 0; i < 3; i++) {
-        ellipse(0, 0, size * 0.8 - i * 10, size * 0.8 - i * 10);
-      }
-      break;
-
+      return 'radial';     // Special radial treatment
     default:
-        pop(); 
-        return;
+      return 0; // No rotation
   }
-
-  pop();
 }
+
 
 function getActivityColor(activity) {
   switch (activity.trim().toLowerCase()) {
