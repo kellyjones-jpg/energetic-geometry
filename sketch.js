@@ -223,7 +223,7 @@ function draw() {
 function drawTooltip(entry) {
   let textLines = [
     "Name: " + entry.name,
-    "Habitat: " + entry.habitat.join(', '),
+    "Habitat: " + (entry.habitat?.trim() || 'None'),
     "Activities: " + entry.activities.join(', '),
     "PV Tech: " + entry.pvTech,
     "Animal Type: " + entry.animalType.join(', '),
