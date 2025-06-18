@@ -7,49 +7,55 @@ let availableYears = [];
 let cnv;
 let tooltipEntry = null; 
 
-const cropVisualGroups = {
-  // Row Crops
-  "hay": "row",
-  "alfalfa": "row",
-  "corn": "row",
-  "soy": "row",
-  "spring wheat": "row",
-  "grain and specialty crops": "row",
-  "saffron": "row",
+const cropEdgeGroups = {
+  // Root vegetables
+  "carrots": "root",
+  "beets": "root",
+  "radish": "root",
+  "garlic": "root",
+  "onions": "root",
+  "yams": "root",
+  "turnips": "root",
+  "potatoes": "root",
 
-  // Tree Crops
-  "grapes": "tree",
-  "persimmons": "tree",
-  "blueberries": "tree",
-  "peaches": "tree",
-  "pears": "tree",
-  "apples": "tree",
-  "kiwis": "tree",
-  "native berry plants": "tree",
+  // Leafy greens
+  "spinach": "leafy",
+  "kale": "leafy",
+  "chard": "leafy",
+  "lettuce": "leafy",
+  "cabbage": "leafy",
+  "arugula": "leafy",
+  "herbs": "leafy",
 
-  // Vine Crops
-  "tomatoes": "vine",
-  "peppers": "vine",
-  "squash": "vine",
-  "zucchini": "vine",
-  "cucurbits & solanaceous crops": "vine",
-  "eggplant": "vine",
+  // Fruit-bearing
+  "tomatoes": "fruit",
+  "squash": "fruit",
+  "peppers": "fruit",
+  "melons": "fruit",
+  "eggplant": "fruit",
+  "cucumbers": "fruit",
+  "berries": "fruit",
 
-  // Forage Crops
-  "leafy greens": "forage",
-  "herbs": "forage",
-  "mixed vegetables": "forage",
-  "broccoli": "forage",
-  "kale": "forage",
-  "cabbage": "forage",
-  "lettuce": "forage",
-  "radish": "forage",
-  "daikon": "forage",
-  "beets": "forage",
-  "carrots": "forage",
-  "parsley": "forage",
-  "berries": "forage",
+  // Grains & grasses
+  "hay": "grain",
+  "spring wheat": "grain",
+  "corn": "grain",
+  "saffron": "grain",
+
+  // Vining / perennial
+  "grapes": "vine",
+  "vanilla": "vine",
+  "tea": "vine",
+  "kiwi": "vine",
+  "lavender": "vine",
+  "peppercorn": "vine",
+  "maile": "vine",
+
+  // Mixed
+  "mixed vegetables": "mixed",
+  "assorted vegetables": "mixed"
 };
+
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
@@ -301,76 +307,53 @@ function keyPressed() {
   }
 }
 
-function drawCropEdgeStyle(cropType, x, y, size) {
+function drawCropEdgeStyle(cropTypes, x, y, size) {
+  if (!Array.isArray(cropTypes) || cropTypes.length === 0) return;
+
+  // Map each crop to its group
+  const groups = cropTypes
+    .map(crop => cropEdgeGroups[crop.trim().toLowerCase()])
+    .filter(Boolean);
+
+  // Collect unique crop groups
+  const uniqueGroups = [...new Set(groups)];
+  if (uniqueGroups.length === 0) return;
+
   push();
   translate(x, y);
   noFill();
   strokeWeight(2);
 
-  if (!cropType) {
-    pop();
-    return;
-  }
+  for (let i = 0; i < uniqueGroups.length; i++) {
+    let group = uniqueGroups[i];
 
-  let cleanCrop = String(cropType || '').trim().toLowerCase();
-  let group = cropVisualGroups[cleanCrop];
-  if (!group) {
-    pop();
-    return;
-  }
-
-  switch (group) {
-    case 'row':
-      stroke('#008000'); // Classic green, flat and universal, but separate
-      beginShape();
-      let steps = 36;
-      for (let i = 0; i <= steps; i++) {
-        let angle = TWO_PI * i / steps;
-        let radius = size * 0.5 + (i % 2 === 0 ? 12 : -12);
-        vertex(cos(angle) * radius, sin(angle) * radius);
-      }
-      endShape(CLOSE);
-      break;
-
-    case 'tree':
-      stroke('#1155CC'); // Ultramarine-style Suprematist blue, clear sky blue
-      beginShape();
-      for (let a = 0; a <= TWO_PI; a += 0.1) {
-        let r = size * 0.5 + 10 * sin(5 * a);
-        vertex(cos(a) * r, sin(a) * r);
-      }
-      endShape(CLOSE);
-      break;
-
-    case 'vine':
-      stroke('#6A0DAD'); // Vibrant violet, layered complexity like vines
-      strokeWeight(3);
-      let dots = 24;
-      for (let i = 0; i < dots; i++) {
-        let angle = TWO_PI * i / dots;
-        let px = cos(angle) * size * 0.5;
-        let py = sin(angle) * size * 0.5;
-        point(px, py);
-      }
-      break;
-
-    case 'forage':
-      stroke('#B8860B'); // Earthy gold, dynamic ground coverage
-      strokeWeight(2);
-      let circumference = TWO_PI * size * 0.5;
-      let dashLength = 10;
-      let gapLength = 6;
-      let totalDashes = floor(circumference / (dashLength + gapLength));
-      for (let i = 0; i < totalDashes; i++) {
-        let startAngle = (i * (dashLength + gapLength)) / (size * 0.5);
-        let endAngle = startAngle + dashLength / (size * 0.5);
-        arc(0, 0, size, size, startAngle, endAngle);
-      }
-      break;
-
-    default:
-        pop(); 
-        return;
+    // Set stroke color by group
+    switch (group) {
+      case 'root':
+        stroke('#008000'); // Green
+        drawPointedEdge(size, i);
+        break;
+      case 'leafy':
+        stroke('#B8860B'); // Earthy gold
+        drawWavyEdge(size, i);
+        break;
+      case 'fruit':
+        stroke('#1155CC'); // Blue
+        drawLobedEdge(size, i);
+        break;
+      case 'grain':
+        stroke('#008000'); // Green (same as root/row)
+        drawLinearSpikes(size, i);
+        break;
+      case 'vine':
+        stroke('#6A0DAD'); // Violet
+        drawSpiralOverlay(size, i);
+        break;
+      case 'mixed':
+        stroke('#20C997'); // Mint-teal
+        drawWavyEdge(size, i);
+        break;
+    }
   }
 
   pop();
@@ -433,53 +416,67 @@ function getLineStyle(animalType) {
   }
 }
 
-// Wavy line: sinusoidal wave along the horizontal axis
-function drawWavyLine(x, y, length) {
+function drawPointedEdge(size, offsetIndex = 0) {
+  let steps = 72;
+  beginShape();
+  for (let i = 0; i <= steps; i++) {
+    let angle = TWO_PI * i / steps;
+    let radius = size * 0.45 + (i % 2 === 0 ? 10 : -10);
+    let x = cos(angle) * radius;
+    let y = sin(angle) * radius;
+    vertex(x, y);
+  }
+  endShape(CLOSE);
+}
+
+function drawWavyEdge(size, offsetIndex = 0) {
+  let waves = 8 + offsetIndex * 2;
+  beginShape();
+  for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
+    let r = size * 0.4 + 10 * sin(waves * angle);
+    let x = cos(angle) * r;
+    let y = sin(angle) * r;
+    curveVertex(x, y);
+  }
+  endShape(CLOSE);
+}
+
+function drawLobedEdge(size, offsetIndex = 0) {
+  let lobes = 5 + offsetIndex;
+  beginShape();
+  for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
+    let r = size * 0.4 + 8 * sin(lobes * angle);
+    let x = cos(angle) * r;
+    let y = sin(angle) * r;
+    curveVertex(x, y);
+  }
+  endShape(CLOSE);
+}
+
+function drawLinearSpikes(size, offsetIndex = 0) {
+  let lines = 12;
+  for (let i = 0; i < lines; i++) {
+    let angle = TWO_PI * i / lines + offsetIndex * 0.05;
+    let x1 = cos(angle) * size * 0.3;
+    let y1 = sin(angle) * size * 0.3;
+    let x2 = cos(angle) * size * 0.5;
+    let y2 = sin(angle) * size * 0.5;
+    line(x1, y1, x2, y2);
+  }
+}
+
+function drawSpiralOverlay(size, offsetIndex = 0) {
   noFill();
   beginShape();
-  let amplitude = 5;
-  let waves = 6;
-  for (let i = 0; i <= waves; i++) {
-    let px = x - length / 2 + (length / waves) * i;
-    let py = y + sin(i * TWO_PI / waves) * amplitude;
-    vertex(px, py);
+  for (let a = 0; a < TWO_PI * 3; a += 0.1) {
+    let r = size * 0.05 * a + offsetIndex * 2;
+    let x = cos(a) * r;
+    let y = sin(a) * r;
+    vertex(x, y);
   }
   endShape();
 }
 
-// Dashed line: repeated short dashes with gaps
-function drawDashedLine(x, y, length) {
-  let dashLength = 10;
-  let gapLength = 7;
-  let startX = x - length / 2;
-  let endX = x + length / 2;
-  for (let px = startX; px < endX; px += dashLength + gapLength) {
-    line(px, y, px + dashLength, y);
-  }
-}
-
-// Bezier curved line with smooth S shape
-function drawBezierLine(x, y, length) {
-  noFill();
-  bezier(
-    x - length / 2, y,
-    x - length / 4, y - length / 3,
-    x + length / 4, y + length / 3,
-    x + length / 2, y
-  );
-}
-
-// Textured line: short broken segments with jitter
-function drawTexturedLine(x, y, length) {
-  let segmentLength = 6;
-  let gap = 4;
-  let startX = x - length / 2;
-  let endX = x + length / 2;
-  for (let px = startX; px < endX; px += segmentLength + gap) {
-    let jitterY = random(-2, 2);
-    line(px, y + jitterY, px + segmentLength, y + jitterY);
-  }
-}
 
 function drawHabitatShape(habitatList, x, y, size, baseColor) {
   if (!Array.isArray(habitatList) || habitatList.length === 0) return;
