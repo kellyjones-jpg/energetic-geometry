@@ -576,12 +576,8 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
 }
 
 
-function drawCheckerboardPattern(activities, habitatList, x, y, size) {
-  if (!Array.isArray(habitatList) || habitatList.length === 0) return;
-
-  push();
-  translate(x, y);
-
+function drawCheckerboardPattern(activities, shapeType, x, y, size) {
+  let pattern = createGraphics(size, size);
   let gridCount = 6;
   let cellSize = size / gridCount;
 
@@ -591,33 +587,55 @@ function drawCheckerboardPattern(activities, habitatList, x, y, size) {
   let colorA = activityColors[0];
   let colorB = activityColors[1];
 
-  // Draw pattern directly into each valid habitat shape
-  for (let h = 0; h < habitatList.length; h++) {
-    let habitat = habitatList[h]?.trim().toLowerCase();
-    let shapeAlpha = 180 - h * 80;
-    push();
-    rotate(radians(h * 15)); // same rotational offset
+  pattern.noStroke();
 
-    for (let row = 0; row < gridCount; row++) {
-      for (let col = 0; col < gridCount; col++) {
-        let isAlt = (row + col) % 2 === 0;
-        let chosenColor = isAlt ? colorA : colorB;
-        fill(red(chosenColor), green(chosenColor), blue(chosenColor), shapeAlpha);
-        noStroke();
-
-        let cx = col * cellSize - size / 2 + cellSize / 2;
-        let cy = row * cellSize - size / 2 + cellSize / 2;
-
-        if (isPointInHabitatShape(habitat, cx, cy, size)) {
-          ellipse(cx, cy, cellSize); // use circles or small fills, not rects
-        }
-      }
+  for (let row = 0; row < gridCount; row++) {
+    for (let col = 0; col < gridCount; col++) {
+      pattern.fill((row + col) % 2 === 0 ? colorA : colorB);
+      pattern.rect(col * cellSize, row * cellSize, cellSize, cellSize);
     }
-
-    pop();
   }
 
-  pop();
+  // Create a mask shape that matches the habitat or line
+  let mask = createGraphics(size, size);
+  mask.translate(size / 2, size / 2);
+  mask.noStroke();
+  mask.fill(255); // white = visible area in mask
+
+  if (Array.isArray(shapeType) && shapeType.length > 0) {
+    for (let i = 0; i < shapeType.length; i++) {
+      let shape = shapeType[i]?.trim().toLowerCase();
+      mask.push();
+      mask.rotate(radians(i * 15));
+      switch (shape) {
+        case 'pollinator':
+          mask.beginShape();
+          for (let j = 0; j < 6; j++) {
+            let angle = TWO_PI / 6 * j - PI / 2;
+            let vx = cos(angle) * size * 0.25;
+            let vy = sin(angle) * size * 0.25;
+            mask.vertex(vx, vy);
+          }
+          mask.endShape(CLOSE);
+          break;
+        case 'native grasses':
+          mask.rectMode(CENTER);
+          mask.rect(0, 0, size * 0.15, size * 0.5);
+          break;
+        case 'naturalized':
+          mask.ellipse(0, 0, size * 0.5);
+          break;
+      }
+      mask.pop();
+    }
+  }
+
+  // Apply mask to pattern
+  pattern.mask(mask);
+
+  // Draw the result centered at (x, y)
+  imageMode(CENTER);
+  image(pattern, x, y);
 }
 
 
