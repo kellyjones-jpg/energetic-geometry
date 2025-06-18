@@ -306,8 +306,6 @@ function drawCropEdgeStyle(cropType, x, y, size) {
   strokeWeight(2);
 
   if (!cropType) {
-    stroke(0, 50);
-    ellipse(0, 0, size * 0.7);
     pop();
     return;
   }
@@ -315,9 +313,6 @@ function drawCropEdgeStyle(cropType, x, y, size) {
   let cleanCrop = String(cropType || '').trim().toLowerCase();
   let group = cropVisualGroups[cleanCrop];
   if (!group) {
-    // default fallback
-    stroke(0, 50);
-    ellipse(0, 0, size * 0.7);
     pop();
     return;
   }
@@ -372,8 +367,8 @@ function drawCropEdgeStyle(cropType, x, y, size) {
       break;
 
     default:
-      stroke(0, 50);
-      ellipse(0, 0, size * 0.7);
+        pop(); 
+        return;
   }
 
   pop();
@@ -384,6 +379,7 @@ function drawCropEdgeStyle(cropType, x, y, size) {
 // Draw different line styles based on Animal Type
 function drawAnimalLine(animalType, x, y, size) {
   let style = getLineStyle(animalType);
+  if (!style) return;
   stroke(style.color);
   strokeWeight(style.weight);
   noFill();
@@ -409,9 +405,6 @@ function drawAnimalLine(animalType, x, y, size) {
       drawTexturedLine(x, y, size);
       break;
 
-    default:
-      // fallback straight line
-      line(x - size / 2, y, x + size / 2, y);
   }
 }
 
@@ -419,7 +412,7 @@ function drawAnimalLine(animalType, x, y, size) {
 function getLineStyle(animalType) {
   let typeStr = String(animalType || '').trim().toLowerCase();
 
-  if (!typeStr) return { type: 'straight', weight: 1, color: color('#A1A1A1AA') }; // Cool medium gray, semi-transparent
+  if (!typeStr) return null;
 
   switch (typeStr) {
     case 'sheep':
@@ -433,7 +426,8 @@ function getLineStyle(animalType) {
     case 'cattle':
       return { type: 'textured', weight: 3, color: color('#E5E5E5BB') }; // Light neutral gray
     default:
-      return { type: 'straight', weight: 1, color: color('#20C997AA') }; // Minty green-teal Op Art tone
+        pop(); 
+        return;
   }
 }
 
@@ -511,7 +505,8 @@ function drawHabitatShape(habitat, x, y, size, colorVal) {
       break;
 
     default:
-      ellipse(0, 0, size * 0.5);
+        pop(); 
+        return;
   }
 
   pop();
@@ -565,7 +560,8 @@ function isPointInHabitatShape(habitat, px, py, size) {
     case 'naturalized':
       return (px * px + py * py <= (size / 2) * (size / 2));
     default:
-      return (px * px + py * py <= (size * 0.25) * (size * 0.25));
+        pop(); 
+        return;
   }
 }
 
@@ -602,7 +598,8 @@ function drawHabitatOutline(habitat, x, y, size) {
       break;
 
     default:
-      ellipse(0, 0, size * 0.5);
+        pop(); 
+        return;
   }
 
   pop();
@@ -636,8 +633,8 @@ function drawPVShape(pvTech, x, y, size, baseColor) {
       break;
 
     default:
-      fill(baseColor);
-      ellipse(0, 0, size * 0.6);
+        pop(); 
+        return;
   }
 
   pop();
@@ -654,6 +651,7 @@ function getActivityColor(activity) {
     case 'greenhouse':
       return color('#F2D43D');
     default:
-      return color(150);
+        pop(); 
+        return;
   }
 }
