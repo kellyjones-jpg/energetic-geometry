@@ -581,7 +581,7 @@ function drawCheckerboardPattern(activities, shapeType, x, y, size) {
   let cellSize = size / gridCount;
 
   let activityColors = activities.map(act => getActivityColor(act));
-  if (activityColors.length === 1) activityColors.push(color(255, 100));
+  if (activityColors.length === 1) activityColors.push(activityColors[0]);
 
   let colorA = activityColors[0];
   let colorB = activityColors[1];
