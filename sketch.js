@@ -162,7 +162,6 @@ function draw() {
     let baseColor = getActivityColor(entry.activities?.[0] || '');
 
     // Habitat shape (only if valid)
- let habitatList = entry.habitat.split(/,\s*/);
 if (habitatList.length > 0) {
   for (let j = 0; j < habitatList.length; j++) {
     let rotation = radians(15 * j);
