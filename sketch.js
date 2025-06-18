@@ -158,74 +158,74 @@ function draw() {
   let startY = 80;
 
   for (let i = 0; i < yearEntries.length; i++) {
-    let entry = yearEntries[i];
-    let centerX = width / 2;
-    let centerY = startY + i * (shapeSize + padding);
+  let entry = yearEntries[i];
+  let centerX = width / 2;
+  let centerY = startY + i * (shapeSize + padding);
+  let baseColor = getActivityColor(entry.activities?.[0] || '');
+  let pvOrientation = getPVOrientation(entry.pvTech); // get this early
 
+  push();
+  translate(centerX, centerY);
+
+  // Apply PV-based rotation BEFORE any drawing
+  if (pvOrientation !== 'radial') {
+    rotate(pvOrientation);
+  }
+
+  // Draw everything inside the rotated coordinate system
+
+  // Habitat shape
+  if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
+    drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
+  }
+
+  // Activities
+  if (Array.isArray(entry.activities) && entry.activities.length > 0) {
+    if (entry.activities.length === 1) {
+      noFill();
+      stroke(getActivityColor(entry.activities[0]));
+      strokeWeight(6);
+      ellipse(0, 0, shapeSize * 0.9);
+    } else if (entry.activities.length === 2) {
+      drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
+    } else {
+      let angleStep = TWO_PI / entry.activities.length;
+      for (let j = 0; j < entry.activities.length; j++) {
+        let startAngle = j * angleStep;
+        let endAngle = startAngle + angleStep;
+        fill(getActivityColor(entry.activities[j]));
+        noStroke();
+        arc(0, 0, shapeSize * 0.85, shapeSize * 0.85, startAngle, endAngle, PIE);
+      }
+    }
+  }
+
+  // Crop edges
+  if (entry.cropType && entry.cropType.length > 0) {
+    drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
+  }
+
+  // Animal line
+  if (entry.animalType && entry.animalType.length > 0) {
+    drawAnimalLine(entry.animalType, 0, 0, shapeSize);
+  }
+
+  pop(); // End rotation context
+
+  // Draw radial overlay on top if needed
+  if (pvOrientation === 'radial') {
     push();
     translate(centerX, centerY);
-
-    let baseColor = getActivityColor(entry.activities?.[0] || '');
-
-    // Habitat shape (only if valid)
-   if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-    drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
-    }
-
-
-    // Activities treatment
-    if (Array.isArray(entry.activities) && entry.activities.length > 0) {
-      if (entry.activities.length === 1) {
-        // Single activity: solid color ring
-        noFill();
-        stroke(getActivityColor(entry.activities[0]));
-        strokeWeight(6);
-        ellipse(0, 0, shapeSize * 0.9);
-      } else if (entry.activities.length === 2) {
-        // Two activities: checkerboard overlay
-        drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
-      } else {
-        // Three or more: suprematist-style wedges
-        let angleStep = TWO_PI / entry.activities.length;
-        for (let j = 0; j < entry.activities.length; j++) {
-          let startAngle = j * angleStep;
-          let endAngle = startAngle + angleStep;
-          fill(getActivityColor(entry.activities[j]));
-          noStroke();
-          arc(0, 0, shapeSize * 0.85, shapeSize * 0.85, startAngle, endAngle, PIE);
-        }
-      }
-    }
-
-    // Crop edge (only if cropType exists)
-    if (entry.cropType && entry.cropType.length > 0) {
-      drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
-    }
-
-    // Animal line (only if animalType exists)
-    if (entry.animalType && entry.animalType.length > 0) {
-      drawAnimalLine(entry.animalType, 0, 0, shapeSize);
-    }
-
-    // PV shape (only if pvTech exists)
-      let pvOrientation = getPVOrientation(entry.pvTech);
-
-      // Save context before applying rotation
-      push();
-
-      pop();
-
-      // Apply PV-based orientation
-      if (pvOrientation !== 'radial') {
-        rotate(pvOrientation);
-      }
-
-
-    // Labels
-    textSize(14);
-    textAlign(CENTER, TOP);
-    text(entry.name, centerX, centerY + shapeSize / 2 + 8);
+    drawRadialEffectOverlay(shapeSize);
+    pop();
   }
+
+  // Draw label (NOT rotated)
+  textSize(14);
+  textAlign(CENTER, TOP);
+  text(entry.name, centerX, centerY + shapeSize / 2 + 8);
+}
+
 
   if (tooltipEntry) {
     drawTooltip(tooltipEntry);
