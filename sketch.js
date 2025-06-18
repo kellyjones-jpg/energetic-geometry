@@ -7,49 +7,55 @@ let availableYears = [];
 let cnv;
 let tooltipEntry = null; 
 
-const cropVisualGroups = {
-  // Row Crops
-  "hay": "row",
-  "alfalfa": "row",
-  "corn": "row",
-  "soy": "row",
-  "spring wheat": "row",
-  "grain and specialty crops": "row",
-  "saffron": "row",
+const cropEdgeGroups = {
+  // Root vegetables
+  "carrots": "root",
+  "beets": "root",
+  "radish": "root",
+  "garlic": "root",
+  "onions": "root",
+  "yams": "root",
+  "turnips": "root",
+  "potatoes": "root",
 
-  // Tree Crops
-  "grapes": "tree",
-  "persimmons": "tree",
-  "blueberries": "tree",
-  "peaches": "tree",
-  "pears": "tree",
-  "apples": "tree",
-  "kiwis": "tree",
-  "native berry plants": "tree",
+  // Leafy greens
+  "spinach": "leafy",
+  "kale": "leafy",
+  "chard": "leafy",
+  "lettuce": "leafy",
+  "cabbage": "leafy",
+  "arugula": "leafy",
+  "herbs": "leafy",
 
-  // Vine Crops
-  "tomatoes": "vine",
-  "peppers": "vine",
-  "squash": "vine",
-  "zucchini": "vine",
-  "cucurbits & solanaceous crops": "vine",
-  "eggplant": "vine",
+  // Fruit-bearing
+  "tomatoes": "fruit",
+  "squash": "fruit",
+  "peppers": "fruit",
+  "melons": "fruit",
+  "eggplant": "fruit",
+  "cucumbers": "fruit",
+  "berries": "fruit",
 
-  // Forage Crops
-  "leafy greens": "forage",
-  "herbs": "forage",
-  "mixed vegetables": "forage",
-  "broccoli": "forage",
-  "kale": "forage",
-  "cabbage": "forage",
-  "lettuce": "forage",
-  "radish": "forage",
-  "daikon": "forage",
-  "beets": "forage",
-  "carrots": "forage",
-  "parsley": "forage",
-  "berries": "forage",
+  // Grains & grasses
+  "hay": "grain",
+  "spring wheat": "grain",
+  "corn": "grain",
+  "saffron": "grain",
+
+  // Vining / perennial
+  "grapes": "vine",
+  "vanilla": "vine",
+  "tea": "vine",
+  "kiwi": "vine",
+  "lavender": "vine",
+  "peppercorn": "vine",
+  "maile": "vine",
+
+  // Mixed
+  "mixed vegetables": "mixed",
+  "assorted vegetables": "mixed"
 };
+
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
