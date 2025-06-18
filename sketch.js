@@ -60,8 +60,7 @@ function setup() {
     let name = table.getString(i, 'Name') || '';
     let activityStr = table.getString(i, 'Agrivoltaic Activities') || '';
     let activities = activityStr ? activityStr.split(/,\s*/) : [];
-    let habitatRaw = table.getString(i, 'Habitat Type') || '';
-    let habitat = habitatRaw.split(/,\s*/); // always an array
+    let habitat = table.getString(i, 'Habitat Type') || '';
     let pvTech = table.getString(i, 'PV Technology') || '';
     let animalTypeStr = table.getString(i, 'Animal Type') || '';
     let animalType = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
@@ -161,21 +160,10 @@ function draw() {
 
     let baseColor = getActivityColor(entry.activities?.[0] || '');
 
-
     // Habitat shape (only if valid)
-    if (Array.isArray(entry.habitat)) {
-      for (let j = 0; j < entry.habitat.length; j++) {
-        let h = entry.habitat[j];
-        if (typeof h === 'string' && h.trim() !== '') {
-          push();
-          rotate(radians(j * 15)); // optional Suprematist offset
-          drawHabitatShape(h, 0, 0, shapeSize, baseColor);
-          pop();
-        }
-      }
+    if (entry.habitat && entry.habitat.trim() !== '') {
+      drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
     }
-
-
 
     // Activities treatment
     if (Array.isArray(entry.activities) && entry.activities.length > 0) {
@@ -232,7 +220,7 @@ function draw() {
 function drawTooltip(entry) {
   let textLines = [
     "Name: " + entry.name,
-    "Habitat: " + (entry.habitat?.trim() || 'None'),
+    "Habitat: " + entry.habitat,
     "Activities: " + entry.activities.join(', '),
     "PV Tech: " + entry.pvTech,
     "Animal Type: " + entry.animalType.join(', '),
