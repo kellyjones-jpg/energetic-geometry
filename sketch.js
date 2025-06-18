@@ -60,7 +60,8 @@ function setup() {
     let name = table.getString(i, 'Name') || '';
     let activityStr = table.getString(i, 'Agrivoltaic Activities') || '';
     let activities = activityStr ? activityStr.split(/,\s*/) : [];
-    let habitat = table.getString(i, 'Habitat Type') || '';
+    let habitatStr = table.getString(i, 'Habitat Type') || '';
+    let habitat = habitatStr ? habitatStr.split(/,\s*/) : [];
     let pvTech = table.getString(i, 'PV Technology') || '';
     let animalTypeStr = table.getString(i, 'Animal Type') || '';
     let animalType = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
@@ -161,9 +162,10 @@ function draw() {
     let baseColor = getActivityColor(entry.activities?.[0] || '');
 
     // Habitat shape (only if valid)
-    if (entry.habitat && entry.habitat.trim() !== '') {
-      drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
+   if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
+    drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
     }
+
 
     // Activities treatment
     if (Array.isArray(entry.activities) && entry.activities.length > 0) {
@@ -220,7 +222,7 @@ function draw() {
 function drawTooltip(entry) {
   let textLines = [
     "Name: " + entry.name,
-    "Habitat: " + entry.habitat,
+    "Habitat Type: " + (Array.isArray(entry.habitat) ? entry.habitat.join(', ') : entry.habitat),
     "Activities: " + entry.activities.join(', '),
     "PV Tech: " + entry.pvTech,
     "Animal Type: " + entry.animalType.join(', '),
@@ -479,38 +481,50 @@ function drawTexturedLine(x, y, length) {
   }
 }
 
-function drawHabitatShape(habitat, x, y, size, colorVal) {
+function drawHabitatShape(habitatList, x, y, size, baseColor) {
+  if (!Array.isArray(habitatList) || habitatList.length === 0) return;
+
   push();
   translate(x, y);
-  fill(colorVal);
-  noStroke();
 
-  switch (habitat?.trim().toLowerCase()) {
-    case 'pollinator':
-      beginShape();
-      for (let i = 0; i < 6; i++) {
-        let angle = TWO_PI / 6 * i - PI / 2;
-        vertex(cos(angle) * size * 0.5, sin(angle) * size * 0.5);
-      }
-      endShape(CLOSE);
-      break;
+  let angleOffset = 15; // degrees to rotate each shape slightly
+  let alphaStep = 255 / (habitatList.length + 1); // transparency per shape
 
-    case 'native grasses':
-      rectMode(CENTER);
-      rect(0, 0, size * 0.3, size);
-      break;
+  for (let i = 0; i < habitatList.length; i++) {
+    let habitat = habitatList[i]?.trim().toLowerCase();
+    let shapeAlpha = 180 - i * alphaStep;
 
-    case 'naturalized':
-      ellipse(0, 0, size, size);
-      break;
+    fill(red(baseColor), green(baseColor), blue(baseColor), shapeAlpha);
+    noStroke();
+    push();
+    rotate(radians(i * angleOffset));
 
-    default:
-        pop(); 
-        return;
+    switch (habitat) {
+      case 'pollinator':
+        beginShape();
+        for (let j = 0; j < 6; j++) {
+          let angle = TWO_PI / 6 * j - PI / 2;
+          vertex(cos(angle) * size * 0.5, sin(angle) * size * 0.5);
+        }
+        endShape(CLOSE);
+        break;
+
+      case 'native grasses':
+        rectMode(CENTER);
+        rect(0, 0, size * 0.3, size);
+        break;
+
+      case 'naturalized':
+        ellipse(0, 0, size, size);
+        break;
+    }
+
+    pop();
   }
 
   pop();
 }
+
 
 function drawCheckerboardPattern(activities, habitat, x, y, size) {
   push();
@@ -537,7 +551,7 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
       let cx = col * cellSize - size / 2 + cellSize / 2;
       let cy = row * cellSize - size / 2 + cellSize / 2;
 
-      if (isPointInHabitatShape(habitat, cx, cy, size)) {
+      if (Array.isArray(habitat) && habitat.some(h => isPointInHabitatShape(h, cx, cy, size))) {
         rect(cx, cy, cellSize, cellSize);
       }
     }
