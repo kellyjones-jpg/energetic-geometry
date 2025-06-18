@@ -576,7 +576,9 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
 }
 
 
-function drawCheckerboardPattern(activities, habitat, x, y, size) {
+function drawCheckerboardPattern(activities, habitatList, x, y, size) {
+  if (!Array.isArray(habitatList) || habitatList.length === 0) return;
+
   push();
   translate(x, y);
 
@@ -584,35 +586,40 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
   let cellSize = size / gridCount;
 
   let activityColors = activities.map(act => getActivityColor(act));
-
-  if (activityColors.length === 1) {
-    activityColors.push(color(255, 100));
-  }
+  if (activityColors.length === 1) activityColors.push(color(255, 100));
 
   let colorA = activityColors[0];
   let colorB = activityColors[1];
 
-  for (let row = 0; row < gridCount; row++) {
-    for (let col = 0; col < gridCount; col++) {
-      let isAlt = (row + col) % 2 === 0;
-      fill(isAlt ? colorA : colorB);
-      noStroke();
+  // Draw pattern directly into each valid habitat shape
+  for (let h = 0; h < habitatList.length; h++) {
+    let habitat = habitatList[h]?.trim().toLowerCase();
+    let shapeAlpha = 180 - h * 80;
+    push();
+    rotate(radians(h * 15)); // same rotational offset
 
-      let cx = col * cellSize - size / 2 + cellSize / 2;
-      let cy = row * cellSize - size / 2 + cellSize / 2;
+    for (let row = 0; row < gridCount; row++) {
+      for (let col = 0; col < gridCount; col++) {
+        let isAlt = (row + col) % 2 === 0;
+        let chosenColor = isAlt ? colorA : colorB;
+        fill(red(chosenColor), green(chosenColor), blue(chosenColor), shapeAlpha);
+        noStroke();
 
-      if (Array.isArray(habitat) && habitat.some(h => isPointInHabitatShape(h, cx, cy, size))) {
-        rect(cx, cy, cellSize, cellSize);
+        let cx = col * cellSize - size / 2 + cellSize / 2;
+        let cy = row * cellSize - size / 2 + cellSize / 2;
+
+        if (isPointInHabitatShape(habitat, cx, cy, size)) {
+          ellipse(cx, cy, cellSize); // use circles or small fills, not rects
+        }
       }
     }
-  }
 
-  noFill();
-  stroke(0, 80);
-  strokeWeight(1.5);
+    pop();
+  }
 
   pop();
 }
+
 
 function isPointInHabitatShape(habitat, px, py, size) {
   switch (habitat?.trim().toLowerCase()) {
