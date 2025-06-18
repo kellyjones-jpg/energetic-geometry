@@ -182,7 +182,7 @@ function draw() {
   // Activities
   if (Array.isArray(entry.activities) && entry.activities.length > 0) {
    if (entry.activities.length === 1) {
-  // color passed to Habitat Shape fill already — do nothing here
+        activityColors.push(activityColors[0]);
     }
     else if (entry.activities.length === 2) {
       // overlay pattern using both colors
