@@ -560,7 +560,6 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
   noFill();
   stroke(0, 80);
   strokeWeight(1.5);
-  drawHabitatOutline(habitat, 0, 0, size);
 
   pop();
 }
@@ -574,8 +573,7 @@ function isPointInHabitatShape(habitat, px, py, size) {
     case 'naturalized':
       return (px * px + py * py <= (size / 2) * (size / 2));
     default:
-        pop(); 
-        return;
+        return false;
   }
 }
 
@@ -587,37 +585,7 @@ function pointInHexagon(px, py, r) {
   return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
 }
 
-function drawHabitatOutline(habitat, x, y, size) {
-  push();
-  translate(x, y);
-  noFill();
 
-  switch (habitat?.trim().toLowerCase()) {
-    case 'pollinator':
-      beginShape();
-      for (let i = 0; i < 6; i++) {
-        let angle = TWO_PI / 6 * i - PI / 2;
-        vertex(cos(angle) * size * 0.5, sin(angle) * size * 0.5);
-      }
-      endShape(CLOSE);
-      break;
-
-    case 'native grasses':
-      rectMode(CENTER);
-      rect(0, 0, size * 0.3, size);
-      break;
-
-    case 'naturalized':
-      ellipse(0, 0, size, size);
-      break;
-
-    default:
-        pop(); 
-        return;
-  }
-
-  pop();
-}
 
 function drawPVShape(pvTech, x, y, size, baseColor) {
   push();
