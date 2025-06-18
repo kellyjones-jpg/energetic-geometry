@@ -60,8 +60,8 @@ function setup() {
     let name = table.getString(i, 'Name') || '';
     let activityStr = table.getString(i, 'Agrivoltaic Activities') || '';
     let activities = activityStr ? activityStr.split(/,\s*/) : [];
-    let habitatStr = table.getString(i, 'Habitat Type') || '';
-    let habitat = habitatStr ? habitatStr.split(/,\s*/) : [];
+    let habitatRaw = table.getString(i, 'Habitat Type') || '';
+    let habitat = habitatRaw.split(/,\s*/); // always an array
     let pvTech = table.getString(i, 'PV Technology') || '';
     let animalTypeStr = table.getString(i, 'Animal Type') || '';
     let animalType = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
@@ -163,9 +163,18 @@ function draw() {
 
 
     // Habitat shape (only if valid)
-    if (entry.habitat && entry.habitat.trim() !== '') {
-      drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
+    if (Array.isArray(entry.habitat)) {
+      for (let j = 0; j < entry.habitat.length; j++) {
+        let h = entry.habitat[j];
+        if (typeof h === 'string' && h.trim() !== '') {
+          push();
+          rotate(radians(j * 15)); // optional Suprematist offset
+          drawHabitatShape(h, 0, 0, shapeSize, baseColor);
+          pop();
+        }
+      }
     }
+
 
 
     // Activities treatment
