@@ -596,48 +596,48 @@ function drawCheckerboardPattern(activities, shapeType, x, y, size) {
     }
   }
 
-  // Step 2: Clip checkerboard pattern to shapes directly
-let clippedGfx = createGraphics(size, size);
-clippedGfx.translate(size / 2, size / 2);
-clippedGfx.noStroke();
+  // Step 2: Draw shape mask
+  let maskGfx = createGraphics(size, size);
+  maskGfx.translate(size / 2, size / 2);
+  maskGfx.noStroke();
+  maskGfx.fill(255); // white shows through mask
 
-if (Array.isArray(shapeType) && shapeType.length > 0) {
-  for (let i = 0; i < shapeType.length; i++) {
-    let shape = shapeType[i]?.trim().toLowerCase();
-    clippedGfx.push();
-    clippedGfx.rotate(radians(i * 15));
-    clippedGfx.drawingContext.clip(); // Not supported in p5, only workaround is shape-based masking
-
-    // Only drawing pattern within the shape
-    clippedGfx.beginShape();
-    clippedGfx.texture(patternGfx);
-    switch (shape) {
-      case 'pollinator':
-        for (let j = 0; j < 6; j++) {
-          let angle = TWO_PI / 6 * j - PI / 2;
-          let vx = cos(angle) * size * 0.25;
-          let vy = sin(angle) * size * 0.25;
-          clippedGfx.vertex(vx, vy, vx + size / 2, vy + size / 2);
-        }
-        break;
-      case 'native grasses':
-        clippedGfx.vertex(-size * 0.075, -size * 0.25, size / 2 - size * 0.075, size / 2 - size * 0.25);
-        clippedGfx.vertex(size * 0.075, -size * 0.25, size / 2 + size * 0.075, size / 2 - size * 0.25);
-        clippedGfx.vertex(size * 0.075, size * 0.25, size / 2 + size * 0.075, size / 2 + size * 0.25);
-        clippedGfx.vertex(-size * 0.075, size * 0.25, size / 2 - size * 0.075, size / 2 + size * 0.25);
-        break;
-      case 'naturalized':
-        clippedGfx.ellipse(0, 0, size * 0.5, size * 0.5);
-        break;
+  if (Array.isArray(shapeType) && shapeType.length > 0) {
+    for (let i = 0; i < shapeType.length; i++) {
+      let shape = shapeType[i]?.trim().toLowerCase();
+      maskGfx.push();
+      maskGfx.rotate(radians(i * 15));
+      switch (shape) {
+        case 'pollinator':
+          maskGfx.beginShape();
+          for (let j = 0; j < 6; j++) {
+            let angle = TWO_PI / 6 * j - PI / 2;
+            let vx = cos(angle) * size * 0.25;
+            let vy = sin(angle) * size * 0.25;
+            maskGfx.vertex(vx, vy);
+          }
+          maskGfx.endShape(CLOSE);
+          break;
+        case 'native grasses':
+          maskGfx.rectMode(CENTER);
+          maskGfx.rect(0, 0, size * 0.15, size * 0.5);
+          break;
+        case 'naturalized':
+          maskGfx.ellipse(0, 0, size * 0.5);
+          break;
+      }
+      maskGfx.pop();
     }
-    clippedGfx.endShape(CLOSE);
-    clippedGfx.pop();
   }
-}
 
-  // Step 3: Draw the masked pattern at (x, y)
+  // Step 3: Convert patternGfx and maskGfx to p5.Image
+  let patternImg = patternGfx.get();
+  let maskImg = maskGfx.get();
+  patternImg.mask(maskImg); // this now works
+
+  // Step 4: Draw the masked pattern at (x, y)
   imageMode(CENTER);
-  image(clippedGfx, x, y);
+  image(patternImg, x, y);
 }
 
 
