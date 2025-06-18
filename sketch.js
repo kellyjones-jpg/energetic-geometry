@@ -462,23 +462,23 @@ function drawHabitatShape(habitat, x, y, size, baseColor) {
   fill(baseColor); // apply activity-based color
 
   switch (habitat.trim().toLowerCase()) {
-    case 'pollinator':
-      ellipse(0, 0, size * 0.9);
+        case 'pollinator':
+      beginShape();
+      for (let i = 0; i < 6; i++) {
+        let angle = TWO_PI / 6 * i - PI / 2;
+        vertex(cos(angle) * size * 0.5, sin(angle) * size * 0.5);
+      }
+      endShape(CLOSE);
       break;
-    case 'pasture':
+
+    case 'native grasses':
       rectMode(CENTER);
-      rect(0, 0, size * 0.9, size * 0.9);
+      rect(0, 0, size * 0.3, size);
       break;
-    case 'range':
-      triangle(
-        -size * 0.45, size * 0.45,
-         size * 0.45, size * 0.45,
-         0, -size * 0.5
-      );
+
+    case 'naturalized':
+      ellipse(0, 0, size, size);
       break;
-    // Add more habitat shapes if needed
-    default:
-      ellipse(0, 0, size * 0.9); // fallback shape (can skip if not wanted)
   }
 
   pop();
