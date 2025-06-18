@@ -161,16 +161,11 @@ function draw() {
 
     let baseColor = getActivityColor(entry.activities?.[0] || '');
 
+
     // Habitat shape (only if valid)
-if (habitatList.length > 0) {
-  for (let j = 0; j < habitatList.length; j++) {
-    let rotation = radians(15 * j);
-    push();
-    rotate(rotation);
-    drawHabitatShape(habitatList[j], 0, 0, shapeSize, color(0, 80 + j * 50)); // semi-transparent overlay
-    pop();
-  }
-}
+    if (entry.habitat && entry.habitat.trim() !== '') {
+      drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
+    }
 
 
     // Activities treatment
