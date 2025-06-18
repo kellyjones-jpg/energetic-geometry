@@ -7,55 +7,49 @@ let availableYears = [];
 let cnv;
 let tooltipEntry = null; 
 
-const cropEdgeGroups = {
-  // Root vegetables
-  "carrots": "root",
-  "beets": "root",
-  "radish": "root",
-  "garlic": "root",
-  "onions": "root",
-  "yams": "root",
-  "turnips": "root",
-  "potatoes": "root",
+const cropVisualGroups = {
+  // Row Crops
+  "hay": "row",
+  "alfalfa": "row",
+  "corn": "row",
+  "soy": "row",
+  "spring wheat": "row",
+  "grain and specialty crops": "row",
+  "saffron": "row",
 
-  // Leafy greens
-  "spinach": "leafy",
-  "kale": "leafy",
-  "chard": "leafy",
-  "lettuce": "leafy",
-  "cabbage": "leafy",
-  "arugula": "leafy",
-  "herbs": "leafy",
+  // Tree Crops
+  "grapes": "tree",
+  "persimmons": "tree",
+  "blueberries": "tree",
+  "peaches": "tree",
+  "pears": "tree",
+  "apples": "tree",
+  "kiwis": "tree",
+  "native berry plants": "tree",
 
-  // Fruit-bearing
-  "tomatoes": "fruit",
-  "squash": "fruit",
-  "peppers": "fruit",
-  "melons": "fruit",
-  "eggplant": "fruit",
-  "cucumbers": "fruit",
-  "berries": "fruit",
+  // Vine Crops
+  "tomatoes": "vine",
+  "peppers": "vine",
+  "squash": "vine",
+  "zucchini": "vine",
+  "cucurbits & solanaceous crops": "vine",
+  "eggplant": "vine",
 
-  // Grains & grasses
-  "hay": "grain",
-  "spring wheat": "grain",
-  "corn": "grain",
-  "saffron": "grain",
-
-  // Vining / perennial
-  "grapes": "vine",
-  "vanilla": "vine",
-  "tea": "vine",
-  "kiwi": "vine",
-  "lavender": "vine",
-  "peppercorn": "vine",
-  "maile": "vine",
-
-  // Mixed
-  "mixed vegetables": "mixed",
-  "assorted vegetables": "mixed"
+  // Forage Crops
+  "leafy greens": "forage",
+  "herbs": "forage",
+  "mixed vegetables": "forage",
+  "broccoli": "forage",
+  "kale": "forage",
+  "cabbage": "forage",
+  "lettuce": "forage",
+  "radish": "forage",
+  "daikon": "forage",
+  "beets": "forage",
+  "carrots": "forage",
+  "parsley": "forage",
+  "berries": "forage",
 };
-
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
@@ -359,63 +353,6 @@ function drawCropEdgeStyle(cropTypes, x, y, size) {
   pop();
 }
 
-
-
-// Draw different line styles based on Animal Type
-function drawAnimalLine(animalType, x, y, size) {
-  let style = getLineStyle(animalType);
-  if (!style) return;
-  stroke(style.color);
-  strokeWeight(style.weight);
-  noFill();
-
-  switch (style.type) {
-    case 'wavy':
-      drawWavyLine(x, y, size);
-      break;
-
-    case 'dashed':
-      drawDashedLine(x, y, size);
-      break;
-
-    case 'bezier':
-      drawBezierLine(x, y, size);
-      break;
-
-    case 'straight':
-      line(x - size / 2, y, x + size / 2, y);
-      break;
-
-    case 'textured':
-      drawTexturedLine(x, y, size);
-      break;
-
-  }
-}
-
-// Map Animal Type to line style properties
-function getLineStyle(animalType) {
-  let typeStr = String(animalType || '').trim().toLowerCase();
-
-  if (!typeStr) return null;
-
-  switch (typeStr) {
-    case 'sheep':
-      return { type: 'wavy', weight: 2, color: color('#E63946CC') }; // Suprematist-inspired crimson
-    case 'llamas & alpacas':
-      return { type: 'dashed', weight: 2, color: color('#3A0CA3CC') }; // Deep violet-blue
-    case 'horse':
-      return { type: 'bezier', weight: 3, color: color('#FF6700CC') }; // Vivid orange
-    case 'cows':
-      return { type: 'straight', weight: 5, color: color('#222222DD') }; // Rich charcoal
-    case 'cattle':
-      return { type: 'textured', weight: 3, color: color('#E5E5E5BB') }; // Light neutral gray
-    default:
-        pop(); 
-        return;
-  }
-}
-
 function drawPointedEdge(size, offsetIndex = 0) {
   let steps = 72;
   beginShape();
@@ -477,6 +414,108 @@ function drawSpiralOverlay(size, offsetIndex = 0) {
   endShape();
 }
 
+// Draw different line styles based on Animal Type
+function drawAnimalLine(animalType, x, y, size) {
+  let style = getLineStyle(animalType);
+  if (!style) return;
+  stroke(style.color);
+  strokeWeight(style.weight);
+  noFill();
+
+  switch (style.type) {
+    case 'wavy':
+      drawWavyLine(x, y, size);
+      break;
+
+    case 'dashed':
+      drawDashedLine(x, y, size);
+      break;
+
+    case 'bezier':
+      drawBezierLine(x, y, size);
+      break;
+
+    case 'straight':
+      line(x - size / 2, y, x + size / 2, y);
+      break;
+
+    case 'textured':
+      drawTexturedLine(x, y, size);
+      break;
+
+  }
+}
+
+// Map Animal Type to line style properties
+function getLineStyle(animalType) {
+  let typeStr = String(animalType || '').trim().toLowerCase();
+
+  if (!typeStr) return null;
+
+  switch (typeStr) {
+    case 'sheep':
+      return { type: 'wavy', weight: 2, color: color('#E63946CC') }; // Suprematist-inspired crimson
+    case 'llamas & alpacas':
+      return { type: 'dashed', weight: 2, color: color('#3A0CA3CC') }; // Deep violet-blue
+    case 'horse':
+      return { type: 'bezier', weight: 3, color: color('#FF6700CC') }; // Vivid orange
+    case 'cows':
+      return { type: 'straight', weight: 5, color: color('#222222DD') }; // Rich charcoal
+    case 'cattle':
+      return { type: 'textured', weight: 3, color: color('#E5E5E5BB') }; // Light neutral gray
+    default:
+        pop(); 
+        return;
+  }
+}
+
+// Wavy line: sinusoidal wave along the horizontal axis
+function drawWavyLine(x, y, length) {
+  noFill();
+  beginShape();
+  let amplitude = 5;
+  let waves = 6;
+  for (let i = 0; i <= waves; i++) {
+    let px = x - length / 2 + (length / waves) * i;
+    let py = y + sin(i * TWO_PI / waves) * amplitude;
+    vertex(px, py);
+  }
+  endShape();
+}
+
+// Dashed line: repeated short dashes with gaps
+function drawDashedLine(x, y, length) {
+  let dashLength = 10;
+  let gapLength = 7;
+  let startX = x - length / 2;
+  let endX = x + length / 2;
+  for (let px = startX; px < endX; px += dashLength + gapLength) {
+    line(px, y, px + dashLength, y);
+  }
+}
+
+// Bezier curved line with smooth S shape
+function drawBezierLine(x, y, length) {
+  noFill();
+  bezier(
+    x - length / 2, y,
+    x - length / 4, y - length / 3,
+    x + length / 4, y + length / 3,
+    x + length / 2, y
+  );
+}
+
+// Textured line: short broken segments with jitter
+function drawTexturedLine(x, y, length) {
+  let segmentLength = 6;
+  let gap = 4;
+  let startX = x - length / 2;
+  let endX = x + length / 2;
+  for (let px = startX; px < endX; px += segmentLength + gap) {
+    let jitterY = random(-2, 2);
+    line(px, y + jitterY, px + segmentLength, y + jitterY);
+  }
+}
 
 function drawHabitatShape(habitatList, x, y, size, baseColor) {
   if (!Array.isArray(habitatList) || habitatList.length === 0) return;
