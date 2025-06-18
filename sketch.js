@@ -384,10 +384,6 @@ function drawAnimalLine(animalType, x, y, size) {
     case 'textured':
       drawTexturedLine(x, y, size);
       break;
-
-    default:
-      // fallback straight line
-      line(x - size / 2, y, x + size / 2, y);
   }
 }
 
@@ -408,8 +404,6 @@ function getLineStyle(animalType) {
       return { type: 'straight', weight: 5, color: color('#222222DD') }; // Rich charcoal
     case 'cattle':
       return { type: 'textured', weight: 3, color: color('#E5E5E5BB') }; // Light neutral gray
-    default:
-      return { type: 'straight', weight: 1, color: color('#20C997AA') }; // Minty green-teal Op Art tone
   }
 }
 
@@ -538,8 +532,6 @@ function isPointInHabitatShape(habitat, px, py, size) {
       return (abs(px) <= size * 0.15 && abs(py) <= size * 0.5);
     case 'naturalized':
       return (px * px + py * py <= (size / 2) * (size / 2));
-    default:
-      return (px * px + py * py <= (size * 0.25) * (size * 0.25));
   }
 }
 
@@ -574,9 +566,6 @@ function drawHabitatOutline(habitat, x, y, size) {
     case 'naturalized':
       ellipse(0, 0, size, size);
       break;
-
-    default:
-      ellipse(0, 0, size * 0.5);
   }
 
   pop();
