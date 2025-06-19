@@ -181,9 +181,8 @@ function draw() {
 
   // Activities
   if (Array.isArray(entry.activities) && entry.activities.length > 0) {
-   let activityColors = entry.activities.map(act => getActivityColor(act));
-    if (activityColors.length === 1) {
-      activityColors.push(activityColors[0]);
+   if (entry.activities.length === 1) {
+        activityColors.push(activityColors[0]);
     }
     else if (entry.activities.length === 2) {
       // overlay pattern using both colors
@@ -211,8 +210,6 @@ function draw() {
   if (entry.animalType && entry.animalType.length > 0) {
     drawAnimalLine(entry.animalType, 0, 0, shapeSize);
   }
-
-  pop(); // End rotation context
 
   // Draw radial overlay on top if needed
   if (pvOrientation === 'radial') {
