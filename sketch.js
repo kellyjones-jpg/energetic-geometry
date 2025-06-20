@@ -162,15 +162,11 @@ function draw() {
   let centerX = width / 2;
   let centerY = startY + i * (shapeSize + padding);
   let baseColor = getActivityColor(entry.activities?.[0] || '');
-  let pvOrientation = getPVOrientation(entry.pvTech); // get this early
-
   push();
   translate(centerX, centerY);
+  drawPVWarp(entry.pvTech, shapeSize);
+  pop();
 
-  // Apply PV-based rotation BEFORE any drawing
-  if (pvOrientation !== 'radial') {
-    rotate(pvOrientation);
-  }
 
   // Draw everything inside the rotated coordinate system
 
@@ -236,7 +232,7 @@ function drawTooltip(entry) {
     "Name: " + entry.name,
     "Habitat Type: " + (Array.isArray(entry.habitat) ? entry.habitat.join(', ') : entry.habitat),
     "Activities: " + entry.activities.join(', '),
-    "PV Tech: " + entry.pvTech,
+    "PV Technology: " + entry.pvTech,
     "Animal Type: " + entry.animalType.join(', '),
     "Crop Type: " + (Array.isArray(entry.cropType) ? entry.cropType.join(', ') : String(entry.cropType))
   ];
@@ -663,18 +659,43 @@ function pointInHexagon(px, py, r) {
 
 
 
-function getPVOrientation(pvTech) {
+function drawPVWarp(pvTech, size) {
+  let half = size / 2;
+  noFill();
+  stroke(0, 100); // Use a low-opacity stroke for elegance
+
   switch (pvTech?.trim().toLowerCase()) {
     case 'monofacial':
-      return radians(-30); // Tilted downward or flat
+      // Linear warp: downward converging lines
+      for (let i = -half; i <= half; i += 10) {
+        line(i, -half, 0, half); // All converge downward
+      }
+      break;
+
     case 'bifacial':
-      return radians(90);  // Vertical or symmetric
+      // Symmetric warp: mirrored sine curves
+      for (let y = -half; y <= half; y += 10) {
+        let x = sin(y * 0.1) * 20;
+        line(-x, y, x, y);
+      }
+      break;
+
     case 'translucent':
-      return 'radial';     // Special radial treatment
+      // Radial warp: concentric circles
+      for (let r = 10; r < half; r += 10) {
+        ellipse(0, 0, r * 2, r * 2);
+      }
+      break;
+
     default:
-      return 0; // No rotation
+      // No PV warp data—draw a neutral cross grid
+      for (let i = -half; i <= half; i += 10) {
+        line(i, -half, i, half);
+        line(-half, i, half, i);
+      }
   }
 }
+
 
 
 function getActivityColor(activity) {
