@@ -525,8 +525,6 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
 
     pop();
   }
- pop();
-}
 
 function drawCheckerboardPattern(activities, habitat, x, y, size) {
   push();
