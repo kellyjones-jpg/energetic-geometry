@@ -68,7 +68,6 @@ function setup() {
     let activities = activityStr ? activityStr.split(/,\s*/) : [];
     let habitatStr = table.getString(i, 'Habitat Type') || '';
     let habitat = habitatStr ? habitatStr.split(/,\s*/) : [];
-    let pvTech = table.getString(i, 'PV Technology') || '';
     let animalTypeStr = table.getString(i, 'Animal Type') || '';
     let animalType = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
     let cropTypeStr = table.getString(i, 'Crop Types') || '';
@@ -79,7 +78,6 @@ function setup() {
       name,
       activities,
       habitat,
-      pvTech,
       animalType,
       cropType,
       year
@@ -164,7 +162,6 @@ function draw() {
   let baseColor = getActivityColor(entry.activities?.[0] || '');
   push();
   translate(centerX, centerY);
-  drawPVWarp(entry.pvTech, shapeSize);
   pop();
 
 
@@ -207,14 +204,6 @@ function draw() {
     drawAnimalLine(entry.animalType, 0, 0, shapeSize);
   }
 
-  // Draw radial overlay on top if needed
-  if (pvOrientation === 'radial') {
-    push();
-    translate(centerX, centerY);
-    drawRadialEffectOverlay(shapeSize);
-    pop();
-  }
-
   // Draw label (NOT rotated)
   textSize(14);
   textAlign(CENTER, TOP);
@@ -232,7 +221,6 @@ function drawTooltip(entry) {
     "Name: " + entry.name,
     "Habitat Type: " + (Array.isArray(entry.habitat) ? entry.habitat.join(', ') : entry.habitat),
     "Activities: " + entry.activities.join(', '),
-    "PV Technology: " + entry.pvTech,
     "Animal Type: " + entry.animalType.join(', '),
     "Crop Type: " + (Array.isArray(entry.cropType) ? entry.cropType.join(', ') : String(entry.cropType))
   ];
@@ -332,11 +320,11 @@ function drawCropEdgeStyle(cropTypes, x, y, size) {
     // Set stroke color by group
     switch (group) {
       case 'root':
-        stroke('#008000'); // Green
+        stroke('#A020F0'); // Purple
         drawPointedEdge(size, i);
         break;
       case 'leafy':
-        stroke('#B8860B'); // Earthy gold
+        stroke('#D2691E'); // Earthy orange-brown
         drawWavyEdge(size, i);
         break;
       case 'fruit':
@@ -344,11 +332,11 @@ function drawCropEdgeStyle(cropTypes, x, y, size) {
         drawLobedEdge(size, i);
         break;
       case 'grain':
-        stroke('#008000'); // Green (same as root/row)
+        stroke('#DAA520'); // Goldenrod
         drawLinearSpikes(size, i);
         break;
       case 'vine':
-        stroke('#6A0DAD'); // Violet
+        stroke('#FF1493'); // Hot pink
         drawSpiralOverlay(size, i);
         break;
       case 'mixed':
@@ -468,9 +456,9 @@ function getLineStyle(animalType) {
     case 'horse':
       return { type: 'bezier', weight: 3, color: color('#FF6700CC') }; // Vivid orange
     case 'cows':
-      return { type: 'straight', weight: 5, color: color('#222222DD') }; // Rich charcoal
+      return { type: 'straight', weight: 5, color: color('#B7410ECC') }; // Warm brick tone
     case 'cattle':
-      return { type: 'textured', weight: 3, color: color('#E5E5E5BB') }; // Light neutral gray
+      return { type: 'textured', weight: 3, color: color('#D8837FCC') }; // Dusty rose
     default:
         pop(); 
         return;
@@ -658,58 +646,18 @@ function pointInHexagon(px, py, r) {
 }
 
 
-
-function drawPVWarp(pvTech, size) {
-  let half = size / 2;
-  noFill();
-  stroke(0, 100); // Use a low-opacity stroke for elegance
-
-  switch (pvTech?.trim().toLowerCase()) {
-    case 'monofacial':
-      // Linear warp: downward converging lines
-      for (let i = -half; i <= half; i += 10) {
-        line(i, -half, 0, half); // All converge downward
-      }
-      break;
-
-    case 'bifacial':
-      // Symmetric warp: mirrored sine curves
-      for (let y = -half; y <= half; y += 10) {
-        let x = sin(y * 0.1) * 20;
-        line(-x, y, x, y);
-      }
-      break;
-
-    case 'translucent':
-      // Radial warp: concentric circles
-      for (let r = 10; r < half; r += 10) {
-        ellipse(0, 0, r * 2, r * 2);
-      }
-      break;
-
-    default:
-      // No PV warp data—draw a neutral cross grid
-      for (let i = -half; i <= half; i += 10) {
-        line(i, -half, i, half);
-        line(-half, i, half, i);
-      }
-  }
-}
-
-
-
 function getActivityColor(activity) {
   switch (activity.trim().toLowerCase()) {
     case 'crop production':
-      return color('#DA1E37');
+      return color('#DA1E37'); // Bold red
     case 'habitat':
-      return color('#0A0A0A');
+      return color('#228B22'); // Forest green
     case 'grazing':
-      return color('#007CBE');
+      return color('#007CBE'); // Blue
     case 'greenhouse':
-      return color('#F2D43D');
+      return color('#F2D43D'); // Yellow
     default:
-        pop(); 
-        return;
+      pop();
+      return;
   }
 }
