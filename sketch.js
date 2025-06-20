@@ -104,6 +104,9 @@ function setup() {
   cnv = createCanvas(1650, 985);
   centerCanvas();
   centerSlider();
+  
+  cnv.canvas.style.outline = 'none';
+  cnv.canvas.style.userSelect = 'none';
 
   textFont('Helvetica');
   textSize(16);
@@ -252,8 +255,12 @@ function mousePressed() {
   tooltipEntry = null;
 
   for (let i = 0; i < yearEntries.length; i++) {
-    let centerX = width / 2;
-    let centerY = startY + i * (shapeSize + padding);
+    let columns = floor(width / (shapeSize + padding));
+    let row = floor(i / columns);
+    let col = i % columns;
+
+    let centerX = padding / 2 + col * (shapeSize + padding) + shapeSize / 2;
+    let centerY = startY + row * (shapeSize + padding);
     let d = dist(mouseX, mouseY, centerX, centerY);
 
     if (d < shapeSize / 2) {
