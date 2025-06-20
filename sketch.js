@@ -65,7 +65,7 @@ function setup() {
     let name = table.getString(i, 'Name') || '';
     let activityStr = table.getString(i, 'Agrivoltaic Activities') || '';
     let activities = activityStr ? activityStr.split(/,\s*/) : [];
-    let habitatStr = table.getString(i, 'Habitat Type') || '';
+    let habitatStr = String(table.getString(i, 'Habitat Type') || '').trim();
     let habitat = habitatStr ? habitatStr.split(/,\s*/) : [];
     let animalTypeStr = table.getString(i, 'Animal Type') || '';
     let animalType = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
@@ -497,34 +497,25 @@ function drawTexturedLine(x, y, length) {
   }
 }
 
-function drawHabitatShape(habitat, x, y, size, colorVal) {
-  push();
-  translate(x, y);
-  fill(colorVal);
-  noStroke();
+function drawHabitatShape(habitats, x, y, size, col) {
+  for (let h of habitats) {
+    if (typeof h !== 'string') continue;
 
-switch (habitat) {
+    let cleaned = h.trim().toLowerCase();
+
+    switch (cleaned) {
       case 'pollinator':
-        beginShape();
-        for (let j = 0; j < 6; j++) {
-          let angle = TWO_PI / 6 * j - PI / 2;
-          vertex(cos(angle) * size * 0.5, sin(angle) * size * 0.5);
-        }
-        endShape(CLOSE);
+        drawHexagon(x, y, size * 0.5, col);
         break;
-
       case 'native grasses':
-        rectMode(CENTER);
-        rect(0, 0, size * 0.3, size);
+        drawRectangle(x, y, size * 0.3, size, col);
         break;
-
       case 'naturalized':
-        ellipse(0, 0, size, size);
+        drawCircle(x, y, size, col);
         break;
     }
-
-    pop();
   }
+}
 
 function drawCheckerboardPattern(activities, habitat, x, y, size) {
   push();
@@ -562,9 +553,9 @@ function isPointInHabitatShape(habitat, px, py, size) {
   let habitats = Array.isArray(habitat) ? habitat : [habitat];
 
   for (let h of habitats) {
-    if (typeof h !== 'string') continue;
+  if (typeof h !== 'string') continue;
 
-    let cleaned = h.trim().toLowerCase();
+  let cleaned = h.trim().toLowerCase();
     switch (cleaned) {
       case 'pollinator':
         if (pointInHexagon(px, py, size * 0.5)) return true;
