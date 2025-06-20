@@ -56,7 +56,6 @@ const cropEdgeGroups = {
   "assorted vegetables": "mixed"
 };
 
-
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
 }
@@ -78,6 +77,7 @@ function setup() {
       name,
       activities,
       habitat,
+      pvTech,
       animalType,
       cropType,
       year
@@ -101,12 +101,9 @@ function setup() {
     windowResized(); // triggers height adjustment
   });
 
-  cnv = createCanvas(1650, 985);
+  cnv = createCanvas(windowWidth * 0.9, windowHeight * 0.8);
   centerCanvas();
   centerSlider();
-  
-  cnv.canvas.style.outline = 'none';
-  cnv.canvas.style.userSelect = 'none';
 
   textFont('Helvetica');
   textSize(16);
@@ -118,14 +115,10 @@ function setup() {
 function windowResized() {
   let yearEntries = entriesByYear[selectedYear] || [];
   let shapeSize = 150;
-  let availableHeight = height - 160; // account for top/bottom margins
-  let maxEntries = yearEntries.length;
-  let padding = (availableHeight - (shapeSize * maxEntries)) / (maxEntries + 1);
-  padding = max(10, padding); // minimum padding
-  let startY = 80 + padding;
+  let padding = 60;
+  let totalHeight = 100 + yearEntries.length * (shapeSize + padding);
 
-
-  resizeCanvas(1650, 985);
+  resizeCanvas(windowWidth * 0.9, max(windowHeight * 0.8, totalHeight));
   centerCanvas();
   centerSlider();
   redraw();
@@ -158,54 +151,56 @@ function draw() {
     return;
   }
 
-let shapeSize = 150;
-let availableHeight = height - 160; // account for top/bottom margins
-let maxEntries = yearEntries.length;
-let padding = (availableHeight - (shapeSize * maxEntries)) / (maxEntries + 1);
-padding = max(10, padding); // minimum padding
-let startY = 80 + padding;
-
+  let padding = 60;
+  let shapeSize = 150;
+  let startY = 80;
 
   for (let i = 0; i < yearEntries.length; i++) {
-  let entry = yearEntries[i];
-  let centerX = width / 2;
-  let centerY = startY + i * (shapeSize + padding);
-  let baseColor = getActivityColor(entry.activities?.[0] || '');
+    let entry = yearEntries[i];
+    let centerX = width / 2;
+    let centerY = startY + i * (shapeSize + padding);
 
-  push();
-  translate(centerX, centerY);
+    push();
+    translate(centerX, centerY);
 
-  // Habitat shape
-  if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-    drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
+    let baseColor = getActivityColor(entry.activities?.[0] || '');
+
+    // Habitat shape (only if valid)
+    if (entry.habitat && entry.habitat.trim() !== '') {
+      drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
+    }
+
+    // Activities treatment
+    if (Array.isArray(entry.activities) && entry.activities.length > 0) {
+      let activityColors = entry.activities.map(act => getActivityColor(act));
+      if (activityColors.length === 1) {
+        activityColors.push(activityColors[0]); // duplicate for checkerboard to work
+      }
+      drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
+    }
+
+    // Crop edge (only if cropType exists)
+    if (entry.cropType && entry.cropType.length > 0) {
+      drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
+    }
+
+    // Animal line (only if animalType exists)
+    if (entry.animalType && entry.animalType.length > 0) {
+      drawAnimalLine(entry.animalType, 0, 0, shapeSize);
+    }
+
+    // PV shape (only if pvTech exists)
+    if (entry.pvTech && entry.pvTech.trim() !== '') {
+      drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
+    }
+
+    pop();
+
+    // Labels
+    textSize(14);
+    textAlign(CENTER, TOP);
+    text(entry.name, centerX, centerY + shapeSize / 2 + 8);
   }
-
-// Activities
-if (Array.isArray(entry.activities) && entry.activities.length > 0) {
-  let activityColors = entry.activities.map(act => getActivityColor(act));
-  if (activityColors.length === 1) {
-    activityColors.push(activityColors[0]); // duplicate for checkerboard to work
-  }
-  drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
-}
-
-
-  // Crop edges
-  if (entry.cropType && entry.cropType.length > 0) {
-    drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
-  }
-
-  // Animal line
-  if (entry.animalType && entry.animalType.length > 0) {
-    drawAnimalLine(entry.animalType, 0, 0, shapeSize);
-  }
-
-  // Draw label (NOT rotated)
-  textSize(14);
-  textAlign(CENTER, TOP);
-  text(entry.name, centerX, centerY + shapeSize / 2 + 8);
-}
-
 
   if (tooltipEntry) {
     drawTooltip(tooltipEntry);
@@ -255,12 +250,8 @@ function mousePressed() {
   tooltipEntry = null;
 
   for (let i = 0; i < yearEntries.length; i++) {
-    let columns = floor(width / (shapeSize + padding));
-    let row = floor(i / columns);
-    let col = i % columns;
-
-    let centerX = padding / 2 + col * (shapeSize + padding) + shapeSize / 2;
-    let centerY = startY + row * (shapeSize + padding);
+    let centerX = width / 2;
+    let centerY = startY + i * (shapeSize + padding);
     let d = dist(mouseX, mouseY, centerX, centerY);
 
     if (d < shapeSize / 2) {
@@ -349,71 +340,10 @@ function drawCropEdgeStyle(cropTypes, x, y, size) {
   pop();
 }
 
-function drawPointedEdge(size, offsetIndex = 0) {
-  let steps = 72;
-  beginShape();
-  for (let i = 0; i <= steps; i++) {
-    let angle = TWO_PI * i / steps;
-    let radius = size * 0.45 + (i % 2 === 0 ? 10 : -10);
-    let x = cos(angle) * radius;
-    let y = sin(angle) * radius;
-    vertex(x, y);
-  }
-  endShape(CLOSE);
-}
-
-function drawWavyEdge(size, offsetIndex = 0) {
-  let waves = 8 + offsetIndex * 2;
-  beginShape();
-  for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
-    let r = size * 0.4 + 10 * sin(waves * angle);
-    let x = cos(angle) * r;
-    let y = sin(angle) * r;
-    curveVertex(x, y);
-  }
-  endShape(CLOSE);
-}
-
-function drawLobedEdge(size, offsetIndex = 0) {
-  let lobes = 5 + offsetIndex;
-  beginShape();
-  for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
-    let r = size * 0.4 + 8 * sin(lobes * angle);
-    let x = cos(angle) * r;
-    let y = sin(angle) * r;
-    curveVertex(x, y);
-  }
-  endShape(CLOSE);
-}
-
-function drawLinearSpikes(size, offsetIndex = 0) {
-  let lines = 12;
-  for (let i = 0; i < lines; i++) {
-    let angle = TWO_PI * i / lines + offsetIndex * 0.05;
-    let x1 = cos(angle) * size * 0.3;
-    let y1 = sin(angle) * size * 0.3;
-    let x2 = cos(angle) * size * 0.5;
-    let y2 = sin(angle) * size * 0.5;
-    line(x1, y1, x2, y2);
-  }
-}
-
-function drawSpiralOverlay(size, offsetIndex = 0) {
-  noFill();
-  beginShape();
-  for (let a = 0; a < TWO_PI * 3; a += 0.1) {
-    let r = size * 0.05 * a + offsetIndex * 2;
-    let x = cos(a) * r;
-    let y = sin(a) * r;
-    vertex(x, y);
-  }
-  endShape();
-}
 
 // Draw different line styles based on Animal Type
 function drawAnimalLine(animalType, x, y, size) {
   let style = getLineStyle(animalType);
-  if (!style) return;
   stroke(style.color);
   strokeWeight(style.weight);
   noFill();
@@ -439,6 +369,9 @@ function drawAnimalLine(animalType, x, y, size) {
       drawTexturedLine(x, y, size);
       break;
 
+    default:
+      // fallback straight line
+      line(x - size / 2, y, x + size / 2, y);
   }
 }
 
@@ -446,10 +379,10 @@ function drawAnimalLine(animalType, x, y, size) {
 function getLineStyle(animalType) {
   let typeStr = String(animalType || '').trim().toLowerCase();
 
-  if (!typeStr) return null;
+   if (!typeStr) return null;
 
   switch (typeStr) {
-    case 'sheep':
+        case 'sheep':
       return { type: 'wavy', weight: 2, color: color('#E63946CC') }; // Suprematist-inspired crimson
     case 'llamas & alpacas':
       return { type: 'dashed', weight: 2, color: color('#3A0CA3CC') }; // Deep violet-blue
@@ -513,25 +446,13 @@ function drawTexturedLine(x, y, length) {
   }
 }
 
-function drawHabitatShape(habitatList, x, y, size, baseColor) {
-  if (!Array.isArray(habitatList) || habitatList.length === 0) return;
-
+function drawHabitatShape(habitat, x, y, size, colorVal) {
   push();
   translate(x, y);
+  fill(colorVal);
+  noStroke();
 
-  let angleOffset = 15; // degrees to rotate each shape slightly
-  let alphaStep = 255 / (habitatList.length + 1); // transparency per shape
-
-  for (let i = 0; i < habitatList.length; i++) {
-    let habitat = habitatList[i]?.trim().toLowerCase();
-    let shapeAlpha = 180 - i * alphaStep;
-
-    fill(red(baseColor), green(baseColor), blue(baseColor), shapeAlpha);
-    noStroke();
-    push();
-    rotate(radians(i * angleOffset));
-
-    switch (habitat) {
+switch (habitat) {
       case 'pollinator':
         beginShape();
         for (let j = 0; j < 6; j++) {
@@ -557,71 +478,44 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
   pop();
 }
 
+function drawCheckerboardPattern(activities, habitat, x, y, size) {
+  push();
+  translate(x, y);
 
-function drawCheckerboardPattern(activities, shapeType, x, y, size) {
   let gridCount = 6;
   let cellSize = size / gridCount;
 
   let activityColors = activities.map(act => getActivityColor(act));
-  if (activityColors.length === 1) activityColors.push(activityColors[0]); // Ensure at least 2
 
-  // Step 1: Draw checkerboard pattern to graphics
-  let patternGfx = createGraphics(size, size);
-  patternGfx.noStroke();
+  if (activityColors.length === 1) {
+    activityColors.push(color(255, 100));
+  }
+
+  let colorA = activityColors[0];
+  let colorB = activityColors[1];
 
   for (let row = 0; row < gridCount; row++) {
     for (let col = 0; col < gridCount; col++) {
-      let colorIndex = (row * gridCount + col) % activityColors.length;
-      patternGfx.fill(activityColors[colorIndex]);
-      patternGfx.rect(col * cellSize, row * cellSize, cellSize, cellSize);
-    }
-  }
+      let isAlt = (row + col) % 2 === 0;
+      fill(isAlt ? colorA : colorB);
+      noStroke();
 
-  // Step 2: Draw shape mask
-  let maskGfx = createGraphics(size, size);
-  maskGfx.translate(size / 2, size / 2);
-  maskGfx.noStroke();
-  maskGfx.fill(255); // white shows through mask
+      let cx = col * cellSize - size / 2 + cellSize / 2;
+      let cy = row * cellSize - size / 2 + cellSize / 2;
 
-  if (Array.isArray(shapeType) && shapeType.length > 0) {
-    for (let i = 0; i < shapeType.length; i++) {
-      let shape = shapeType[i]?.trim().toLowerCase();
-      maskGfx.push();
-      maskGfx.rotate(radians(i * 15));
-      switch (shape) {
-        case 'pollinator':
-          maskGfx.beginShape();
-          for (let j = 0; j < 6; j++) {
-            let angle = TWO_PI / 6 * j - PI / 2;
-            let vx = cos(angle) * size * 0.25;
-            let vy = sin(angle) * size * 0.25;
-            maskGfx.vertex(vx, vy);
-          }
-          maskGfx.endShape(CLOSE);
-          break;
-        case 'native grasses':
-          maskGfx.rectMode(CENTER);
-          maskGfx.rect(0, 0, size * 0.15, size * 0.5);
-          break;
-        case 'naturalized':
-          maskGfx.ellipse(0, 0, size * 0.5);
-          break;
+      if (isPointInHabitatShape(habitat, cx, cy, size)) {
+        rect(cx, cy, cellSize, cellSize);
       }
-      maskGfx.pop();
     }
   }
 
-  // Step 3: Convert patternGfx and maskGfx to p5.Image
-  let patternImg = patternGfx.get();
-  let maskImg = maskGfx.get();
-  patternImg.mask(maskImg); // this now works
+  noFill();
+  stroke(0, 80);
+  strokeWeight(1.5);
+  drawHabitatOutline(habitat, 0, 0, size);
 
-  // Step 4: Draw the masked pattern at (x, y)
-  imageMode(CENTER);
-  image(patternImg, x, y);
+  pop();
 }
-
-
 
 function isPointInHabitatShape(habitat, px, py, size) {
   switch (habitat?.trim().toLowerCase()) {
@@ -632,7 +526,7 @@ function isPointInHabitatShape(habitat, px, py, size) {
     case 'naturalized':
       return (px * px + py * py <= (size / 2) * (size / 2));
     default:
-        return false;
+      return (px * px + py * py <= (size * 0.25) * (size * 0.25));
   }
 }
 
@@ -644,19 +538,81 @@ function pointInHexagon(px, py, r) {
   return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
 }
 
+function drawHabitatOutline(habitat, x, y, size) {
+  push();
+  translate(x, y);
+  noFill();
+
+  switch (habitat?.trim().toLowerCase()) {
+    case 'pollinator':
+      beginShape();
+      for (let i = 0; i < 6; i++) {
+        let angle = TWO_PI / 6 * i - PI / 2;
+        vertex(cos(angle) * size * 0.5, sin(angle) * size * 0.5);
+      }
+      endShape(CLOSE);
+      break;
+
+    case 'native grasses':
+      rectMode(CENTER);
+      rect(0, 0, size * 0.3, size);
+      break;
+
+    case 'naturalized':
+      ellipse(0, 0, size, size);
+      break;
+
+    default:
+      ellipse(0, 0, size * 0.5);
+  }
+
+  pop();
+}
+
+function drawPVShape(pvTech, x, y, size, baseColor) {
+  push();
+  translate(x, y);
+  noStroke();
+
+  switch (pvTech?.trim().toLowerCase()) {
+    case 'monofacial':
+      fill(baseColor);
+      rotate(radians(-30));
+      rectMode(CENTER);
+      rect(0, 0, size, size * 0.3);
+      break;
+
+    case 'bifacial':
+      fill(lerpColor(baseColor, color(255), 0.3));
+      rectMode(CENTER);
+      rect(0, -size * 0.2, size * 0.4, size * 0.3);
+      rect(0, size * 0.2, size * 0.4, size * 0.3);
+      break;
+
+    case 'translucent':
+      fill(baseColor.levels[0], baseColor.levels[1], baseColor.levels[2], 80);
+      for (let i = 0; i < 3; i++) {
+        ellipse(0, 0, size * 0.8 - i * 10, size * 0.8 - i * 10);
+      }
+      break;
+
+    default:
+      fill(baseColor);
+      ellipse(0, 0, size * 0.6);
+  }
+
+  pop();
+}
 
 function getActivityColor(activity) {
   switch (activity.trim().toLowerCase()) {
- case 'crop production':
-      return color('#DA1E37'); // Bold red
+    case 'crop production':
+           return color('#DA1E37'); // Bold red
     case 'habitat':
       return color('#228B22'); // Forest green
     case 'grazing':
       return color('#007CBE'); // Blue
     case 'greenhouse':
       return color('#F2D43D'); // Yellow
-    default:
-        pop(); 
-        return;
   }
 }
