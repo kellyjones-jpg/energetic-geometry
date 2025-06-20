@@ -475,9 +475,6 @@ switch (habitat) {
     pop();
   }
 
-  pop();
-}
-
 function drawCheckerboardPattern(activities, habitat, x, y, size) {
   push();
   translate(x, y);
