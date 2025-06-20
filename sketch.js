@@ -505,16 +505,27 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
 }
 
 function isPointInHabitatShape(habitat, px, py, size) {
-  switch (habitat?.trim().toLowerCase()) {
-    case 'pollinator':
-      return pointInHexagon(px, py, size * 0.5);
-    case 'native grasses':
-      return (abs(px) <= size * 0.15 && abs(py) <= size * 0.5);
-    case 'naturalized':
-      return (px * px + py * py <= (size / 2) * (size / 2));
-    default:
-        return false;
+  // Ensure habitat is an array
+  let habitats = Array.isArray(habitat) ? habitat : [habitat];
+
+  for (let h of habitats) {
+    if (typeof h !== 'string') continue;
+
+    let cleaned = h.trim().toLowerCase();
+    switch (cleaned) {
+      case 'pollinator':
+        if (pointInHexagon(px, py, size * 0.5)) return true;
+        break;
+      case 'native grasses':
+        if (abs(px) <= size * 0.15 && abs(py) <= size * 0.5) return true;
+        break;
+      case 'naturalized':
+        if (px * px + py * py <= (size / 2) * (size / 2)) return true;
+        break;
+    }
   }
+
+  return false; // if no matches
 }
 
 function pointInHexagon(px, py, r) {
