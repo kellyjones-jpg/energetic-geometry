@@ -157,7 +157,7 @@ function draw() {
 
   for (let i = 0; i < yearEntries.length; i++) {
   let entry = yearEntries[i];
-
+  let baseColor = getActivityColor(entry.activities?.[0] || '');
 
 
   // Draw everything inside the rotated coordinate system
