@@ -515,6 +515,7 @@ function isPointInHabitatShape(habitat, px, py, size) {
     default:
         return false;
   }
+}
 
 function pointInHexagon(px, py, r) {
   px = abs(px);
