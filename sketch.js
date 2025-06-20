@@ -160,8 +160,6 @@ function draw() {
   let baseColor = getActivityColor(entry.activities?.[0] || '');
 
 
-  // Draw everything inside the rotated coordinate system
-
   // Habitat shape
   if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
     drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
@@ -203,7 +201,7 @@ function draw() {
   // Draw label (NOT rotated)
   textSize(14);
   textAlign(CENTER, TOP);
-  text(entry.name, centerX, centerY + shapeSize / 2 + 8);
+  text(entry.name + shapeSize / 2 + 8);
 }
 
 
@@ -515,9 +513,6 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
   push();
   translate(x, y);
 
-  let angleOffset = 15; // degrees to rotate each shape slightly
-  let alphaStep = 255 / (habitatList.length + 1); // transparency per shape
-
   for (let i = 0; i < habitatList.length; i++) {
     let habitat = habitatList[i]?.trim().toLowerCase();
     let shapeAlpha = 180 - i * alphaStep;
@@ -525,7 +520,6 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
     fill(red(baseColor), green(baseColor), blue(baseColor), shapeAlpha);
     noStroke();
     push();
-    rotate(radians(i * angleOffset));
 
     switch (habitat) {
       case 'pollinator':
