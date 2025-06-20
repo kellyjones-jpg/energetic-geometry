@@ -517,9 +517,8 @@ function isPointInHabitatShape(habitat, px, py, size) {
     case 'naturalized':
       return (px * px + py * py <= (size / 2) * (size / 2));
     default:
-      return (px * px + py * py <= (size * 0.25) * (size * 0.25));
+        return false;
   }
-}
 
 function pointInHexagon(px, py, r) {
   px = abs(px);
