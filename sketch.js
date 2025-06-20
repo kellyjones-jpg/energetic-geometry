@@ -571,3 +571,4 @@ function getActivityColor(activity) {
       return color('#F2D43D'); // Yellow
   }
 }
+}
