@@ -164,8 +164,8 @@ function draw() {
 
     let baseColor = getActivityColor(entry.activities?.[0] || '');
 
-    // Habitat shape (only if valid)
-    if (entry.habitat && entry.habitat.trim() !== '') {
+    // Habitat shape
+    if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
       drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
     }
 
@@ -186,11 +186,6 @@ function draw() {
     // Animal line (only if animalType exists)
     if (entry.animalType && entry.animalType.length > 0) {
       drawAnimalLine(entry.animalType, 0, 0, shapeSize);
-    }
-
-    // PV shape (only if pvTech exists)
-    if (entry.pvTech && entry.pvTech.trim() !== '') {
-      drawPVShape(entry.pvTech, 0, 0, shapeSize * 0.5, baseColor);
     }
 
     pop();
@@ -560,41 +555,6 @@ function drawHabitatOutline(habitat, x, y, size) {
 
     default:
       ellipse(0, 0, size * 0.5);
-  }
-
-  pop();
-}
-
-function drawPVShape(pvTech, x, y, size, baseColor) {
-  push();
-  translate(x, y);
-  noStroke();
-
-  switch (pvTech?.trim().toLowerCase()) {
-    case 'monofacial':
-      fill(baseColor);
-      rotate(radians(-30));
-      rectMode(CENTER);
-      rect(0, 0, size, size * 0.3);
-      break;
-
-    case 'bifacial':
-      fill(lerpColor(baseColor, color(255), 0.3));
-      rectMode(CENTER);
-      rect(0, -size * 0.2, size * 0.4, size * 0.3);
-      rect(0, size * 0.2, size * 0.4, size * 0.3);
-      break;
-
-    case 'translucent':
-      fill(baseColor.levels[0], baseColor.levels[1], baseColor.levels[2], 80);
-      for (let i = 0; i < 3; i++) {
-        ellipse(0, 0, size * 0.8 - i * 10, size * 0.8 - i * 10);
-      }
-      break;
-
-    default:
-      fill(baseColor);
-      ellipse(0, 0, size * 0.6);
   }
 
   pop();
