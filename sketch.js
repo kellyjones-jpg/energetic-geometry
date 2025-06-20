@@ -158,6 +158,7 @@ function draw() {
     let entry = yearEntries[i];
     let centerX = width / 2;
     let centerY = startY + i * (shapeSize + padding);
+    let baseColor = getActivityColor(entry.activities?.[0] || '');
 
     push();
     translate(centerX, centerY);
