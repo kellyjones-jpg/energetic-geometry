@@ -496,11 +496,6 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
     }
   }
 
-  noFill();
-  stroke(0, 80);
-  strokeWeight(1.5);
-  drawHabitatOutline(habitat, 0, 0, size);
-
   pop();
 }
 
