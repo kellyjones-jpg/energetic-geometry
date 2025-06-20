@@ -169,27 +169,15 @@ function draw() {
     drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
   }
 
-  // Activities
-  if (Array.isArray(entry.activities) && entry.activities.length > 0) {
-   if (entry.activities.length === 1) {
-        activityColors.push(activityColors[0]);
-    }
-    else if (entry.activities.length === 2) {
-      // overlay pattern using both colors
-      drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
-    }
-    else {
-      // suprematist-style wedges over the Habitat shape
-      let angleStep = TWO_PI / entry.activities.length;
-      for (let j = 0; j < entry.activities.length; j++) {
-        let startAngle = j * angleStep;
-        let endAngle = startAngle + angleStep;
-        fill(getActivityColor(entry.activities[j]));
-        noStroke();
-        arc(0, 0, shapeSize * 0.85, shapeSize * 0.85, startAngle, endAngle, PIE);
-      }
-    }
+// Activities
+if (Array.isArray(entry.activities) && entry.activities.length > 0) {
+  let activityColors = entry.activities.map(act => getActivityColor(act));
+  if (activityColors.length === 1) {
+    activityColors.push(activityColors[0]); // duplicate for checkerboard to work
   }
+  drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
+}
+
 
   // Crop edges
   if (entry.cropType && entry.cropType.length > 0) {
@@ -560,17 +548,16 @@ function drawCheckerboardPattern(activities, shapeType, x, y, size) {
   let cellSize = size / gridCount;
 
   let activityColors = activities.map(act => getActivityColor(act));
-  if (activityColors.length === 1) activityColors.push(activityColors[0]);
-
-  let colorA = activityColors[0];
-  let colorB = activityColors[1];
+  if (activityColors.length === 1) activityColors.push(activityColors[0]); // Ensure at least 2
 
   // Step 1: Draw checkerboard pattern to graphics
   let patternGfx = createGraphics(size, size);
   patternGfx.noStroke();
+
   for (let row = 0; row < gridCount; row++) {
     for (let col = 0; col < gridCount; col++) {
-      patternGfx.fill((row + col) % 2 === 0 ? colorA : colorB);
+      let colorIndex = (row * gridCount + col) % activityColors.length;
+      patternGfx.fill(activityColors[colorIndex]);
       patternGfx.rect(col * cellSize, row * cellSize, cellSize, cellSize);
     }
   }
