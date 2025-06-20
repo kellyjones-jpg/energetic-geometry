@@ -333,10 +333,71 @@ function drawCropEdgeStyle(cropTypes, x, y, size) {
   pop();
 }
 
+function drawPointedEdge(size, offsetIndex = 0) {
+  let steps = 72;
+  beginShape();
+  for (let i = 0; i <= steps; i++) {
+    let angle = TWO_PI * i / steps;
+    let radius = size * 0.45 + (i % 2 === 0 ? 10 : -10);
+    let x = cos(angle) * radius;
+    let y = sin(angle) * radius;
+    vertex(x, y);
+  }
+  endShape(CLOSE);
+}
+
+function drawWavyEdge(size, offsetIndex = 0) {
+  let waves = 8 + offsetIndex * 2;
+  beginShape();
+  for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
+    let r = size * 0.4 + 10 * sin(waves * angle);
+    let x = cos(angle) * r;
+    let y = sin(angle) * r;
+    curveVertex(x, y);
+  }
+  endShape(CLOSE);
+}
+
+function drawLobedEdge(size, offsetIndex = 0) {
+  let lobes = 5 + offsetIndex;
+  beginShape();
+  for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
+    let r = size * 0.4 + 8 * sin(lobes * angle);
+    let x = cos(angle) * r;
+    let y = sin(angle) * r;
+    curveVertex(x, y);
+  }
+  endShape(CLOSE);
+}
+
+function drawLinearSpikes(size, offsetIndex = 0) {
+  let lines = 12;
+  for (let i = 0; i < lines; i++) {
+    let angle = TWO_PI * i / lines + offsetIndex * 0.05;
+    let x1 = cos(angle) * size * 0.3;
+    let y1 = sin(angle) * size * 0.3;
+    let x2 = cos(angle) * size * 0.5;
+    let y2 = sin(angle) * size * 0.5;
+    line(x1, y1, x2, y2);
+  }
+}
+
+function drawSpiralOverlay(size, offsetIndex = 0) {
+  noFill();
+  beginShape();
+  for (let a = 0; a < TWO_PI * 3; a += 0.1) {
+    let r = size * 0.05 * a + offsetIndex * 2;
+    let x = cos(a) * r;
+    let y = sin(a) * r;
+    vertex(x, y);
+  }
+  endShape();
+}
 
 // Draw different line styles based on Animal Type
 function drawAnimalLine(animalType, x, y, size) {
   let style = getLineStyle(animalType);
+  if (!style) return;
   stroke(style.color);
   strokeWeight(style.weight);
   noFill();
@@ -362,9 +423,6 @@ function drawAnimalLine(animalType, x, y, size) {
       drawTexturedLine(x, y, size);
       break;
 
-    default:
-      // fallback straight line
-      line(x - size / 2, y, x + size / 2, y);
   }
 }
 
