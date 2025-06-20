@@ -162,8 +162,6 @@ function draw() {
     push();
     translate(centerX, centerY);
 
-    let baseColor = getActivityColor(entry.activities?.[0] || '');
-
     // Habitat shape
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
       drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
