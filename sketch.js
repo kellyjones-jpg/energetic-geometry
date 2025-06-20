@@ -68,7 +68,6 @@ function setup() {
     let activities = activityStr ? activityStr.split(/,\s*/) : [];
     let habitatStr = table.getString(i, 'Habitat Type') || '';
     let habitat = habitatStr ? habitatStr.split(/,\s*/) : [];
-    let pvTech = table.getString(i, 'PV Technology') || '';
     let animalTypeStr = table.getString(i, 'Animal Type') || '';
     let animalType = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
     let cropTypeStr = table.getString(i, 'Crop Types') || '';
@@ -79,7 +78,6 @@ function setup() {
       name,
       activities,
       habitat,
-      pvTech,
       animalType,
       cropType,
       year
@@ -162,17 +160,9 @@ function draw() {
   let centerX = width / 2;
   let centerY = startY + i * (shapeSize + padding);
   let baseColor = getActivityColor(entry.activities?.[0] || '');
-  let pvOrientation = getPVOrientation(entry.pvTech); // get this early
 
   push();
   translate(centerX, centerY);
-
-  // Apply PV-based rotation BEFORE any drawing
-  if (pvOrientation !== 'radial') {
-    rotate(pvOrientation);
-  }
-
-  // Draw everything inside the rotated coordinate system
 
   // Habitat shape
   if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
@@ -211,14 +201,6 @@ function draw() {
     drawAnimalLine(entry.animalType, 0, 0, shapeSize);
   }
 
-  // Draw radial overlay on top if needed
-  if (pvOrientation === 'radial') {
-    push();
-    translate(centerX, centerY);
-    drawRadialEffectOverlay(shapeSize);
-    pop();
-  }
-
   // Draw label (NOT rotated)
   textSize(14);
   textAlign(CENTER, TOP);
@@ -236,7 +218,6 @@ function drawTooltip(entry) {
     "Name: " + entry.name,
     "Habitat Type: " + (Array.isArray(entry.habitat) ? entry.habitat.join(', ') : entry.habitat),
     "Activities: " + entry.activities.join(', '),
-    "PV Tech: " + entry.pvTech,
     "Animal Type: " + entry.animalType.join(', '),
     "Crop Type: " + (Array.isArray(entry.cropType) ? entry.cropType.join(', ') : String(entry.cropType))
   ];
@@ -659,21 +640,6 @@ function pointInHexagon(px, py, r) {
 
   if (px > r * 0.8660254 || py > r * 0.5 + r * 0.288675) return false;
   return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
-}
-
-
-
-function getPVOrientation(pvTech) {
-  switch (pvTech?.trim().toLowerCase()) {
-    case 'monofacial':
-      return radians(-30); // Tilted downward or flat
-    case 'bifacial':
-      return radians(90);  // Vertical or symmetric
-    case 'translucent':
-      return 'radial';     // Special radial treatment
-    default:
-      return 0; // No rotation
-  }
 }
 
 
