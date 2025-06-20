@@ -68,6 +68,7 @@ function setup() {
     let activities = activityStr ? activityStr.split(/,\s*/) : [];
     let habitatStr = table.getString(i, 'Habitat Type') || '';
     let habitat = habitatStr ? habitatStr.split(/,\s*/) : [];
+    let pvTech = table.getString(i, 'PV Technology') || '';
     let animalTypeStr = table.getString(i, 'Animal Type') || '';
     let animalType = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
     let cropTypeStr = table.getString(i, 'Crop Types') || '';
@@ -78,6 +79,7 @@ function setup() {
       name,
       activities,
       habitat,
+      pvTech,
       animalType,
       cropType,
       year
@@ -157,36 +159,47 @@ function draw() {
 
   for (let i = 0; i < yearEntries.length; i++) {
   let entry = yearEntries[i];
+  let centerX = width / 2;
+  let centerY = startY + i * (shapeSize + padding);
   let baseColor = getActivityColor(entry.activities?.[0] || '');
+  let pvOrientation = getPVOrientation(entry.pvTech); // get this early
 
+  push();
+  translate(centerX, centerY);
+
+  // Apply PV-based rotation BEFORE any drawing
+  if (pvOrientation !== 'radial') {
+    rotate(pvOrientation);
+  }
+
+  // Draw everything inside the rotated coordinate system
 
   // Habitat shape
   if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
     drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
   }
-  
-    
+
   // Activities
- if (Array.isArray(entry.activities) && entry.activities.length > 0) {
-  let activityColors = entry.activities.map(act => getActivityColor(act));
-  
-  if (entry.activities.length === 1) {
-    activityColors.push(activityColors[0]);
-  } 
-  else if (entry.activities.length === 2) {
-    drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
-  }
-  else {
-    let angleStep = TWO_PI / entry.activities.length;
-    for (let j = 0; j < entry.activities.length; j++) {
-      let startAngle = j * angleStep;
-      let endAngle = startAngle + angleStep;
-      fill(getActivityColor(entry.activities[j]));
-      noStroke();
-      arc(0, 0, shapeSize * 0.85, shapeSize * 0.85, startAngle, endAngle, PIE);
+  if (Array.isArray(entry.activities) && entry.activities.length > 0) {
+   if (entry.activities.length === 1) {
+        activityColors.push(activityColors[0]);
+    }
+    else if (entry.activities.length === 2) {
+      // overlay pattern using both colors
+      drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
+    }
+    else {
+      // suprematist-style wedges over the Habitat shape
+      let angleStep = TWO_PI / entry.activities.length;
+      for (let j = 0; j < entry.activities.length; j++) {
+        let startAngle = j * angleStep;
+        let endAngle = startAngle + angleStep;
+        fill(getActivityColor(entry.activities[j]));
+        noStroke();
+        arc(0, 0, shapeSize * 0.85, shapeSize * 0.85, startAngle, endAngle, PIE);
+      }
     }
   }
-}
 
   // Crop edges
   if (entry.cropType && entry.cropType.length > 0) {
@@ -198,10 +211,18 @@ function draw() {
     drawAnimalLine(entry.animalType, 0, 0, shapeSize);
   }
 
+  // Draw radial overlay on top if needed
+  if (pvOrientation === 'radial') {
+    push();
+    translate(centerX, centerY);
+    drawRadialEffectOverlay(shapeSize);
+    pop();
+  }
+
   // Draw label (NOT rotated)
   textSize(14);
   textAlign(CENTER, TOP);
-  text(entry.name + shapeSize / 2 + 8);
+  text(entry.name, centerX, centerY + shapeSize / 2 + 8);
 }
 
 
@@ -215,6 +236,7 @@ function drawTooltip(entry) {
     "Name: " + entry.name,
     "Habitat Type: " + (Array.isArray(entry.habitat) ? entry.habitat.join(', ') : entry.habitat),
     "Activities: " + entry.activities.join(', '),
+    "PV Tech: " + entry.pvTech,
     "Animal Type: " + entry.animalType.join(', '),
     "Crop Type: " + (Array.isArray(entry.cropType) ? entry.cropType.join(', ') : String(entry.cropType))
   ];
@@ -312,7 +334,7 @@ function drawCropEdgeStyle(cropTypes, x, y, size) {
     let group = uniqueGroups[i];
 
     // Set stroke color by group
-    switch (group) {
+     switch (group) {
       case 'root':
         stroke('#A020F0'); // Purple
         drawPointedEdge(size, i);
@@ -513,6 +535,9 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
   push();
   translate(x, y);
 
+  let angleOffset = 15; // degrees to rotate each shape slightly
+  let alphaStep = 255 / (habitatList.length + 1); // transparency per shape
+
   for (let i = 0; i < habitatList.length; i++) {
     let habitat = habitatList[i]?.trim().toLowerCase();
     let shapeAlpha = 180 - i * alphaStep;
@@ -520,6 +545,7 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
     fill(red(baseColor), green(baseColor), blue(baseColor), shapeAlpha);
     noStroke();
     push();
+    rotate(radians(i * angleOffset));
 
     switch (habitat) {
       case 'pollinator':
@@ -636,9 +662,24 @@ function pointInHexagon(px, py, r) {
 }
 
 
+
+function getPVOrientation(pvTech) {
+  switch (pvTech?.trim().toLowerCase()) {
+    case 'monofacial':
+      return radians(-30); // Tilted downward or flat
+    case 'bifacial':
+      return radians(90);  // Vertical or symmetric
+    case 'translucent':
+      return 'radial';     // Special radial treatment
+    default:
+      return 0; // No rotation
+  }
+}
+
+
 function getActivityColor(activity) {
   switch (activity.trim().toLowerCase()) {
-    case 'crop production':
+ case 'crop production':
       return color('#DA1E37'); // Bold red
     case 'habitat':
       return color('#228B22'); // Forest green
@@ -647,7 +688,7 @@ function getActivityColor(activity) {
     case 'greenhouse':
       return color('#F2D43D'); // Yellow
     default:
-      pop();
-      return;
+        pop(); 
+        return;
   }
 }
