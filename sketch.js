@@ -101,7 +101,7 @@ function setup() {
     windowResized(); // triggers height adjustment
   });
 
-  cnv = createCanvas(windowWidth * 0.9, windowHeight * 0.8);
+  cnv = createCanvas(1650, 985);
   centerCanvas();
   centerSlider();
 
@@ -115,10 +115,14 @@ function setup() {
 function windowResized() {
   let yearEntries = entriesByYear[selectedYear] || [];
   let shapeSize = 150;
-  let padding = 60;
-  let totalHeight = 100 + yearEntries.length * (shapeSize + padding);
+  let availableHeight = height - 160; // account for top/bottom margins
+  let maxEntries = yearEntries.length;
+  let padding = (availableHeight - (shapeSize * maxEntries)) / (maxEntries + 1);
+  padding = max(10, padding); // minimum padding
+  let startY = 80 + padding;
 
-  resizeCanvas(windowWidth * 0.9, max(windowHeight * 0.8, totalHeight));
+
+  resizeCanvas(1650, 985);
   centerCanvas();
   centerSlider();
   redraw();
@@ -151,9 +155,13 @@ function draw() {
     return;
   }
 
-  let padding = 60;
-  let shapeSize = 150;
-  let startY = 80;
+let shapeSize = 150;
+let availableHeight = height - 160; // account for top/bottom margins
+let maxEntries = yearEntries.length;
+let padding = (availableHeight - (shapeSize * maxEntries)) / (maxEntries + 1);
+padding = max(10, padding); // minimum padding
+let startY = 80 + padding;
+
 
   for (let i = 0; i < yearEntries.length; i++) {
   let entry = yearEntries[i];
