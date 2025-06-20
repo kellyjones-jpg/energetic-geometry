@@ -171,28 +171,29 @@ function draw() {
   if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
     drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
   }
-
+  
+    
   // Activities
-  if (Array.isArray(entry.activities) && entry.activities.length > 0) {
-   if (entry.activities.length === 1) {
-        activityColors.push(activityColors[0]);
-    }
-    else if (entry.activities.length === 2) {
-      // overlay pattern using both colors
-      drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
-    }
-    else {
-      // suprematist-style wedges over the Habitat shape
-      let angleStep = TWO_PI / entry.activities.length;
-      for (let j = 0; j < entry.activities.length; j++) {
-        let startAngle = j * angleStep;
-        let endAngle = startAngle + angleStep;
-        fill(getActivityColor(entry.activities[j]));
-        noStroke();
-        arc(0, 0, shapeSize * 0.85, shapeSize * 0.85, startAngle, endAngle, PIE);
-      }
+ if (Array.isArray(entry.activities) && entry.activities.length > 0) {
+  let activityColors = entry.activities.map(act => getActivityColor(act));
+  
+  if (entry.activities.length === 1) {
+    activityColors.push(activityColors[0]);
+  } 
+  else if (entry.activities.length === 2) {
+    drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
+  }
+  else {
+    let angleStep = TWO_PI / entry.activities.length;
+    for (let j = 0; j < entry.activities.length; j++) {
+      let startAngle = j * angleStep;
+      let endAngle = startAngle + angleStep;
+      fill(getActivityColor(entry.activities[j]));
+      noStroke();
+      arc(0, 0, shapeSize * 0.85, shapeSize * 0.85, startAngle, endAngle, PIE);
     }
   }
+}
 
   // Crop edges
   if (entry.cropType && entry.cropType.length > 0) {
