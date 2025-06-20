@@ -77,7 +77,6 @@ function setup() {
       name,
       activities,
       habitat,
-      pvTech,
       animalType,
       cropType,
       year
