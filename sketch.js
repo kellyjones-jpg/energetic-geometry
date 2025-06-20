@@ -476,10 +476,7 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
   let cellSize = size / gridCount;
 
   let activityColors = activities.map(act => getActivityColor(act));
-
-  if (activityColors.length === 1) {
-    activityColors.push(color(255, 100));
-  }
+  if (activityColors.length === 1) activityColors.push(activityColors[0]); // Ensure at least 2
 
   let colorA = activityColors[0];
   let colorB = activityColors[1];
@@ -527,47 +524,19 @@ function pointInHexagon(px, py, r) {
   return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
 }
 
-function drawHabitatOutline(habitat, x, y, size) {
-  push();
-  translate(x, y);
-  noFill();
-
-  switch (habitat?.trim().toLowerCase()) {
-    case 'pollinator':
-      beginShape();
-      for (let i = 0; i < 6; i++) {
-        let angle = TWO_PI / 6 * i - PI / 2;
-        vertex(cos(angle) * size * 0.5, sin(angle) * size * 0.5);
-      }
-      endShape(CLOSE);
-      break;
-
-    case 'native grasses':
-      rectMode(CENTER);
-      rect(0, 0, size * 0.3, size);
-      break;
-
-    case 'naturalized':
-      ellipse(0, 0, size, size);
-      break;
-
-    default:
-      ellipse(0, 0, size * 0.5);
-  }
-
-  pop();
-}
-
+  
 function getActivityColor(activity) {
   switch (activity.trim().toLowerCase()) {
-    case 'crop production':
-           return color('#DA1E37'); // Bold red
+ case 'crop production':
+      return color('#DA1E37'); // Bold red
     case 'habitat':
       return color('#228B22'); // Forest green
     case 'grazing':
       return color('#007CBE'); // Blue
     case 'greenhouse':
       return color('#F2D43D'); // Yellow
+    default:
+        pop(); 
+        return;
   }
-}
 }
