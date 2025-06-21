@@ -557,6 +557,7 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
 
   push();
   translate(x, y);
+  rectMode(CENTER);
   noStroke();
 
   let gridCount = 8; // 8x8 grid
@@ -564,24 +565,18 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
   let colors = activities.map(act => getActivityColor(act)).filter(Boolean);
   let colorCount = colors.length;
 
-  if (colorCount === 0) {
-    pop();
-    return;
-  }
+  if (colorCount === 0) return;
 
   for (let row = 0; row < gridCount; row++) {
     for (let col = 0; col < gridCount; col++) {
+      // Use more colors: index based on (row + col)
       let index = (row * gridCount + col) % colorCount;
       let fillColor = colors[index];
 
-      // Coordinates adjusted for rectMode CORNER:
-      // translate(0,0) is top-left of pattern,
-      // so just use col*cellSize, row*cellSize directly
-      let cx = col * cellSize;
-      let cy = row * cellSize;
+      let cx = col * cellSize - size / 2 + cellSize / 2;
+      let cy = row * cellSize - size / 2 + cellSize / 2;
 
-      // Adjust isPointInHabitatShape accordingly if it expects centered coords
-      if (isPointInHabitatShape(habitat, cx + cellSize / 2, cy + cellSize / 2, size)) {
+      if (isPointInHabitatShape(habitat, cx, cy, size)) {
         fill(fillColor);
         rect(cx, cy, cellSize, cellSize);
       }
@@ -590,7 +585,6 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
 
   pop();
 }
-
 
 
 function isPointInHabitatShape(habitat, px, py, size) {
