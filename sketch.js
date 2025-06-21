@@ -498,23 +498,44 @@ function drawTexturedLine(x, y, length) {
 }
 
 function drawHabitatShape(habitatList, x, y, size, baseColor) {
-  if (!Array.isArray(habitatList) || habitatList.length === 0) return;
-  push();
-  
-  let habitat = habitatList[i]?.trim().toLowerCase();
+  if (!Array.isArray(habitatList)) return;
 
-   switch (habitat) {
+  // Filter out empty strings, null, undefined, or whitespace-only values
+  habitatList = habitatList
+    .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
+    .filter(h => h !== '');
+
+  // Stop if nothing valid remains
+  if (habitatList.length === 0) return;
+
+  push();
+  translate(x, y);
+  rectMode(CENTER);
+  angleMode(RADIANS);
+  noStroke();
+
+  for (let i = 0; i < habitatList.length; i++) {
+    let habitat = habitatList[i];
+    let angleOffset = PI / 8 * i;
+    let alpha = map(i, 0, habitatList.length, 180, 100);
+    let fillColor = color(baseColor.levels[0], baseColor.levels[1], baseColor.levels[2], alpha);
+
+    fill(fillColor);
+    rotate(angleOffset);
+
+    switch (habitat) {
       case 'pollinator':
         beginShape();
         for (let j = 0; j < 6; j++) {
           let angle = TWO_PI / 6 * j - PI / 2;
-          vertex(cos(angle) * size * 0.5, sin(angle) * size * 0.5);
+          let vx = cos(angle) * size * 0.5;
+          let vy = sin(angle) * size * 0.5;
+          vertex(vx, vy);
         }
         endShape(CLOSE);
         break;
 
       case 'native grasses':
-        rectMode(CENTER);
         rect(0, 0, size * 0.3, size);
         break;
 
@@ -522,9 +543,10 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
         ellipse(0, 0, size, size);
         break;
     }
-
-    pop();
   }
+
+  pop();
+}
 
 function drawCheckerboardPattern(activities, habitat, x, y, size) {
   push();
