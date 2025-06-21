@@ -163,15 +163,15 @@ function draw() {
     push();
     translate(centerX, centerY);
 
-    // --- Checkerboard FILL before shape ---
+        // --- Habitat shape on top ---
+    if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
+      drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
+    }
+    
+    // --- Checkerboard FILL ---
     if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
         Array.isArray(entry.habitat) && entry.habitat.length > 0) {
       drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
-    }
-
-    // --- Habitat shape on top ---
-    if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-      drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
     }
 
     // --- Crop Edge Styling ---
