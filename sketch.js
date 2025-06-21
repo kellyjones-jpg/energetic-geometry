@@ -115,7 +115,11 @@ function windowResized() {
   let yearEntries = entriesByYear[selectedYear] || [];
   let shapeSize = 150;
   let padding = 60;
-  let totalHeight = 100 + yearEntries.length * (shapeSize + padding);
+  let numCols = floor((windowWidth * 0.9 - padding) / (shapeSize + padding));
+  numCols = max(numCols, 1);
+
+  let numRows = ceil(yearEntries.length / numCols);
+  let totalHeight = 100 + numRows * (shapeSize + padding);
 
   resizeCanvas(windowWidth * 0.9, max(windowHeight * 0.8, totalHeight));
   centerCanvas();
@@ -153,40 +157,39 @@ function draw() {
   let padding = 60;
   let shapeSize = 150;
   let startY = 80;
+  let numCols = floor((width - padding) / (shapeSize + padding)); // calculate number of columns that fit
 
   for (let i = 0; i < yearEntries.length; i++) {
     let entry = yearEntries[i];
-    let centerX = width / 2;
-    let centerY = startY + i * (shapeSize + padding);
+    let col = i % numCols;
+    let row = floor(i / numCols);
+
+    let centerX = padding + col * (shapeSize + padding) + shapeSize / 2;
+    let centerY = startY + row * (shapeSize + padding) + shapeSize / 2;
     let baseColor = getActivityColor(entry.activities?.[0] || '');
 
     push();
     translate(centerX, centerY);
 
-        // --- Habitat shape on top ---
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
       drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
     }
-    
-    // --- Checkerboard FILL ---
+
     if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
         Array.isArray(entry.habitat) && entry.habitat.length > 0) {
       drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
     }
 
-    // --- Crop Edge Styling ---
     if (entry.cropType && entry.cropType.length > 0) {
       drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
     }
 
-    // --- Animal Line Styling ---
     if (entry.animalType && entry.animalType.length > 0) {
       drawAnimalLine(entry.animalType, 0, 0, shapeSize);
     }
 
     pop();
 
-    // --- Name label ---
     textSize(14);
     textAlign(CENTER, TOP);
     text(entry.name, centerX, centerY + shapeSize / 2 + 8);
@@ -196,6 +199,7 @@ function draw() {
     drawTooltip(tooltipEntry);
   }
 }
+
 
 function drawTooltip(entry) {
   let textLines = [
@@ -222,7 +226,7 @@ function drawTooltip(entry) {
   fill(255);
   stroke(0);
   strokeWeight(1);
-  rect(x, y, w + 10, h, 6);
+  rect(x, y, w + 20, h, 16);
 
   noStroke();
   fill(0);
