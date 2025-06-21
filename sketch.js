@@ -243,13 +243,22 @@ function mousePressed() {
 
   tooltipEntry = null;
 
+  // Calculate number of columns fitting in the current canvas width
+  let numCols = floor((width - padding) / (shapeSize + padding));
+  numCols = max(numCols, 1);
+
   for (let i = 0; i < yearEntries.length; i++) {
-    let centerX = width / 2;
-    let centerY = startY + i * (shapeSize + padding);
+    let col = i % numCols;
+    let row = floor(i / numCols);
+
+    let centerX = padding + col * (shapeSize + padding) + shapeSize / 2;
+    let centerY = startY + row * (shapeSize + padding) + shapeSize / 2;
+
     let d = dist(mouseX, mouseY, centerX, centerY);
 
     if (d < shapeSize / 2) {
-      tooltipEntry = { ...yearEntries[i], x: mouseX, y: mouseY };
+      // Show tooltip near the shape center (you can also use mouseX/mouseY if preferred)
+      tooltipEntry = { ...yearEntries[i], x: centerX, y: centerY };
       break;
     }
   }
@@ -264,6 +273,7 @@ function keyPressed() {
   if (keyCode === ESCAPE) {
     tooltipEntry = null;
     redraw();
+    return;
   }
 
   // Move between tiles with arrow keys
@@ -273,11 +283,30 @@ function keyPressed() {
   let currentIndex = yearEntries.findIndex(e => e.name === tooltipEntry.name);
   if (currentIndex === -1) return;
 
+  let shapeSize = 150;
+  let padding = 60;
+  let startY = 80;
+  let numCols = floor((width - padding) / (shapeSize + padding));
+  numCols = max(numCols, 1);
+
   if (keyCode === RIGHT_ARROW && currentIndex < yearEntries.length - 1) {
-    tooltipEntry = { ...yearEntries[currentIndex + 1], x: 100, y: 100 };
+    let newIndex = currentIndex + 1;
+    let col = newIndex % numCols;
+    let row = floor(newIndex / numCols);
+    let centerX = padding + col * (shapeSize + padding) + shapeSize / 2;
+    let centerY = startY + row * (shapeSize + padding) + shapeSize / 2;
+
+    tooltipEntry = { ...yearEntries[newIndex], x: centerX, y: centerY };
     redraw();
+
   } else if (keyCode === LEFT_ARROW && currentIndex > 0) {
-    tooltipEntry = { ...yearEntries[currentIndex - 1], x: 100, y: 100 };
+    let newIndex = currentIndex - 1;
+    let col = newIndex % numCols;
+    let row = floor(newIndex / numCols);
+    let centerX = padding + col * (shapeSize + padding) + shapeSize / 2;
+    let centerY = startY + row * (shapeSize + padding) + shapeSize / 2;
+
+    tooltipEntry = { ...yearEntries[newIndex], x: centerX, y: centerY };
     redraw();
   }
 }
