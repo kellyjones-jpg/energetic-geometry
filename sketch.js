@@ -545,37 +545,39 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
   pop();
 }
 
-function drawCheckerboardPattern(activities, habitatList, x, y, size) {
-  if (!Array.isArray(habitatList) || habitatList.length === 0 || !Array.isArray(activities)) return;
+function drawCheckerboardPattern(activities, habitat, x, y, size) {
+  if (!Array.isArray(activities) || activities.length === 0) return;
+  if (!Array.isArray(habitat) || habitat.length === 0) return;
 
-  // Sanitize habitats
-  habitatList = habitatList
+  // Sanitize habitat list
+  habitat = habitat
     .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
     .filter(h => h !== '');
-
-  if (habitatList.length === 0) return;
+  if (habitat.length === 0) return;
 
   push();
   translate(x, y);
   rectMode(CENTER);
   noStroke();
 
-  let gridCount = 8;
+  let gridCount = 8; // 8x8 grid
   let cellSize = size / gridCount;
+  let colors = activities.map(act => getActivityColor(act)).filter(Boolean);
+  let colorCount = colors.length;
 
-  let activityColors = activities.map(act => getActivityColor(act));
-  if (activityColors.length === 1) activityColors.push(activityColors[0]);
-
-  let colorA = activityColors[0];
-  let colorB = activityColors[1];
+  if (colorCount === 0) return;
 
   for (let row = 0; row < gridCount; row++) {
     for (let col = 0; col < gridCount; col++) {
+      // Use more colors: index based on (row + col)
+      let index = (row * gridCount + col) % colorCount;
+      let fillColor = colors[index];
+
       let cx = col * cellSize - size / 2 + cellSize / 2;
       let cy = row * cellSize - size / 2 + cellSize / 2;
 
-      if (isPointInHabitatShape(habitatList, cx, cy, size)) {
-        fill((row + col) % 2 === 0 ? colorA : colorB);
+      if (isPointInHabitatShape(habitat, cx, cy, size)) {
+        fill(fillColor);
         rect(cx, cy, cellSize, cellSize);
       }
     }
@@ -583,6 +585,7 @@ function drawCheckerboardPattern(activities, habitatList, x, y, size) {
 
   pop();
 }
+
 
 function isPointInHabitatShape(habitat, px, py, size) {
   // Ensure habitat is an array
