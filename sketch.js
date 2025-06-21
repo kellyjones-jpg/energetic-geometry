@@ -163,33 +163,30 @@ function draw() {
     push();
     translate(centerX, centerY);
 
-    // Habitat shape
+    // --- Checkerboard FILL before shape ---
+    if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
+        Array.isArray(entry.habitat) && entry.habitat.length > 0) {
+      drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
+    }
+
+    // --- Habitat shape on top ---
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
       drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
     }
 
-    // Activities treatment
-    if (Array.isArray(entry.activities) && entry.activities.length > 0) {
-      let activityColors = entry.activities.map(act => getActivityColor(act));
-      if (activityColors.length === 1) {
-        activityColors.push(activityColors[0]); // duplicate for checkerboard to work
-      }
-      drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
-    }
-
-    // Crop edge (only if cropType exists)
+    // --- Crop Edge Styling ---
     if (entry.cropType && entry.cropType.length > 0) {
       drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
     }
 
-    // Animal line (only if animalType exists)
+    // --- Animal Line Styling ---
     if (entry.animalType && entry.animalType.length > 0) {
       drawAnimalLine(entry.animalType, 0, 0, shapeSize);
     }
 
     pop();
 
-    // Labels
+    // --- Name label ---
     textSize(14);
     textAlign(CENTER, TOP);
     text(entry.name, centerX, centerY + shapeSize / 2 + 8);
@@ -548,29 +545,37 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
   pop();
 }
 
-function drawCheckerboardPattern(activities, habitat, x, y, size) {
+function drawCheckerboardPattern(activities, habitatList, x, y, size) {
+  if (!Array.isArray(habitatList) || habitatList.length === 0 || !Array.isArray(activities)) return;
+
+  // Sanitize habitats
+  habitatList = habitatList
+    .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
+    .filter(h => h !== '');
+
+  if (habitatList.length === 0) return;
+
   push();
   translate(x, y);
+  rectMode(CENTER);
+  noStroke();
 
-  let gridCount = 6;
+  let gridCount = 8;
   let cellSize = size / gridCount;
 
   let activityColors = activities.map(act => getActivityColor(act));
-  if (activityColors.length === 1) activityColors.push(activityColors[0]); // Ensure at least 2
+  if (activityColors.length === 1) activityColors.push(activityColors[0]);
 
   let colorA = activityColors[0];
   let colorB = activityColors[1];
 
   for (let row = 0; row < gridCount; row++) {
     for (let col = 0; col < gridCount; col++) {
-      let isAlt = (row + col) % 2 === 0;
-      fill(isAlt ? colorA : colorB);
-      noStroke();
-
       let cx = col * cellSize - size / 2 + cellSize / 2;
       let cy = row * cellSize - size / 2 + cellSize / 2;
 
-      if (isPointInHabitatShape(habitat, cx, cy, size)) {
+      if (isPointInHabitatShape(habitatList, cx, cy, size)) {
+        fill((row + col) % 2 === 0 ? colorA : colorB);
         rect(cx, cy, cellSize, cellSize);
       }
     }
