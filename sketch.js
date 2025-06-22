@@ -64,6 +64,7 @@ function preload() {
 }
 
 function setup() {
+  // Load and organize data
   for (let i = 0; i < table.getRowCount(); i++) {
     let name = table.getString(i, 'Name') || '';
     let activityStr = table.getString(i, 'Agrivoltaic Activities') || '';
@@ -94,7 +95,6 @@ function setup() {
     };
 
     entries.push(entry);
-
     if (!entriesByYear[year]) {
       entriesByYear[year] = [];
     }
@@ -104,16 +104,29 @@ function setup() {
   availableYears = Object.keys(entriesByYear).sort();
   selectedYear = availableYears[0];
 
+  // Create the canvas
+  let initialWidth = windowWidth * 0.9;
+  let shapeSize = 150;
+  let padding = 60;
+  let yearEntries = entriesByYear[selectedYear] || [];
+  let numCols = floor((initialWidth - padding) / (shapeSize + padding));
+  numCols = max(numCols, 1);
+  let numRows = ceil(yearEntries.length / numCols);
+  let totalHeight = 100 + numRows * (shapeSize + padding);
+  let maxCanvasHeight = 1080;
+  let initialHeight = min(windowHeight * 0.8, maxCanvasHeight);
+
+  cnv = createCanvas(initialWidth, min(totalHeight, initialHeight));
+  cnv.parent('sketch-container');
+
+  // Create the slider
   yearSlider = createSlider(0, availableYears.length - 1, 0);
   yearSlider.style('width', '400px');
+  yearSlider.parent('sketch-container');
   yearSlider.input(() => {
     selectedYear = availableYears[yearSlider.value()];
-    windowResized(); // triggers height adjustment
+    windowResized();
   });
-
-  cnv = createCanvas(windowWidth * 0.9, windowHeight * 0.8);
-  centerCanvas();
-  centerSlider();
 
   textFont('Helvetica');
   textSize(16);
@@ -131,25 +144,12 @@ function windowResized() {
 
   let numRows = ceil(yearEntries.length / numCols);
   let totalHeight = 100 + numRows * (shapeSize + padding);
+  let maxCanvasHeight = 1000;
 
-  resizeCanvas(windowWidth * 0.9, max(windowHeight * 0.8, totalHeight));
-  centerCanvas();
-  centerSlider();
+  resizeCanvas(windowWidth * 0.9, min(windowHeight * 0.8, maxCanvasHeight, totalHeight));
   redraw();
 }
 
-function centerCanvas() {
-  let x = (windowWidth - width) / 2;
-  let y = (windowHeight - height) / 2 - 30;
-  cnv.position(x, y);
-}
-
-function centerSlider() {
-  let sliderWidth = parseInt(yearSlider.style('width'));
-  let x = windowWidth / 2 - sliderWidth / 2;
-  let y = windowHeight - 60;
-  yearSlider.position(x, y);
-}
 
 function draw() {
   // Draw background image dimmed and semi-transparent
