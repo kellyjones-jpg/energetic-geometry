@@ -689,7 +689,7 @@ function drawIsometricGridMultiColor(activities, size, step = 7, slope = 1.35) {
   let halfSize = size / 2;
 
   push(); // Start inner transformation for rotation
-  rotate(HALF_PI);
+  rotate(-HALF_PI);
 
   for (let x = -halfSize; x <= halfSize; x += step) {
     // Forward-slanting lines
