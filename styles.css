@@ -34,3 +34,19 @@ h1 {
   width: 80%;
   max-width: 400px;
 }
+
+#tooltip {
+  background: rgba(255, 255, 255, 0.9);
+  color: #000;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  max-width: 300px;
+  pointer-events: none; /* so it doesn't block mouse */
+  user-select: none;
+  transition: opacity 0.2s ease;
+  position: absolute;
+  z-index: 1000;
+}
