@@ -202,10 +202,6 @@ function draw() {
     }
     
     pop();
-
-    textSize(14);
-    textAlign(CENTER, TOP);
-    text(entry.name, centerX, centerY + shapeSize / 2 + 8);
   }
 
   if (tooltipEntry) {
