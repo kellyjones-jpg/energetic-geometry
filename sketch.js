@@ -215,7 +215,7 @@ function drawTooltip(entry) {
     Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
 
   let textLines = [];
-  
+
   if (entry.name) textLines.push("Name: " + entry.name);
   if (entry.habitat && entry.habitat.length > 0) textLines.push("Habitat Type: " + formatArray(entry.habitat));
   if (entry.activities && entry.activities.length > 0) textLines.push("Activities: " + formatArray(entry.activities));
@@ -223,30 +223,40 @@ function drawTooltip(entry) {
   if (entry.cropType && entry.cropType.length > 0) textLines.push("Crop Type: " + formatArray(entry.cropType));
   if (entry.arrayType) textLines.push("Array Type: " + capitalizeWords(entry.arrayType));
 
+  // TEXT STYLE
+  let lineHeight = 16;
+  let padding = 12;
   textSize(14);
+  textAlign(LEFT, TOP);
   let w = 0;
+
   for (let line of textLines) {
     w = max(w, textWidth(line));
   }
-  let h = textLines.length * 18 + 10;
 
+  let h = textLines.length * lineHeight + padding;
+
+  // Position
   let x = entry.x + 15;
   let y = entry.y + 15;
 
-  if (x + w + 10 > width) x -= w + 30;
-  if (y + h + 10 > height) y -= h + 30;
+  if (x + w + 20 > width) x -= w + 30;
+  if (y + h + 20 > height) y -= h + 30;
 
+  // Draw background
   fill(255);
   stroke(0);
   strokeWeight(1);
-  rect(x, y, w + 20, h, 16);
+  rect(x, y, w + 20, h, 12); // width auto-adjusts to longest line
 
+  // Draw text
   noStroke();
   fill(0);
   for (let i = 0; i < textLines.length; i++) {
-    text(textLines[i], x + 5, y + 20 + i * 18 - 10);
+    text(textLines[i], x + 10, y + 8 + i * lineHeight);
   }
 }
+
 
 function capitalizeWords(str) {
   return String(str)
