@@ -212,72 +212,53 @@ function draw() {
     
     pop();
   }
-
-  if (tooltipEntry) {
-    drawTooltip(tooltipEntry);
-  }
 }
 
 
-function drawTooltip(entry) {
-  const formatArray = arr =>
+function showTooltip(entry) {
+  tooltipEntry = entry; // Keep track of current tooltip for keyboard nav
+  const tooltip = document.getElementById('tooltip');
+
+  if (!entry) {
+    tooltip.style.display = 'none';
+    return;
+  }
+
+  const capitalizeWords = (str) =>
+    str.replace(/\b\w/g, c => c.toUpperCase());
+
+  const formatArray = (arr) =>
     Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
 
-  let textLines = [];
+  let lines = [];
 
-  if (entry.name) textLines.push("Name: " + entry.name);
-  if (entry.habitat && entry.habitat.length > 0) textLines.push("Habitat Type: " + formatArray(entry.habitat));
-  if (entry.activities && entry.activities.length > 0) textLines.push("Activities: " + formatArray(entry.activities));
-  if (entry.animalType && entry.animalType.length > 0) textLines.push("Animal Type: " + formatArray(entry.animalType));
-  if (entry.cropType && entry.cropType.length > 0) textLines.push("Crop Type: " + formatArray(entry.cropType));
-  if (entry.arrayType) textLines.push("Array Type: " + capitalizeWords(entry.arrayType));
+  if (entry.name) lines.push(`Name: ${entry.name}`);
+  if (entry.habitat && entry.habitat.length) lines.push(`Habitat Type: ${formatArray(entry.habitat)}`);
+  if (entry.activities && entry.activities.length) lines.push(`Activities: ${formatArray(entry.activities)}`);
+  if (entry.animalType && entry.animalType.length) lines.push(`Animal Type: ${formatArray(entry.animalType)}`);
+  if (entry.cropType && entry.cropType.length) lines.push(`Crop Type: ${formatArray(entry.cropType)}`);
+  if (entry.arrayType) lines.push(`Array Type: ${capitalizeWords(entry.arrayType)}`);
 
-  // TEXT STYLE
-  let lineHeight = 16;
-  let padding = 12;
-  textSize(14);
-  textAlign(LEFT, TOP);
-  let w = 0;
+  tooltip.innerHTML = lines.join('<br>');
 
-  for (let line of textLines) {
-    w = max(w, textWidth(line));
+  // Position tooltip relative to canvas on the page
+  let canvasRect = cnv.elt.getBoundingClientRect();
+
+  let left = canvasRect.left + entry.x + 15;
+  let top = canvasRect.top + entry.y + 15;
+
+  // Prevent tooltip from going off screen horizontally
+  if (left + tooltip.offsetWidth + 20 > window.innerWidth) {
+    left = canvasRect.left + entry.x - tooltip.offsetWidth - 20;
+  }
+  // Prevent tooltip from going off screen vertically
+  if (top + tooltip.offsetHeight + 20 > window.innerHeight) {
+    top = canvasRect.top + entry.y - tooltip.offsetHeight - 20;
   }
 
-  let h = textLines.length * lineHeight + padding;
-
-  // Position
-  let x = entry.x + 15;
-  let y = entry.y + 15;
-
-  if (x + w + 20 > width) x -= w + 30;
-  if (y + h + 20 > height) y -= h + 30;
-
-  // Draw background
-  fill(255);
-  stroke(0);
-  strokeWeight(1);
-  rect(x, y, w + 20, h, 12); // width auto-adjusts to longest line
-
-  // Draw text
-  noStroke();
-  fill(0);
-  for (let i = 0; i < textLines.length; i++) {
-    text(textLines[i], x + 10, y + 8 + i * lineHeight);
-  }
-}
-
-
-function capitalizeWords(str) {
-  return String(str)
-    .trim()
-    .split(/\s+/)
-    .map(word => {
-      // Preserve acronyms (already all uppercase, 2+ letters)
-      if (word.length > 1 && word === word.toUpperCase()) return word;
-      // Otherwise capitalize normally
-      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-    })
-    .join(' ');
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+  tooltip.style.display = 'block';
 }
 
 function mousePressed() {
@@ -286,9 +267,8 @@ function mousePressed() {
   let padding = 60;
   let startY = 80;
 
-  tooltipEntry = null;
+  let foundEntry = null;
 
-  // Calculate number of columns fitting in the current canvas width
   let numCols = floor((width - padding) / (shapeSize + padding));
   numCols = max(numCols, 1);
 
@@ -302,28 +282,22 @@ function mousePressed() {
     let d = dist(mouseX, mouseY, centerX, centerY);
 
     if (d < shapeSize / 2) {
-      // Show tooltip near the shape center (you can also use mouseX/mouseY if preferred)
-      tooltipEntry = { ...yearEntries[i], x: centerX, y: centerY };
+      foundEntry = { ...yearEntries[i], x: centerX, y: centerY };
       break;
     }
   }
 
-  redraw();
+  if (foundEntry) {
+    showTooltip(foundEntry);
+  } else {
+    showTooltip(null);
+  }
 }
 
 function keyPressed() {
-  if (!tooltipEntry) return;
-
-  // Press 'Escape' to close tooltip
-  if (keyCode === ESCAPE) {
-    tooltipEntry = null;
-    redraw();
-    return;
-  }
-
-  // Move between tiles with arrow keys
   let yearEntries = entriesByYear[selectedYear];
   if (!yearEntries) return;
+  if (!tooltipEntry) return;
 
   let currentIndex = yearEntries.findIndex(e => e.name === tooltipEntry.name);
   if (currentIndex === -1) return;
@@ -334,25 +308,25 @@ function keyPressed() {
   let numCols = floor((width - padding) / (shapeSize + padding));
   numCols = max(numCols, 1);
 
-  if (keyCode === RIGHT_ARROW && currentIndex < yearEntries.length - 1) {
-    let newIndex = currentIndex + 1;
-    let col = newIndex % numCols;
-    let row = floor(newIndex / numCols);
-    let centerX = padding + col * (shapeSize + padding) + shapeSize / 2;
-    let centerY = startY + row * (shapeSize + padding) + shapeSize / 2;
+  let newIndex = currentIndex;
 
-    tooltipEntry = { ...yearEntries[newIndex], x: centerX, y: centerY };
-    redraw();
-
+  if (keyCode === ESCAPE) {
+    showTooltip(null);
+    return;
+  } else if (keyCode === RIGHT_ARROW && currentIndex < yearEntries.length - 1) {
+    newIndex = currentIndex + 1;
   } else if (keyCode === LEFT_ARROW && currentIndex > 0) {
-    let newIndex = currentIndex - 1;
+    newIndex = currentIndex - 1;
+  }
+
+  if (newIndex !== currentIndex) {
     let col = newIndex % numCols;
     let row = floor(newIndex / numCols);
     let centerX = padding + col * (shapeSize + padding) + shapeSize / 2;
     let centerY = startY + row * (shapeSize + padding) + shapeSize / 2;
 
-    tooltipEntry = { ...yearEntries[newIndex], x: centerX, y: centerY };
-    redraw();
+    let newEntry = { ...yearEntries[newIndex], x: centerX, y: centerY };
+    showTooltip(newEntry);
   }
 }
 
