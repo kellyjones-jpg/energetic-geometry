@@ -26,6 +26,7 @@ const cropEdgeGroups = {
   "cabbage": "leafy",
   "arugula": "leafy",
   "herbs": "leafy",
+  "greens": "leafy",
 
   // Fruit-bearing
   "tomatoes": "fruit",
