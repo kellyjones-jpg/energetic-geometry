@@ -214,14 +214,14 @@ function drawTooltip(entry) {
   const formatArray = arr =>
     Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
 
-  let textLines = [
-    "Name: " + entry.name,
-    "Habitat Type: " + formatArray(entry.habitat),
-    "Activities: " + formatArray(entry.activities),
-    "Animal Type: " + formatArray(entry.animalType),
-    "Crop Type: " + formatArray(entry.cropType),
-    "Array Type: " + capitalizeWords(entry.arrayType || '')
-  ];
+  let textLines = [];
+  
+  if (entry.name) textLines.push("Name: " + entry.name);
+  if (entry.habitat && entry.habitat.length > 0) textLines.push("Habitat Type: " + formatArray(entry.habitat));
+  if (entry.activities && entry.activities.length > 0) textLines.push("Activities: " + formatArray(entry.activities));
+  if (entry.animalType && entry.animalType.length > 0) textLines.push("Animal Type: " + formatArray(entry.animalType));
+  if (entry.cropType && entry.cropType.length > 0) textLines.push("Crop Type: " + formatArray(entry.cropType));
+  if (entry.arrayType) textLines.push("Array Type: " + capitalizeWords(entry.arrayType));
 
   textSize(14);
   let w = 0;
@@ -250,8 +250,14 @@ function drawTooltip(entry) {
 
 function capitalizeWords(str) {
   return String(str)
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .trim()
+    .split(/\s+/)
+    .map(word => {
+      // Preserve acronyms (already all uppercase, 2+ letters)
+      if (word.length > 1 && word === word.toUpperCase()) return word;
+      // Otherwise capitalize normally
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
     .join(' ');
 }
 
