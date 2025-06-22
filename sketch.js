@@ -181,11 +181,12 @@ function draw() {
     }
 
     if (entry.cropType && entry.cropType.length > 0) {
-      drawCropEdgeStyle(entry.cropType, 0, 0, shapeSize);
+      drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, shapeSize);
+
     }
 
     if (entry.animalType && entry.animalType.length > 0) {
-      drawAnimalLine(entry.animalType, 0, 0, shapeSize);
+      drawAnimalLine(entry.animalType, entry.activities, 0, 0, shapeSize);
     }
 
     pop();
@@ -311,15 +312,13 @@ function keyPressed() {
   }
 }
 
-function drawCropEdgeStyle(cropTypes, x, y, size) {
+function drawCropEdgeStyle(cropTypes, activities, x, y, size) {
   if (!Array.isArray(cropTypes) || cropTypes.length === 0) return;
+  if (!Array.isArray(activities) || activities.length === 0) return;
 
-  // Map each crop to its group
   const groups = cropTypes
     .map(crop => cropEdgeGroups[crop.trim().toLowerCase()])
     .filter(Boolean);
-
-  // Collect unique crop groups
   const uniqueGroups = [...new Set(groups)];
   if (uniqueGroups.length === 0) return;
 
@@ -328,40 +327,29 @@ function drawCropEdgeStyle(cropTypes, x, y, size) {
   noFill();
   strokeWeight(2);
 
-  for (let i = 0; i < uniqueGroups.length; i++) {
-    let group = uniqueGroups[i];
+  for (let i = 0; i < activities.length; i++) {
+    let activity = activities[i];
+    let strokeColor = getActivityColor(activity);
+    if (!strokeColor) continue;
 
-    // Set stroke color by group
-     switch (group) {
-      case 'root':
-        stroke('#A020F0'); // Purple
-        drawPointedEdge(size, i);
-        break;
-      case 'leafy':
-        stroke('#D2691E'); // Earthy orange-brown
-        drawWavyEdge(size, i);
-        break;
-      case 'fruit':
-        stroke('#1155CC'); // Blue
-        drawLobedEdge(size, i);
-        break;
-      case 'grain':
-        stroke('#DAA520'); // Goldenrod
-        drawLinearSpikes(size, i);
-        break;
-      case 'vine':
-        stroke('#FF1493'); // Hot pink
-        drawSpiralOverlay(size, i);
-        break;
-      case 'mixed':
-        stroke('#20C997'); // Mint-teal
-        drawWavyEdge(size, i);
-        break;
+    stroke(strokeColor);
+
+    for (let j = 0; j < uniqueGroups.length; j++) {
+      let group = uniqueGroups[j];
+      switch (group) {
+        case 'root': drawPointedEdge(size, j + i); break;
+        case 'leafy': drawWavyEdge(size, j + i); break;
+        case 'fruit': drawLobedEdge(size, j + i); break;
+        case 'grain': drawLinearSpikes(size, j + i); break;
+        case 'vine': drawSpiralOverlay(size, j + i); break;
+        case 'mixed': drawWavyEdge(size, j + i); break;
+      }
     }
   }
 
   pop();
 }
+
 
 function drawPointedEdge(size, offsetIndex = 0) {
   let steps = 72;
@@ -425,58 +413,30 @@ function drawSpiralOverlay(size, offsetIndex = 0) {
 }
 
 // Draw different line styles based on Animal Type
-function drawAnimalLine(animalType, x, y, size) {
+function drawAnimalLine(animalType, activities, x, y, size) {
+  if (!animalType || activities.length === 0) return;
   let style = getLineStyle(animalType);
   if (!style) return;
-  stroke(style.color);
-  strokeWeight(style.weight);
+
+  push();
   noFill();
+  strokeWeight(style.weight);
 
-  switch (style.type) {
-    case 'wavy':
-      drawWavyLine(x, y, size);
-      break;
+  for (let i = 0; i < activities.length; i++) {
+    let strokeColor = getActivityColor(activities[i]);
+    if (!strokeColor) continue;
+    stroke(strokeColor);
 
-    case 'dashed':
-      drawDashedLine(x, y, size);
-      break;
-
-    case 'bezier':
-      drawBezierLine(x, y, size);
-      break;
-
-    case 'straight':
-      line(x - size / 2, y, x + size / 2, y);
-      break;
-
-    case 'textured':
-      drawTexturedLine(x, y, size);
-      break;
-
+    switch (style.type) {
+      case 'wavy': drawWavyLine(x, y + i * 4, size); break;
+      case 'dashed': drawDashedLine(x, y + i * 4, size); break;
+      case 'bezier': drawBezierLine(x, y + i * 4, size); break;
+      case 'straight': line(x - size / 2, y + i * 4, x + size / 2, y + i * 4); break;
+      case 'textured': drawTexturedLine(x, y + i * 4, size); break;
+    }
   }
-}
 
-// Map Animal Type to line style properties
-function getLineStyle(animalType) {
-  let typeStr = String(animalType || '').trim().toLowerCase();
-
-   if (!typeStr) return null;
-
-  switch (typeStr) {
-        case 'sheep':
-      return { type: 'wavy', weight: 2, color: color('#E63946CC') }; // Suprematist-inspired crimson
-    case 'llamas & alpacas':
-      return { type: 'dashed', weight: 2, color: color('#3A0CA3CC') }; // Deep violet-blue
-    case 'horse':
-      return { type: 'bezier', weight: 3, color: color('#FF6700CC') }; // Vivid orange
-    case 'cows':
-      return { type: 'straight', weight: 5, color: color('#B7410ECC') }; // Warm brick tone
-    case 'cattle':
-      return { type: 'textured', weight: 3, color: color('#D8837FCC') }; // Dusty rose
-    default:
-        pop(); 
-        return;
-  }
+  pop();
 }
 
 // Wavy line: sinusoidal wave along the horizontal axis
@@ -656,13 +616,13 @@ function pointInHexagon(px, py, r) {
 function getActivityColor(activity) {
   switch (activity.trim().toLowerCase()) {
  case 'crop production':
-      return color('#DA1E37'); // Bold red
+      return color('#E4572E'); // Vivd Orange
     case 'habitat':
-      return color('#228B22'); // Forest green
+      return color('#2E8B57'); // Sea Green
     case 'grazing':
-      return color('#007CBE'); // Blue
+      return color('#005A99'); // Deep Blue
     case 'greenhouse':
-      return color('#F2D43D'); // Yellow
+      return color('#FFD100'); // Solar Gold
     default:
         pop(); 
         return;
