@@ -64,11 +64,17 @@ function setup() {
   for (let i = 0; i < table.getRowCount(); i++) {
     let name = table.getString(i, 'Name') || '';
     let activityStr = table.getString(i, 'Agrivoltaic Activities') || '';
-    let activities = activityStr ? activityStr.split(/,\s*/) : [];
+    let activities = activityStr
+      .split(/,\s*/)
+      .map(a => a.trim().toLowerCase())
+      .filter(a => a.length > 0);
     let habitatStr = String(table.getString(i, 'Habitat Type') || '').trim();
     let habitat = habitatStr ? habitatStr.split(/,\s*/) : [];
     let animalTypeStr = table.getString(i, 'Animal Type') || '';
-    let animalType = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
+    let animalType = animalTypeStr
+      .split(/,\s*/)
+      .map(a => a.trim().toLowerCase())
+      .filter(a => a.length > 0);
     let cropTypeStr = table.getString(i, 'Crop Types') || '';
     let cropType = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
     let arrayTypeStr = table.getString(i, 'Type Of Array') || '';
@@ -208,12 +214,16 @@ function draw() {
 
 
 function drawTooltip(entry) {
+  const formatArray = arr =>
+    Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
+
   let textLines = [
     "Name: " + entry.name,
-    "Habitat Type: " + (Array.isArray(entry.habitat) ? entry.habitat.join(', ') : entry.habitat),
-    "Activities: " + entry.activities.join(', '),
-    "Animal Type: " + entry.animalType.join(', '),
-    "Crop Type: " + (Array.isArray(entry.cropType) ? entry.cropType.join(', ') : String(entry.cropType))
+    "Habitat Type: " + formatArray(entry.habitat),
+    "Activities: " + formatArray(entry.activities),
+    "Animal Type: " + formatArray(entry.animalType),
+    "Crop Type: " + formatArray(entry.cropType),
+    "Array Type: " + capitalizeWords(entry.arrayType || '')
   ];
 
   textSize(14);
@@ -239,6 +249,13 @@ function drawTooltip(entry) {
   for (let i = 0; i < textLines.length; i++) {
     text(textLines[i], x + 5, y + 20 + i * 18 - 10);
   }
+}
+
+function capitalizeWords(str) {
+  return String(str)
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }
 
 function mousePressed() {
