@@ -152,10 +152,12 @@ function centerSlider() {
 }
 
 function draw() {
-  // Draw background image
+  // Draw background image dimmed and semi-transparent
+  tint(150, 200);  // soften colors, 200 alpha opacity
   image(bgImg, 0, 0, width, height);
+  tint(255);       // reset tint to default
   
-  fill(0);
+  fill(255);
   textSize(24);
   textAlign(CENTER, TOP);
   text("Year: " + selectedYear, width / 2, 30);
