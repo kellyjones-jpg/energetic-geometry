@@ -661,8 +661,9 @@ function drawArrayOverlay(arrayType, activities, x, y, size) {
   switch (arrayType) {
    case 'fixed':
     drawCrosshatchGridMultiColor(activities, size, 7); break;
-  case 'single-axis tracking':
-    drawIsometricGridMultiColor(activities, size, 3); break;
+   case 'single-axis tracking':
+    drawIsometricGridMultiColor(activities, size, 6, 0.25);
+    break;
   case 'dual-axis tracking':
     drawDottedMatrixMultiColor(activities, size, 8); break;
   }
@@ -682,23 +683,29 @@ function drawArrayOverlay(arrayType, activities, x, y, size) {
   }
 }
 
-function drawIsometricGridMultiColor(activities, size, step = 3) {
+function drawIsometricGridMultiColor(activities, size, step = 8, slope = 0.25) {
   let colorCount = activities.length;
   let idx = 0;
 
-  let xLength = size * 0.1;
-  let yLength = size * 0.7; 
+  let halfSize = size / 2;
 
-  for (let x = -size; x < size; x += step) {
+  for (let x = -halfSize; x <= halfSize; x += step) {
+    // Forward-slanting lines
     stroke(getActivityColor(activities[idx % colorCount]));
-    line(x, -yLength, x + xLength, yLength);
+    let y1a = -halfSize * slope;
+    let y2a = halfSize * slope;
+    line(x, y1a, x + halfSize, y2a);
     idx++;
 
+    // Backward-slanting lines
     stroke(getActivityColor(activities[idx % colorCount]));
-    line(x + xLength, -yLength, x, yLength);
+    let y1b = -halfSize * slope;
+    let y2b = halfSize * slope;
+    line(x + halfSize, y1b, x, y2b);
     idx++;
   }
 }
+
 
 function drawDottedMatrixMultiColor(activities, size) {
   let step = 10;
