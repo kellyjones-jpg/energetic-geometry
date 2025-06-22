@@ -26,9 +26,8 @@ h1 {
 }
 
 #sketch-container canvas {
-  max-height: 1080px;
   width: 100%;
-  height: auto;
+  height: 1080px;
 }
 
 #sketch-container input[type="range"] {
