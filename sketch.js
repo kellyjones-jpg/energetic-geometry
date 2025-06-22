@@ -71,7 +71,7 @@ function setup() {
     let animalType = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
     let cropTypeStr = table.getString(i, 'Crop Types') || '';
     let cropType = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
-    let arrayTypeStr = table.getString(i, 'Type of Array') || '';
+    let arrayTypeStr = table.getString(i, 'Type Of Array') || '';
     let year = table.getString(i, 'Year Installed') || 'Unknown';
 
     let entry = {
