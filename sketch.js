@@ -6,6 +6,7 @@ let selectedYear;
 let availableYears = [];
 let cnv;
 let tooltipEntry = null; 
+let bgImg;
 
 const cropEdgeGroups = {
   // Root vegetables
@@ -59,6 +60,7 @@ const cropEdgeGroups = {
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
+  bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
 }
 
 function setup() {
@@ -150,7 +152,9 @@ function centerSlider() {
 }
 
 function draw() {
-  background(255);
+  // Draw background image
+  image(bgImg, 0, 0, width, height);
+  
   fill(0);
   textSize(24);
   textAlign(CENTER, TOP);
