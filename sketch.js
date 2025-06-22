@@ -594,13 +594,11 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
   let cellSize = size / gridCount;
   let colors = activities.map(act => getActivityColor(act)).filter(Boolean);
   let colorCount = colors.length;
-
   if (colorCount === 0) return;
 
   for (let row = 0; row < gridCount; row++) {
     for (let col = 0; col < gridCount; col++) {
-      // Use more colors: index based on (row + col)
-      let index = (row * gridCount + col) % colorCount;
+      let index = (row + col) % colorCount;  // alternate diagonally
       let fillColor = colors[index];
 
       let cx = col * cellSize - size / 2 + cellSize / 2;
