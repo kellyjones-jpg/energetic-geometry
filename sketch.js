@@ -662,7 +662,7 @@ function drawArrayOverlay(arrayType, activities, x, y, size) {
    case 'fixed':
     drawCrosshatchGridMultiColor(activities, size, 7); break;
   case 'single-axis tracking':
-    drawIsometricGridMultiColor(activities, size, 5); break;
+    drawIsometricGridMultiColor(activities, size, 3); break;
   case 'dual-axis tracking':
     drawDottedMatrixMultiColor(activities, size, 8); break;
   }
@@ -682,7 +682,7 @@ function drawArrayOverlay(arrayType, activities, x, y, size) {
   }
 }
 
-function drawIsometricGridMultiColor(activities, size, step = 5) {
+function drawIsometricGridMultiColor(activities, size, step = 3) {
   let colorCount = activities.length;
   let idx = 0;
 
