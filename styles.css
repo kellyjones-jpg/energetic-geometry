@@ -16,9 +16,22 @@ h1 {
   position: relative;
 }
 
+#sketch-container {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px; /* adds vertical space between elements */
+  margin-bottom: 40px;
+}
+
 #sketch-container canvas {
-  display: block;
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
+  max-height: 1080px;
+  width: 100%;
+  height: auto;
+}
+
+#sketch-container input[type="range"] {
+  width: 80%;
+  max-width: 400px;
 }
