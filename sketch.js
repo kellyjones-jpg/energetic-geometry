@@ -671,7 +671,7 @@ function drawArrayOverlay(arrayType, activities, x, y, size) {
 }
 
   function drawCrosshatchGridMultiColor(activities, size) {
-  let step = 12;
+  let step = 10;
   let colorCount = activities.length;
 
   for (let i = -size / 2, idx = 0; i <= size / 2; i += step, idx++) {
@@ -686,8 +686,8 @@ function drawIsometricGridMultiColor(activities, size, step = 8) {
   let colorCount = activities.length;
   let idx = 0;
 
-  let xLength = size * 1.2;
-  let yLength = size * 0.4; 
+  let xLength = size * 0.2;
+  let yLength = size * 0.6; 
 
   for (let x = -size; x < size; x += step) {
     stroke(getActivityColor(activities[idx % colorCount]));
