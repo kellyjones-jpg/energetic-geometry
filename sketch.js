@@ -71,6 +71,7 @@ function setup() {
     let animalType = animalTypeStr ? animalTypeStr.split(/,\s*/) : [];
     let cropTypeStr = table.getString(i, 'Crop Types') || '';
     let cropType = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
+    let arrayTypeStr = table.getString(i, 'Type of Array') || '';
     let year = table.getString(i, 'Year Installed') || 'Unknown';
 
     let entry = {
@@ -79,6 +80,7 @@ function setup() {
       habitat,
       animalType,
       cropType,
+      arrayType: arrayTypeStr.trim().toLowerCase(), 
       year
     };
 
@@ -188,7 +190,10 @@ function draw() {
     if (entry.animalType && entry.animalType.length > 0) {
       drawAnimalLine(entry.animalType, entry.activities, 0, 0, shapeSize);
     }
-
+    if (entry.arrayType) {
+      drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shapeSize);
+    }
+    
     pop();
 
     textSize(14);
@@ -643,3 +648,70 @@ function getActivityColor(activity) {
         return;
   }
 }
+
+function drawArrayOverlay(arrayType, activities, x, y, size) {
+  if (!arrayType || !Array.isArray(activities) || activities.length === 0) return;
+
+  push();
+  translate(x, y);
+  rectMode(CENTER);
+  strokeWeight(1.2);
+  noFill();
+
+  switch (arrayType) {
+    case 'fixed':
+      drawCrosshatchGridMultiColor(activities, size); break;
+    case 'single-axis tracking':
+      drawIsometricGridMultiColor(activities, size); break;
+    case 'dual-axis tracking':
+      drawDottedMatrixMultiColor(activities, size); break;
+  }
+
+  pop();
+}
+
+  function drawCrosshatchGridMultiColor(activities, size) {
+  let step = 12;
+  let colorCount = activities.length;
+
+  for (let i = -size / 2, idx = 0; i <= size / 2; i += step, idx++) {
+    let col = getActivityColor(activities[idx % colorCount]);
+    stroke(col);
+    line(i, -size / 2, i, size / 2); // vertical
+    line(-size / 2, i, size / 2, i); // horizontal
+  }
+}
+
+function drawIsometricGridMultiColor(activities, size) {
+  let step = 15;
+  let colorCount = activities.length;
+  let idx = 0;
+
+  for (let x = -size; x < size; x += step) {
+    stroke(getActivityColor(activities[idx % colorCount]));
+    line(x, -size, x + size, size);
+    idx++;
+
+    stroke(getActivityColor(activities[idx % colorCount]));
+    line(x + size, -size, x, size);
+    idx++;
+  }
+}
+
+function drawDottedMatrixMultiColor(activities, size) {
+  let step = 10;
+  let colorCount = activities.length;
+  let dotSize = 3;
+  let idx = 0;
+
+  for (let x = -size / 2; x < size / 2; x += step) {
+    for (let y = -size / 2; y < size / 2; y += step) {
+      fill(getActivityColor(activities[idx % colorCount]));
+      noStroke();
+      ellipse(x, y, dotSize, dotSize);
+      idx++;
+    }
+  }
+}
+
+
