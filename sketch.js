@@ -633,23 +633,6 @@ function pointInHexagon(px, py, r) {
   return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
 }
 
-  
-function getActivityColor(activity) {
-  switch (activity.trim().toLowerCase()) {
- case 'crop production':
-      return color('#E4572E'); // Vivd Orange
-    case 'habitat':
-      return color('#2E8B57'); // Sea Green
-    case 'grazing':
-      return color('#005A99'); // Deep Blue
-    case 'greenhouse':
-      return color('#FFD100'); // Solar Gold
-    default:
-        pop(); 
-        return;
-  }
-}
-
 function drawArrayOverlay(arrayType, activities, x, y, size) {
   if (!arrayType || !Array.isArray(activities) || activities.length === 0) return;
 
@@ -712,5 +695,21 @@ function drawDottedMatrixMultiColor(activities, size) {
       ellipse(x, y, dotSize, dotSize);
       idx++;
     }
+  }
+}
+  
+function getActivityColor(activity) {
+  switch (activity.trim().toLowerCase()) {
+ case 'crop production':
+      return color('#E4572E'); // Vivd Orange
+    case 'habitat':
+      return color('#2E8B57'); // Sea Green
+    case 'grazing':
+      return color('#005A99'); // Deep Blue
+    case 'greenhouse':
+      return color('#FFD100'); // Solar Gold
+    default:
+        pop(); 
+        return;
   }
 }
