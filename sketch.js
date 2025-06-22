@@ -682,18 +682,20 @@ function drawArrayOverlay(arrayType, activities, x, y, size) {
   }
 }
 
-function drawIsometricGridMultiColor(activities, size) {
-  let step = 8; 
+function drawIsometricGridMultiColor(activities, size, step = 8) {
   let colorCount = activities.length;
   let idx = 0;
 
+  let xLength = size * 1.2;
+  let yLength = size * 0.4; 
+
   for (let x = -size; x < size; x += step) {
     stroke(getActivityColor(activities[idx % colorCount]));
-    line(x, -size * 0.8, x + size * 1.1, size * 0.8); // Tilted lines
+    line(x, -yLength, x + xLength, yLength);
     idx++;
 
     stroke(getActivityColor(activities[idx % colorCount]));
-    line(x + size * 1.1, -size * 0.8, x, size * 0.8); // Cross lines
+    line(x + xLength, -yLength, x, yLength);
     idx++;
   }
 }
