@@ -213,7 +213,8 @@ function drawTooltip(entry) {
     "Habitat Type: " + (Array.isArray(entry.habitat) ? entry.habitat.join(', ') : entry.habitat),
     "Activities: " + entry.activities.join(', '),
     "Animal Type: " + entry.animalType.join(', '),
-    "Crop Type: " + (Array.isArray(entry.cropType) ? entry.cropType.join(', ') : String(entry.cropType))
+    "Crop Type: " + (Array.isArray(entry.cropType) ? entry.cropType.join(', ') : String(entry.cropType)),
+    "Type of Array: " + (entry.arrayType ? entry.arrayType : 'N/A')
   ];
 
   textSize(14);
