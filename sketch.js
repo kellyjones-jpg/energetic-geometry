@@ -686,8 +686,10 @@ function drawArrayOverlay(arrayType, activities, x, y, size) {
 function drawIsometricGridMultiColor(activities, size, step = 8, slope = 0.25) {
   let colorCount = activities.length;
   let idx = 0;
-
   let halfSize = size / 2;
+
+  push(); // Start inner transformation for rotation
+  rotate(HALF_PI); // 90 degrees counterclockwise (vertical orientation)
 
   for (let x = -halfSize; x <= halfSize; x += step) {
     // Forward-slanting lines
@@ -704,6 +706,8 @@ function drawIsometricGridMultiColor(activities, size, step = 8, slope = 0.25) {
     line(x + halfSize, y1b, x, y2b);
     idx++;
   }
+
+  pop(); // End inner transformation
 }
 
 
