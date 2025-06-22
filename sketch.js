@@ -658,7 +658,7 @@ function drawArrayOverlay(arrayType, activities, x, y, size) {
 
   switch (arrayType) {
    case 'fixed':
-    drawCrosshatchGridMultiColor(activities, size, 9); break;
+    drawCrosshatchGridMultiColor(activities, size, 6); break;
    case 'single-axis tracking':
     drawIsometricGridMultiColor(activities, size, 7, 1.35);
     break;
@@ -669,9 +669,11 @@ function drawArrayOverlay(arrayType, activities, x, y, size) {
   pop();
 }
 
-  function drawCrosshatchGridMultiColor(activities, size) {
-  let step = 9;
+function drawCrosshatchGridMultiColor(activities, size, step = 9) {
   let colorCount = activities.length;
+
+  push();
+  rotate(PI / 4); // Rotate 45 degrees for diamond orientation
 
   for (let i = -size / 2, idx = 0; i <= size / 2; i += step, idx++) {
     let col = getActivityColor(activities[idx % colorCount]);
@@ -679,6 +681,8 @@ function drawArrayOverlay(arrayType, activities, x, y, size) {
     line(i, -size / 2, i, size / 2); // vertical
     line(-size / 2, i, size / 2, i); // horizontal
   }
+
+  pop();
 }
 
 function drawIsometricGridMultiColor(activities, size, step = 7, slope = 1.35) {
