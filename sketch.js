@@ -658,9 +658,9 @@ function drawArrayOverlay(arrayType, activities, x, y, size) {
 
   switch (arrayType) {
    case 'fixed':
-    drawCrosshatchGridMultiColor(activities, size, 13); break;
+    drawCrosshatchGridMultiColor(activities, size, 17); break;
    case 'single-axis tracking':
-    drawIsometricGridMultiColor(activities, size, 9, 1.35);
+    drawIsometricGridMultiColor(activities, size, 11, 1.35);
     break;
   case 'dual-axis tracking':
     drawDottedMatrixMultiColor(activities, size, 8); break;
