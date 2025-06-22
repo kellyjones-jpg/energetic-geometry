@@ -659,12 +659,12 @@ function drawArrayOverlay(arrayType, activities, x, y, size) {
   noFill();
 
   switch (arrayType) {
-    case 'fixed':
-      drawCrosshatchGridMultiColor(activities, size); break;
-    case 'single-axis tracking':
-      drawIsometricGridMultiColor(activities, size); break;
-    case 'dual-axis tracking':
-      drawDottedMatrixMultiColor(activities, size); break;
+   case 'fixed':
+    drawCrosshatchGridMultiColor(activities, size, 10); break;
+  case 'single-axis tracking':
+    drawIsometricGridMultiColor(activities, size, 6); break;
+  case 'dual-axis tracking':
+    drawDottedMatrixMultiColor(activities, size, 8); break;
   }
 
   pop();
@@ -683,17 +683,17 @@ function drawArrayOverlay(arrayType, activities, x, y, size) {
 }
 
 function drawIsometricGridMultiColor(activities, size) {
-  let step = 15;
+  let step = 8; 
   let colorCount = activities.length;
   let idx = 0;
 
   for (let x = -size; x < size; x += step) {
     stroke(getActivityColor(activities[idx % colorCount]));
-    line(x, -size, x + size, size);
+    line(x, -size * 0.8, x + size * 1.1, size * 0.8); // Tilted lines
     idx++;
 
     stroke(getActivityColor(activities[idx % colorCount]));
-    line(x + size, -size, x, size);
+    line(x + size * 1.1, -size * 0.8, x, size * 0.8); // Cross lines
     idx++;
   }
 }
