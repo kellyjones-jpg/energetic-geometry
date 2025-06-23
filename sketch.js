@@ -563,7 +563,7 @@ function drawAnimalLine(animalType, activities, x, y, size) {
   pop();
 }
 
-function getAnimalLineStyle(typeStr) {
+function getLineStyle(typeStr) {
   typeStr = typeStr.toLowerCase().trim().replace(/and/g, '&');
 
   switch (typeStr) {
