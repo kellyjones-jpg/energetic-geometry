@@ -564,12 +564,12 @@ function drawAnimalLine(animalType, activities, x, y, size) {
 }
 
 function getLineStyle(animalType) {
-  typeStr = typeStr.toLowerCase().trim().replace(/and/g, '&');
+  let typeStr = String(animalType || '').trim().toLowerCase();
   if (!typeStr) return null;
 
   switch (typeStr) {
     case 'sheep': return { type: 'wavy', weight: 2 };
-    case 'llamas & alpacas': return { type: 'dashed', weight: 2 };
+    case 'llamas and alpacas': return { type: 'dashed', weight: 2 };
     case 'horse': return { type: 'bezier', weight: 3 };
     case 'cows': return { type: 'straight', weight: 5 };
     case 'cattle': return { type: 'textured', weight: 3 };
