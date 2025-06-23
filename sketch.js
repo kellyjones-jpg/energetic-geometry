@@ -189,11 +189,8 @@ function setup() {
   let numCols = floor((initialWidth - padding) / (shapeSize + padding));
   numCols = max(numCols, 1);
   let numRows = ceil(yearEntries.length / numCols);
-  let totalHeight = 100 + numRows * (shapeSize + padding);
-  let maxCanvasHeight = 1080;
-  let initialHeight = min(windowHeight * 0.8, maxCanvasHeight);
-
-  cnv = createCanvas(initialWidth, min(totalHeight, initialHeight));
+  let fixedHeight = 985;
+  cnv = createCanvas(initialWidth, fixedHeight);
   cnv.parent('sketch-container');
 
   // Create the slider
@@ -220,10 +217,9 @@ function windowResized() {
   numCols = max(numCols, 1);
 
   let numRows = ceil(yearEntries.length / numCols);
-  let totalHeight = 100 + numRows * (shapeSize + padding);
-  let maxCanvasHeight = 1000;
-
-  resizeCanvas(windowWidth * 0.9, min(windowHeight * 0.8, maxCanvasHeight, totalHeight));
+  let fixedHeight = 985;
+  resizeCanvas(windowWidth * 0.9, fixedHeight);
+  
   redraw();
 }
 
