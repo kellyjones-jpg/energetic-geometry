@@ -233,11 +233,11 @@ function showTooltip(entry) {
   let lines = [];
 
   if (entry.name) lines.push(`<strong>Name:</strong> ${entry.name}`);
-  if (entry.habitat && entry.habitat.length) lines.push(`<strong>Habitat Type:</strong> ${formatArray(entry.habitat)}`);
   if (entry.activities && entry.activities.length) lines.push(`<strong>Activities:</strong> ${formatArray(entry.activities)}`);
-  if (entry.animalType && entry.animalType.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
+  if (entry.arrayType) lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
+  if (entry.habitat && entry.habitat.length) lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
   if (entry.cropType && entry.cropType.length) lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
-  if (entry.arrayType) lines.push(`<strong>Array Type:</strong> ${capitalizeWords(entry.arrayType)}`);
+  if (entry.animalType && entry.animalType.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
 
   tooltip.innerHTML = lines.join('<br>');
 
