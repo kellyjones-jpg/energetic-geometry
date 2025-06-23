@@ -54,3 +54,10 @@
       z-index: 1000;
       display: none;
     }
+
+.nav-link {
+  line-height: 1.2; /* tighten vertical spacing */
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
