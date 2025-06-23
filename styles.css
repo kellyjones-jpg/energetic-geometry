@@ -15,10 +15,6 @@
       color: white;
     }
 
-    a.title {text-decoration: none;
-              color: white;
-            }
-
     #sketch-container {
       width: 100%;
       max-width: 1650px; /* match container max-width */
