@@ -232,12 +232,12 @@ function showTooltip(entry) {
 
   let lines = [];
 
-  if (entry.name) lines.push(`Name: ${entry.name}`);
-  if (entry.habitat && entry.habitat.length) lines.push(`Habitat Type: ${formatArray(entry.habitat)}`);
-  if (entry.activities && entry.activities.length) lines.push(`Activities: ${formatArray(entry.activities)}`);
-  if (entry.animalType && entry.animalType.length) lines.push(`Animal Type: ${formatArray(entry.animalType)}`);
-  if (entry.cropType && entry.cropType.length) lines.push(`Crop Type: ${formatArray(entry.cropType)}`);
-  if (entry.arrayType) lines.push(`Array Type: ${capitalizeWords(entry.arrayType)}`);
+  if (entry.name) lines.push(`<strong>Name:</strong> ${entry.name}`);
+  if (entry.habitat && entry.habitat.length) lines.push(`<strong>Habitat Type:</strong> ${formatArray(entry.habitat)}`);
+  if (entry.activities && entry.activities.length) lines.push(`<strong>Activities:</strong> ${formatArray(entry.activities)}`);
+  if (entry.animalType && entry.animalType.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
+  if (entry.cropType && entry.cropType.length) lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
+  if (entry.arrayType) lines.push(`<strong>Array Type:</strong> ${capitalizeWords(entry.arrayType)}`);
 
   tooltip.innerHTML = lines.join('<br>');
 
