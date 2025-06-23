@@ -682,7 +682,6 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
   if (!Array.isArray(activities) || activities.length === 0) return;
   if (!Array.isArray(habitat) || habitat.length === 0) return;
 
-  // Clean habitat list
   habitat = habitat
     .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
     .filter(h => h !== '');
@@ -707,31 +706,10 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
       let cx = col * cellSize - size / 2 + cellSize / 2;
       let cy = row * cellSize - size / 2 + cellSize / 2;
 
+      // Only draw the square if it falls within the habitat shape
       if (isPointInHabitatShape(habitat, cx, cy, size)) {
         fill(fillColor);
-
-        // Match the overlay shape to the habitat type
-        switch (habitat[0]) {
-          case 'pollinator':
-            beginShape();
-            for (let j = 0; j < 6; j++) {
-              let angle = TWO_PI / 6 * j - PI / 2;
-              let vx = cx + cos(angle) * cellSize * 0.5;
-              let vy = cy + sin(angle) * cellSize * 0.5;
-              vertex(vx, vy);
-            }
-            endShape(CLOSE);
-            break;
-
-          case 'native grasses':
-            rect(cx, cy, cellSize * 0.3, cellSize);
-            break;
-
-          case 'naturalized':
-          default:
-            ellipse(cx, cy, cellSize);
-            break;
-        }
+        rect(cx, cy, cellSize, cellSize); // traditional square cell
       }
     }
   }
