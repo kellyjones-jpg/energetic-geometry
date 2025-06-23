@@ -11,6 +11,8 @@
       line-height: 1.2;
       /* left aligned by default */
       margin-bottom: 1rem; 
+      text-decoration: none;
+      color: white;
     }
 
     #sketch-container {
