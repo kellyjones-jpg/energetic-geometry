@@ -1,51 +1,56 @@
-body {
-  font-family: Helvetica, Arial, sans-serif;
-  background-color: #353839;
-  color: white;
-  margin: 0;
-  padding: 0;
-}
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      background-color: #353839;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
 
-/* Remove h1 position & z-index, Bootstrap handles spacing */
-h1 {
-  font-size: 2.5rem;
-  line-height: 1.3;
-  text-align: left;
-  /* margin handled by Bootstrap */
-}
+    h1 {
+      font-size: 2.5rem;
+      line-height: 1.3;
+      /* left aligned by default */
+      margin-bottom: 1.5rem; 
+    }
 
-/* Sketch container styling */
-#sketch-container {
-  width: 100%;
-  max-width: 1200px; /* optional max width */
-}
+    #sketch-container {
+      width: 100%;
+      max-width: 1200px; /* match container max-width */
+      margin: 0 auto; /* center horizontally */
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* center canvas horizontally */
+      gap: 20px;
+      margin-bottom: 40px;
+    }
 
-#sketch-container canvas {
-  width: 100%;
-  height: 985px; /* fixed height as you want */
-}
+    #sketch-container canvas {
+      width: 100%;
+      height: 985px;
+      display: block;
+      max-width: 100%; /* prevent overflow */
+    }
 
-/* Inputs inside sketch container */
-#sketch-container input[type="range"] {
-  width: 80%;
-  max-width: 400px;
-}
+    #sketch-container input[type="range"] {
+      width: 80%;
+      max-width: 400px;
+    }
 
-/* Tooltip stays absolute */
-#tooltip {
-  background: rgba(255, 255, 255, 0.9);
-  color: #000;
-  line-height: 1.5;
-  text-align: left;
-  padding: 10px 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  font-family: Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  max-width: 500px;
-  pointer-events: none;
-  user-select: none;
-  transition: opacity 0.2s ease;
-  position: absolute;
-  z-index: 1000;
-}
+    #tooltip {
+      background: rgba(255, 255, 255, 0.9);
+      color: #000;
+      line-height: 1.5;
+      text-align: left;
+      padding: 10px 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      max-width: 500px;
+      pointer-events: none;
+      user-select: none;
+      transition: opacity 0.2s ease;
+      position: absolute;
+      z-index: 1000;
+      display: none;
+    }
