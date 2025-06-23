@@ -594,7 +594,7 @@ function getLineStyle(typeStr) {
 }
 
 function drawWavyLine(size, offsetIndex = 0) {
-  noFill();
+  fill(activityColor);
   strokeWeight(2);
   beginShape();
   let waves = 8 + offsetIndex * 2;
