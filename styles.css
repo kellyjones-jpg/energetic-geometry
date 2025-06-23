@@ -81,7 +81,7 @@
     }
 }
 
-.hyperlink {
+a.hyperlink {
   color: #3399CC;
   text-decoration: underline;
   font-weight: bold;
