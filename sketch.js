@@ -189,7 +189,7 @@ function setup() {
   let numCols = floor((initialWidth - padding) / (shapeSize + padding));
   numCols = max(numCols, 1);
   let numRows = ceil(yearEntries.length / numCols);
-  let fixedHeight = 985;
+  let fixedHeight = 900;
   cnv = createCanvas(initialWidth, fixedHeight);
   cnv.parent('sketch-container');
 
@@ -217,7 +217,7 @@ function windowResized() {
   numCols = max(numCols, 1);
 
   let numRows = ceil(yearEntries.length / numCols);
-  let fixedHeight = 985;
+  let fixedHeight = 900;
   resizeCanvas(windowWidth * 0.9, fixedHeight);
   
   redraw();
