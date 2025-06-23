@@ -537,51 +537,35 @@ function drawDotRing(size, offsetIndex = 0) {
 
 
 // Draw different line styles based on Animal Type
-function drawAnimalLine(animalTypes, activities, x, y, size) {
-  if (!Array.isArray(animalTypes) || animalTypes.length === 0 || activities.length === 0) return;
+function drawAnimalLine(animalType, activities, x, y, size) {
+  if (!animalType || activities.length === 0) return;
+  let style = getLineStyle(animalType);
+  if (!style) return;
 
   push();
-  translate(x, y);
+  noFill();
+  strokeWeight(style.weight);
 
-  for (let i = 0; i < animalTypes.length; i++) {
-    let type = animalTypes[i];
-    let style = getLineStyle(type);
-    if (!style) continue;
-
-    let activity = activities[i % activities.length];
-    let activityColor = getActivityColor(activity);
-
-    // Skip drawing if no color found for this activity (no fallback)
-    if (!activityColor) continue;
-
-    stroke(activityColor);
-    strokeWeight(style.weight || 2);
+  for (let i = 0; i < activities.length; i++) {
+    let strokeColor = getActivityColor(activities[i]);
+    if (!strokeColor) continue;
+    stroke(strokeColor);
 
     switch (style.type) {
-      case 'wavy':
-        drawWavyLine(size, i);
-        break;
-      case 'dashed':
-        drawDashedLine(size, i);
-        break;
-      case 'bezier':
-        drawBezierLine(size, i);
-        break;
-      case 'straight':
-        drawStraightLine(size, i);
-        break;
-      case 'textured':
-        drawTexturedLine(size, i);
-        break;
+      case 'wavy': drawWavyLine(x, y + i * 4, size); break;
+      case 'dashed': drawDashedLine(x, y + i * 4, size); break;
+      case 'bezier': drawBezierLine(x, y + i * 4, size); break;
+      case 'straight': line(x - size / 2, y + i * 4, x + size / 2, y + i * 4); break;
+      case 'textured': drawTexturedLine(x, y + i * 4, size); break;
     }
   }
 
   pop();
 }
 
-function getLineStyle(typeStr) {
-  if (typeof typeStr !== 'string') return null;
+function getLineStyle(animalType) {
   typeStr = typeStr.toLowerCase().trim().replace(/and/g, '&');
+  if (!typeStr) return null;
 
   switch (typeStr) {
     case 'sheep': return { type: 'wavy', weight: 2 };
@@ -592,6 +576,7 @@ function getLineStyle(typeStr) {
     default: return null;
   }
 }
+
 
 // Wavy line: sinusoidal wave along the horizontal axis
 function drawWavyLine(x, y, length) {
@@ -847,11 +832,17 @@ function drawDottedMatrixMultiColor(activities, size) {
 }
   
 function getActivityColor(activity) {
-  switch (activity.toLowerCase()) {
-    case 'grazing': return color('#005A99');
-    case 'crop production': return color('#E4572E');
-    case 'habitat': return color('#2E8B57');
-    case 'greenhouse': return color('#FFD100');
-    default: return null;  // <-- no fallback color here
+  switch (activity.trim().toLowerCase()) {
+ case 'crop production':
+      return color('#E4572E'); // Vivd Orange
+    case 'habitat':
+      return color('#2E8B57'); // Sea Green
+    case 'grazing':
+      return color('#005A99'); // Deep Blue
+    case 'greenhouse':
+      return color('#FFD100'); // Solar Gold
+    default:
+        pop(); 
+        return;
   }
 }
