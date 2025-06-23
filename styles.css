@@ -15,7 +15,7 @@
 
     #sketch-container {
       width: 100%;
-      max-width: 1650px; /* match container max-width */
+      max-width: 2340px; /* match container max-width */
       margin: 0 auto; /* center horizontally */
       display: flex;
       flex-direction: column;
