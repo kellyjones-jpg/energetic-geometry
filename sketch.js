@@ -537,26 +537,36 @@ function drawDotRing(size, offsetIndex = 0) {
 
 
 // Draw different line styles based on Animal Type
-function drawAnimalLine(animalType, activities, x, y, size) {
-  if (!animalType || activities.length === 0) return;
-  let style = getLineStyle(animalType);
-  if (!style) return;
+function drawAnimalLine(animalTypes, activities, x, y, size) {
+  if (!Array.isArray(animalTypes) || animalTypes.length === 0 || activities.length === 0) return;
 
   push();
-  noFill();
-  strokeWeight(style.weight);
+  translate(x, y);
 
-  for (let i = 0; i < activities.length; i++) {
-    let strokeColor = getActivityColor(activities[i]);
-    if (!strokeColor) continue;
-    stroke(strokeColor);
+  for (let i = 0; i < animalTypes.length; i++) {
+    let type = animalTypes[i];
+    let style = getLineStyle(type);
+    if (!style) continue;
+
+    strokeWeight(style.weight || 2);
+    stroke(255); // You can adjust color or map it to activities if needed
 
     switch (style.type) {
-      case 'wavy': drawWavyLine(x, y + i * 4, size); break;
-      case 'dashed': drawDashedLine(x, y + i * 4, size); break;
-      case 'bezier': drawBezierLine(x, y + i * 4, size); break;
-      case 'straight': line(x - size / 2, y + i * 4, x + size / 2, y + i * 4); break;
-      case 'textured': drawTexturedLine(x, y + i * 4, size); break;
+      case 'wavy':
+        drawWavyLine(size, i);
+        break;
+      case 'dashed':
+        drawDashedLine(size, i);
+        break;
+      case 'bezier':
+        drawBezierLine(size, i);
+        break;
+      case 'straight':
+        drawStraightLine(size, i);
+        break;
+      case 'textured':
+        drawTexturedLine(size, i);
+        break;
     }
   }
 
@@ -564,6 +574,7 @@ function drawAnimalLine(animalType, activities, x, y, size) {
 }
 
 function getLineStyle(typeStr) {
+  if (typeof typeStr !== 'string') return null;
   typeStr = typeStr.toLowerCase().trim().replace(/and/g, '&');
 
   switch (typeStr) {
@@ -576,52 +587,34 @@ function getLineStyle(typeStr) {
   }
 }
 
-
-// Wavy line: sinusoidal wave along the horizontal axis
-function drawWavyLine(x, y, length) {
-  noFill();
+function drawWavyLine(size, offset = 0) {
   beginShape();
-  let amplitude = 5;
-  let waves = 6;
-  for (let i = 0; i <= waves; i++) {
-    let px = x - length / 2 + (length / waves) * i;
-    let py = y + sin(i * TWO_PI / waves) * amplitude;
-    vertex(px, py);
+  for (let x = -size / 2; x <= size / 2; x += 10) {
+    let y = sin(x * 0.1 + offset) * 10;
+    vertex(x, y);
   }
   endShape();
 }
 
-// Dashed line: repeated short dashes with gaps
-function drawDashedLine(x, y, length) {
+function drawDashedLine(size, offset = 0) {
   let dashLength = 10;
-  let gapLength = 7;
-  let startX = x - length / 2;
-  let endX = x + length / 2;
-  for (let px = startX; px < endX; px += dashLength + gapLength) {
-    line(px, y, px + dashLength, y);
+  for (let x = -size / 2; x < size / 2; x += dashLength * 2) {
+    line(x, 0, x + dashLength, 0);
   }
 }
 
-// Bezier curved line with smooth S shape
-function drawBezierLine(x, y, length) {
+function drawBezierLine(size, offset = 0) {
   noFill();
-  bezier(
-    x - length / 2, y,
-    x - length / 4, y - length / 3,
-    x + length / 4, y + length / 3,
-    x + length / 2, y
-  );
+  bezier(-size / 2, 0, -size / 4, -size / 4, size / 4, size / 4, size / 2, 0);
 }
 
-// Textured line: short broken segments with jitter
-function drawTexturedLine(x, y, length) {
-  let segmentLength = 6;
-  let gap = 4;
-  let startX = x - length / 2;
-  let endX = x + length / 2;
-  for (let px = startX; px < endX; px += segmentLength + gap) {
-    let jitterY = random(-2, 2);
-    line(px, y + jitterY, px + segmentLength, y + jitterY);
+function drawStraightLine(size, offset = 0) {
+  line(-size / 2, 0, size / 2, 0);
+}
+
+function drawTexturedLine(size, offset = 0) {
+  for (let x = -size / 2; x < size / 2; x += 6) {
+    line(x, -3, x, 3);
   }
 }
 
