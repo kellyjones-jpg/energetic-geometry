@@ -8,14 +8,14 @@
 
     h1 {
       font-size: 2.5rem;
-      line-height: 1.3;
+      line-height: 1.2;
       /* left aligned by default */
-      margin-bottom: 1.5rem; 
+      margin-bottom: 1rem; 
     }
 
     #sketch-container {
       width: 100%;
-      max-width: 2340px; /* match container max-width */
+      max-width: 1650px; /* match container max-width */
       margin: 0 auto; /* center horizontally */
       display: flex;
       flex-direction: column;
@@ -26,7 +26,7 @@
 
     #sketch-container canvas {
       width: 100%;
-      height: 985px;
+      height: 900px;
       display: block;
       max-width: 100%; /* prevent overflow */
     }
