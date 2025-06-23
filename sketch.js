@@ -13,50 +13,127 @@ const cropEdgeGroups = {
   "carrots": "root",
   "beets": "root",
   "radish": "root",
+  "daikon": "root",
   "garlic": "root",
   "onions": "root",
+  "shallots": "root",
+  "leeks": "root",
   "yams": "root",
   "turnips": "root",
   "potatoes": "root",
+  "sweet potato": "root",
+  "dryland taro": "root",
+  "asparagus": "root",
+  "celery": "root",
+  "fennel": "root",
 
   // Leafy greens
   "spinach": "leafy",
   "kale": "leafy",
   "chard": "leafy",
+  "swiss chard": "leafy",
   "lettuce": "leafy",
-  "cabbage": "leafy",
+  "buttercrunch head lettuce": "leafy",
+  "red salad bowl lettuce": "leafy",
   "arugula": "leafy",
-  "herbs": "leafy",
   "greens": "leafy",
+  "leafy greens": "leafy",
+  "collards": "leafy",
+  "salad greens": "leafy",
+  "microgreens": "leafy",
 
-  // Fruit-bearing
+  // Fruit-bearing vegetables (Solanaceae, cucurbits)
   "tomatoes": "fruit",
-  "squash": "fruit",
+  "cherry tomatoes": "fruit",
   "peppers": "fruit",
+  "bell pepper": "fruit",
+  "squash": "fruit",
+  "summer squash": "fruit",
+  "winter squash": "fruit",
   "melons": "fruit",
   "eggplant": "fruit",
   "cucumbers": "fruit",
-  "berries": "fruit",
+  "cucurbits & solanaceous crops": "fruit",
+  "pumpkins": "fruit",
+  "zucchini": "fruit",
+  "chiles": "fruit",
+
+  // Fruits & berries
+  "berries": "berry",
+  "blueberries": "berry",
+  "raspberry": "berry",
+  "strawberries": "berry",
+  "native berry plants": "berry",
+  "poha berries": "berry",
+  "persimmons": "fruit",
+  "peaches": "fruit",
+  "pears": "fruit",
+  "apples": "fruit",
+  "watermelon": "fruit",
+
+  // Herbs
+  "herbs": "herb",
+  "basil": "herb",
+  "genovese basil": "herb",
+  "cilantro": "herb",
+  "parsley": "herb",
 
   // Grains & grasses
   "hay": "grain",
-  "spring wheat": "grain",
   "corn": "grain",
+  "soy": "grain",
+  "soybean": "grain",
+  "spring wheat": "grain",
   "saffron": "grain",
+  "sorghum": "grain",
+  "clover": "grain",
+  "grain and specialty crops": "grain",
+  "alfalfa": "grain",
+
+  // Legumes
+  "beans": "legume",
+  "bush beans": "legume",
+  "string beans": "legume",
+  "green beans": "legume",
+  "peas": "legume",
 
   // Vining / perennial
   "grapes": "vine",
-  "vanilla": "vine",
-  "tea": "vine",
+  "kiwis": "vine",
   "kiwi": "vine",
   "lavender": "vine",
+  "vanilla": "vine",
+  "tea": "vine",
+  "mamaki tea": "vine",
   "peppercorn": "vine",
   "maile": "vine",
+  "coffee": "vine",
+  "protea": "vine",
 
-  // Mixed
+  // Cruciferous vegetables
+  "broccoli": "cruciferous",
+  "cabbage": "cruciferous",
+  "bok choy": "cruciferous",
+  "kohlrabi": "cruciferous",
+  "cauliflower": "cruciferous",
+
+  // Mixed / general
   "mixed vegetables": "mixed",
-  "assorted vegetables": "mixed"
+  "assorted vegetables": "mixed",
+  "various vegetables": "mixed",
+  "vegetables": "mixed",
+  "vegetables, herbs, fruits": "mixed",
+  "leafy greens, berries": "mixed",
+  "tomato, pepper, 20+ crop types": "mixed",
+  "tomato, pepper, kale, radish, eggplant, 30+ crop types": "mixed",
+  "pepper, kale, broccoli, beans, chard": "mixed",
+  "peppers, tomatoes, squash, lettuce, herbs": "mixed",
+  "potatoes, tomatoes, basil, beans, squash": "mixed",
+  "vegetables (kohlrabi, cabbage, broccoli, kale, chard, peppers, parsley, tomatoes)": "mixed",
+  "vegetables (kohlrabi, cabbage, kale, chard, peppers, basil, tomatoes)": "mixed",
+  "native berry plants, vegetable crops, and forage crops": "mixed",
 };
+
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250529.csv', 'csv', 'header');
@@ -355,13 +432,30 @@ function drawCropEdgeStyle(cropTypes, activities, x, y, size) {
     for (let j = 0; j < uniqueGroups.length; j++) {
       let group = uniqueGroups[j];
       switch (group) {
-        case 'root': drawPointedEdge(size, j + i); break;
-        case 'leafy': drawWavyEdge(size, j + i); break;
-        case 'fruit': drawLobedEdge(size, j + i); break;
-        case 'grain': drawLinearSpikes(size, j + i); break;
-        case 'vine': drawSpiralOverlay(size, j + i); break;
-        case 'mixed': drawWavyEdge(size, j + i); break;
-      }
+  case 'root':
+  case 'cruciferous':
+    drawPointedEdge(size, j + i);
+    break;
+  case 'leafy':
+  case 'herb':
+    drawWavyEdge(size, j + i);
+    break;
+  case 'fruit':
+  case 'berry':
+    drawLobedEdge(size, j + i);
+    break;
+  case 'grain':
+  case 'legume':
+    drawLinearSpikes(size, j + i);
+    break;
+  case 'vine':
+    drawSpiralOverlay(size, j + i);
+    break;
+  case 'mixed':
+  case 'various':
+    drawDotRing(size, j + i);
+    break;
+}
     }
   }
 
@@ -429,6 +523,18 @@ function drawSpiralOverlay(size, offsetIndex = 0) {
   }
   endShape();
 }
+
+function drawDotRing(size, offsetIndex = 0) {
+  let dots = 12 + offsetIndex;
+  for (let i = 0; i < dots; i++) {
+    let angle = TWO_PI * i / dots;
+    let r = size * 0.4;
+    let x = cos(angle) * r;
+    let y = sin(angle) * r;
+    ellipse(x, y, 4);
+  }
+}
+
 
 // Draw different line styles based on Animal Type
 function drawAnimalLine(animalType, activities, x, y, size) {
