@@ -266,13 +266,17 @@ function draw() {
     push();
     translate(centerX, centerY);
 
-    if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-      drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
+    if (entry.arrayType) {
+      drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shapeSize);
     }
 
-    if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
-        Array.isArray(entry.habitat) && entry.habitat.length > 0) {
+     if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
+     Array.isArray(entry.habitat) && entry.habitat.length > 0) {
       drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
+    }
+
+    if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
+      drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
     }
 
     if (entry.cropType && entry.cropType.length > 0) {
@@ -282,9 +286,6 @@ function draw() {
 
     if (entry.animalType && entry.animalType.length > 0) {
       drawAnimalLine(entry.animalType, entry.activities, 0, 0, shapeSize);
-    }
-    if (entry.arrayType) {
-      drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shapeSize);
     }
     
     pop();
