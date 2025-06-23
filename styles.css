@@ -6,6 +6,14 @@
       padding: 0;
     }
 
+    a.title,
+    a.title:hover,
+    a.title:focus,
+    a.title:visited {
+      color: white;
+      text-decoration: none;
+    }
+
     h1 {
       font-size: 2.5rem;
       line-height: 1.2;
