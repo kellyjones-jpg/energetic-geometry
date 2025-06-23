@@ -830,17 +830,11 @@ function drawDottedMatrixMultiColor(activities, size) {
 }
   
 function getActivityColor(activity) {
-  switch (activity.trim().toLowerCase()) {
- case 'crop production':
-      return color('#E4572E'); // Vivd Orange
-    case 'habitat':
-      return color('#2E8B57'); // Sea Green
-    case 'grazing':
-      return color('#005A99'); // Deep Blue
-    case 'greenhouse':
-      return color('#FFD100'); // Solar Gold
-    default: return null;
-        pop(); 
-        return;
+  switch (activity.toLowerCase()) {
+    case 'grazing': return color('#005A99');
+    case 'crop production': return color('#E4572E');
+    case 'habitat': return color('#2E8B57');
+    case 'greenhouse': return color('#FFD100');
+    default: return null;  // <-- no fallback color here
   }
 }
