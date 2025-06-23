@@ -548,8 +548,12 @@ function drawAnimalLine(animalTypes, activities, x, y, size) {
     let style = getLineStyle(type);
     if (!style) continue;
 
+    // Cycle through activities colors for each animal line
+    let activityColor = getActivityColor(activities[i % activities.length]);
+    if (!activityColor) activityColor = color(255); // fallback white
+
+    stroke(activityColor);
     strokeWeight(style.weight || 2);
-    stroke(255); // You can adjust color or map it to activities if needed
 
     switch (style.type) {
       case 'wavy':
