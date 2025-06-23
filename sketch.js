@@ -682,7 +682,7 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
   if (!Array.isArray(activities) || activities.length === 0) return;
   if (!Array.isArray(habitat) || habitat.length === 0) return;
 
-  // Sanitize habitat list
+  // Clean habitat list
   habitat = habitat
     .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
     .filter(h => h !== '');
@@ -693,7 +693,7 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
   rectMode(CENTER);
   noStroke();
 
-  let gridCount = 8; // 8x8 grid
+  let gridCount = 8;
   let cellSize = size / gridCount;
   let colors = activities.map(act => getActivityColor(act)).filter(Boolean);
   let colorCount = colors.length;
@@ -701,7 +701,7 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
 
   for (let row = 0; row < gridCount; row++) {
     for (let col = 0; col < gridCount; col++) {
-      let index = (row + col) % colorCount;  // alternate diagonally
+      let index = (row + col) % colorCount;
       let fillColor = colors[index];
 
       let cx = col * cellSize - size / 2 + cellSize / 2;
@@ -709,7 +709,29 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
 
       if (isPointInHabitatShape(habitat, cx, cy, size)) {
         fill(fillColor);
-        rect(cx, cy, cellSize, cellSize);
+
+        // Match the overlay shape to the habitat type
+        switch (habitat[0]) {
+          case 'pollinator':
+            beginShape();
+            for (let j = 0; j < 6; j++) {
+              let angle = TWO_PI / 6 * j - PI / 2;
+              let vx = cx + cos(angle) * cellSize * 0.5;
+              let vy = cy + sin(angle) * cellSize * 0.5;
+              vertex(vx, vy);
+            }
+            endShape(CLOSE);
+            break;
+
+          case 'native grasses':
+            rect(cx, cy, cellSize * 0.3, cellSize);
+            break;
+
+          case 'naturalized':
+          default:
+            ellipse(cx, cy, cellSize);
+            break;
+        }
       }
     }
   }
@@ -717,29 +739,6 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
   pop();
 }
 
-if (isPointInHabitatShape(habitat, cx, cy, size)) {
-  fill(fillColor);
-
-  switch (habitat[0]) {
-    case 'pollinator':
-      beginShape();
-      for (let j = 0; j < 6; j++) {
-        let angle = TWO_PI / 6 * j - PI / 2;
-        let vx = cx + cos(angle) * cellSize * 0.5;
-        let vy = cy + sin(angle) * cellSize * 0.5;
-        vertex(vx, vy);
-      }
-      endShape(CLOSE);
-      break;
-    case 'native grasses':
-      rect(cx, cy, cellSize * 0.3, cellSize);
-      break;
-    case 'naturalized':
-    default:
-      ellipse(cx, cy, cellSize);
-      break;
-  }
-}
 
 function pointInHexagon(px, py, r) {
   px = abs(px);
