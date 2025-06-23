@@ -548,9 +548,11 @@ function drawAnimalLine(animalTypes, activities, x, y, size) {
     let style = getLineStyle(type);
     if (!style) continue;
 
-    // Cycle through activities colors for each animal line
-    let activityColor = getActivityColor(activities[i % activities.length]);
-    if (!activityColor) activityColor = color(255); // fallback white
+    let activity = activities[i % activities.length];
+    let activityColor = getActivityColor(activity);
+
+    // Skip drawing if no color found for this activity (no fallback)
+    if (!activityColor) continue;
 
     stroke(activityColor);
     strokeWeight(style.weight || 2);
