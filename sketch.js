@@ -839,7 +839,7 @@ function getActivityColor(activity) {
       return color('#005A99'); // Deep Blue
     case 'greenhouse':
       return color('#FFD100'); // Solar Gold
-    default:
+    default: return null;
         pop(); 
         return;
   }
