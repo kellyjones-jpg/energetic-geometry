@@ -594,14 +594,15 @@ function getLineStyle(typeStr) {
 }
 
 function drawWavyLine(size, offsetIndex = 0) {
-  noFill();  // Prevent fill, only stroke outlines
+  noFill();
+  strokeWeight(2);
   beginShape();
   let waves = 8 + offsetIndex * 2;
   for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
     let r = size * 0.4 + 10 * sin(waves * angle);
     let x = cos(angle) * r;
     let y = sin(angle) * r;
-    curveVertex(x, y);
+    vertex(x, y);
   }
   endShape(CLOSE);
 }
