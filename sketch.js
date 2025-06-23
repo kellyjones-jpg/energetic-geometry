@@ -584,7 +584,7 @@ function getLineStyle(typeStr) {
   typeStr = typeStr.toLowerCase().trim().replace(/and/g, '&');
 
   switch (typeStr) {
-    case 'sheep': return { type: 'wavy', weight: 2 };
+    case 'sheep': return { type: 'wavy', weight: 1 };
     case 'llamas & alpacas': return { type: 'dashed', weight: 2 };
     case 'horse': return { type: 'bezier', weight: 3 };
     case 'cows': return { type: 'straight', weight: 5 };
