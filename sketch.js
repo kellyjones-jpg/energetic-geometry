@@ -584,7 +584,7 @@ function getLineStyle(typeStr) {
   typeStr = typeStr.toLowerCase().trim().replace(/and/g, '&');
 
   switch (typeStr) {
-    case 'sheep': return { type: 'wavy', weight: 1 };
+    case 'sheep': return { type: 'wavy', weight: 2 };
     case 'llamas & alpacas': return { type: 'dashed', weight: 2 };
     case 'horse': return { type: 'bezier', weight: 3 };
     case 'cows': return { type: 'straight', weight: 5 };
@@ -593,13 +593,17 @@ function getLineStyle(typeStr) {
   }
 }
 
-function drawWavyLine(size, offset = 0) {
+function drawWavyLine(size, offsetIndex = 0) {
+  noFill();  // Prevent fill, only stroke outlines
   beginShape();
-  for (let x = -size / 2; x <= size / 2; x += 10) {
-    let y = sin(x * 0.1 + offset) * 10;
-    vertex(x, y);
+  let waves = 8 + offsetIndex * 2;
+  for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
+    let r = size * 0.4 + 10 * sin(waves * angle);
+    let x = cos(angle) * r;
+    let y = sin(angle) * r;
+    curveVertex(x, y);
   }
-  endShape();
+  endShape(CLOSE);
 }
 
 function drawDashedLine(size, offset = 0) {
