@@ -563,9 +563,8 @@ function drawAnimalLine(animalType, activities, x, y, size) {
   pop();
 }
 
-function getLineStyle(animalType) {
-  let typeStr = String(animalType || '').trim().toLowerCase();
-  if (!typeStr) return null;
+function getAnimalLineStyle(typeStr) {
+  typeStr = typeStr.toLowerCase().trim().replace(/and/g, '&');
 
   switch (typeStr) {
     case 'sheep': return { type: 'wavy', weight: 2 };
