@@ -85,3 +85,19 @@ a.hyperlink {
   text-decoration: underline;
   transition: color 0.2s ease;
 }
+
+.logo-img {
+  max-height: 50px; 
+  width: auto;
+}
+
+.site-title {
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.site-title .subtitle {
+  font-size: 1rem;
+  color: white; 
+}
+
