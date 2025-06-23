@@ -69,3 +69,10 @@
           color: #3399CC;
     }
 }
+
+a {
+  color: #005A99;
+  text-decoration: underline;
+  font-weight: bold;
+  transition: color 0.2s ease;
+}
