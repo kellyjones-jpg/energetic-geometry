@@ -677,6 +677,30 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
   pop();
 }
 
+function getHabitatShapePath(habitat, size) {
+  let path = new Path2D();
+  switch (habitat) {
+    case 'pollinator':
+      for (let j = 0; j < 6; j++) {
+        let angle = TWO_PI / 6 * j - PI / 2;
+        let vx = cos(angle) * size * 0.5;
+        let vy = sin(angle) * size * 0.5;
+        if (j === 0) path.moveTo(vx, vy);
+        else path.lineTo(vx, vy);
+      }
+      path.closePath();
+      break;
+    case 'native grasses':
+      path.rect(-size * 0.15, -size * 0.5, size * 0.3, size);
+      break;
+    case 'naturalized':
+      path.arc(0, 0, size / 2, 0, Math.PI * 2);
+      break;
+  }
+  return path;
+}
+
+
 function drawCheckerboardPattern(activities, habitat, x, y, size) {
   if (!Array.isArray(activities) || activities.length === 0) return;
   if (!Array.isArray(habitat) || habitat.length === 0) return;
@@ -717,36 +741,18 @@ function drawCheckerboardPattern(activities, habitat, x, y, size) {
 }
 
 
-function isPointInHabitatShape(habitat, px, py, size) {
-  // Ensure habitat is an array
-  let habitats = Array.isArray(habitat) ? habitat : [habitat];
+function isPointInHabitatShape(habitatList, px, py, size) {
+  if (!Array.isArray(habitatList)) return false;
 
-  for (let h of habitats) {
-  if (typeof h !== 'string') continue;
-
-  let cleaned = h.trim().toLowerCase();
-    switch (cleaned) {
-      case 'pollinator':
-        if (pointInHexagon(px, py, size * 0.5)) return true;
-        break;
-      case 'native grasses':
-        if (abs(px) <= size * 0.15 && abs(py) <= size * 0.5) return true;
-        break;
-      case 'naturalized':
-        if (px * px + py * py <= (size / 2) * (size / 2)) return true;
-        break;
-    }
+  for (let h of habitatList) {
+    if (typeof h !== 'string') continue;
+    let shapePath = getHabitatShapePath(h.trim().toLowerCase(), size);
+    // Create canvas context from p5's canvas
+    let ctx = drawingContext;
+    if (ctx.isPointInPath(shapePath, px, py)) return true;
   }
 
-  return false; // if no matches
-}
-
-function pointInHexagon(px, py, r) {
-  px = abs(px);
-  py = abs(py);
-
-  if (px > r * 0.8660254 || py > r * 0.5 + r * 0.288675) return false;
-  return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
+  return false;
 }
 
 function drawArrayOverlay(arrayType, activities, x, y, size) {
