@@ -35,7 +35,7 @@
       margin-bottom: 40px;
     }
 
-    .container.border {
+    .container.landing-border {
      /* Asymmetric border */
           border-top: 6px solid #0A0A0A;      /* heavier top */
           border-right: 2px solid #0A0A0A;    /* minimal right */
