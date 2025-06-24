@@ -35,10 +35,10 @@
       margin-bottom: 40px;
     
       /* Asymmetric border */
-      border-top: 11px solid #0A0A0A;      /* heavier top */
-      border-right: 7px solid #0A0A0A;    /* minimal right */
+      border-top: 6px solid #0A0A0A;      /* heavier top */
+      border-right: 2px solid #0A0A0A;    /* minimal right */
       border-bottom: 0;                   /* open bottom */
-      border-left: 15px solid white;      /* strong left for tension */
+      border-left: 10px solid white;      /* strong left for tension */
     }
 
     .container.my-4.about-border {
