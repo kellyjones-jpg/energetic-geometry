@@ -34,7 +34,7 @@
       margin-bottom: 40px;
     }
 
-    .container.landing-border {
+    .landing-border {
      /* Asymmetric border */
           border-top: 6px solid #0A0A0A;      /* heavier top */
           border-right: 2px solid #0A0A0A;    /* minimal right */
@@ -42,7 +42,7 @@
           border-left: 10px solid white;      /* strong left for tension */
     }
 
-    .container.interior-border {
+    .interior-border {
       border-left: 6px solid white;
       border-top: 2px solid #0A0A0A;
       padding-left: 1.5rem;
