@@ -41,6 +41,11 @@
       border-left: 15px solid white;      /* strong left for tension */
     }
 
+    .container.my-4.about-border {
+      border-left: 6px solid white;
+      border-top: 2px solid #0A0A0A;
+      padding-left: 1.5rem;
+    }
 
     #sketch-container canvas {
       width: 100%;
