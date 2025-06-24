@@ -23,25 +23,24 @@
       color: white;
     }
 
-   #sketch-container {
-      position: relative;
-      /* existing styles */
-      border: 6px solid #0A0A0A; /* or your asymmetric border */
-    }
+    #sketch-container {
+      width: 100%;
+      max-width: 1650px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      margin-top: 25px;
+      margin-bottom: 40px;
     
-    #sketch-container::before {
-      content: '';
-      position: absolute;
-      top: -12px;
-      left: -12px;
-      width: 40px;
-      height: 4px;
-      background: white;
-      transform: rotate(25deg);
-      z-index: 10;
-      pointer-events: none;
-      opacity: 0.6;
+      /* Asymmetric border */
+      border-top: 6px solid #0A0A0A;      /* heavier top */
+      border-right: 2px solid #0A0A0A;    /* minimal right */
+      border-bottom: 0;                   /* open bottom */
+      border-left: 10px solid white;      /* strong left for tension */
     }
+
 
     #sketch-container canvas {
       width: 100%;
