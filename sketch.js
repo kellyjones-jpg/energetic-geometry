@@ -160,6 +160,9 @@ function setup() {
     let cropType = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
     let arrayTypeStr = table.getString(i, 'Type Of Array') || '';
     let year = table.getString(i, 'Year Installed') || 'Unknown';
+    let megawatts = parseFloat(table.getString(i, 'System Size') || 0);
+    let acres = parseFloat(table.getString(i, 'Site Size') || 0);
+
 
     let entry = {
       name,
@@ -168,7 +171,9 @@ function setup() {
       animalType,
       cropType,
       arrayType: arrayTypeStr.trim().toLowerCase(), 
-      year
+      year,
+      megawatts,
+      acres
     };
 
     entries.push(entry);
@@ -198,9 +203,11 @@ function setup() {
   yearSlider.style('width', '400px');
   yearSlider.parent('sketch-container');
   yearSlider.input(() => {
-    selectedYear = availableYears[yearSlider.value()];
+  selectedYear = availableYears[yearSlider.value()];
     windowResized();
+    updateCounters(entriesByYear[selectedYear]); 
   });
+
 
   textFont('Helvetica');
   textSize(32);
@@ -840,4 +847,24 @@ function getActivityColor(activity) {
         pop(); 
         return;
   }
+}
+
+function updateCounters(yearEntries) {
+  let siteCount = yearEntries.length;
+  let totalMegawatts = 0;
+  let totalAcres = 0;
+
+  for (let entry of yearEntries) {
+    if (!isNaN(entry.megawatts)) totalMegawatts += entry.megawatts;
+    if (!isNaN(entry.acres)) totalAcres += entry.acres;
+  }
+
+  // Animate with Counter-Up 2
+  $('#site-count').text(siteCount).toLocaleString());
+  $('#megawatt-count').text(Math.round(totalMegawatts).toLocaleString());
+  $('#acre-count').text(Math.round(totalAcres).toLocaleString());
+
+  counterUp(document.getElementById('site-count'), { duration: 1000 });
+  counterUp(document.getElementById('megawatt-count'), { duration: 1000 });
+  counterUp(document.getElementById('acre-count'), { duration: 1000 });
 }
