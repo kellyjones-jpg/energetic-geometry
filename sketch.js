@@ -203,7 +203,7 @@ function setup() {
   });
 
   textFont('Helvetica');
-  textSize(16);
+  textSize(32);
   textAlign(CENTER, CENTER);
   rectMode(CENTER);
   noLoop();
