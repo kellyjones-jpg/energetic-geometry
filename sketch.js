@@ -861,7 +861,7 @@ function updateCounters(yearEntries) {
   const mwEl = document.getElementById('megawatt-count');
   const acreEl = document.getElementById('acre-count');
 
-  // Calculate totals from the current yearEntries
+  // Calculate totals from the current year's entries
   let totalSites = yearEntries.length;
   let totalMegawatts = 0;
   let totalAcres = 0;
@@ -871,13 +871,25 @@ function updateCounters(yearEntries) {
     totalAcres += entry.acres || 0;
   });
 
-  // Set values first (CounterUp animates from 0 to this value)
-  siteEl.textContent = totalSites;
-  mwEl.textContent = Math.round(totalMegawatts);
-  acreEl.textContent = Math.round(totalAcres);
+  // Round totals for clean display
+  totalMegawatts = Math.round(totalMegawatts);
+  totalAcres = Math.round(totalAcres);
 
-  // Animate using the function-style API
-  window.counterUp(siteEl, { duration: 1000, delay: 16 });
-  window.counterUp(mwEl, { duration: 1000, delay: 16 });
-  window.counterUp(acreEl, { duration: 1000, delay: 16 });
+  // CountUp options with commas as thousands separators
+  const options = {
+    separator: ',',       // adds commas like 1,000
+    duration: 1.2,        // animation time in seconds
+  };
+
+  // Animate counters using CountUp.js
+  const siteCounter = new window.CountUp(siteEl, totalSites, options);
+  const mwCounter = new window.CountUp(mwEl, totalMegawatts, options);
+  const acreCounter = new window.CountUp(acreEl, totalAcres, options);
+
+  // Start animations if no errors
+  if (!siteCounter.error) siteCounter.start();
+  if (!mwCounter.error) mwCounter.start();
+  if (!acreCounter.error) acreCounter.start();
 }
+
+
