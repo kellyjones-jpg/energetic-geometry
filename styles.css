@@ -103,4 +103,5 @@ a.hyperlink {
 .thick-num {
     font-weight: bold;
     color: white;
+    font-size: 2rem;
 }
