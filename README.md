@@ -1,4 +1,4 @@
-# Energetic Geometry: The Art and Power of Agrivoltaics (In Progress...)
+# Energetic Geometry: The Art and Power of Agrivoltaics
 
 An interactive web-based visualization that explores agrivoltaics with abstract forms while emphasizing accessibility and longevity.
 
