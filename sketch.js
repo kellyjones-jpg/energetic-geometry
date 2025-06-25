@@ -7,6 +7,7 @@ let availableYears = [];
 let cnv;
 let tooltipEntry = null; 
 let bgImg;
+let counterTimeout;
 
 const cropEdgeGroups = {
   // Root vegetables
@@ -206,6 +207,12 @@ function setup() {
   selectedYear = availableYears[yearSlider.value()];
     windowResized();
     updateCounters(entriesByYear[selectedYear]); 
+
+    // Debounce counter updates
+    clearTimeout(counterTimeout);
+    counterTimeout = setTimeout(() => {
+      updateCounters(entriesByYear[selectedYear]);
+    }, 200);
   });
 
 
@@ -864,18 +871,13 @@ function updateCounters(yearEntries) {
     totalAcres += entry.acres || 0;
   });
 
-  // Set the text content before animation
+  // Set values first (CounterUp animates from 0 to this value)
   siteEl.textContent = totalSites;
   mwEl.textContent = Math.round(totalMegawatts);
   acreEl.textContent = Math.round(totalAcres);
 
-  // Animate using CounterUp 2
-  const counter = new window.CounterUp({
-    duration: 1000,
-    delay: 16,
-  });
-
-  counter.start(siteEl);
-  counter.start(mwEl);
-  counter.start(acreEl);
+  // Animate using the function-style API
+  window.counterUp(siteEl, { duration: 1000, delay: 16 });
+  window.counterUp(mwEl, { duration: 1000, delay: 16 });
+  window.counterUp(acreEl, { duration: 1000, delay: 16 });
 }
