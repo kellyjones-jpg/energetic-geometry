@@ -7,7 +7,6 @@ let availableYears = [];
 let cnv;
 let tooltipEntry = null; 
 let bgImg;
-let counterTimeout;
 
 const cropEdgeGroups = {
   // Root vegetables
@@ -207,12 +206,6 @@ function setup() {
   selectedYear = availableYears[yearSlider.value()];
     windowResized();
     updateCounters(entriesByYear[selectedYear]); 
-
-    // Debounce counter updates
-    clearTimeout(counterTimeout);
-    counterTimeout = setTimeout(() => {
-      updateCounters(entriesByYear[selectedYear]);
-    }, 200);
   });
 
 
@@ -857,39 +850,21 @@ function getActivityColor(activity) {
 }
 
 function updateCounters(yearEntries) {
-  const siteEl = document.getElementById('site-count');
-  const mwEl = document.getElementById('megawatt-count');
-  const acreEl = document.getElementById('acre-count');
-
-  // Calculate totals from the current year's entries
-  let totalSites = yearEntries.length;
+  let siteCount = yearEntries.length;
   let totalMegawatts = 0;
   let totalAcres = 0;
 
-  yearEntries.forEach(entry => {
-    totalMegawatts += entry.megawatts || 0;
-    totalAcres += entry.acres || 0;
-  });
+  for (let entry of yearEntries) {
+    if (!isNaN(entry.megawatts)) totalMegawatts += entry.megawatts;
+    if (!isNaN(entry.acres)) totalAcres += entry.acres;
+  }
 
-  // Round totals for clean display
-  totalMegawatts = Math.round(totalMegawatts);
-  totalAcres = Math.round(totalAcres);
+  // Animate with Counter-Up 2
+  $('#site-count').text(Math.round(siteCount).toLocaleString());
+  $('#megawatt-count').text(Math.round(totalMegawatts).toLocaleString());
+  $('#acre-count').text(Math.round(totalAcres).toLocaleString());
 
-  // CountUp options with commas as thousands separators
-  const options = {
-    separator: ',',       // adds commas like 1,000
-    duration: 1.2,        // animation time in seconds
-  };
-
-  // Animate counters using CountUp.js
-  const siteCounter = new window.CountUp(siteEl, totalSites, options);
-  const mwCounter = new window.CountUp(mwEl, totalMegawatts, options);
-  const acreCounter = new window.CountUp(acreEl, totalAcres, options);
-
-  // Start animations if no errors
-  if (!siteCounter.error) siteCounter.start();
-  if (!mwCounter.error) mwCounter.start();
-  if (!acreCounter.error) acreCounter.start();
+  counterUp(document.getElementById('site-count'), { duration: 1000 });
+  counterUp(document.getElementById('megawatt-count'), { duration: 1000 });
+  counterUp(document.getElementById('acre-count'), { duration: 1000 });
 }
-
-
