@@ -6,12 +6,8 @@
       padding: 0;
     }
 
-    a.title,
-    a.title:hover,
-    a.title:focus,
-    a.title:visited {
-      color: white;
-      text-decoration: none;
+    h3 {
+        font-size: 1.5rem;
     }
 
     h1 {
@@ -93,6 +89,13 @@
     .nav-link:focus {
           color: #3399CC;
     }
+ a.title,
+    a.title:hover,
+    a.title:focus,
+    a.title:visited {
+      color: white;
+      text-decoration: none;
+    }
 
 a.hyperlink {
   color: #3399CC;
@@ -105,6 +108,7 @@ a.hyperlink {
     color: white;
     font-size: 2rem;
 }
-h3 {
-        font-size: 1.5rem;
-    }
+.lead {
+    font-size: 1.15rem;
+    font-weight: 300;
+}
