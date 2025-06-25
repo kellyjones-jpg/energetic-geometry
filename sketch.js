@@ -860,7 +860,7 @@ function updateCounters(yearEntries) {
   }
 
   // Animate with Counter-Up 2
-  $('#site-count').text(siteCount).toLocaleString());
+  $('#site-count').text(Math.round(siteCount).toLocaleString());
   $('#megawatt-count').text(Math.round(totalMegawatts).toLocaleString());
   $('#acre-count').text(Math.round(totalAcres).toLocaleString());
 
