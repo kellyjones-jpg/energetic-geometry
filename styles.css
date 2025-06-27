@@ -113,3 +113,11 @@ a.hyperlink {
     font-size: 1.15rem;
     font-weight: 300;
 }
+
+.image-caption {
+  font-size: 10px;
+  text-align: left;
+  margin: 8px 0 4px 0;
+  color: white;
+  font-style: italic;
+}
