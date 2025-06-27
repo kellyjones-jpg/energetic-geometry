@@ -119,3 +119,37 @@ a.hyperlink {
   color: white;
   font-style: italic;
 }
+.timeline-slider {
+  width: 400px;
+  align-items: center;
+  margin-top: 10px;
+  appearance: none;
+  height: 6px;
+  background: #999;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Thumb (handle) styling for most browsers */
+.timeline-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  align-items: center;
+  height: 16px;
+  border-radius: 50%;
+  background: #e4572e; /* Match your theme */
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 2px rgba(0,0,0,0.3);
+}
+
+.timeline-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  border-radius: 50%;
+  background: #e4572e;
+  cursor: pointer;
+  border: none;
+}
