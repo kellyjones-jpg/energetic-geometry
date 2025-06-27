@@ -198,6 +198,11 @@ function setup() {
   cnv = createCanvas(initialWidth, fixedHeight);
   cnv.parent('sketch-container');
 
+  // Create caption
+  let caption = createP("Image from Pexels");
+  caption.class('image-caption');
+  caption.parent('sketch-container');
+
   // Create the slider
   yearSlider = createSlider(0, availableYears.length - 1, 0);
   yearSlider.style('width', '400px');
