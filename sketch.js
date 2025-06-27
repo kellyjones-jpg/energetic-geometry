@@ -212,7 +212,22 @@ function setup() {
     windowResized();
     updateCounters(entriesByYear[selectedYear]); 
   });
+  
+let yearButtonsContainer = createDiv();
+yearButtonsContainer.parent('sketch-container');
+yearButtonsContainer.class('year-buttons');
 
+availableYears.forEach((year, index) => {
+  let btn = createButton(year);
+  btn.class('year-btn');
+  btn.mousePressed(() => {
+    selectedYear = year;
+    yearSlider.value(index);
+    windowResized(); // Re-render visual grid
+    updateCounters(entriesByYear[selectedYear]);
+  });
+  btn.parent(yearButtonsContainer);
+});
 
   textFont('Helvetica');
   textSize(32);
