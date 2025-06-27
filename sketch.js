@@ -205,29 +205,25 @@ function setup() {
 
   // Create the slider
   yearSlider = createSlider(0, availableYears.length - 1, 0);
-  yearSlider.class('timeline-slider'); 
   yearSlider.parent('sketch-container');
-  yearSlider.input(() => {
-  selectedYear = availableYears[yearSlider.value()];
-    windowResized();
-    updateCounters(entriesByYear[selectedYear]); 
-  });
+  yearSlider.class('timeline-slider'); // ← important for styling
   
-let yearButtonsContainer = createDiv();
-yearButtonsContainer.parent('sketch-container');
-yearButtonsContainer.class('year-buttons');
-
-availableYears.forEach((year, index) => {
-  let btn = createButton(year);
-  btn.class('year-btn');
-  btn.mousePressed(() => {
-    selectedYear = year;
-    yearSlider.value(index);
-    windowResized(); // Re-render visual grid
-    updateCounters(entriesByYear[selectedYear]);
+  // YEAR BUTTONS
+  let yearButtonsContainer = createDiv();
+  yearButtonsContainer.parent('sketch-container');
+  yearButtonsContainer.class('year-buttons');
+  
+  availableYears.forEach((year, index) => {
+    let btn = createButton(year);
+    btn.class('year-btn');
+    btn.mousePressed(() => {
+      selectedYear = year;
+      yearSlider.value(index);
+      windowResized();
+      updateCounters(entriesByYear[selectedYear]);
+    });
+    btn.parent(yearButtonsContainer);
   });
-  btn.parent(yearButtonsContainer);
-});
 
   textFont('Helvetica');
   textSize(32);
@@ -272,43 +268,61 @@ function draw() {
     return;
   }
 
-  let padding = 60;
-  let shapeSize = 150;
   let startY = 80;
-  let numCols = floor((width - padding) / (shapeSize + padding)); // calculate number of columns that fit
+  let yearEntries = entriesByYear[selectedYear] || [];
+  
+  let count = yearEntries.length;
+  let minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
+  let maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
+  
+  // Base size decreases as number of entries increases
+  let baseShapeSize = map(count, 10, 120, 140, 50);
+  let padding = map(count, 10, 120, 60, 15);
+  
+  let numCols = floor((width - padding) / (baseShapeSize + padding));
+  numCols = max(numCols, 1);
+  let numRows = ceil(count / numCols);
+  let maxCellHeight = (height - startY - 50) / numRows;
+
 
   for (let i = 0; i < yearEntries.length; i++) {
     let entry = yearEntries[i];
     let col = i % numCols;
     let row = floor(i / numCols);
 
-    let centerX = padding + col * (shapeSize + padding) + shapeSize / 2;
-    let centerY = startY + row * (shapeSize + padding) + shapeSize / 2;
+    let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
+    entryShapeSize = constrain(entryShapeSize, 30, maxCellHeight * 0.85);
+    let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 0.5, 3);
+    strokeW = constrain(strokeW, 0.5, 4); // Keep visually reasonable
+    let density = floor(map(entry.acres, minSiteSize, maxSiteSize, 6, 16));
+    density = constrain(density, 5, 20); // Prevent extreme cases
+    let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
+    let centerY = startY + row * maxCellHeight + maxCellHeight / 2;
     let baseColor = getActivityColor(entry.activities?.[0] || '');
 
     push();
     translate(centerX, centerY);
 
     if (entry.arrayType) {
-      drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shapeSize);
+      drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, entryShapeSize, strokeW, density);
     }
 
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-      drawHabitatShape(entry.habitat, 0, 0, shapeSize, baseColor);
+      drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor);
     }
 
      if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
      Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-      drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, shapeSize);
+      drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, entryShapeSize);
     }
 
     if (entry.cropType && entry.cropType.length > 0) {
-      drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, shapeSize);
+      drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize, strokeW);
 
     }
 
     if (entry.animalType && entry.animalType.length > 0) {
-      drawAnimalLine(entry.animalType, entry.activities, 0, 0, shapeSize);
+      drawAnimalLine(entry.animalType, entry.activities, 0, 0, entryShapeSize, strokeW);
     }
     
     pop();
@@ -431,7 +445,7 @@ function keyPressed() {
   }
 }
 
-function drawCropEdgeStyle(cropTypes, activities, x, y, size) {
+function drawCropEdgeStyle(cropTypes, activities, x, y, size, strokeW = 2) {
   if (!Array.isArray(cropTypes) || cropTypes.length === 0) return;
   if (!Array.isArray(activities) || activities.length === 0) return;
 
@@ -444,7 +458,7 @@ function drawCropEdgeStyle(cropTypes, activities, x, y, size) {
   push();
   translate(x, y);
   noFill();
-  strokeWeight(2);
+  strokeWeight(strokeW);
 
   for (let i = 0; i < activities.length; i++) {
     let activity = activities[i];
@@ -561,14 +575,14 @@ function drawDotRing(size, offsetIndex = 0) {
 
 
 // Draw different line styles based on Animal Type
-function drawAnimalLine(animalType, activities, x, y, size) {
+function drawAnimalLine(animalType, activities, x, y, size, strokeW = 2) {
   if (!animalType || activities.length === 0) return;
   let style = getLineStyle(animalType);
   if (!style) return;
 
   push();
   noFill();
-  strokeWeight(style.weight);
+  strokeWeight(strokeW || style.weight);
 
   for (let i = 0; i < activities.length; i++) {
     let strokeColor = getActivityColor(activities[i]);
@@ -771,35 +785,34 @@ function pointInHexagon(px, py, r) {
   return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
 }
 
-function drawArrayOverlay(arrayType, activities, x, y, size) {
+function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, density = 10) {
   if (!arrayType || !Array.isArray(activities) || activities.length === 0) return;
 
   push();
   translate(x, y);
   rectMode(CENTER);
-  strokeWeight(1.2);
+  strokeWeight(strokeW);
   noFill();
 
   switch (arrayType) {
    case 'fixed':
-    drawCrosshatchGridMultiColor(activities, size, 18); break;
-   case 'single-axis tracking':
-    drawIsometricGridMultiColor(activities, size, 11, 1.35);
-    break;
+    drawCrosshatchGridMultiColor(activities, size, density); break;
+  case 'single-axis tracking':
+    drawIsometricGridMultiColor(activities, size, density, 1.35); break;
   case 'dual-axis tracking':
-    drawDottedMatrixMultiColor(activities, size, 8); break;
+    drawDottedMatrixMultiColor(activities, size, density); break;
   }
 
   pop();
 }
 
-function drawCrosshatchGridMultiColor(activities, size, step = 11) {
+function drawCrosshatchGridMultiColor(activities, size, density = 11) {
   let colorCount = activities.length;
 
   push();
   rotate(PI / 4); // Rotate 45 degrees for diamond orientation
 
-  for (let i = -size / 2, idx = 0; i <= size / 2; i += step, idx++) {
+  for (let i = -size / 2, idx = 0; i <= size / 2; i += density, idx++) {
     let col = getActivityColor(activities[idx % colorCount]);
     stroke(col);
     line(i, -size / 2, i, size / 2); // vertical
@@ -809,7 +822,7 @@ function drawCrosshatchGridMultiColor(activities, size, step = 11) {
   pop();
 }
 
-function drawIsometricGridMultiColor(activities, size, step = 7, slope = 1.35) {
+function drawIsometricGridMultiColor(activities, size, density = 7, slope = 1.35) {
   let colorCount = activities.length;
   let idx = 0;
   let halfSize = size / 2;
@@ -817,7 +830,7 @@ function drawIsometricGridMultiColor(activities, size, step = 7, slope = 1.35) {
   push(); // Start inner transformation for rotation
   rotate(HALF_PI);
 
-  for (let x = -halfSize; x <= halfSize; x += step) {
+  for (let x = -halfSize; x <= halfSize; x += density) {
     // Forward-slanting lines
     stroke(getActivityColor(activities[idx % colorCount]));
     let y1a = -halfSize * slope;
@@ -837,14 +850,14 @@ function drawIsometricGridMultiColor(activities, size, step = 7, slope = 1.35) {
 }
 
 
-function drawDottedMatrixMultiColor(activities, size) {
+function drawDottedMatrixMultiColor(activities, size, density = 10) {
   let step = 10;
   let colorCount = activities.length;
   let dotSize = 3;
   let idx = 0;
 
-  for (let x = -size / 2; x < size / 2; x += step) {
-    for (let y = -size / 2; y < size / 2; y += step) {
+  for (let x = -size / 2; x < size / 2; x += density) {
+  for (let y = -size / 2; y < size / 2; y += density) {
       fill(getActivityColor(activities[idx % colorCount]));
       noStroke();
       ellipse(x, y, dotSize, dotSize);
