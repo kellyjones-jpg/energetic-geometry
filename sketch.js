@@ -200,7 +200,7 @@ function setup() {
 
   // Create caption
   let caption = createP("Image from Pexels");
-  caption.style('text-align', 'left');
+  caption.style('text-align', 'left', true);
   caption.class('image-caption');
   caption.parent('sketch-container');
 
