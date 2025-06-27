@@ -269,7 +269,6 @@ function draw() {
   }
 
   let startY = 80;
-  let yearEntries = entriesByYear[selectedYear] || [];
   
   let count = yearEntries.length;
   let minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
