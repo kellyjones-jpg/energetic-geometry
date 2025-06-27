@@ -205,7 +205,7 @@ function setup() {
 
   // Create the slider
   yearSlider = createSlider(0, availableYears.length - 1, 0);
-  yearSlider.style('width', '400px');
+  yearSlider.class('timeline-slider'); 
   yearSlider.parent('sketch-container');
   yearSlider.input(() => {
   selectedYear = availableYears[yearSlider.value()];
