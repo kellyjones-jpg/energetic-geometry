@@ -881,26 +881,6 @@ function getActivityColor(activity) {
   }
 }
 
-function updateCounters(yearEntries) {
-  let siteCount = yearEntries.length;
-  let totalMegawatts = 0;
-  let totalAcres = 0;
-
-  for (let entry of yearEntries) {
-    if (!isNaN(entry.megawatts)) totalMegawatts += entry.megawatts;
-    if (!isNaN(entry.acres)) totalAcres += entry.acres;
-  }
-
-  // Animate with Counter-Up 2
-  $('#site-count').text(Math.round(siteCount).toLocaleString());
-  $('#megawatt-count').text(Math.round(totalMegawatts).toLocaleString());
-  $('#acre-count').text(Math.round(totalAcres).toLocaleString());
-
-  counterUp(document.getElementById('site-count'), { duration: 1000 });
-  counterUp(document.getElementById('megawatt-count'), { duration: 1000 });
-  counterUp(document.getElementById('acre-count'), { duration: 1000 });
-}
-
 function drawMinimalSite(x, y, activity = 'habitat', systemSize = 0.1, siteSize = 0.1) {
   const baseColor = getActivityColor(activity); 
   const size = map(siteSize, 0, 10, 2, 40); 
@@ -919,5 +899,25 @@ function drawMinimalSite(x, y, activity = 'habitat', systemSize = 0.1, siteSize 
   fill(baseColor);
   ellipse(0, 0, size, size); // dot
   pop();
+}
+
+function updateCounters(yearEntries) {
+  let siteCount = yearEntries.length;
+  let totalMegawatts = 0;
+  let totalAcres = 0;
+
+  for (let entry of yearEntries) {
+    if (!isNaN(entry.megawatts)) totalMegawatts += entry.megawatts;
+    if (!isNaN(entry.acres)) totalAcres += entry.acres;
+  }
+
+  // Animate with Counter-Up 2
+  $('#site-count').text(Math.round(siteCount).toLocaleString());
+  $('#megawatt-count').text(Math.round(totalMegawatts).toLocaleString());
+  $('#acre-count').text(Math.round(totalAcres).toLocaleString());
+
+  counterUp(document.getElementById('site-count'), { duration: 1000 });
+  counterUp(document.getElementById('megawatt-count'), { duration: 1000 });
+  counterUp(document.getElementById('acre-count'), { duration: 1000 });
 }
 
