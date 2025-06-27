@@ -900,3 +900,24 @@ function updateCounters(yearEntries) {
   counterUp(document.getElementById('megawatt-count'), { duration: 1000 });
   counterUp(document.getElementById('acre-count'), { duration: 1000 });
 }
+
+function drawMinimalSite(x, y, activity = 'habitat', systemSize = 0.1, siteSize = 0.1) {
+  const baseColor = getActivityColor(activity); 
+  const size = map(siteSize, 0, 10, 2, 40); 
+  const shadowOffset = map(systemSize, 0, 10, 0.5, 6); 
+
+  push();
+  translate(x, y);
+  noStroke();
+
+  // Draw hard-edged drop shadow (Suprematist-inspired block)
+  fill(0, 100); // semi-opaque black for shadow
+  rectMode(CENTER);
+  ellipse(shadowOffset, shadowOffset, size, size);
+
+  // Draw minimal primary dot (filled shape)
+  fill(baseColor);
+  ellipse(0, 0, size, size); // dot
+  pop();
+}
+
