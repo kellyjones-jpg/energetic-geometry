@@ -129,77 +129,77 @@ a.hyperlink {
   max-width: 100%;
 }
 
-.timeline-slider {
-  appearance: none;
-  width: 80%;
-  max-width: 700px;
-  height: 12px;
-  background: 
-    linear-gradient(to right, #444 0%, #444 100%),
-    linear-gradient(to right, #666 0%, #666 100%);
-  background-repeat: no-repeat;
-  background-size: 100% 2px, 100% 2px;
-  background-position: center, calc(50% + 3px); /* slight misalignment */
-  border-radius: 0;
-  cursor: pointer;
-  margin-top: 12px;
+#timeline {
   position: relative;
-}
-
-.timeline-slider::-webkit-slider-thumb {
-  appearance: none;
-  width: 14px;
-  height: 19px;
-  background: #0A0A0A;
-  border: none;
-  transform: rotate(45deg);
-  transform-origin: center;
-  margin-top: -6px; /* center over line */
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.timeline-slider:focus::-webkit-slider-thumb,
-.timeline-slider:hover::-webkit-slider-thumb {
-  transform: rotate(45deg) scale(1.2);
-  background: black;
-}
-
-.timeline-slider::-moz-range-thumb {
-  width: 14px;
-  height: 19px;
-  background: #0A0A0A;
-  border: none;
-  transform: rotate(45deg);
-}
-
-.year-buttons {
-  position: relative;
-  width: 100%;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px 8px; /* space out rows and buttons */
-  margin-top: 20px;
-  margin-bottom: 10px;
+  justify-content: space-between;
+  align-items: center;
+  width: 90%;
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 30px 0;
 }
 
-.year-btn {
-  font-family: Helvetica, sans-serif;
-  color: white;
-  text-decoration: underline;
-  font-size: 14px;
-  padding: 3px 5px;
+#timeline::before,
+#timeline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #444;
+}
+
+#timeline::before {
+  top: 50%;
+  transform: translateY(-6px); /* slightly misaligned */
+}
+
+#timeline::after {
+  top: 50%;
+  transform: translateY(6px); /* slightly misaligned */
+}
+
+.timeline-year {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.year-label {
+  font-size: 12px;
+  margin: 0;
   text-transform: uppercase;
-  transform: rotate(0deg);
+  font-weight: bold;
+  color: white;
+}
+
+.year-label.above {
+  order: -1;
+  margin-bottom: 6px;
+}
+
+.year-label.below {
+  order: 1;
+  margin-top: 6px;
+}
+
+.year-node {
+  width: 16px;
+  height: 16px;
+  background-color: #E4572E;
+  transform: rotate(45deg);
+  border: 2px solid black;
+  cursor: pointer;
   transition: transform 0.2s, background 0.2s;
 }
 
-.year-btn.above-line {
-  margin-bottom: 12px;
+.year-node.active {
+  background-color: black;
+  border-color: #E4572E;
+  transform: rotate(45deg) scale(1.2);
 }
 
-.year-btn.below-line {
-  margin-top: 12px;
-}
 
