@@ -202,6 +202,7 @@ function setup() {
   let caption = createP("Image from Pexels");
   caption.class('image-caption');
   caption.parent('sketch-container');
+  caption.style('text-align', 'left', true);
 
   // Create the slider
   yearSlider = createSlider(0, availableYears.length - 1, 0);
@@ -411,36 +412,81 @@ function mousePressed() {
 function keyPressed() {
   let yearEntries = entriesByYear[selectedYear];
   if (!yearEntries) return;
-  if (!tooltipEntry) return;
 
-  let currentIndex = yearEntries.findIndex(e => e.name === tooltipEntry.name);
-  if (currentIndex === -1) return;
+  // Handle ESC, LEFT, RIGHT for tooltip navigation
+  if (tooltipEntry) {
+    let currentIndex = yearEntries.findIndex(e => e.name === tooltipEntry.name);
+    if (currentIndex === -1) return;
 
-  let shapeSize = 150;
-  let padding = 60;
-  let startY = 80;
-  let numCols = floor((width - padding) / (shapeSize + padding));
-  numCols = max(numCols, 1);
+    let shapeSize = 150;
+    let padding = 60;
+    let startY = 80;
+    let numCols = floor((width - padding) / (shapeSize + padding));
+    numCols = max(numCols, 1);
 
-  let newIndex = currentIndex;
+    let newIndex = currentIndex;
 
-  if (keyCode === ESCAPE) {
-    showTooltip(null);
-    return;
-  } else if (keyCode === RIGHT_ARROW && currentIndex < yearEntries.length - 1) {
-    newIndex = currentIndex + 1;
-  } else if (keyCode === LEFT_ARROW && currentIndex > 0) {
-    newIndex = currentIndex - 1;
+    if (keyCode === ESCAPE) {
+      showTooltip(null);
+      return;
+    } else if (keyCode === RIGHT_ARROW && currentIndex < yearEntries.length - 1) {
+      newIndex = currentIndex + 1;
+    } else if (keyCode === LEFT_ARROW && currentIndex > 0) {
+      newIndex = currentIndex - 1;
+    }
+
+    if (newIndex !== currentIndex) {
+      let col = newIndex % numCols;
+      let row = floor(newIndex / numCols);
+      let centerX = padding + col * (shapeSize + padding) + shapeSize / 2;
+      let centerY = startY + row * (shapeSize + padding) + shapeSize / 2;
+
+      let newEntry = { ...yearEntries[newIndex], x: centerX, y: centerY };
+      showTooltip(newEntry);
+    }
   }
 
-  if (newIndex !== currentIndex) {
-    let col = newIndex % numCols;
-    let row = floor(newIndex / numCols);
-    let centerX = padding + col * (shapeSize + padding) + shapeSize / 2;
-    let centerY = startY + row * (shapeSize + padding) + shapeSize / 2;
+  // Handle HOME and END to jump years
+  let currentYearIndex = availableYears.indexOf(selectedYear);
 
-    let newEntry = { ...yearEntries[newIndex], x: centerX, y: centerY };
-    showTooltip(newEntry);
+  if (keyCode === HOME) {
+    selectedYear = availableYears[0];
+    yearSlider.value(0);
+    updateYear(selectedYear, 0);
+  } else if (keyCode === END) {
+    let lastIndex = availableYears.length - 1;
+    selectedYear = availableYears[lastIndex];
+    yearSlider.value(lastIndex);
+    updateYear(selectedYear, lastIndex);
+  }
+
+  // Optional: Left/right keys switch years if no tooltip is selected
+  if (!tooltipEntry && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
+    let delta = keyCode === RIGHT_ARROW ? 1 : -1;
+    let nextIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
+    if (nextIndex !== currentYearIndex) {
+      selectedYear = availableYears[nextIndex];
+      yearSlider.value(nextIndex);
+      updateYear(selectedYear, nextIndex);
+    }
+  }
+}
+
+function updateYear(year, index) {
+  windowResized();
+  updateCounters(entriesByYear[year]);
+
+  // Optional: visually update year button highlights
+  document.querySelectorAll('.year-btn').forEach(btn => {
+    btn.classList.remove('selected');
+  });
+  let selectedBtn = document.querySelector(`.year-btn[data-year="${year}"]`);
+  if (selectedBtn) selectedBtn.classList.add('selected');
+
+  // Screen reader update
+  const srLive = document.getElementById('sr-live');
+  if (srLive) {
+    srLive.textContent = `Year changed to ${year}`;
   }
 }
 
