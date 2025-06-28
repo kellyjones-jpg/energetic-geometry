@@ -240,8 +240,7 @@ a.hyperlink {
 
 .suprematist-op-dropshadow {
   filter:
-    drop-shadow(8px 4px 0 #0A0A0A)      /* near-black offset shadow */
-    drop-shadow(12px 7px 0 white)        /* white offset shadow for contrast */
-    drop-shadow(4px 10px 0 #0A0A0A)      /* another near-black shadow, different offset */
-    drop-shadow(-3px 6px 0 white);       /* white shadow offset opposite side */
+     drop-shadow(3px 1.5px 0 #0A0A0A)   /* small near-black offset */
+    drop-shadow(5px 3px 0 white)         /* small white offset */
+    drop-shadow(-2px 2px 0 #0A0A0A);    /* subtle opposite near-black shadow */
 }
