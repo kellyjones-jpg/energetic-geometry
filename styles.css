@@ -152,6 +152,17 @@ a.hyperlink {
   text-transform: uppercase;
   color: white;
   text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.year-label:hover {
+  color: #E4572E;
+}
+
+.year-label.active {
+  color: #E4572E;
+  font-weight: bold;
 }
 
 .year-label.above {
@@ -169,13 +180,8 @@ a.hyperlink {
   height: 45px;
   background-color: #0A0A0A;
   transform: rotate(45deg);
-  cursor: pointer;
-  transition: transform 0.2s, background 0.2s;
-}
-
-.year-label.active {
-  color: #E4572E;
-  font-weight: bold;
+  pointer-events: none; /* disables click events */
+  user-select: none;    /* disables text selection */
 }
 
 @media (max-width: 700px) {
