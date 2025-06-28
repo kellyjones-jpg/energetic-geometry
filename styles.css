@@ -144,7 +144,7 @@ a.hyperlink {
   left: 0;
   right: 0;
   top: 50%;
-  height: 2px;
+  height: 3px;
   background: #0A0A0A;
 }
 
@@ -164,12 +164,12 @@ a.hyperlink {
 
 .year-label.above {
   order: -1;
-  margin-bottom: 6px;
+  margin-bottom: 15px;
 }
 
 .year-label.below {
   order: 1;
-  margin-top: 6px;
+  margin-top: 15px;
 }
 
 .year-node {
@@ -206,7 +206,7 @@ a.hyperlink {
       top: 0;
       bottom: 0;
       left: 50%;
-      width: 2px;
+      width: 3px;
       background: #0A0A0A;
       transform: translateX(-50%);
     }
