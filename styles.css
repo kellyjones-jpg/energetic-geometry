@@ -156,25 +156,26 @@ a.hyperlink {
 }
 
 .year-label {
-  font-size: 14px;
+  font-size: 16px;
   margin: 0;
   text-transform: uppercase;
   color: white;
+  text-decoration: underline;
 }
 
 .year-label.above {
   order: -1;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
 }
 
 .year-label.below {
   order: 1;
-  margin-top: 15px;
+  margin-top: 5px;
 }
 
 .year-node {
   width: 3px;
-  height: 16px;
+  height: 45px;
   background-color: #0A0A0A;
   transform: rotate(45deg);
   cursor: pointer;
