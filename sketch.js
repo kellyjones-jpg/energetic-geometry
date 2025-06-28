@@ -205,6 +205,7 @@ function setup() {
   
   // YEAR BUTTONS
  let timelineContainer = createDiv().id('timeline');
+ timelineContainer.style('text-align', 'center', true);
  timelineContainer.parent('sketch-container');
 
   availableYears.forEach((year, index) => {
