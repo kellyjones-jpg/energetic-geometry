@@ -131,8 +131,8 @@ a.hyperlink {
 
 .timeline-slider {
   appearance: none;
-  width: 70%;
-  max-width: 500px;
+  width: 80%;
+  max-width: 700px;
   height: 12px;
   background: 
     linear-gradient(to right, #444 0%, #444 100%),
@@ -149,8 +149,8 @@ a.hyperlink {
 .timeline-slider::-webkit-slider-thumb {
   appearance: none;
   width: 14px;
-  height: 14px;
-  background: #E4572E;
+  height: 19px;
+  background: #0A0A0A;
   border: none;
   transform: rotate(45deg);
   transform-origin: center;
@@ -167,8 +167,8 @@ a.hyperlink {
 
 .timeline-slider::-moz-range-thumb {
   width: 14px;
-  height: 14px;
-  background: #E4572E;
+  height: 19px;
+  background: #0A0A0A;
   border: none;
   transform: rotate(45deg);
 }
@@ -186,10 +186,10 @@ a.hyperlink {
 
 .year-btn {
   font-family: Helvetica, sans-serif;
-  font-size: 11px;
+  color: white;
+  text-decoration: underline;
+  font-size: 14px;
   padding: 3px 5px;
-  background: white;
-  border: 1px solid black;
   text-transform: uppercase;
   transform: rotate(0deg);
   transition: transform 0.2s, background 0.2s;
