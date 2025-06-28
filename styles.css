@@ -185,9 +185,9 @@ a.hyperlink {
 }
 
 .year-node {
-  width: 16px;
+  width: 3px;
   height: 16px;
-  background-color: #E4572E;
+  background-color: #0A0A0A;
   transform: rotate(45deg);
   border: 2px solid black;
   cursor: pointer;
@@ -195,7 +195,7 @@ a.hyperlink {
 }
 
 .year-node.active {
-  background-color: black;
+  background-color: #0A0A0A;
   border-color: #E4572E;
   transform: rotate(45deg) scale(1.2);
 }
