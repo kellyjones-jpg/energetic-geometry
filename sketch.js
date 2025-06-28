@@ -240,7 +240,7 @@ function setup() {
   textAlign(CENTER, CENTER);
   rectMode(CENTER);
   noLoop();
-
+}
 
 function windowResized() {
   let yearEntries = entriesByYear[selectedYear] || [];
