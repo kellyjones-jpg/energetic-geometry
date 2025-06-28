@@ -220,20 +220,21 @@ function setup() {
     label.addClass('below');
   }
 
-  let node = createDiv().class('year-node');
+   let node = createDiv().class('year-node');
   node.parent(yearDiv);
-  node.attribute('data-year', year);
-  node.mousePressed(() => {
+
+  // Move click handling to label only
+  label.mousePressed(() => {
     selectedYear = year;
     windowResized();
     updateCounters(entriesByYear[selectedYear]);
 
-    // Update active styling
-    document.querySelectorAll('.year-node').forEach(n => n.classList.remove('active'));
-    node.addClass('active');
+    // Update active label styling
+    document.querySelectorAll('.year-label').forEach(l => l.classList.remove('active'));
+    label.addClass('active');
   });
 
-  if (index === 0) node.addClass('active');
+  if (index === 0) label.addClass('active');
 });
 
 
