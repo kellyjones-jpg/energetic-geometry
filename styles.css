@@ -238,3 +238,19 @@ a.hyperlink {
   }
 }
 
+.op-art-dropshadow {
+  /* Base image style */
+  display: block;
+  max-width: 100%;
+  height: auto;
+
+  /* Multiple layered shadows, slight horizontal offset, sharp edges */
+  filter:
+    drop-shadow(2px 0 0 black)
+    drop-shadow(-2px 0 0 white)
+    drop-shadow(0 2px 0 black)
+    drop-shadow(0 -2px 0 white);
+
+  /* Optional subtle blur to soften edges slightly */
+  /* filter: drop-shadow(2px 0 1px black) drop-shadow(-2px 0 1px white); */
+}
