@@ -139,6 +139,21 @@ function preload() {
   bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
 }
 
+function updateYear(newYear, index) {
+  selectedYear = newYear;
+  windowResized();
+  updateCounters(entriesByYear[selectedYear]);
+
+  // Remove 'active' from all year labels
+  selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
+
+  // Add 'active' to the correct label
+  let yearLabels = selectAll('.year-label');
+  if (yearLabels[index]) {
+    yearLabels[index].addClass('active');
+  }
+}
+
 function setup() {
   // Load and organize data
   for (let i = 0; i < table.getRowCount(); i++) {
@@ -225,16 +240,10 @@ availableYears.forEach((year, index) => {
   node.parent(yearDiv);
 
   label.mousePressed(() => {
-    selectedYear = year;
-    windowResized();
-    updateCounters(entriesByYear[selectedYear]);
-
-    // Remove 'active' from all labels, then add to this one
-    selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
-    label.addClass('active');
+    updateYear(year, index);
   });
 
-  if (index === 0) label.addClass('active');
+  if (index === 0) updateYear(year, index);
 });
 
   
@@ -298,9 +307,9 @@ function draw() {
 
 
   for (let i = 0; i < yearEntries.length; i++) {
-    let entry = yearEntries[i];
-    let col = i % numCols;
-    let row = floor(i / numCols);
+  let entry = yearEntries[i];
+  let col = i % numCols;
+  let row = floor(i / numCols);
 
     let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
     entryShapeSize = constrain(entryShapeSize, 30, maxCellHeight * 0.85);
@@ -311,36 +320,42 @@ function draw() {
     let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
     let centerY = startY + row * maxCellHeight + maxCellHeight / 2;
     let baseColor = getActivityColor(entry.activities?.[0] || '');
+    let isSelected = tooltipEntry && (tooltipEntry.name === entry.name);
 
-    push();
-    translate(centerX, centerY);
+  push();
+  translate(centerX, centerY);
 
-    if (entry.arrayType) {
-      drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, entryShapeSize, strokeW, density);
-    }
-
-    if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-      drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor);
-    }
-
-     if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
-     Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-      drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, entryShapeSize);
-    }
-
-    if (entry.cropType && entry.cropType.length > 0) {
-      drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize, strokeW);
-
-    }
-
-    if (entry.animalType && entry.animalType.length > 0) {
-      drawAnimalLine(entry.animalType, entry.activities, 0, 0, entryShapeSize, strokeW);
-    }
-    
-    pop();
+  // Apply grayscale or lower opacity if NOT selected and something IS selected
+  if (tooltipEntry && !isSelected) {
+    // Gray out: draw with reduced opacity or grayscale fill/stroke
+    tint(150, 150, 150, 150); // apply a gray tint with some transparency (p5.js function)
+  } else {
+    noTint(); // reset tint to normal
   }
-}
 
+  if (entry.arrayType) {
+    drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, entryShapeSize, strokeW, density, isSelected);
+  }
+
+  if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
+    drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor, isSelected);
+  }
+
+  if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
+      Array.isArray(entry.habitat) && entry.habitat.length > 0) {
+    drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, entryShapeSize, isSelected);
+  }
+
+  if (entry.cropType && entry.cropType.length > 0) {
+    drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize, strokeW, isSelected);
+  }
+
+  if (entry.animalType && entry.animalType.length > 0) {
+    drawAnimalLine(entry.animalType, entry.activities, 0, 0, entryShapeSize, strokeW, isSelected);
+  }
+
+  pop();
+}
 
 function showTooltip(entry) {
   tooltipEntry = entry; // Keep track of current tooltip for keyboard nav
@@ -415,8 +430,10 @@ function mousePressed() {
   }
 
   if (foundEntry) {
+    tooltipEntry = foundEntry;  // <-- track selection globally
     showTooltip(foundEntry);
   } else {
+    tooltipEntry = null;
     showTooltip(null);
   }
 }
@@ -425,7 +442,6 @@ function keyPressed() {
   let yearEntries = entriesByYear[selectedYear];
   if (!yearEntries) return;
 
-  // Handle ESC, LEFT, RIGHT for tooltip navigation
   if (tooltipEntry) {
     let currentIndex = yearEntries.findIndex(e => e.name === tooltipEntry.name);
     if (currentIndex === -1) return;
@@ -458,25 +474,22 @@ function keyPressed() {
     }
   }
 
-  // Handle HOME and END to jump years
+  // Handle HOME and END keys
   let currentYearIndex = availableYears.indexOf(selectedYear);
 
   if (keyCode === HOME) {
-    selectedYear = availableYears[0];
-    updateYear(selectedYear, 0);
+    updateYear(availableYears[0], 0);
   } else if (keyCode === END) {
     let lastIndex = availableYears.length - 1;
-    selectedYear = availableYears[lastIndex];
-    updateYear(selectedYear, lastIndex);
+    updateYear(availableYears[lastIndex], lastIndex);
   }
 
-  // Optional: Left/right keys switch years if no tooltip is selected
+  // Arrow keys switch years if no tooltip is shown
   if (!tooltipEntry && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
     let delta = keyCode === RIGHT_ARROW ? 1 : -1;
     let nextIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
     if (nextIndex !== currentYearIndex) {
-      selectedYear = availableYears[nextIndex];
-      updateYear(selectedYear, nextIndex);
+      updateYear(availableYears[nextIndex], nextIndex);
     }
   }
 }
@@ -718,7 +731,15 @@ function drawTexturedLine(x, y, length) {
   }
 }
 
-function drawHabitatShape(habitatList, x, y, size, baseColor) {
+function drawHabitatShape(habitat, x, y, size, baseColor, isSelected = true) {
+  if (!isSelected) {
+    // Draw with grayscale or lighter fill
+    fill(150, 150, 150, 150);
+    stroke(180, 180, 180, 100);
+  } else {
+    fill(baseColor);
+    stroke(0);
+  }
   if (!Array.isArray(habitatList)) return;
 
   // Filter out empty strings, null, undefined, or whitespace-only values
