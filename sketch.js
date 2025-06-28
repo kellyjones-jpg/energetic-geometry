@@ -1,7 +1,6 @@
 let table;
 let entries = [];
 let entriesByYear = {};
-let yearSlider;
 let selectedYear;
 let availableYears = [];
 let cnv;
@@ -200,37 +199,42 @@ function setup() {
 
   // Create caption
   let caption = createP("Image from Pexels");
+  caption.style('text-align', 'left', true);
   caption.class('image-caption');
   caption.parent('sketch-container');
-  caption.style('text-align', 'left', true);
-
-  // Create the slider
-  yearSlider = createSlider(0, availableYears.length - 1, 0);
-  yearSlider.parent('sketch-container');
-  yearSlider.class('timeline-slider'); // ← important for styling
   
   // YEAR BUTTONS
-  let yearButtonsContainer = createDiv();
-  yearButtonsContainer.parent('sketch-container');
-  yearButtonsContainer.class('year-buttons');
-  
+ let timelineContainer = createDiv().id('timeline');
+ timelineContainer.parent('sketch-container');
+
   availableYears.forEach((year, index) => {
-  let btn = createButton(year);
-  btn.class('year-btn');
-  btn.attribute('data-year', year);
+  let yearDiv = createDiv().class('timeline-year');
+  yearDiv.parent(timelineContainer);
+
+  let label = createP(year).class('year-label');
+  label.parent(yearDiv);
   if (index % 2 === 0) {
-    btn.addClass('above-line');
+    label.addClass('above');
   } else {
-    btn.addClass('below-line');
+    label.addClass('below');
   }
-  btn.mousePressed(() => {
+
+  let node = createDiv().class('year-node');
+  node.parent(yearDiv);
+  node.attribute('data-year', year);
+  node.mousePressed(() => {
     selectedYear = year;
-    yearSlider.value(index);
     windowResized();
     updateCounters(entriesByYear[selectedYear]);
+
+    // Update active styling
+    document.querySelectorAll('.year-node').forEach(n => n.classList.remove('active'));
+    node.addClass('active');
   });
-  btn.parent(yearButtonsContainer);
+
+  if (index === 0) node.addClass('active');
 });
+
 
 
   textFont('Helvetica');
@@ -458,12 +462,10 @@ function keyPressed() {
 
   if (keyCode === HOME) {
     selectedYear = availableYears[0];
-    yearSlider.value(0);
     updateYear(selectedYear, 0);
   } else if (keyCode === END) {
     let lastIndex = availableYears.length - 1;
     selectedYear = availableYears[lastIndex];
-    yearSlider.value(lastIndex);
     updateYear(selectedYear, lastIndex);
   }
 
@@ -473,7 +475,6 @@ function keyPressed() {
     let nextIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
     if (nextIndex !== currentYearIndex) {
       selectedYear = availableYears[nextIndex];
-      yearSlider.value(nextIndex);
       updateYear(selectedYear, nextIndex);
     }
   }
