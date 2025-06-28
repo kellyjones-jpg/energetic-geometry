@@ -139,21 +139,6 @@ function preload() {
   bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
 }
 
-function updateYear(newYear, index) {
-  selectedYear = newYear;
-  windowResized();
-  updateCounters(entriesByYear[selectedYear]);
-
-  // Remove 'active' from all year labels
-  selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
-
-  // Add 'active' to the correct label
-  let yearLabels = selectAll('.year-label');
-  if (yearLabels[index]) {
-    yearLabels[index].addClass('active');
-  }
-}
-
 function setup() {
   // Load and organize data
   for (let i = 0; i < table.getRowCount(); i++) {
@@ -240,10 +225,16 @@ availableYears.forEach((year, index) => {
   node.parent(yearDiv);
 
   label.mousePressed(() => {
-    updateYear(year, index);
+    selectedYear = year;
+    windowResized();
+    updateCounters(entriesByYear[selectedYear]);
+
+    // Remove 'active' from all labels, then add to this one
+    selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
+    label.addClass('active');
   });
 
-  if (index === 0) updateYear(year, index);
+  if (index === 0) label.addClass('active');
 });
 
   
@@ -307,9 +298,9 @@ function draw() {
 
 
   for (let i = 0; i < yearEntries.length; i++) {
-  let entry = yearEntries[i];
-  let col = i % numCols;
-  let row = floor(i / numCols);
+    let entry = yearEntries[i];
+    let col = i % numCols;
+    let row = floor(i / numCols);
 
     let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
     entryShapeSize = constrain(entryShapeSize, 30, maxCellHeight * 0.85);
@@ -320,43 +311,36 @@ function draw() {
     let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
     let centerY = startY + row * maxCellHeight + maxCellHeight / 2;
     let baseColor = getActivityColor(entry.activities?.[0] || '');
-    let isSelected = tooltipEntry && (tooltipEntry.name === entry.name);
 
-  push();
-  translate(centerX, centerY);
+    push();
+    translate(centerX, centerY);
 
-  // Apply grayscale or lower opacity if NOT selected and something IS selected
-  if (tooltipEntry && !isSelected) {
-    // Gray out: draw with reduced opacity or grayscale fill/stroke
-    tint(150, 150, 150, 150); // apply a gray tint with some transparency (p5.js function)
-  } else {
-    noTint(); // reset tint to normal
-  }
+    if (entry.arrayType) {
+      drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, entryShapeSize, strokeW, density);
+    }
 
-  if (entry.arrayType) {
-    drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, entryShapeSize, strokeW, density, isSelected);
-  }
+    if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
+      drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor);
+    }
 
-  if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-    drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor, isSelected);
-  }
+     if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
+     Array.isArray(entry.habitat) && entry.habitat.length > 0) {
+      drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, entryShapeSize);
+    }
 
-  if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
-      Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-    drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, entryShapeSize, isSelected);
-  }
+    if (entry.cropType && entry.cropType.length > 0) {
+      drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize, strokeW);
 
-  if (entry.cropType && entry.cropType.length > 0) {
-    drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize, strokeW, isSelected);
-  }
+    }
 
-  if (entry.animalType && entry.animalType.length > 0) {
-    drawAnimalLine(entry.animalType, entry.activities, 0, 0, entryShapeSize, strokeW, isSelected);
-  }
-
-  pop();
+    if (entry.animalType && entry.animalType.length > 0) {
+      drawAnimalLine(entry.animalType, entry.activities, 0, 0, entryShapeSize, strokeW);
+    }
+    
+    pop();
   }
 }
+
 
 function showTooltip(entry) {
   tooltipEntry = entry; // Keep track of current tooltip for keyboard nav
@@ -431,10 +415,8 @@ function mousePressed() {
   }
 
   if (foundEntry) {
-    tooltipEntry = foundEntry;  // <-- track selection globally
     showTooltip(foundEntry);
   } else {
-    tooltipEntry = null;
     showTooltip(null);
   }
 }
@@ -443,6 +425,7 @@ function keyPressed() {
   let yearEntries = entriesByYear[selectedYear];
   if (!yearEntries) return;
 
+  // Handle ESC, LEFT, RIGHT for tooltip navigation
   if (tooltipEntry) {
     let currentIndex = yearEntries.findIndex(e => e.name === tooltipEntry.name);
     if (currentIndex === -1) return;
@@ -475,22 +458,25 @@ function keyPressed() {
     }
   }
 
-  // Handle HOME and END keys
+  // Handle HOME and END to jump years
   let currentYearIndex = availableYears.indexOf(selectedYear);
 
   if (keyCode === HOME) {
-    updateYear(availableYears[0], 0);
+    selectedYear = availableYears[0];
+    updateYear(selectedYear, 0);
   } else if (keyCode === END) {
     let lastIndex = availableYears.length - 1;
-    updateYear(availableYears[lastIndex], lastIndex);
+    selectedYear = availableYears[lastIndex];
+    updateYear(selectedYear, lastIndex);
   }
 
-  // Arrow keys switch years if no tooltip is shown
+  // Optional: Left/right keys switch years if no tooltip is selected
   if (!tooltipEntry && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
     let delta = keyCode === RIGHT_ARROW ? 1 : -1;
     let nextIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
     if (nextIndex !== currentYearIndex) {
-      updateYear(availableYears[nextIndex], nextIndex);
+      selectedYear = availableYears[nextIndex];
+      updateYear(selectedYear, nextIndex);
     }
   }
 }
@@ -732,15 +718,7 @@ function drawTexturedLine(x, y, length) {
   }
 }
 
-function drawHabitatShape(habitat, x, y, size, baseColor, isSelected = true) {
-  if (!isSelected) {
-    // Draw with grayscale or lighter fill
-    fill(150, 150, 150, 150);
-    stroke(180, 180, 180, 100);
-  } else {
-    fill(baseColor);
-    stroke(0);
-  }
+function drawHabitatShape(habitatList, x, y, size, baseColor) {
   if (!Array.isArray(habitatList)) return;
 
   // Filter out empty strings, null, undefined, or whitespace-only values
