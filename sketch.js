@@ -355,6 +355,7 @@ function draw() {
   }
 
   pop();
+  }
 }
 
 function showTooltip(entry) {
@@ -996,4 +997,3 @@ function updateCounters(yearEntries) {
   counterUp(document.getElementById('megawatt-count'), { duration: 1000 });
   counterUp(document.getElementById('acre-count'), { duration: 1000 });
 }
-
