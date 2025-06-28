@@ -224,20 +224,15 @@ function setup() {
   node.parent(yearDiv);
 
   // Move click handling to label only
-  label.mousePressed(() => {
-    selectedYear = year;
-    windowResized();
-    updateCounters(entriesByYear[selectedYear]);
+ label.mousePressed(() => {
+  selectedYear = year;
+  windowResized();
+  updateCounters(entriesByYear[selectedYear]);
 
-    // Update active label styling
-    document.querySelectorAll('.year-label').forEach(l => l.classList.remove('active'));
-    label.addClass('active');
-  });
-
-  if (index === 0) label.addClass('active');
+  // Properly remove 'active' from all labels using p5 DOM
+  selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
+  label.addClass('active');
 });
-
-
 
   textFont('Helvetica');
   textSize(32);
