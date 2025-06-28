@@ -153,6 +153,7 @@ a.hyperlink {
   text-transform: uppercase;
   color: white;
   text-decoration: underline;
+  font-style: italic;
 }
 
 .year-label.above {
