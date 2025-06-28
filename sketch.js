@@ -215,16 +215,23 @@ function setup() {
   yearButtonsContainer.class('year-buttons');
   
   availableYears.forEach((year, index) => {
-    let btn = createButton(year);
-    btn.class('year-btn');
-    btn.mousePressed(() => {
-      selectedYear = year;
-      yearSlider.value(index);
-      windowResized();
-      updateCounters(entriesByYear[selectedYear]);
-    });
-    btn.parent(yearButtonsContainer);
+  let btn = createButton(year);
+  btn.class('year-btn');
+  btn.attribute('data-year', year);
+  if (index % 2 === 0) {
+    btn.addClass('above-line');
+  } else {
+    btn.addClass('below-line');
+  }
+  btn.mousePressed(() => {
+    selectedYear = year;
+    yearSlider.value(index);
+    windowResized();
+    updateCounters(entriesByYear[selectedYear]);
   });
+  btn.parent(yearButtonsContainer);
+});
+
 
   textFont('Helvetica');
   textSize(32);
