@@ -145,7 +145,7 @@ a.hyperlink {
   left: 0;
   right: 0;
   height: 2px;
-  background: #444;
+  background: #0A0A0A;
 }
 
 #timeline::before {
@@ -167,10 +167,9 @@ a.hyperlink {
 }
 
 .year-label {
-  font-size: 12px;
+  font-size: 14px;
   margin: 0;
   text-transform: uppercase;
-  font-weight: bold;
   color: white;
 }
 
@@ -189,14 +188,13 @@ a.hyperlink {
   height: 16px;
   background-color: #0A0A0A;
   transform: rotate(45deg);
-  border: 2px solid black;
   cursor: pointer;
   transition: transform 0.2s, background 0.2s;
 }
 
 .year-node.active {
-  background-color: #0A0A0A;
-  border-color: #E4572E;
+  background-color: #E4572E;
+  border-color: #0A0A0A;
   transform: rotate(45deg) scale(1.2);
 }
 
