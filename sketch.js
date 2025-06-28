@@ -220,26 +220,27 @@ function setup() {
     label.addClass('below');
   }
 
-   let node = createDiv().class('year-node');
+  let node = createDiv().class('year-node');
   node.parent(yearDiv);
 
-  // Move click handling to label only
- label.mousePressed(() => {
-  selectedYear = year;
-  windowResized();
-  updateCounters(entriesByYear[selectedYear]);
+  label.mousePressed(() => {
+    selectedYear = year;
+    windowResized();
+    updateCounters(entriesByYear[selectedYear]);
 
-  // Properly remove 'active' from all labels using p5 DOM
-  selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
-  label.addClass('active');
-});
+    selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
+    label.addClass('active');
+  });
 
+  if (index === 0) label.addClass('active');
+  });
+  
   textFont('Helvetica');
   textSize(32);
   textAlign(CENTER, CENTER);
   rectMode(CENTER);
   noLoop();
-}
+
 
 function windowResized() {
   let yearEntries = entriesByYear[selectedYear] || [];
