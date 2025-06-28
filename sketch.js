@@ -208,12 +208,13 @@ function setup() {
  timelineContainer.style('text-align', 'center', true);
  timelineContainer.parent('sketch-container');
 
-  availableYears.forEach((year, index) => {
+availableYears.forEach((year, index) => {
   let yearDiv = createDiv().class('timeline-year');
   yearDiv.parent(timelineContainer);
 
-  let label = createP(year).class('year-label');
+  const label = createP(year).class('year-label'); // use const for block scope
   label.parent(yearDiv);
+
   if (index % 2 === 0) {
     label.addClass('above');
   } else {
@@ -228,12 +229,14 @@ function setup() {
     windowResized();
     updateCounters(entriesByYear[selectedYear]);
 
+    // Remove 'active' from all labels, then add to this one
     selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
     label.addClass('active');
   });
 
   if (index === 0) label.addClass('active');
-  });
+});
+
   
   textFont('Helvetica');
   textSize(32);
