@@ -238,19 +238,10 @@ a.hyperlink {
   }
 }
 
-.op-art-dropshadow {
-  /* Base image style */
-  display: block;
-  max-width: 100%;
-  height: auto;
-
-  /* Multiple layered shadows, slight horizontal offset, sharp edges */
+.suprematist-op-dropshadow {
   filter:
-    drop-shadow(2px 0 0 black)
-    drop-shadow(-2px 0 0 white)
-    drop-shadow(0 2px 0 black)
-    drop-shadow(0 -2px 0 white);
-
-  /* Optional subtle blur to soften edges slightly */
-  /* filter: drop-shadow(2px 0 1px black) drop-shadow(-2px 0 1px white); */
+    drop-shadow(8px 4px 0 #0A0A0A)      /* near-black offset shadow */
+    drop-shadow(12px 7px 0 white)        /* white offset shadow for contrast */
+    drop-shadow(4px 10px 0 #0A0A0A)      /* another near-black shadow, different offset */
+    drop-shadow(-3px 6px 0 white);       /* white shadow offset opposite side */
 }
