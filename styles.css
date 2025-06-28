@@ -152,7 +152,6 @@ a.hyperlink {
   text-transform: uppercase;
   color: white;
   text-decoration: underline;
-  font-weight: bold;
 }
 
 .year-label.above {
@@ -174,10 +173,9 @@ a.hyperlink {
   transition: transform 0.2s, background 0.2s;
 }
 
-.year-node.active {
-  background-color: #0A0A0A;
-  border-color: #E4572E;
-  transform: rotate(45deg) scale(1.2);
+.year-label.active {
+  color: #E4572E;
+  font-weight: bold;
 }
 
 @media (max-width: 700px) {
