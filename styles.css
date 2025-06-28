@@ -127,7 +127,6 @@ a.hyperlink {
   justify-content: space-between;
   align-items: center;
   width: 90%;
-  max-width: 1000px;
 }
 
 #timeline::before {
