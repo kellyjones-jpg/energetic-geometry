@@ -449,7 +449,7 @@ a.hyperlink {
 /* Accordion button hover and focus */
 .accordion-button:hover,
 .accordion-button:focus {
-  background-color: #E4572E;  /* your accent orange */
+  background-color: #E4572E;  /* accent orange */
   color: white;
   text-shadow:
     1px 1px 0 #0A0A0A;
@@ -474,7 +474,6 @@ a.hyperlink {
 /* Remove Bootstrap's default chevron and add custom one using ::after */
 .accordion-button::after {
   content: '\25B6';  /* right-pointing triangle */
-  font-size: 1.2rem;
   color: white;
   transition: transform 0.3s ease;
   margin-left: auto;
