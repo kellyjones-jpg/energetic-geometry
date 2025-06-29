@@ -985,8 +985,8 @@ function drawSuprematistOpShadowRect(baseSize, systemSize) {
   rect(offset, offset, shadowSize, shadowSize);
   pop();
 
-  // Gray tilted highlight
-  fill('#353839');
+  // White tilted highlight
+  fill(255);
   push();
   rotate(radians(8));
   rect(offset * 1.4, offset * 0.8, highlightSize, highlightSize);
