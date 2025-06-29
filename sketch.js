@@ -954,31 +954,44 @@ function drawMinimalSite(x, y, activity = 'habitat', systemSize = 0.1, siteSize 
   pop();
 }
 
-function drawSuprematistShadowRect(baseSize, systemSize) {
+function drawSuprematistOpShadowRect(baseSize, systemSize) {
   let sz = constrain(systemSize || 0.1, 0.1, 10);
 
-  // Offset grows with system size
-  let offset = map(sz, 0, 10, 1.5, 12); 
+  let offset = map(sz, 0, 10, 2, 10);
+  let shadowSize = map(sz, 0, 10, baseSize * 0.9, baseSize * 1.4);
 
-  // Shadow size grows with system size (slightly larger than base)
-  let shadowSize = map(sz, 0, 10, baseSize * 0.95, baseSize * 1.3);
-  let highlightSize = shadowSize * 0.96;
-  let reverseShadowSize = shadowSize * 0.92;
-
-  noStroke();
+  push();
   rectMode(CENTER);
+  noStroke();
 
-  // Deep dark drop shadow (bottom-right)
+  // Suprematist base shadow: tilted near-black block (symbolic weight)
   fill('#0A0A0A');
-  rect(offset, offset * 0.6, shadowSize, shadowSize);
+  push();
+  rotate(radians(-12)); // deliberate off-axis tension
+  rect(offset, offset, shadowSize, shadowSize);
+  pop();
 
-  // White highlight (further right)
+  // Op Art bright contrast: tilted white highlight with slight vibration
   fill(255);
-  rect(offset * 1.6, offset, highlightSize, highlightSize);
+  push();
+  rotate(radians(8)); // opposing tension
+  rect(offset * 1.4, offset * 0.8, shadowSize * 0.95, shadowSize * 0.95);
+  pop();
 
-  // Reverse offset shadow (top-left)
+  // Subtle counter-shadow for depth (reverse offset)
   fill('#0A0A0A');
-  rect(-offset * 0.6, offset * 0.6, reverseShadowSize, reverseShadowSize);
+  push();
+  rotate(radians(3)); // slight wave/shift
+  rect(-offset * 0.6, offset * 0.5, shadowSize * 0.88, shadowSize * 0.88);
+  pop();
+
+  // Thin white outline flash for added Op Art contrast rhythm
+  stroke(255);
+  noFill();
+  strokeWeight(1);
+  rect(0, 0, shadowSize * 0.7, shadowSize * 0.7);
+
+  pop();
 }
 
 function updateCounters(yearEntries) {
