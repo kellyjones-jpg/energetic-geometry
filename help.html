@@ -45,71 +45,144 @@
     <div class="interior-border">
     <h2 class="mt-4">Help</h2>
 <section id="legend" class="mb-5">
-
-  <h3>1. System Size — Shadow Effect</h3>
+  <h3>Agrivoltaic Activities — Color Coding</h3>
   <table class="table table-dark table-striped align-middle">
     <thead>
       <tr>
-        <th>Visual</th>
+        <th>Agrivoltaic Activity</th>
+        <th>Style Influence</th>
+        <th>Color</th>
+        <th>Rationale</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Crop Production</td>
+        <td>Suprematism</td>
+        <td><span style="display:inline-block;width:30px;height:20px;background:#E4572E;border:1px solid white;"></span> #E4572E (Orange)</td>
+        <td>Constructivist energy and growth symbolism</td>
+      </tr>
+      <tr>
+        <td>Habitat</td>
+        <td>Op Art</td>
+        <td><span style="display:inline-block;width:30px;height:20px;background:#2E8B57;border:1px solid white;"></span> #2E8B57 (Sea Green)</td>
+        <td>Ecological resilience and natural harmony</td>
+      </tr>
+      <tr>
+        <td>Grazing</td>
+        <td>Suprematism</td>
+        <td><span style="display:inline-block;width:30px;height:20px;background:#005A99;border:1px solid white;"></span> #005A99 (Deep Blue)</td>
+        <td>Pastoral calm with strong visual presence</td>
+      </tr>
+      <tr>
+        <td>Greenhouse</td>
+        <td>Op Art</td>
+        <td><span style="display:inline-block;width:30px;height:20px;background:#FFD100;border:1px solid white;"></span> #FFD100 (Solar Gold)</td>
+        <td>Artificial light and energy cycles, optical play</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><strong>Combined Activities Treatment:</strong> Checkerboard or repeating high-contrast patterns (e.g., diagonal halves, stripes) to reflect layered activities.</p>
+  <hr />
+  <h3>System Size — Shadow Effect</h3>
+  <table class="table table-dark table-striped align-middle">
+    <thead>
+      <tr>
         <th>System Size</th>
         <th>Shadow Characteristics</th>
+         <th>Visual</th>
         <th>Visual Concept</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><span class="shadow-small"></span></td>
         <td>Small systems</td>
         <td>Tight, subtle shadows</td>
+         <td><span class="shadow-small"></span></td>
         <td>Minimal geometric tension, understated presence</td>
       </tr>
       <tr>
-        <td><span class="shadow-large"></span></td>
         <td>Large systems</td>
         <td>Bold, angular, prominent shadows</td>
+         <td><span class="shadow-large"></span></td>
         <td>Strong Suprematist tension, visually dominant</td>
       </tr>
     </tbody>
   </table>
-
-  <h3>2. PV Technology — Light Distortion Patterns</h3>
+<hr />
+    <h3>Site Size — Shape/Line Weight</h3>
   <table class="table table-dark table-striped align-middle">
     <thead>
       <tr>
-        <th>Visual</th>
+        <th>Site Size</th>
+        <th>Visual Weight</th>
+         <th>Visual</th>
+        <th>Visual Style Reference</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Small sites</td>
+        <td>Light, airy gridlines</td>
+         <td>
+          <div class="legend-shape legend-rectangle" style="width: 80px; height: 4px;"></div>
+        </td>
+        <td>Inspired by Vasarely's grids, Lissitzky's tension</td>
+      </tr>
+      <tr>
+        <td>Large sites</td>
+        <td>Dense, rhythmically intense patterns</td>
+        <td>
+          <div class="legend-shape legend-rectangle" style="width: 80px; height: 12px;"></div>
+        </td>
+        <td>Increased visual density and rhythmic tension</td>
+      </tr>
+    </tbody>
+  </table>
+<hr />
+  <h3>Year Installed</h3>
+  <p>Displayed via a timeline (interactive UI element).</p>
+<hr />
+  <h3>PV Technology — Light Distortion Patterns</h3>
+  <table class="table table-dark table-striped align-middle">
+    <thead>
+      <tr>
         <th>PV Technology</th>
         <th>Warp Style</th>
+        <th>Visual</th>
         <th>Visual Strategy</th>
         <th>Conceptual Rationale</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>
+        <td>Monofacial PV</td>
+        <td>Linear Warp</td>
+         <td>
           <svg class="pv-icon pv-monofacial" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
             <path d="M10 50 Q60 10 110 50" />
             <line x1="20" y1="50" x2="100" y2="50" stroke="white" stroke-width="2" />
           </svg>
         </td>
-        <td>Monofacial PV</td>
-        <td>Linear Warp</td>
         <td>Shapes bend one way; converging lines; stable downward tilt</td>
         <td>Mimics single-direction light collection with lens-like planar flow</td>
       </tr>
       <tr>
-        <td>
+        <td>Bifacial PV</td>
+        <td>Symmetric Warp / Mirror</td>
+          <td>
           <svg class="pv-icon pv-bifacial" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
             <path d="M10 50 Q40 10 60 50 Q80 10 110 50" />
             <line x1="30" y1="50" x2="50" y2="10" stroke="white" stroke-width="2" />
             <line x1="70" y1="10" x2="90" y2="50" stroke="white" stroke-width="2" />
           </svg>
         </td>
-        <td>Bifacial PV</td>
-        <td>Symmetric Warp / Mirror</td>
         <td>Bilateral waveforms; bulging vertical shapes; moiré overlap effects</td>
         <td>Reflects dual light intake; symmetry suggests front and rear absorption</td>
       </tr>
       <tr>
+        <td>Translucent PV</td>
+        <td>Radial / Organic Warp</td>
         <td>
           <svg class="pv-icon pv-translucent" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
             <circle cx="30" cy="30" r="20" stroke="white" stroke-width="2" fill="none" />
@@ -117,77 +190,47 @@
             <circle cx="30" cy="30" r="6" stroke="white" stroke-width="2" fill="none" />
           </svg>
         </td>
-        <td>Translucent PV</td>
-        <td>Radial / Organic Warp</td>
         <td>Rippled, circular distortions; transparent mesh with center deformation</td>
         <td>Suggests permeability, diffusion, greenhouse light conditions</td>
       </tr>
     </tbody>
   </table>
-
-  <h3>3. Site Size — Shape/Line Weight</h3>
+<hr />
+  <h3>Type of Array — Texture Overlay</h3>
   <table class="table table-dark table-striped align-middle">
     <thead>
       <tr>
-        <th>Visual</th>
-        <th>Site Size</th>
-        <th>Visual Weight</th>
-        <th>Visual Style Reference</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>
-          <div class="legend-shape legend-rectangle" style="width: 80px; height: 4px;"></div>
-        </td>
-        <td>Small sites</td>
-        <td>Light, airy gridlines</td>
-        <td>Inspired by Vasarely's grids, Lissitzky's tension</td>
-      </tr>
-      <tr>
-        <td>
-          <div class="legend-shape legend-rectangle" style="width: 80px; height: 12px;"></div>
-        </td>
-        <td>Large sites</td>
-        <td>Dense, rhythmically intense patterns</td>
-        <td>Increased visual density and rhythmic tension</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <h3>4. Type of Array — Texture Overlay</h3>
-  <table class="table table-dark table-striped align-middle">
-    <thead>
-      <tr>
-        <th>Visual</th>
         <th>Type of Array</th>
         <th>Best Overlay</th>
+         <th>Visual</th>
         <th>Visual Logic</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>
+        <td>Fixed</td>
+        <td>Crosshatch Grid</td>
+          <td>
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="white" stroke-width="1">
             <path d="M0 10 H40 M10 0 V40 M0 30 H40 M30 0 V40" />
           </svg>
         </td>
-        <td>Fixed</td>
-        <td>Crosshatch Grid</td>
         <td>Rigid, stable structure</td>
       </tr>
       <tr>
-        <td>
+        <td>Single-axis Tracking</td>
+        <td>Isometric Grid</td>
+         <td>
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="white" stroke-width="1">
             <path d="M0 30 L40 10 M10 40 L30 0" />
           </svg>
         </td>
-        <td>Single-axis Tracking</td>
-        <td>Isometric Grid</td>
         <td>Directional tilt, limited motion</td>
       </tr>
       <tr>
-        <td>
+        <td>Dual-axis Tracking</td>
+        <td>Dotted Matrix</td>
+         <td>
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="white" stroke-width="2">
             <circle cx="10" cy="10" r="2" />
             <circle cx="30" cy="10" r="2" />
@@ -195,74 +238,167 @@
             <circle cx="30" cy="30" r="2" />
           </svg>
         </td>
-        <td>Dual-axis Tracking</td>
-        <td>Dotted Matrix</td>
         <td>Fluid, high-resolution movement</td>
       </tr>
     </tbody>
   </table>
 
-  <h3>7. Habitat Type — Shape Coding</h3>
+  <h3>Habitat Type — Shape Coding</h3>
   <table class="table table-dark table-striped align-middle">
     <thead>
       <tr>
-        <th>Visual</th>
         <th>Habitat Type</th>
         <th>Shape</th>
+         <th>Visual</th>
         <th>Rationale</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><div class="legend-shape legend-hexagon"></div></td>
         <td>Pollinator</td>
         <td>Hexagon</td>
+         <td><div class="legend-shape legend-hexagon"></div></td>
         <td>Symbolizes beehive structure; modular and dynamic visual</td>
       </tr>
       <tr>
-        <td><div class="legend-shape legend-rectangle"></div></td>
         <td>Native Grasses</td>
         <td>Vertical Rectangle</td>
+         <td><div class="legend-shape legend-rectangle"></div></td>
         <td>Evokes grass blades; references Lissitzky and Vasarely patterns</td>
       </tr>
       <tr>
-        <td><div class="legend-shape legend-circle"></div></td>
         <td>Naturalized</td>
         <td>Circle</td>
+         <td><div class="legend-shape legend-circle"></div></td>
         <td>Represents balance, organic growth; cosmic unity and flow in art</td>
       </tr>
     </tbody>
   </table>
-
-  <h3>8. Animal Type — Line Style</h3>
+  <p><strong>Combined Habitat Treatment:</strong> Superimpose shapes with varying opacity/rotation (Suprematist overlay style).</p>
+<hr />
+  <h3>Crop Type — Edge Style / Curvature</h3>
   <table class="table table-dark table-striped align-middle">
     <thead>
       <tr>
+        <th>Crop Type Group</th>
+        <th>Edge Style / Curvature</th>
         <th>Visual</th>
+        <th>Visual Metaphor / Rationale</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Root vegetables (carrots, beets, radish, garlic, onions, yams, turnips, potatoes)</td>
+        <td>Pointed / tapered edges</td>
+        <td>
+          <svg class="crop-edge edge-pointed" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 20 L10 0 L20 20 L30 0 L40 20 L50 0 L60 20" />
+          </svg>
+        </td>
+        <td>Jagged tips mimic downward root growth</td>
+      </tr>
+      <tr>
+        <td>Leafy greens & herbs (spinach, kale, chard, lettuce, cabbage, arugula, parsley, basil)</td>
+        <td>Wavy / frilled edges</td>
+         <td>
+          <svg class="crop-edge edge-wavy" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 10 Q5 0 10 10 T20 10 T30 10 T40 10 T50 10 T60 10" />
+          </svg>
+        </td>
+        <td>Soft rippling textures of leaves</td>
+      </tr>
+      <tr>
+        <td>Fruit-bearing crops (tomatoes, squash, peppers, melons, eggplant, cucumbers)</td>
+        <td>Bulbous / lobed outlines</td>
+        <td>
+          <svg class="crop-edge edge-lobed" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 10 Q15 0 25 10 Q35 20 45 10 Q55 0 60 10" />
+          </svg>
+        </td>
+        <td>Curved and multi-lobed fruit forms</td>
+      </tr>
+      <tr>
+        <td>Berry / small fruits (berries, strawberries, blueberries, raspberries)</td>
+        <td>Concentric dot rings</td>
+         <td>
+          <svg class="crop-edge edge-dotring" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10" cy="10" r="3" />
+            <circle cx="20" cy="10" r="3" />
+            <circle cx="30" cy="10" r="3" />
+            <circle cx="40" cy="10" r="3" />
+            <circle cx="50" cy="10" r="3" />
+          </svg>
+        </td>
+        <td>Clustered, modular small fruit bodies</td>
+      </tr>
+      <tr>
+        <td>Grains & grasses (hay, wheat, corn, saffron, sorghum)</td>
+        <td>Straight, fine, linear spikes</td>
+        <td>
+          <svg class="crop-edge edge-linearspikes" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 20 L10 0 L15 20 L20 0 L25 20 L30 0 L35 20 L40 0 L45 20 L50 0 L55 20" />
+          </svg>
+        </td>
+        <td>Upright narrow grain spikes in linear repetition</td>
+      </tr>
+      <tr>
+        <td>Vining / perennial crops (grapes, vanilla, tea, kiwi, lavender, peppercorn, maile)</td>
+        <td>Spiraled / looping overlays</td>
+        <td>
+          <svg class="crop-edge edge-spiral" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 15 C15 5 25 15 30 5 35 15 45 5 50 15" />
+          </svg>
+        </td>
+        <td>Twisting vines with looping patterns</td>
+      </tr>
+      <tr>
+        <td>Mixed / assorted crops (kale, tomatoes, herbs, beans, squash, etc.)</td>
+        <td>Layered overlays / composite edges</td>
+         <td>
+          <svg class="crop-edge edge-composite" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 10 Q5 0 10 10 L20 0 L30 10 L40 0 L50 10 L60 0" />
+          </svg>
+        </td>
+        <td>Combines multiple shapes and curvature patterns</td>
+      </tr>
+    </tbody>
+  </table>
+ <p><strong>Treatment for Multiple Crop Types:</strong></p>
+  <ul>
+    <li>Morphological blending using Bézier curves to create compound outlines.</li>
+    <li>Edge complexity increases with diversity (1–2 crops simple; 6+ irregular, organic forms).</li>
+    <li>Edge wave frequency/amplitude modulated by crop count and type contribution.</li>
+  </ul>
+  <hr />
+   <h3>Animal Type — Line Style</h3>
+  <table class="table table-dark table-striped align-middle">
+    <thead>
+      <tr>
         <th>Animal Type</th>
         <th>Line Type</th>
+        <th>Visual</th>
         <th>Visual Qualities</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>
+        <td>Sheep</td>
+        <td>Soft wavy line</td>
+         <td>
           <svg class="animal-line line-soft-wavy" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
             <path d="M0 10 Q10 0 20 10 T60 10" />
           </svg>
         </td>
-        <td>Sheep</td>
-        <td>Soft wavy line</td>
         <td>Gentle, meandering</td>
       </tr>
       <tr>
-        <td>
+        <td>Llamas & Alpacas</td>
+        <td>Dashed / zigzag line</td>
+          <td>
           <svg class="animal-line line-dashed" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
             <path d="M5 10 L55 10" />
           </svg>
         </td>
-        <td>Llamas & Alpacas</td>
-        <td>Dashed / zigzag line</td>
         <td>Alert, segmented</td>
       </tr>
       <tr>
@@ -276,116 +412,27 @@
         <td>Graceful, dynamic</td>
       </tr>
       <tr>
-        <td>
+        <td>Cows</td>
+        <td>Thick, straight / bent line</td>
+         <td>
           <svg class="animal-line line-thick-straight" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
             <path d="M5 10 L55 10" />
           </svg>
         </td>
-        <td>Cows</td>
-        <td>Thick, straight / bent line</td>
         <td>Heavy, calm</td>
       </tr>
       <tr>
+        <td>Cattle</td>
+        <td>Rough, textured, broken line</td>
         <td>
           <svg class="animal-line line-rough-broken" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
             <path d="M5 10 L10 14 L15 6 L20 14 L25 10 L30 14 L35 6 L40 14 L45 10 L50 14 L55 6" />
           </svg>
         </td>
-        <td>Cattle</td>
-        <td>Rough, textured, broken line</td>
         <td>Rugged, wild, strong</td>
       </tr>
     </tbody>
   </table>
-
-  <h3>9. Crop Type — Edge Style / Curvature</h3>
-  <table class="table table-dark table-striped align-middle">
-    <thead>
-      <tr>
-        <th>Visual</th>
-        <th>Crop Type Group</th>
-        <th>Edge Style / Curvature</th>
-        <th>Visual Metaphor / Rationale</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>
-          <svg class="crop-edge edge-pointed" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 20 L10 0 L20 20 L30 0 L40 20 L50 0 L60 20" />
-          </svg>
-        </td>
-        <td>Root vegetables (carrots, beets, radish, garlic, onions, yams, turnips, potatoes)</td>
-        <td>Pointed / tapered edges</td>
-        <td>Jagged tips mimic downward root growth</td>
-      </tr>
-      <tr>
-        <td>
-          <svg class="crop-edge edge-wavy" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 10 Q5 0 10 10 T20 10 T30 10 T40 10 T50 10 T60 10" />
-          </svg>
-        </td>
-        <td>Leafy greens & herbs (spinach, kale, chard, lettuce, cabbage, arugula, parsley, basil)</td>
-        <td>Wavy / frilled edges</td>
-        <td>Soft rippling textures of leaves</td>
-      </tr>
-      <tr>
-        <td>
-          <svg class="crop-edge edge-lobed" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 10 Q15 0 25 10 Q35 20 45 10 Q55 0 60 10" />
-          </svg>
-        </td>
-        <td>Fruit-bearing crops (tomatoes, squash, peppers, melons, eggplant, cucumbers)</td>
-        <td>Bulbous / lobed outlines</td>
-        <td>Curved and multi-lobed fruit forms</td>
-      </tr>
-      <tr>
-        <td>
-          <svg class="crop-edge edge-dotring" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="10" cy="10" r="3" />
-            <circle cx="20" cy="10" r="3" />
-            <circle cx="30" cy="10" r="3" />
-            <circle cx="40" cy="10" r="3" />
-            <circle cx="50" cy="10" r="3" />
-          </svg>
-        </td>
-        <td>Berry / small fruits (berries, strawberries, blueberries, raspberries)</td>
-        <td>Concentric dot rings</td>
-        <td>Clustered, modular small fruit bodies</td>
-      </tr>
-      <tr>
-        <td>
-          <svg class="crop-edge edge-linearspikes" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 20 L10 0 L15 20 L20 0 L25 20 L30 0 L35 20 L40 0 L45 20 L50 0 L55 20" />
-          </svg>
-        </td>
-        <td>Grains & grasses (hay, wheat, corn, saffron, sorghum)</td>
-        <td>Straight, fine, linear spikes</td>
-        <td>Upright narrow grain spikes in linear repetition</td>
-      </tr>
-      <tr>
-        <td>
-          <svg class="crop-edge edge-spiral" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 15 C15 5 25 15 30 5 35 15 45 5 50 15" />
-          </svg>
-        </td>
-        <td>Vining / perennial crops (grapes, vanilla, tea, kiwi, lavender, peppercorn, maile)</td>
-        <td>Spiraled / looping overlays</td>
-        <td>Twisting vines with looping patterns</td>
-      </tr>
-      <tr>
-        <td>
-          <svg class="crop-edge edge-composite" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 10 Q5 0 10 10 L20 0 L30 10 L40 0 L50 10 L60 0" />
-          </svg>
-        </td>
-        <td>Mixed / assorted crops (kale, tomatoes, herbs, beans, squash, etc.)</td>
-        <td>Layered overlays / composite edges</td>
-        <td>Combines multiple shapes and curvature patterns</td>
-      </tr>
-    </tbody>
-  </table>
-
 </section>
 
     </div>
