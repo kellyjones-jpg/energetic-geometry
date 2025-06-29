@@ -311,7 +311,23 @@ function draw() {
 
     push();
     translate(centerX, centerY);
-    drawSuprematistOpShadowRect(entryShapeSize, entry.megawatts);
+    let shadowInfo = drawSuprematistOpShadowRect(entryShapeSize, entry.megawatts);
+
+      // Draw the array overlay directly onto the tilted white rectangle
+      if (entry.arrayType) {
+        push();
+        translate(shadowInfo.offsetX, shadowInfo.offsetY);
+        rotate(shadowInfo.angle);
+        drawArrayOverlay(
+          entry.arrayType,
+          entry.activities,
+          0, 0,
+          shadowInfo.size,
+          1.2,
+          10
+        );
+        pop();
+      }
 
     if (entry.arrayType) {
       drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, entryShapeSize, strokeW, density);
@@ -957,42 +973,53 @@ function drawMinimalSite(x, y, activity = 'habitat', systemSize = 0.1, siteSize 
 function drawSuprematistOpShadowRect(baseSize, systemSize) {
   let sz = constrain(systemSize || 0.1, 0.1, 10);
 
+  // Define offsets and sizes
   let offset = map(sz, 0, 10, 2, 10);
   let shadowSize = map(sz, 0, 10, baseSize * 0.9, baseSize * 1.4);
+  let highlightSize = shadowSize * 0.95;
 
   push();
   rectMode(CENTER);
   noStroke();
 
-  // Suprematist base shadow: tilted near-black block (symbolic weight)
+  // Suprematist base shadow
   fill('#0A0A0A');
   push();
-  rotate(radians(-12)); // deliberate off-axis tension
+  rotate(radians(-12));
   rect(offset, offset, shadowSize, shadowSize);
   pop();
 
-  // Op Art bright contrast: tilted white highlight with slight vibration
+  // White tilted highlight
   fill(255);
   push();
-  rotate(radians(8)); // opposing tension
-  rect(offset * 1.4, offset * 0.8, shadowSize * 0.95, shadowSize * 0.95);
+  rotate(radians(8));
+  rect(offset * 1.4, offset * 0.8, highlightSize, highlightSize);
   pop();
 
-  // Subtle counter-shadow for depth (reverse offset)
+  // Reverse shadow
   fill('#0A0A0A');
   push();
-  rotate(radians(3)); // slight wave/shift
+  rotate(radians(3));
   rect(-offset * 0.6, offset * 0.5, shadowSize * 0.88, shadowSize * 0.88);
   pop();
 
-  // Thin white outline flash for added Op Art contrast rhythm
+  // White outline
   stroke(255);
   noFill();
   strokeWeight(1);
   rect(0, 0, shadowSize * 0.7, shadowSize * 0.7);
 
   pop();
+
+  // Return transform info for the array overlay
+  return {
+    offsetX: offset * 1.4,
+    offsetY: offset * 0.8,
+    angle: radians(8),
+    size: highlightSize
+  };
 }
+
 
 function updateCounters(yearEntries) {
   let siteCount = yearEntries.length;
