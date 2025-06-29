@@ -954,25 +954,31 @@ function drawMinimalSite(x, y, activity = 'habitat', systemSize = 0.1, siteSize 
   pop();
 }
 
-function drawSuprematistShadowRect(size, systemSize) {
+function drawSuprematistShadowRect(baseSize, systemSize) {
   let sz = constrain(systemSize || 0.1, 0.1, 10);
-  let dark1Offset = map(sz, 0, 10, 2, 6);
-  let dark2Offset = dark1Offset * 0.5;
+
+  // Offset grows with system size
+  let offset = map(sz, 0, 10, 1.5, 12); 
+
+  // Shadow size grows with system size (slightly larger than base)
+  let shadowSize = map(sz, 0, 10, baseSize * 0.95, baseSize * 1.3);
+  let highlightSize = shadowSize * 0.96;
+  let reverseShadowSize = shadowSize * 0.92;
 
   noStroke();
   rectMode(CENTER);
 
-  // First near-black shadow (main drop to right-bottom)
+  // Deep dark drop shadow (bottom-right)
   fill('#0A0A0A');
-  rect(dark1Offset, dark1Offset * 0.5, size, size);
+  rect(offset, offset * 0.6, shadowSize, shadowSize);
 
-  // Second white highlight (bolder offset)
+  // White highlight (further right)
   fill(255);
-  rect(dark1Offset * 1.5, dark1Offset, size * 0.98, size * 0.98);
+  rect(offset * 1.6, offset, highlightSize, highlightSize);
 
-  // Third subtle near-black counter offset
+  // Reverse offset shadow (top-left)
   fill('#0A0A0A');
-  rect(-dark2Offset, dark2Offset, size * 0.95, size * 0.95);
+  rect(-offset * 0.6, offset * 0.6, reverseShadowSize, reverseShadowSize);
 }
 
 function updateCounters(yearEntries) {
