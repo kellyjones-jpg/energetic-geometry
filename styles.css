@@ -431,7 +431,7 @@ a.hyperlink {
 .accordion-button {
   background-color: transparent;
   color: white;
-  font-family: 'Anton', Helvetica, Arial, sans-serif; /* strong display font */
+  font-family: Helvetica, Arial, sans-serif; 
   font-size: 1.4rem;
   border: none;
   border-radius: 0;
