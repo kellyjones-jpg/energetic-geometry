@@ -311,6 +311,7 @@ function draw() {
 
     push();
     translate(centerX, centerY);
+    drawSuprematistShadowRect(entryShapeSize, entry.megawatts);
 
     if (entry.arrayType) {
       drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, entryShapeSize, strokeW, density);
@@ -951,6 +952,27 @@ function drawMinimalSite(x, y, activity = 'habitat', systemSize = 0.1, siteSize 
   fill(baseColor);
   ellipse(0, 0, size, size); // dot
   pop();
+}
+
+function drawSuprematistShadowRect(size, systemSize) {
+  let sz = constrain(systemSize || 0.1, 0.1, 10);
+  let dark1Offset = map(sz, 0, 10, 2, 6);
+  let dark2Offset = dark1Offset * 0.5;
+
+  noStroke();
+  rectMode(CENTER);
+
+  // First near-black shadow (main drop to right-bottom)
+  fill('#0A0A0A');
+  rect(dark1Offset, dark1Offset * 0.5, size, size);
+
+  // Second white highlight (bolder offset)
+  fill(255);
+  rect(dark1Offset * 1.5, dark1Offset, size * 0.98, size * 0.98);
+
+  // Third subtle near-black counter offset
+  fill('#0A0A0A');
+  rect(-dark2Offset, dark2Offset, size * 0.95, size * 0.95);
 }
 
 function updateCounters(yearEntries) {
