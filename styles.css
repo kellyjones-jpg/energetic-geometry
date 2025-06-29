@@ -276,24 +276,26 @@ a.hyperlink {
 }
 
 /* System Size Shadow Visuals */
-.shadow-small {
+.shadow-box {
   width: 40px;
   height: 20px;
   background: white;
-  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
   display: inline-block;
   vertical-align: middle;
+  margin-right: 10px;
+}
+
+.shadow-small {
+  filter:
+    drop-shadow(1.5px 1px 0 #0A0A0A)
+    drop-shadow(-1px 1px 0 white);
 }
 
 .shadow-large {
-  width: 40px;
-  height: 20px;
-  background: white;
-  box-shadow:
-    3px 3px 6px #0A0A0A,
-    6px 6px 12px white;
-  display: inline-block;
-  vertical-align: middle;
+  filter:
+    drop-shadow(3px 1.5px 0 #0A0A0A)
+    drop-shadow(5px 3px 0 white)
+    drop-shadow(-2px 2px 0 #0A0A0A);
 }
 
 /* PV Technology warp style icons */
