@@ -313,6 +313,14 @@ function draw() {
     translate(centerX, centerY);
     let shadowInfo = drawSuprematistOpShadowRect(entryShapeSize, entry.megawatts);
 
+     if (entry.cropType && entry.cropType.length > 0) {
+      drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize, strokeW);
+
+    }
+
+    if (entry.animalType && entry.animalType.length > 0) {
+      drawAnimalLine(entry.animalType, entry.activities, 0, 0, entryShapeSize, strokeW);
+    }
       // Draw the array overlay directly onto the tilted white rectangle
       if (entry.arrayType) {
         push();
@@ -336,15 +344,6 @@ function draw() {
      if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
      Array.isArray(entry.habitat) && entry.habitat.length > 0) {
       drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, entryShapeSize);
-    }
-
-    if (entry.cropType && entry.cropType.length > 0) {
-      drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize, strokeW);
-
-    }
-
-    if (entry.animalType && entry.animalType.length > 0) {
-      drawAnimalLine(entry.animalType, entry.activities, 0, 0, entryShapeSize, strokeW);
     }
     
     pop();
