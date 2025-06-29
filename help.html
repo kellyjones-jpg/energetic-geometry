@@ -43,243 +43,319 @@
 
     <!-- Help Content -->
     <div class="interior-border">
-    <h2 class="mt-4">Help</h2>
-<section id="legend" class="mb-5">
-  <h3>Agrivoltaic Activities — Color Coding</h3>
-  <table class="table table-dark table-striped align-middle">
-    <thead>
-      <tr>
-        <th>Agrivoltaic Activity</th>
-        <th>Style Influence</th>
-        <th>Visual</th>
-        <th>Rationale</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Crop Production</td>
-        <td>Suprematism</td>
-        <td><span style="display:inline-block;width:30px;height:20px;background:#E4572E;border:1px solid white;"></span> #E4572E (Orange)</td>
-        <td>Constructivist energy and growth symbolism</td>
-      </tr>
-      <tr>
-        <td>Habitat</td>
-        <td>Op Art</td>
-        <td><span style="display:inline-block;width:30px;height:20px;background:#2E8B57;border:1px solid white;"></span> #2E8B57 (Sea Green)</td>
-        <td>Ecological resilience and natural harmony</td>
-      </tr>
-      <tr>
-        <td>Grazing</td>
-        <td>Suprematism</td>
-        <td><span style="display:inline-block;width:30px;height:20px;background:#005A99;border:1px solid white;"></span> #005A99 (Deep Blue)</td>
-        <td>Pastoral calm with strong visual presence</td>
-      </tr>
-      <tr>
-        <td>Greenhouse</td>
-        <td>Op Art</td>
-        <td><span style="display:inline-block;width:30px;height:20px;background:#FFD100;border:1px solid white;"></span> #FFD100 (Solar Gold)</td>
-        <td>Artificial light and energy cycles, optical play</td>
-      </tr>
-    </tbody>
-  </table>
+      <h2 class="mt-4">Help</h2>
+      <div class="accordion" id="helpAccordion">
+
+         <div class="accordion-item">
+          <h2 class="accordion-header" id="headingActivities">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseActivities" aria-expanded="true" aria-controls="collapseActivities">
+              Agrivoltaic Activities — Color Coding
+            </button>
+          </h2>
+          <div id="collapseActivities" class="accordion-collapse collapse show" aria-labelledby="headingActivities" data-bs-parent="#helpAccordion">
+            <div class="accordion-body">
+            <table class="table table-dark table-striped align-middle">
+          <thead>
+            <tr>
+              <th>Agrivoltaic Activity</th>
+              <th>Style Influence</th>
+              <th>Visual</th>
+              <th>Rationale</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Crop Production</td>
+              <td>Suprematism</td>
+              <td><span style="display:inline-block;width:30px;height:20px;background:#E4572E;border:1px solid white;"></span> #E4572E (Orange)</td>
+              <td>Constructivist energy and growth symbolism</td>
+            </tr>
+            <tr>
+              <td>Habitat</td>
+              <td>Op Art</td>
+              <td><span style="display:inline-block;width:30px;height:20px;background:#2E8B57;border:1px solid white;"></span> #2E8B57 (Sea Green)</td>
+              <td>Ecological resilience and natural harmony</td>
+            </tr>
+            <tr>
+              <td>Grazing</td>
+              <td>Suprematism</td>
+              <td><span style="display:inline-block;width:30px;height:20px;background:#005A99;border:1px solid white;"></span> #005A99 (Deep Blue)</td>
+              <td>Pastoral calm with strong visual presence</td>
+            </tr>
+            <tr>
+              <td>Greenhouse</td>
+              <td>Op Art</td>
+              <td><span style="display:inline-block;width:30px;height:20px;background:#FFD100;border:1px solid white;"></span> #FFD100 (Solar Gold)</td>
+              <td>Artificial light and energy cycles, optical play</td>
+            </tr>
+          </tbody>
+        </table>
   <p><strong>Combined Activities Treatment:</strong></p>
     <ul>
       <li>Checkerboard pattern to reflect layered activities.</li>
     </ul>
-  <hr />
-  <h3>System Size — Drop Shadow Effect</h3>
-  <table class="table table-dark table-striped align-middle">
-  <thead>
-    <tr>
-      <th>System Size</th>
-      <th>Shadow Characteristics</th>
-       <th>Visual</th>
-      <th>Visual Concept</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Small systems</td>
-      <td>Tight, subtle shadows</td>
-      <td><span class="shadow-box shadow-small"></span></td>
-      <td>Minimal tension, soft geometric weight</td>
-    </tr>
-    <tr>
-      <td>Large systems</td>
-      <td>Bold, angular, hard-edged shadows</td>
-      <td><span class="shadow-box shadow-large"></span></td>
-      <td>Suprematist tension, visual density scaled with power</td>
-    </tr>
-  </tbody>
-</table>
-<hr />
-    <h3>Site Size — Shape/Line Weight</h3>
-  <table class="table table-dark table-striped align-middle">
-    <thead>
-      <tr>
-        <th>Site Size</th>
-        <th>Visual Weight</th>
-         <th>Visual</th>
-        <th>Rationale</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Small sites</td>
-        <td>Light, airy gridlines</td>
-         <td>
-          <div class="legend-shape legend-rectangle" style="width: 80px; height: 4px;"></div>
-        </td>
-        <td>Inspired by Vasarely's grids, Lissitzky's tension</td>
-      </tr>
-      <tr>
-        <td>Large sites</td>
-        <td>Dense, rhythmically intense patterns</td>
-        <td>
-          <div class="legend-shape legend-rectangle" style="width: 80px; height: 12px;"></div>
-        </td>
-        <td>Increased visual density and rhythmic tension</td>
-      </tr>
-    </tbody>
-  </table>
-<hr />
-  <h3>Year Installed</h3>
-  <p>Displayed via a timeline (interactive UI element).</p>
-<hr />
-  <h3>PV Technology — Light Distortion Patterns</h3>
-  <table class="table table-dark table-striped align-middle">
-    <thead>
-      <tr>
-        <th>PV Technology</th>
-        <th>Warp Style</th>
-        <th>Visual</th>
-        <th>Rationale</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Monofacial PV</td>
-        <td>Linear Warp</td>
-         <td>
-          <svg class="pv-icon pv-monofacial" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 50 Q60 10 110 50" />
-            <line x1="20" y1="50" x2="100" y2="50" stroke="white" stroke-width="2" />
-          </svg>
-        </td>
-        <td>Mimics single-direction light collection with lens-like planar flow</td>
-      </tr>
-      <tr>
-        <td>Bifacial PV</td>
-        <td>Symmetric Warp / Mirror</td>
-          <td>
-          <svg class="pv-icon pv-bifacial" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 50 Q40 10 60 50 Q80 10 110 50" />
-            <line x1="30" y1="50" x2="50" y2="10" stroke="white" stroke-width="2" />
-            <line x1="70" y1="10" x2="90" y2="50" stroke="white" stroke-width="2" />
-          </svg>
-        </td>
-        <td>Reflects dual light intake; symmetry suggests front and rear absorption</td>
-      </tr>
-      <tr>
-        <td>Translucent PV</td>
-        <td>Radial / Organic Warp</td>
-        <td>
-          <svg class="pv-icon pv-translucent" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="30" cy="30" r="20" stroke="white" stroke-width="2" fill="none" />
-            <circle cx="30" cy="30" r="12" stroke="white" stroke-width="2" fill="none" />
-            <circle cx="30" cy="30" r="6" stroke="white" stroke-width="2" fill="none" />
-          </svg>
-        </td>
-        <td>Suggests permeability, diffusion, greenhouse light conditions</td>
-      </tr>
-    </tbody>
-  </table>
-<hr />
-  <h3>Type of Array — Texture Overlay</h3>
-  <table class="table table-dark table-striped align-middle">
-    <thead>
-      <tr>
-        <th>Type of Array</th>
-        <th>Overlay</th>
-         <th>Visual</th>
-        <th>Rationale</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Fixed</td>
-        <td>Crosshatch Grid</td>
-          <td>
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="white" stroke-width="1">
-            <path d="M0 10 H40 M10 0 V40 M0 30 H40 M30 0 V40" />
-          </svg>
-        </td>
-        <td>Rigid, stable structure</td>
-      </tr>
-      <tr>
-        <td>Single-axis Tracking</td>
-        <td>Isometric Grid</td>
-         <td>
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="white" stroke-width="1">
-            <path d="M0 30 L40 10 M10 40 L30 0" />
-          </svg>
-        </td>
-        <td>Directional tilt, limited motion</td>
-      </tr>
-      <tr>
-        <td>Dual-axis Tracking</td>
-        <td>Dotted Matrix</td>
-         <td>
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="white" stroke-width="2">
-            <circle cx="10" cy="10" r="2" />
-            <circle cx="30" cy="10" r="2" />
-            <circle cx="10" cy="30" r="2" />
-            <circle cx="30" cy="30" r="2" />
-          </svg>
-        </td>
-        <td>Fluid, high-resolution movement</td>
-      </tr>
-    </tbody>
-  </table>
+            </div>
+          </div>
+        </div>
 
-  <h3>Habitat Type — Shape Coding</h3>
-  <table class="table table-dark table-striped align-middle">
-    <thead>
-      <tr>
-        <th>Habitat Type</th>
-        <th>Shape</th>
-         <th>Visual</th>
-        <th>Rationale</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Pollinator</td>
-        <td>Hexagon</td>
-         <td><div class="legend-shape legend-hexagon"></div></td>
-        <td>Symbolizes beehive structure; modular and dynamic visual</td>
-      </tr>
-      <tr>
-        <td>Native Grasses</td>
-        <td>Vertical Rectangle</td>
-         <td><div class="legend-shape legend-rectangle"></div></td>
-        <td>Evokes grass blades; references Lissitzky and Vasarely patterns</td>
-      </tr>
-      <tr>
-        <td>Naturalized</td>
-        <td>Circle</td>
-         <td><div class="legend-shape legend-circle"></div></td>
-        <td>Represents balance, organic growth; cosmic unity and flow in art</td>
-      </tr>
-    </tbody>
-  </table>
-  <p><strong>Combined Habitat Treatment:</strong></p> 
-  <ul>
-    <li>Superimpose shapes with varying opacity/rotation (Suprematist overlay style).</li>
-  </ul>
-<hr />
-  <h3>Crop Types — Edge Style / Curvature</h3>
-  <table class="table table-dark table-striped align-middle">
+        <!-- System Size -->
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingSystemSize">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSystemSize" aria-expanded="true" aria-controls="collapseSystemSize">
+              System Size — Drop Shadow Effect
+            </button>
+          </h2>
+          <div id="collapseSystemSize" class="accordion-collapse collapse show" aria-labelledby="headingSystemSize" data-bs-parent="#helpAccordion">
+            <div class="accordion-body">
+              <table class="table table-dark table-striped align-middle">
+                <thead>
+                  <tr>
+                    <th>System Size</th>
+                    <th>Shadow Characteristics</th>
+                    <th>Visual</th>
+                    <th>Visual Concept</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Small systems</td>
+                    <td>Tight, subtle shadows</td>
+                    <td><span class="shadow-box shadow-small suprematist-op-dropshadow"></span></td>
+                    <td>Minimal tension, soft geometric weight</td>
+                  </tr>
+                  <tr>
+                    <td>Large systems</td>
+                    <td>Bold, angular, hard-edged shadows</td>
+                    <td><span class="shadow-box shadow-large suprematist-op-dropshadow"></span></td>
+                    <td>Suprematist tension, visual density scaled with power</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+         <div class="accordion-item">
+          <h2 class="accordion-header" id="headingSiteSize">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSiteSize" aria-expanded="true" aria-controls="collapseSiteSize">
+              Site Size — Shape/Line Weight
+            </button>
+          </h2>
+          <div id="collapseSiteSize" class="accordion-collapse collapse show" aria-labelledby="headingSiteSize" data-bs-parent="#helpAccordion">
+            <div class="accordion-body">
+             <table class="table table-dark table-striped align-middle">
+                <thead>
+                  <tr>
+                    <th>Site Size</th>
+                    <th>Visual Weight</th>
+                     <th>Visual</th>
+                    <th>Rationale</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Small sites</td>
+                    <td>Light, airy gridlines</td>
+                     <td>
+                      <div class="legend-shape legend-rectangle" style="width: 80px; height: 4px;"></div>
+                    </td>
+                    <td>Inspired by Vasarely's grids, Lissitzky's tension</td>
+                  </tr>
+                  <tr>
+                    <td>Large sites</td>
+                    <td>Dense, rhythmically intense patterns</td>
+                    <td>
+                      <div class="legend-shape legend-rectangle" style="width: 80px; height: 12px;"></div>
+                    </td>
+                    <td>Increased visual density and rhythmic tension</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+<div class="accordion-item">
+          <h2 class="accordion-header" id="headingYear">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseYear" aria-expanded="true" aria-controls="collapseYear">
+              Year Installed
+            </button>
+          </h2>
+          <div id="collapseYear" class="accordion-collapse collapse show" aria-labelledby="headingYear" data-bs-parent="#helpAccordion">
+            <div class="accordion-body">
+             <p>Displayed via a timeline (interactive UI element).</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingPVTech">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePVTech" aria-expanded="true" aria-controls="collapsePVTech">
+              PV Technology — Light Distortion Patterns
+            </button>
+          </h2>
+          <div id="collapsePVTech" class="accordion-collapse collapse show" aria-labelledby="headingPVTech" data-bs-parent="#helpAccordion">
+            <div class="accordion-body">
+             <table class="table table-dark table-striped align-middle">
+                <thead>
+                  <tr>
+                    <th>PV Technology</th>
+                    <th>Warp Style</th>
+                    <th>Visual</th>
+                    <th>Rationale</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Monofacial PV</td>
+                    <td>Linear Warp</td>
+                     <td>
+                      <svg class="pv-icon pv-monofacial" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 50 Q60 10 110 50" />
+                        <line x1="20" y1="50" x2="100" y2="50" stroke="white" stroke-width="2" />
+                      </svg>
+                    </td>
+                    <td>Mimics single-direction light collection with lens-like planar flow</td>
+                  </tr>
+                  <tr>
+                    <td>Bifacial PV</td>
+                    <td>Symmetric Warp / Mirror</td>
+                      <td>
+                      <svg class="pv-icon pv-bifacial" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 50 Q40 10 60 50 Q80 10 110 50" />
+                        <line x1="30" y1="50" x2="50" y2="10" stroke="white" stroke-width="2" />
+                        <line x1="70" y1="10" x2="90" y2="50" stroke="white" stroke-width="2" />
+                      </svg>
+                    </td>
+                    <td>Reflects dual light intake; symmetry suggests front and rear absorption</td>
+                  </tr>
+                  <tr>
+                    <td>Translucent PV</td>
+                    <td>Radial / Organic Warp</td>
+                    <td>
+                      <svg class="pv-icon pv-translucent" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="30" cy="30" r="20" stroke="white" stroke-width="2" fill="none" />
+                        <circle cx="30" cy="30" r="12" stroke="white" stroke-width="2" fill="none" />
+                        <circle cx="30" cy="30" r="6" stroke="white" stroke-width="2" fill="none" />
+                      </svg>
+                    </td>
+                    <td>Suggests permeability, diffusion, greenhouse light conditions</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingArray">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseArray" aria-expanded="true" aria-controls="collapseArray">
+              Type of Array — Texture Overlay
+            </button>
+          </h2>
+          <div id="collapseArray" class="accordion-collapse collapse show" aria-labelledby="headingArray" data-bs-parent="#helpAccordion">
+            <div class="accordion-body">
+            <table class="table table-dark table-striped align-middle">
+              <thead>
+                <tr>
+                  <th>Type of Array</th>
+                  <th>Overlay</th>
+                   <th>Visual</th>
+                  <th>Rationale</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Fixed</td>
+                  <td>Crosshatch Grid</td>
+                    <td>
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="white" stroke-width="1">
+                      <path d="M0 10 H40 M10 0 V40 M0 30 H40 M30 0 V40" />
+                    </svg>
+                  </td>
+                  <td>Rigid, stable structure</td>
+                </tr>
+                <tr>
+                  <td>Single-axis Tracking</td>
+                  <td>Isometric Grid</td>
+                   <td>
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="white" stroke-width="1">
+                      <path d="M0 30 L40 10 M10 40 L30 0" />
+                    </svg>
+                  </td>
+                  <td>Directional tilt, limited motion</td>
+                </tr>
+                <tr>
+                  <td>Dual-axis Tracking</td>
+                  <td>Dotted Matrix</td>
+                   <td>
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="white" stroke-width="2">
+                      <circle cx="10" cy="10" r="2" />
+                      <circle cx="30" cy="10" r="2" />
+                      <circle cx="10" cy="30" r="2" />
+                      <circle cx="30" cy="30" r="2" />
+                    </svg>
+                  </td>
+                  <td>Fluid, high-resolution movement</td>
+                </tr>
+              </tbody>
+            </table>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingHabitat">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHabitat" aria-expanded="true" aria-controls="collapseHabitat">
+              Habitat Type — Shape Coding
+            </button>
+          </h2>
+          <div id="collapseHabitat" class="accordion-collapse collapse show" aria-labelledby="headingHabitat" data-bs-parent="#helpAccordion">
+            <div class="accordion-body">
+            <table class="table table-dark table-striped align-middle">
+              <thead>
+                <tr>
+                  <th>Habitat Type</th>
+                  <th>Shape</th>
+                   <th>Visual</th>
+                  <th>Rationale</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Pollinator</td>
+                  <td>Hexagon</td>
+                   <td><div class="legend-shape legend-hexagon"></div></td>
+                  <td>Symbolizes beehive structure; modular and dynamic visual</td>
+                </tr>
+                <tr>
+                  <td>Native Grasses</td>
+                  <td>Vertical Rectangle</td>
+                   <td><div class="legend-shape legend-rectangle"></div></td>
+                  <td>Evokes grass blades; references Lissitzky and Vasarely patterns</td>
+                </tr>
+                <tr>
+                  <td>Naturalized</td>
+                  <td>Circle</td>
+                   <td><div class="legend-shape legend-circle"></div></td>
+                  <td>Represents balance, organic growth; cosmic unity and flow in art</td>
+                </tr>
+              </tbody>
+            </table>
+            <p><strong>Combined Habitat Treatment:</strong></p> 
+            <ul>
+              <li>Superimpose shapes with varying opacity/rotation (Suprematist overlay style).</li>
+            </ul>
+            </div>
+          </div>
+        </div>
+         <div class="accordion-item">
+          <h2 class="accordion-header" id="headingCrop">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCrop" aria-expanded="true" aria-controls="collapseCrop">
+              Crop Types — Edge Style / Curvature
+            </button>
+          </h2>
+          <div id="collapseCrop" class="accordion-collapse collapse show" aria-labelledby="headingCrop" data-bs-parent="#helpAccordion">
+            <div class="accordion-body">
+           <table class="table table-dark table-striped align-middle">
     <thead>
       <tr>
         <th>Crop Types</th>
@@ -371,9 +447,18 @@
     <li>Edge complexity increases with diversity (1–2 crops simple; 6+ irregular, organic forms).</li>
     <li>Edge wave frequency/amplitude modulated by crop count and type contribution.</li>
   </ul>
-  <hr />
-   <h3>Animal Type — Line Style</h3>
-  <table class="table table-dark table-striped align-middle">
+      </div>
+    </div>
+  </div>
+    <div class="accordion-item">
+          <h2 class="accordion-header" id="headingAnimal">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAnimal" aria-expanded="true" aria-controls="collapseAnimal">
+              Animal Type — Line Style
+            </button>
+          </h2>
+          <div id="collapseHabitat" class="accordion-collapse collapse show" aria-labelledby="headingHabitat" data-bs-parent="#helpAccordion">
+            <div class="accordion-body">
+            <table class="table table-dark table-striped align-middle">
     <thead>
       <tr>
         <th>Animal Type</th>
@@ -440,9 +525,11 @@
     <li>Overlapping forms signify shared spatial and environmental presence.</li>
     <li>Diagonal and non-orthogonal arrangements, drawn from El Lissitzky’s Constructivist practice, introduce visual disruption and modernist abstraction.</li>
   </ul>
-</section>
+ </div>
+</div>
+</div>
 
-    </div>
-  </div>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
