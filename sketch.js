@@ -329,6 +329,10 @@ function draw() {
         pop();
       }
 
+    if (entry.arrayType) {
+      drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, entryShapeSize, strokeW, density);
+    }
+
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
       drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor);
     }
