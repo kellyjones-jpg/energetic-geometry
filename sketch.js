@@ -311,7 +311,7 @@ function draw() {
 
     push();
     translate(centerX, centerY);
-    drawSuprematistShadowRect(entryShapeSize, entry.megawatts);
+    drawSuprematistOpShadowRect(entryShapeSize, entry.megawatts);
 
     if (entry.arrayType) {
       drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, entryShapeSize, strokeW, density);
