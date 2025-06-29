@@ -405,3 +405,137 @@ a.hyperlink {
 .edge-composite path {
   stroke-linejoin: round;
 }
+/* Accordion container */
+.accordion {
+  border: none; /* Remove default bootstrap border */
+}
+
+/* Accordion items */
+.accordion-item {
+  background-color: #353839;  /* match page bg */
+  border: 2px solid white;   /* sharp white border */
+  border-radius: 0;          /* hard edges, no rounding */
+  margin-bottom: 1rem;
+  box-shadow:
+    3px 1.5px 0 #0A0A0A,   /* layered drop shadow effect */
+    5px 3px 0 white,
+    -2px 2px 0 #0A0A0A;
+}
+
+/* Accordion header */
+.accordion-header {
+  border-bottom: 2px solid white;
+}
+
+/* Accordion button */
+.accordion-button {
+  background-color: transparent;
+  color: white;
+  font-family: 'Anton', Helvetica, Arial, sans-serif; /* strong display font */
+  font-size: 1.4rem;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 1rem 1.5rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  box-shadow:
+    1.5px 1px 0 #0A0A0A,
+    3px 2px 0 white;
+  outline-offset: 4px;
+}
+
+/* Accordion button hover and focus */
+.accordion-button:hover,
+.accordion-button:focus {
+  background-color: #E4572E;  /* your accent orange */
+  color: white;
+  text-shadow:
+    1px 1px 0 #0A0A0A;
+}
+
+/* Accordion button collapsed (default state) */
+.accordion-button.collapsed {
+  background-color: #353839;
+  color: white;
+  box-shadow:
+    1.5px 1px 0 #0A0A0A,
+    3px 2px 0 white;
+}
+
+/* Accordion button expanded */
+.accordion-button:not(.collapsed) {
+  background-color: #E4572E;
+  color: white;
+  font-weight: bold;
+}
+
+/* Remove Bootstrap's default chevron and add custom one using ::after */
+.accordion-button::after {
+  content: '\25B6';  /* right-pointing triangle */
+  font-size: 1.2rem;
+  color: white;
+  transition: transform 0.3s ease;
+  margin-left: auto;
+  filter:
+    drop-shadow(1px 1px 0 #0A0A0A)
+    drop-shadow(1px 0 0 white);
+}
+
+/* Rotate chevron when expanded */
+.accordion-button:not(.collapsed)::after {
+  transform: rotate(90deg);
+}
+
+/* Accordion body */
+.accordion-body {
+  background-color: #1e1e1e;
+  color: white;
+  font-family: Helvetica, Arial, sans-serif;
+  border-top: 2px solid white;
+  padding: 1.25rem 1.5rem;
+  box-shadow:
+    inset 3px 0 0 #E4572E,
+    inset -3px 0 0 white;
+  /* subtle vertical bars referencing Suprematism's geometric lines */
+}
+
+/* Table styling inside accordion body */
+.accordion-body table {
+  border-collapse: collapse;
+  width: 100%;
+  color: white;
+}
+
+.accordion-body th,
+.accordion-body td {
+  border: 1.5px solid white;
+  padding: 0.6rem 1rem;
+  text-align: left;
+  vertical-align: middle;
+  font-size: 0.9rem;
+  font-weight: normal;
+}
+
+/* Accent header rows with solid orange background */
+.accordion-body thead tr {
+  background-color: #E4572E;
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Responsive tweak: smaller font on narrow screens */
+@media (max-width: 768px) {
+  .accordion-button {
+    font-size: 1.1rem;
+  }
+  .accordion-body th,
+  .accordion-body td {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+}
+
