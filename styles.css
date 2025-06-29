@@ -244,3 +244,162 @@ a.hyperlink {
     drop-shadow(5px 3px 0 white)         /* small white offset */
     drop-shadow(-2px 2px 0 #0A0A0A);    /* subtle opposite near-black shadow */
 }
+
+/* Legend shape base */
+.legend-shape {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  box-sizing: content-box;
+  border: 3px solid white;
+  background: transparent;
+}
+
+/* Specific shapes */
+.legend-hexagon {
+  clip-path: polygon(
+    25% 5%, 75% 5%,
+    100% 50%,
+    75% 95%, 25% 95%,
+    0% 50%
+  );
+}
+
+.legend-rectangle {
+  border-radius: 0;
+}
+
+.legend-circle {
+  border-radius: 50%;
+}
+
+/* System Size Shadow Visuals */
+.shadow-small {
+  width: 40px;
+  height: 20px;
+  background: white;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.shadow-large {
+  width: 40px;
+  height: 20px;
+  background: white;
+  box-shadow:
+    3px 3px 6px #0A0A0A,
+    6px 6px 12px white;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* PV Technology warp style icons */
+.pv-icon {
+  width: 36px;
+  height: 24px;
+  stroke: white;
+  stroke-width: 2;
+  fill: none;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+.pv-monofacial path {
+  stroke-linejoin: round;
+}
+
+.pv-bifacial path {
+  stroke-linejoin: round;
+}
+
+.pv-translucent circle {
+  stroke-linejoin: round;
+}
+
+/* Animal Type Line Styles */
+
+.animal-line {
+  width: 60px;
+  height: 20px;
+  vertical-align: middle;
+  margin-right: 8px;
+  display: inline-block;
+}
+
+.line-soft-wavy path {
+  stroke: white;
+  stroke-width: 3;
+  fill: none;
+}
+
+.line-dashed path {
+  stroke: white;
+  stroke-width: 3;
+  stroke-dasharray: 6, 6;
+  fill: none;
+}
+
+.line-bold-curved path {
+  stroke: white;
+  stroke-width: 4;
+  fill: none;
+  stroke-linejoin: round;
+}
+
+.line-thick-straight path {
+  stroke: white;
+  stroke-width: 5;
+  fill: none;
+}
+
+.line-rough-broken path {
+  stroke: white;
+  stroke-width: 3;
+  stroke-dasharray: 2,4,6,4;
+  fill: none;
+}
+
+/* Crop Type Edge Styles */
+
+.crop-edge {
+  width: 60px;
+  height: 20px;
+  vertical-align: middle;
+  margin-right: 8px;
+  display: inline-block;
+  stroke: white;
+  stroke-width: 2;
+  fill: none;
+}
+
+.edge-pointed path {
+  stroke-linejoin: miter;
+}
+
+.edge-wavy path {
+  stroke-linejoin: round;
+}
+
+.edge-lobed path {
+  stroke-linejoin: round;
+}
+
+.edge-dotring circle {
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.edge-linearspikes path {
+  stroke-linejoin: miter;
+}
+
+.edge-spiral path {
+  stroke-linejoin: round;
+}
+
+.edge-composite path {
+  stroke-linejoin: round;
+}
