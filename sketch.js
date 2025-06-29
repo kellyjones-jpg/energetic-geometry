@@ -262,7 +262,7 @@ function draw() {
   image(bgImg, 0, 0, width, height);
   noStroke();
   rectMode(CORNER);          // switch to CORNER mode to cover full canvas
-  fill(0, 100);              // black with semi-transparent alpha
+  fill(0, 130);              // black with semi-transparent alpha
   rect(0, 0, width, height); // cover entire canvas
   rectMode(CENTER);          // restore if needed for other rects
   
