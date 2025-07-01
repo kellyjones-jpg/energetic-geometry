@@ -379,7 +379,7 @@ function showTooltip(entry) {
 if (entry.name) lines.push(`<strong>Name:</strong> ${entry.name}`);
 if (entry.activities && entry.activities.length) lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
 if (!isNaN(entry.megawatts)) lines.push(`<strong>System Size:</strong> ${entry.megawatts} MW`);
-if (!isNaN(entry.acres)) lines.push(`<strong>Site Size:</strong> ${entry.acres} acres`);
+if (!isNaN(entry.acres)) lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
 if (entry.year) lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
 if (entry.arrayType) lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
 if (entry.habitat && entry.habitat.length) lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
@@ -1092,7 +1092,7 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
   push();
   translate(x, y);
   noFill();
-  strokeWeight(2.5);
+  strokeWeight(3.5);
 
   switch (warpStyle) {
     case 'linear':
