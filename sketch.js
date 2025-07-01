@@ -1033,7 +1033,7 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
   push();
   translate(x, y);
   noFill();
-  strokeWeight(1);
+  strokeWeight(2.5);
 
   switch (warpStyle) {
     case 'linear':
