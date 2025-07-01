@@ -376,12 +376,16 @@ function showTooltip(entry) {
 
   let lines = [];
 
-  if (entry.name) lines.push(`<strong>Name:</strong> ${entry.name}`);
-  if (entry.activities && entry.activities.length) lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
-  if (entry.arrayType) lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
-  if (entry.habitat && entry.habitat.length) lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
-  if (entry.cropType && entry.cropType.length) lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
-  if (entry.animalType && entry.animalType.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
+if (entry.name) lines.push(`<strong>Name:</strong> ${entry.name}`);
+if (entry.activities && entry.activities.length) lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
+if (!isNaN(entry.megawatts)) lines.push(`<strong>System Size:</strong> ${entry.megawatts} MW`);
+if (!isNaN(entry.acres)) lines.push(`<strong>Site Size:</strong> ${entry.acres} acres`);
+if (entry.year) lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
+if (entry.arrayType) lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
+if (entry.habitat && entry.habitat.length) lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
+if (entry.cropType && entry.cropType.length) lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
+if (entry.animalType && entry.animalType.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
+
 
   tooltip.innerHTML = lines.join('<br>');
 
@@ -391,14 +395,17 @@ function showTooltip(entry) {
   let left = canvasRect.left + entry.x + 15;
   let top = canvasRect.top + entry.y + 15;
 
-  // Prevent tooltip from going off screen horizontally
-  if (left + tooltip.offsetWidth + 20 > window.innerWidth) {
-    left = canvasRect.left + entry.x - tooltip.offsetWidth - 20;
-  }
-  // Prevent tooltip from going off screen vertically
-  if (top + tooltip.offsetHeight + 20 > window.innerHeight) {
-    top = canvasRect.top + entry.y - tooltip.offsetHeight - 20;
-  }
+  // Adjust horizontal position
+  left = Math.min(
+    Math.max(left, 10), // don't go past left edge
+    window.innerWidth - tooltip.offsetWidth - 10 // don't overflow right
+  );
+
+  // Adjust vertical position
+  top = Math.min(
+    Math.max(top, 10), // don't go past top edge
+    window.innerHeight - tooltip.offsetHeight - 10 // don't overflow bottom
+  );
 
   tooltip.style.left = left + 'px';
   tooltip.style.top = top + 'px';
