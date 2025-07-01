@@ -794,18 +794,36 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
 }
 
 function drawCheckerboardPattern(activities, habitat, x, y, size) {
-  if (!Array.isArray(activities) || activities.length === 0) return;
-  if (!Array.isArray(habitat) || habitat.length === 0) return;
-
   habitat = habitat
     .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
     .filter(h => h !== '');
   if (habitat.length === 0) return;
 
-  push();
-  translate(x, y);
-  rectMode(CENTER);
-  noStroke();
+  if (!Array.isArray(activities) || activities.length === 0) return;
+  if (!Array.isArray(habitat) || habitat.length === 0) return;
+
+ push();
+translate(x, y);
+rectMode(CENTER);
+noStroke();
+
+  fill(255, 10); // almost invisible, but gives subtle boundary edge
+  switch (habitat[0]) {
+  case 'pollinator':
+    beginShape();
+    for (let j = 0; j < 6; j++) {
+      let angle = TWO_PI / 6 * j - PI / 2;
+      vertex(cos(angle) * size * 0.5, sin(angle) * size * 0.5);
+    }
+    endShape(CLOSE);
+    break;
+  case 'native grasses':
+    rect(0, 0, size * 0.3, size);
+    break;
+  case 'naturalized':
+    ellipse(0, 0, size, size);
+    break;
+}
 
   let gridCount = 8;
   let cellSize = size / gridCount;
@@ -1001,34 +1019,34 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
   rectMode(CENTER);
   noStroke();
 
-  // --- Transparent Suprematist shadow layer 1 ---
-  fill(10, 10, 10, 90); // Near-black with alpha
+  // Base black shadow
+  fill('#0A0A0A');
   push();
   rotate(radians(-12));
   translate(offset, offset);
   drawShapeByType(shapeType, shadowSize, shadowSize);
   pop();
 
-  // --- Semi-transparent white highlight ---
-  fill(255, 200); // White with slight alpha for glow
+  // White tilted highlight
+  fill(255);
   push();
   rotate(radians(8));
   translate(offset * 1.4, offset * 0.8);
   drawShapeByType(shapeType, highlightSize, highlightSize);
   pop();
 
-  // --- Transparent Suprematist shadow layer 2 ---
-  fill(10, 10, 10, 80); // Slightly lighter for layering
+  // Reverse shadow
+  fill('#0A0A0A');
   push();
   rotate(radians(3));
   translate(-offset * 0.6, offset * 0.5);
   drawShapeByType(shapeType, shadowSize * 0.88, shadowSize * 0.88);
   pop();
 
-  // --- White outline for definition ---
+  // White outline
   stroke(255);
-  strokeWeight(1);
   noFill();
+  strokeWeight(1);
   drawShapeByType(shapeType, shadowSize * 0.7, shadowSize * 0.7);
 
   pop();
