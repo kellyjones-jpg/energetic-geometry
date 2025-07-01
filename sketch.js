@@ -320,7 +320,7 @@ function draw() {
           drawPVWarpStyle(entry.arrayType, entry.activities, 0, 0, entryShapeSize);
         }
 
-    let shadowInfo = drawSuprematistOpShadowRect(entryShapeSize, entry.megawatts);
+    let shadowInfo = drawSuprematistOpShadowRect(entryShapeSize, entry.megawatts, entry.habitat);
 
       // Draw the array overlay directly onto the tilted white rectangle
       if (entry.arrayType) {
@@ -973,8 +973,17 @@ function drawMinimalSite(x, y, activity = 'habitat', systemSize = 0.1, siteSize 
   pop();
 }
 
-function drawSuprematistOpShadowRect(baseSize, systemSize) {
+function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
   let sz = constrain(systemSize || 0.1, 0.1, 10);
+
+  // Determine shape based on habitat
+  let shapeType = 'square'; // default
+  if (Array.isArray(habitat) && habitat.length > 0) {
+    const cleaned = habitat.map(h => (h || '').trim().toLowerCase());
+    if (cleaned.includes('pollinator')) shapeType = 'hexagon';
+    else if (cleaned.includes('naturalized')) shapeType = 'ellipse';
+    else if (cleaned.includes('native grasses')) shapeType = 'rect';
+  }
 
   // Define offsets and sizes
   let offset = map(sz, 0, 10, 2, 10);
@@ -985,42 +994,67 @@ function drawSuprematistOpShadowRect(baseSize, systemSize) {
   rectMode(CENTER);
   noStroke();
 
-  // Suprematist base shadow
-  fill('#0A0A0A');
+  // --- Transparent Suprematist shadow layer 1 ---
+  fill(10, 10, 10, 90); // Near-black with alpha
   push();
   rotate(radians(-12));
-  rect(offset, offset, shadowSize, shadowSize);
+  translate(offset, offset);
+  drawShapeByType(shapeType, shadowSize, shadowSize);
   pop();
 
-  // White tilted highlight
-  fill(255);
+  // --- Semi-transparent white highlight ---
+  fill(255, 200); // White with slight alpha for glow
   push();
   rotate(radians(8));
-  rect(offset * 1.4, offset * 0.8, highlightSize, highlightSize);
+  translate(offset * 1.4, offset * 0.8);
+  drawShapeByType(shapeType, highlightSize, highlightSize);
   pop();
 
-  // Reverse shadow
-  fill('#0A0A0A');
+  // --- Transparent Suprematist shadow layer 2 ---
+  fill(10, 10, 10, 80); // Slightly lighter for layering
   push();
   rotate(radians(3));
-  rect(-offset * 0.6, offset * 0.5, shadowSize * 0.88, shadowSize * 0.88);
+  translate(-offset * 0.6, offset * 0.5);
+  drawShapeByType(shapeType, shadowSize * 0.88, shadowSize * 0.88);
   pop();
 
-  // White outline
+  // --- White outline for definition ---
   stroke(255);
-  noFill();
   strokeWeight(1);
-  rect(0, 0, shadowSize * 0.7, shadowSize * 0.7);
+  noFill();
+  drawShapeByType(shapeType, shadowSize * 0.7, shadowSize * 0.7);
 
   pop();
 
-  // Return transform info for the array overlay
   return {
     offsetX: offset * 1.4,
     offsetY: offset * 0.8,
     angle: radians(8),
     size: highlightSize
   };
+}
+
+function drawShapeByType(type, w, h) {
+  switch (type) {
+    case 'hexagon':
+      beginShape();
+      for (let i = 0; i < 6; i++) {
+        let angle = TWO_PI / 6 * i - PI / 2;
+        vertex(cos(angle) * w / 2, sin(angle) * h / 2);
+      }
+      endShape(CLOSE);
+      break;
+    case 'ellipse':
+      ellipse(0, 0, w, h);
+      break;
+    case 'rect':
+      rect(0, 0, w, h);
+      break;
+    case 'square':
+    default:
+      rect(0, 0, w, h);
+      break;
+  }
 }
 
 function drawPVWarpStyle(pvType, activities, x, y, size) {
