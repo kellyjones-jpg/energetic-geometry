@@ -133,6 +133,11 @@ const cropEdgeGroups = {
   "native berry plants, vegetable crops, and forage crops": "mixed",
 };
 
+const pvWarpStyles = {
+  'monofacial': 'linear',
+  'bifacial': 'symmetric',
+  'translucent': 'radial'
+};
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250623.csv', 'csv', 'header');
@@ -311,6 +316,10 @@ function draw() {
 
     push();
     translate(centerX, centerY);
+    if (entry.arrayType && entry.activities?.length) {
+          drawPVWarpStyle(entry.arrayType, entry.activities, 0, 0, entryShapeSize);
+        }
+
     let shadowInfo = drawSuprematistOpShadowRect(entryShapeSize, entry.megawatts);
 
       // Draw the array overlay directly onto the tilted white rectangle
@@ -1014,6 +1023,46 @@ function drawSuprematistOpShadowRect(baseSize, systemSize) {
   };
 }
 
+function drawPVWarpStyle(pvType, activities, x, y, size) {
+  if (!pvType || !activities || activities.length === 0) return;
+
+  let type = pvType.trim().toLowerCase();
+  let warpStyle = pvWarpStyles[type];
+  if (!warpStyle) return;
+
+  push();
+  translate(x, y);
+  noFill();
+  strokeWeight(1);
+
+  switch (warpStyle) {
+    case 'linear':
+      for (let i = -size; i <= size; i += 10) {
+        let colorIndex = Math.floor((i + size) / 10) % activities.length;
+        stroke(getActivityColor(activities[colorIndex]));
+        line(i, -size, 0, size);
+      }
+      break;
+
+    case 'symmetric':
+      for (let i = 0; i < size; i += 5) {
+        let yOffset = sin(i * 0.1) * 10;
+        let colorIndex = Math.floor(i / 5) % activities.length;
+        stroke(getActivityColor(activities[colorIndex]));
+        line(-size / 2 + i, -yOffset, -size / 2 + i, yOffset);
+      }
+      break;
+
+    case 'radial':
+      for (let r = 10, idx = 0; r < size / 2; r += 10, idx++) {
+        stroke(getActivityColor(activities[idx % activities.length]));
+        ellipse(0, 0, r * 2, r * 2);
+      }
+      break;
+  }
+
+  pop();
+}
 
 function updateCounters(yearEntries) {
   let siteCount = yearEntries.length;
