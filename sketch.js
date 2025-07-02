@@ -6,6 +6,8 @@ let availableYears = [];
 let cnv;
 let tooltipEntry = null; 
 let bgImg;
+let selectedEntry = null; // Currently selected entry (for tooltip & enlargement)
+let hoveredEntry = null;  // Currently hovered entry (for hover enlargement)
 
 const cropEdgeGroups = {
   // Root vegetables
@@ -267,10 +269,10 @@ function draw() {
   // Draw background image dimmed and semi-transparent
   image(bgImg, 0, 0, width, height);
   noStroke();
-  rectMode(CORNER);          // switch to CORNER mode to cover full canvas
-  fill(0, 130);              // black with semi-transparent alpha
-  rect(0, 0, width, height); // cover entire canvas
-  rectMode(CENTER);          // restore if needed for other rects
+  rectMode(CORNER);          
+  fill(0, 130);              
+  rect(0, 0, width, height); 
+  rectMode(CENTER);          
   
   fill(255);
   textSize(24);
@@ -278,88 +280,97 @@ function draw() {
   text("Year: " + selectedYear, width / 2, 30);
 
   let yearEntries = entriesByYear[selectedYear] || [];
-
   if (yearEntries.length === 0) {
     text("No data available for this year.", width / 2, height / 2);
     return;
   }
 
   let startY = 80;
-  
   let count = yearEntries.length;
   let minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
   let maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
-  
-  // Base size decreases as number of entries increases
   let baseShapeSize = map(count, 10, 120, 140, 50);
   let padding = map(count, 10, 120, 60, 15);
-  
   let numCols = floor((width - padding) / (baseShapeSize + padding));
   numCols = max(numCols, 1);
   let numRows = ceil(count / numCols);
   let maxCellHeight = (height - startY - 50) / numRows;
 
-
   for (let i = 0; i < yearEntries.length; i++) {
     let entry = yearEntries[i];
     let col = i % numCols;
     let row = floor(i / numCols);
-
+    let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
+    let centerY = startY + row * maxCellHeight + maxCellHeight / 2;
     let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
     entryShapeSize = constrain(entryShapeSize, 30, maxCellHeight * 0.85);
     let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 0.5, 3);
-    strokeW = constrain(strokeW, 0.5, 4); // Keep visually reasonable
-    let density = floor(map(entry.acres, minSiteSize, maxSiteSize, 6, 16));
-    density = constrain(density, 5, 20); // Prevent extreme cases
-    let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
-    let centerY = startY + row * maxCellHeight + maxCellHeight / 2;
+    strokeW = constrain(strokeW, 0.5, 4);
     let baseColor = getActivityColor(entry.activities?.[0] || '');
+
+    // Determine scale for hover or selection
+    let isSelected = selectedEntry && selectedEntry.name === entry.name;
+    let isHovered = hoveredEntry && hoveredEntry.name === entry.name;
+    let scaleFactor = (isSelected || isHovered) ? 1.2 : 1;
+    let scaledSize = entryShapeSize * scaleFactor;
 
     push();
     translate(centerX, centerY);
+    scale(scaleFactor);
+
     if (entry.arrayType && entry.activities?.length) {
-          drawPVWarpStyle(entry.arrayType, entry.activities, 0, 0, entryShapeSize);
-        }
+      drawPVWarpStyle(entry.arrayType, entry.activities, 0, 0, entryShapeSize);
+    }
 
     let shadowInfo = drawSuprematistOpShadowRect(entryShapeSize, entry.megawatts, entry.habitat);
 
-      // Draw the array overlay directly onto the tilted white rectangle
-      if (entry.arrayType) {
-        push();
-        translate(shadowInfo.offsetX, shadowInfo.offsetY);
-        rotate(shadowInfo.angle);
-        drawArrayOverlay(
-          entry.arrayType,
-          entry.activities,
-          0, 0,
-          shadowInfo.size,
-          1.2,
-          10
-        );
-        pop();
-      }
+    if (entry.arrayType) {
+      push();
+      translate(shadowInfo.offsetX, shadowInfo.offsetY);
+      rotate(shadowInfo.angle);
+      drawArrayOverlay(
+        entry.arrayType,
+        entry.activities,
+        0, 0,
+        shadowInfo.size,
+        1.2,
+        10
+      );
+      pop();
+    }
 
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
       drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor);
     }
 
-     if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
-          Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-        drawSpiralWedges(entry.activities, entry.habitat, 0, 0, entryShapeSize);
-      }
+    if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
+        Array.isArray(entry.habitat) && entry.habitat.length > 0) {
+      drawSpiralWedges(entry.activities, entry.habitat, 0, 0, entryShapeSize);
+    }
 
-     if (entry.cropType && entry.cropType.length > 0) {
+    if (entry.cropType && entry.cropType.length > 0) {
       drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize, strokeW);
-
     }
 
     if (entry.animalType && entry.animalType.length > 0) {
       drawAnimalLine(entry.animalType, entry.activities, 0, 0, entryShapeSize, strokeW);
     }
     pop();
+
+    // Save position for tooltip positioning if selected or hovered
+    if (isSelected || isHovered) {
+      entry.x = centerX;
+      entry.y = centerY;
+    }
+  }
+
+  // Show tooltip only for selected entry
+  if (selectedEntry) {
+    showTooltip(selectedEntry);
+  } else {
+    showTooltip(null);
   }
 }
-
 
 function showTooltip(entry) {
   tooltipEntry = entry; // Keep track of current tooltip for keyboard nav
@@ -420,57 +431,103 @@ if (entry.animalType && entry.animalType.length) lines.push(`<strong>Animal Type
   tooltip.style.display = 'block';
 }
 
-function mousePressed() {
+function mouseMoved() {
   let yearEntries = entriesByYear[selectedYear] || [];
-  let shapeSize = 150;
-  let padding = 60;
+  let shapeSizeEstimate = 150; // base size used for hit test approx
+  let padding = map(yearEntries.length, 10, 120, 60, 15);
   let startY = 80;
-
-  let foundEntry = null;
-
-  let numCols = floor((width - padding) / (shapeSize + padding));
+  let count = yearEntries.length;
+  let baseShapeSize = map(count, 10, 120, 140, 50);
+  let numCols = floor((width - padding) / (baseShapeSize + padding));
   numCols = max(numCols, 1);
+
+  hoveredEntry = null;
+  let hovering = false;
 
   for (let i = 0; i < yearEntries.length; i++) {
     let col = i % numCols;
     let row = floor(i / numCols);
+    let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
+    let centerY = startY + row * ((height - startY - 50) / ceil(count / numCols)) + ((height - startY - 50) / ceil(count / numCols)) / 2;
+    let entry = yearEntries[i];
 
-    let centerX = padding + col * (shapeSize + padding) + shapeSize / 2;
-    let centerY = startY + row * (shapeSize + padding) + shapeSize / 2;
+    let minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
+    let maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
+    let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
+    entryShapeSize = constrain(entryShapeSize, 30, ((height - startY - 50) / ceil(count / numCols)) * 0.85);
 
     let d = dist(mouseX, mouseY, centerX, centerY);
+    if (d < entryShapeSize / 2) {
+      hoveredEntry = entry;
+      hovering = true;
+      break;
+    }
+  }
+  cursor(hovering ? 'pointer' : 'default');
+}
 
-    if (d < shapeSize / 2) {
-      foundEntry = { ...yearEntries[i], x: centerX, y: centerY };
+
+function mousePressed() {
+  let yearEntries = entriesByYear[selectedYear] || [];
+  let shapeSizeEstimate = 150;
+  let padding = map(yearEntries.length, 10, 120, 60, 15);
+  let startY = 80;
+  let count = yearEntries.length;
+  let baseShapeSize = map(count, 10, 120, 140, 50);
+  let numCols = floor((width - padding) / (baseShapeSize + padding));
+  numCols = max(numCols, 1);
+
+  let foundEntry = null;
+
+  for (let i = 0; i < yearEntries.length; i++) {
+    let col = i % numCols;
+    let row = floor(i / numCols);
+    let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
+    let centerY = startY + row * ((height - startY - 50) / ceil(count / numCols)) + ((height - startY - 50) / ceil(count / numCols)) / 2;
+    let entry = yearEntries[i];
+
+    let minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
+    let maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
+    let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
+    entryShapeSize = constrain(entryShapeSize, 30, ((height - startY - 50) / ceil(count / numCols)) * 0.85);
+
+    let d = dist(mouseX, mouseY, centerX, centerY);
+    if (d < entryShapeSize / 2) {
+      foundEntry = { ...entry, x: centerX, y: centerY };
       break;
     }
   }
 
   if (foundEntry) {
-    showTooltip(foundEntry);
+    selectedEntry = foundEntry;
+    showTooltip(selectedEntry);
   } else {
+    selectedEntry = null;
     showTooltip(null);
   }
 }
+
 
 function keyPressed() {
   let yearEntries = entriesByYear[selectedYear];
   if (!yearEntries) return;
 
-  // Handle ESC, LEFT, RIGHT for tooltip navigation
-  if (tooltipEntry) {
-    let currentIndex = yearEntries.findIndex(e => e.name === tooltipEntry.name);
+  if (selectedEntry) {
+    let currentIndex = yearEntries.findIndex(e => e.name === selectedEntry.name);
     if (currentIndex === -1) return;
 
-    let shapeSize = 150;
-    let padding = 60;
+    let shapeSizeEstimate = 150;
+    let padding = map(yearEntries.length, 10, 120, 60, 15);
     let startY = 80;
-    let numCols = floor((width - padding) / (shapeSize + padding));
+    let count = yearEntries.length;
+    let baseShapeSize = map(count, 10, 120, 140, 50);
+    let numCols = floor((width - padding) / (baseShapeSize + padding));
     numCols = max(numCols, 1);
 
     let newIndex = currentIndex;
 
     if (keyCode === ESCAPE) {
+      selectedEntry = null;
       showTooltip(null);
       return;
     } else if (keyCode === RIGHT_ARROW && currentIndex < yearEntries.length - 1) {
@@ -482,28 +539,25 @@ function keyPressed() {
     if (newIndex !== currentIndex) {
       let col = newIndex % numCols;
       let row = floor(newIndex / numCols);
-      let centerX = padding + col * (shapeSize + padding) + shapeSize / 2;
-      let centerY = startY + row * (shapeSize + padding) + shapeSize / 2;
+      let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
+      let centerY = startY + row * ((height - startY - 50) / ceil(count / numCols)) + ((height - startY - 50) / ceil(count / numCols)) / 2;
 
-      let newEntry = { ...yearEntries[newIndex], x: centerX, y: centerY };
-      showTooltip(newEntry);
+      selectedEntry = { ...yearEntries[newIndex], x: centerX, y: centerY };
+      showTooltip(selectedEntry);
     }
   }
 
-  // Handle HOME and END to jump years
   let currentYearIndex = availableYears.indexOf(selectedYear);
 
   if (keyCode === HOME) {
     selectedYear = availableYears[0];
     updateYear(selectedYear, 0);
   } else if (keyCode === END) {
-    let lastIndex = availableYears.length - 1;
-    selectedYear = availableYears[lastIndex];
-    updateYear(selectedYear, lastIndex);
+    selectedYear = availableYears[availableYears.length - 1];
+    updateYear(selectedYear, availableYears.length - 1);
   }
 
-  // Optional: Left/right keys switch years if no tooltip is selected
-  if (!tooltipEntry && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
+  if (!selectedEntry && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
     let delta = keyCode === RIGHT_ARROW ? 1 : -1;
     let nextIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
     if (nextIndex !== currentYearIndex) {
@@ -801,95 +855,62 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
   pop();
 }
 
-function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
-  let sz = constrain(systemSize || 0.1, 0.1, 10);
-
-  // Determine shape based on habitat
-  let shapeType = 'square'; // default
-  if (Array.isArray(habitat) && habitat.length > 0) {
-    const cleaned = habitat.map(h => (h || '').trim().toLowerCase());
-    if (cleaned.includes('pollinator')) shapeType = 'hexagon';
-    else if (cleaned.includes('naturalized')) shapeType = 'ellipse';
-    else if (cleaned.includes('native grasses')) shapeType = 'rect';
-  }
-
-  // Define offsets and base sizes
-  let offset = map(sz, 0, 10, 2, 10);
-  let shadowSize = map(sz, 0, 10, baseSize * 0.9, baseSize * 1.4);
-  let highlightSize = shadowSize * 0.95;
-
-  // Aspect ratio adjustment and rotation flag
-  let widthFactor = 1;
-  let heightFactor = 1;
-  let rotateRectVertical = false;
-
-  if (shapeType === 'square') {
-    widthFactor = 1;
-    heightFactor = 1.15; // slightly taller square
-  } else if (shapeType === 'rect') {
-    widthFactor = 0.55;  // narrow
-    heightFactor = 1.6;  // tall
-    rotateRectVertical = true;
-  }
-
-  let shadowW = shadowSize * widthFactor;
-  let shadowH = shadowSize * heightFactor;
-  let highlightW = highlightSize * widthFactor;
-  let highlightH = highlightSize * heightFactor;
+function drawSpiralWedges(activities, habitat, x, y, size) {
+  if (!Array.isArray(activities) || activities.length === 0) return;
 
   push();
-  rectMode(CENTER);
+  translate(x, y);
+  angleMode(RADIANS);
   noStroke();
 
-  // Base black shadow
-  fill('#0A0A0A');
-  push();
-  rotate(radians(-12));
-  translate(offset, offset);
-  if (rotateRectVertical) rotate(HALF_PI);
-  drawShapeByType(shapeType, shadowW, shadowH);
-  pop();
+  const numWedges = activities.length;
+  const wedgeAngle = TWO_PI / numWedges;
 
-  // White tilted highlight
-  fill(255);
-  push();
-  rotate(radians(8));
-  translate(offset * 1.4, offset * 0.8);
-  if (rotateRectVertical) rotate(HALF_PI);
-  drawShapeByType(shapeType, highlightW, highlightH);
-  pop();
+  let innerRadius = size * 0.12;
+  let outerRadius = size * 0.4;
 
-  // Reverse shadow
-  fill('#0A0A0A');
-  push();
-  rotate(radians(3));
-  translate(-offset * 0.6, offset * 0.5);
-  if (rotateRectVertical) rotate(HALF_PI);
-  drawShapeByType(shapeType, shadowW * 0.88, shadowH * 0.88);
-  pop();
+  for (let i = 0; i < numWedges; i++) {
+    let activity = activities[i];
+    let fillColor = getActivityColor(activity);
+    if (!fillColor) continue;
 
-  // White outline
-  stroke(255);
-  noFill();
-  strokeWeight(1);
-  if (rotateRectVertical) {
-    push();
-    rotate(HALF_PI);
-    drawShapeByType(shapeType, shadowW * 0.7, shadowH * 0.7);
-    pop();
-  } else {
-    drawShapeByType(shapeType, shadowW * 0.7, shadowH * 0.7);
+    // Suprematist-style: bold, high-contrast, semi-transparent
+    fillColor.setAlpha(170 - i * 10); // decreasing alpha for layering
+    fill(fillColor);
+
+    let rotationOffset = radians(i * 12); // subtle angular shift
+    rotate(rotationOffset);
+
+    beginShape();
+    vertex(0, 0); // center
+    for (let a = 0; a <= wedgeAngle; a += 0.06) {
+      let r = map(a, 0, wedgeAngle, innerRadius, outerRadius);
+      let vx = cos(a) * r;
+      let vy = sin(a) * r;
+      vertex(vx, vy);
+    }
+    endShape(CLOSE);
+
+    // Op Art-style: add white edge wedge between every other slice
+    if (i % 2 === 0) {
+      fill(255, 40);
+      beginShape();
+      vertex(0, 0);
+      for (let a = 0; a <= wedgeAngle; a += 0.06) {
+        let r = map(a, 0, wedgeAngle, innerRadius * 0.9, outerRadius * 1.05);
+        let vx = cos(a + 0.01) * r;
+        let vy = sin(a + 0.01) * r;
+        vertex(vx, vy);
+      }
+      endShape(CLOSE);
+    }
+
+    rotate(-rotationOffset); // reset
   }
 
   pop();
-
-  return {
-    offsetX: offset * 1.4,
-    offsetY: offset * 0.8,
-    angle: radians(8),
-    size: highlightSize
-  };
 }
+
 
 function pointInHexagon(px, py, r) {
   px = abs(px);
