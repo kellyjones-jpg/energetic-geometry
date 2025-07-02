@@ -806,21 +806,26 @@ function drawSpiralWedges(activities, habitat, x, y, size) {
   const totalRotation = TWO_PI;
   const wedgeAngle = totalRotation / numWedges;
 
+  let innerRadius = size * 0.15;  // smaller to fit within the main shape
+  let outerRadius = size * 0.4;   // conservative fill area
+
   for (let i = 0; i < numWedges; i++) {
     let activity = activities[i];
     let fillColor = getActivityColor(activity);
     if (!fillColor) continue;
 
+    fillColor.setAlpha(160); // semi-transparent for layering
     fill(fillColor);
+
     beginShape();
-    for (let angle = 0; angle <= wedgeAngle; angle += 0.1) {
-      let a = angle + i * wedgeAngle;
-      let r = size * 0.5 * (1 + 0.1 * angle); // slight outward spiral
-      let vx = cos(a) * r;
-      let vy = sin(a) * r;
+    vertex(0, 0); // center point
+    for (let angle = 0; angle <= wedgeAngle; angle += 0.05) {
+      let a = i * wedgeAngle + angle;
+      let spiralRadius = map(angle, 0, wedgeAngle, innerRadius, outerRadius);
+      let vx = cos(a) * spiralRadius;
+      let vy = sin(a) * spiralRadius;
       vertex(vx, vy);
     }
-    vertex(0, 0); // close to center
     endShape(CLOSE);
   }
 
