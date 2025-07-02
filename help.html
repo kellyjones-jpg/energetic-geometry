@@ -1,1291 +1,543 @@
-let table;
-let entries = [];
-let entriesByYear = {};
-let selectedYear;
-let availableYears = [];
-let cnv;
-let tooltipEntry = null; 
-let bgImg;
-let selectedEntry = null; // Currently selected entry (for tooltip & enlargement)
-let hoveredEntry = null;  // Currently hovered entry (for hover enlargement)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Help | Energetic Geometry</title>
+  <link rel="icon" href="images/kj-favicon.png" type="image/png" />
+  <link rel="apple-touch-icon" href="icons/favicon.png" />
 
-const cropEdgeGroups = {
-  // Root vegetables
-  "carrots": "root",
-  "beets": "root",
-  "radish": "root",
-  "daikon": "root",
-  "garlic": "root",
-  "onions": "root",
-  "shallots": "root",
-  "leeks": "root",
-  "yams": "root",
-  "turnips": "root",
-  "potatoes": "root",
-  "sweet potato": "root",
-  "dryland taro": "root",
-  "asparagus": "root",
-  "celery": "root",
-  "fennel": "root",
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet" />
 
-  // Leafy greens
-  "spinach": "leafy",
-  "kale": "leafy",
-  "chard": "leafy",
-  "swiss chard": "leafy",
-  "lettuce": "leafy",
-  "buttercrunch head lettuce": "leafy",
-  "red salad bowl lettuce": "leafy",
-  "arugula": "leafy",
-  "greens": "leafy",
-  "leafy greens": "leafy",
-  "collards": "leafy",
-  "salad greens": "leafy",
-  "microgreens": "leafy",
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-  // Fruit-bearing vegetables (Solanaceae, cucurbits)
-  "tomatoes": "fruit",
-  "cherry tomatoes": "fruit",
-  "peppers": "fruit",
-  "bell pepper": "fruit",
-  "squash": "fruit",
-  "summer squash": "fruit",
-  "winter squash": "fruit",
-  "melons": "fruit",
-  "eggplant": "fruit",
-  "cucumbers": "fruit",
-  "cucurbits & solanaceous crops": "fruit",
-  "pumpkins": "fruit",
-  "zucchini": "fruit",
-  "chiles": "fruit",
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
 
-  // Fruits & berries
-  "berries": "berry",
-  "blueberries": "berry",
-  "raspberry": "berry",
-  "strawberries": "berry",
-  "native berry plants": "berry",
-  "poha berries": "berry",
-  "persimmons": "fruit",
-  "peaches": "fruit",
-  "pears": "fruit",
-  "apples": "fruit",
-  "watermelon": "fruit",
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container my-4">
+    <!-- Header and nav -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h1 class="mb-0"><a class="title" href="index.html" aria-label="Home">
+        Energetic Geometry:<br />
+        The Art and Power of Agrivoltaics</a>
+      </h1>
+      <nav class="mb-0">
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link" href="about.html" aria-label="About">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="help.html" aria-label="Help">
+              Help <i class="bi bi-question-circle ms-1" aria-hidden="true"></i>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
 
-  // Herbs
-  "herbs": "herb",
-  "basil": "herb",
-  "genovese basil": "herb",
-  "cilantro": "herb",
-  "parsley": "herb",
+    <!-- Help Content -->
+    <div class="interior-border">
+      <h2 class="mt-4">Help</h2>
+       <p class="lead">This guide outlines how each dataset variable shapes the visual language of <em>Energetic Geometry</em>, serving as a key to understanding the project's use of color, form, texture, and spatial relationships.</p>
+      <div class="accordion" id="helpAccordion">
 
-  // Grains & grasses
-  "hay": "grain",
-  "corn": "grain",
-  "soy": "grain",
-  "soybean": "grain",
-  "spring wheat": "grain",
-  "saffron": "grain",
-  "sorghum": "grain",
-  "clover": "grain",
-  "grain and specialty crops": "grain",
-  "alfalfa": "grain",
+         <div class="accordion-item my-4">
+          <h3 class="accordion-header mt-0" id="headingActivities">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseActivities" aria-expanded="true" aria-controls="collapseActivities">
+              Agrivoltaic Activities — Color Coding
+            </button>
+          </h3>
+          <div id="collapseActivities" class="accordion-collapse collapse" aria-labelledby="headingActivities" data-bs-parent="#helpAccordion">
+            <div class="accordion-body">
+            <table class="table table-dark table-striped align-middle">
+          <thead>
+            <tr>
+              <th>Agrivoltaic Activity</th>
+              <th>Style Influence</th>
+              <th>Visual</th>
+              <th>Rationale</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Crop Production</td>
+              <td>Suprematism</td>
+              <td><span style="display:inline-block;width:30px;height:20px;background:#E4572E;border:1px solid white;"></span> #E4572E (Orange)</td>
+              <td>Constructivist energy and growth symbolism</td>
+            </tr>
+            <tr>
+              <td>Habitat</td>
+              <td>Op Art</td>
+              <td><span style="display:inline-block;width:30px;height:20px;background:#2E8B57;border:1px solid white;"></span> #2E8B57 (Sea Green)</td>
+              <td>Ecological resilience and natural harmony</td>
+            </tr>
+            <tr>
+              <td>Grazing</td>
+              <td>Suprematism</td>
+              <td><span style="display:inline-block;width:30px;height:20px;background:#005A99;border:1px solid white;"></span> #005A99 (Deep Blue)</td>
+              <td>Pastoral calm with strong visual presence</td>
+            </tr>
+            <tr>
+              <td>Greenhouse</td>
+              <td>Op Art</td>
+              <td><span style="display:inline-block;width:30px;height:20px;background:#FFD100;border:1px solid white;"></span> #FFD100 (Solar Gold)</td>
+              <td>Artificial light and energy cycles, optical play</td>
+            </tr>
+          </tbody>
+        </table>
+ <p><strong>Combined Activities Treatment</strong></p>
+  <ul>
+       <li><strong>Sites with Habitat Type Shape(s):</strong><br />
+          Shapes are nested and filled with the corresponding agrivoltaic activity colors.</li>
 
-  // Legumes
-  "beans": "legume",
-  "bush beans": "legume",
-  "string beans": "legume",
-  "green beans": "legume",
-  "peas": "legume",
+      <li><strong>Sites with Animal Type Line(s) but no Habitat Type Shape(s):</strong><br />
+      Multiple lines, each filled with the respective activity colors.</li>
+      
+      <li><strong>Sites with neither Animal Type Line(s) nor Habitat Type Shape(s):</strong><br />
+      Displayed as a small, plain dot in the corresponding activity colors.</li>
+  </ul>
+            </div>
+          </div>
+        </div>
 
-  // Vining / perennial
-  "grapes": "vine",
-  "kiwis": "vine",
-  "kiwi": "vine",
-  "lavender": "vine",
-  "vanilla": "vine",
-  "tea": "vine",
-  "mamaki tea": "vine",
-  "peppercorn": "vine",
-  "maile": "vine",
-  "coffee": "vine",
-  "protea": "vine",
+        <!-- System Size -->
+        <div class="accordion-item my-4">
+          <h3 class="accordion-header" id="headingSystemSize">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSystemSize" aria-expanded="true" aria-controls="collapseSystemSize">
+              System Size — Drop Shadow Effect
+            </button>
+          </h3>
+          <div id="collapseSystemSize" class="accordion-collapse collapse" aria-labelledby="headingSystemSize" data-bs-parent="#helpAccordion">
+            <div class="accordion-body">
+              <table class="table table-dark table-striped align-middle">
+                <thead>
+                  <tr>
+                    <th>System Size</th>
+                    <th>Shadow Characteristics</th>
+                    <th>Visual</th>
+                    <th>Rationale</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Small systems</td>
+                    <td>Tight, subtle shadows</td>
+                    <td><span class="shadow-box shadow-small suprematist-op-dropshadow"></span></td>
+                    <td>Minimal tension, soft geometric weight</td>
+                  </tr>
+                  <tr>
+                    <td>Large systems</td>
+                    <td>Bold, angular, hard-edged shadows</td>
+                    <td><span class="shadow-box shadow-large suprematist-op-dropshadow"></span></td>
+                    <td>Suprematist tension, visual density scaled with power</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
 
-  // Cruciferous vegetables
-  "broccoli": "cruciferous",
-  "cabbage": "cruciferous",
-  "bok choy": "cruciferous",
-  "kohlrabi": "cruciferous",
-  "cauliflower": "cruciferous",
+         <div class="accordion-item my-4">
+          <h3 class="accordion-header" id="headingSiteSize">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSiteSize" aria-expanded="true" aria-controls="collapseSiteSize">
+              Site Size — Shape/Line Weight
+            </button>
+          </h3>
+          <div id="collapseSiteSize" class="accordion-collapse collapse" aria-labelledby="headingSiteSize" data-bs-parent="#helpAccordion">
+            <div class="accordion-body">
+             <table class="table table-dark table-striped align-middle">
+                <thead>
+                  <tr>
+                    <th>Site Size</th>
+                    <th>Visual Weight</th>
+                     <th>Visual</th>
+                    <th>Rationale</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Small sites</td>
+                    <td>Light, airy gridlines</td>
+                     <td>
+                      <div class="legend-shape legend-rectangle" style="width: 80px; height: 4px;"></div>
+                    </td>
+                    <td>Inspired by Vasarely's grids, Lissitzky's tension</td>
+                  </tr>
+                  <tr>
+                    <td>Large sites</td>
+                    <td>Dense, rhythmically intense patterns</td>
+                    <td>
+                      <div class="legend-shape legend-rectangle" style="width: 80px; height: 12px;"></div>
+                    </td>
+                    <td>Increased visual density and rhythmic tension</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
 
-  // Mixed / general
-  "mixed vegetables": "mixed",
-  "assorted vegetables": "mixed",
-  "various vegetables": "mixed",
-  "vegetables": "mixed",
-  "vegetables, herbs, fruits": "mixed",
-  "leafy greens, berries": "mixed",
-  "tomato, pepper, 20+ crop types": "mixed",
-  "tomato, pepper, kale, radish, eggplant, 30+ crop types": "mixed",
-  "pepper, kale, broccoli, beans, chard": "mixed",
-  "peppers, tomatoes, squash, lettuce, herbs": "mixed",
-  "potatoes, tomatoes, basil, beans, squash": "mixed",
-  "vegetables (kohlrabi, cabbage, broccoli, kale, chard, peppers, parsley, tomatoes)": "mixed",
-  "vegetables (kohlrabi, cabbage, kale, chard, peppers, basil, tomatoes)": "mixed",
-  "native berry plants, vegetable crops, and forage crops": "mixed",
-};
+<div class="accordion-item my-4">
+          <h3 class="accordion-header" id="headingYear">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseYear" aria-expanded="true" aria-controls="collapseYear">
+              Year Installed
+            </button>
+          </h3>
+          <div id="collapseYear" class="accordion-collapse collapse" aria-labelledby="headingYear" data-bs-parent="#helpAccordion">
+            <div class="accordion-body">
+             <p>Displayed as an interactive timeline, this element enables navigation and filtering of sites by installation year.</p>
+            </div>
+          </div>
+        </div>
 
-const pvWarpStyles = {
-  'monofacial': 'linear',
-  'bifacial': 'symmetric',
-  'translucent': 'radial'
-};
-
-function preload() {
-  table = loadTable('data/inspire-agrivoltaics-20250702.csv', 'csv', 'header');
-  bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
-}
-
-function setup() {
-  // Load and organize data
-  for (let i = 0; i < table.getRowCount(); i++) {
-    let name = table.getString(i, 'Name') || '';
-    let activityStr = table.getString(i, 'Agrivoltaic Activities') || '';
-    let activities = activityStr
-      .split(/,\s*/)
-      .map(a => a.trim().toLowerCase())
-      .filter(a => a.length > 0);
-    let habitatStr = String(table.getString(i, 'Habitat Type') || '').trim();
-    let habitat = habitatStr ? habitatStr.split(/,\s*/) : [];
-    let animalTypeStr = table.getString(i, 'Animal Type') || '';
-    let animalType = animalTypeStr
-      .split(/,\s*/)
-      .map(a => a.trim().toLowerCase())
-      .filter(a => a.length > 0);
-    let cropTypeStr = table.getString(i, 'Crop Types') || '';
-    let cropType = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
-    let arrayTypeStr = table.getString(i, 'Type Of Array') || '';
-    let year = table.getString(i, 'Year Installed') || 'Unknown';
-    let megawatts = parseFloat(table.getString(i, 'System Size') || 0);
-    let acres = parseFloat(table.getString(i, 'Site Size') || 0);
-    let url = table.getString(i, 'URL') || '';
-
-    let entry = {
-      name,
-      activities,
-      habitat,
-      animalType,
-      cropType,
-      arrayType: arrayTypeStr.trim().toLowerCase(), 
-      year,
-      megawatts,
-      acres,
-      url: url.trim()
-    };
-
-    entries.push(entry);
-    if (!entriesByYear[year]) {
-      entriesByYear[year] = [];
-    }
-    entriesByYear[year].push(entry);
-  }
-
-  availableYears = Object.keys(entriesByYear).sort();
-  selectedYear = availableYears[0];
-
-  // Create the canvas
-  let initialWidth = windowWidth * 0.9;
-  let shapeSize = 150;
-  let padding = 60;
-  let yearEntries = entriesByYear[selectedYear] || [];
-  let numCols = floor((initialWidth - padding) / (shapeSize + padding));
-  numCols = max(numCols, 1);
-  let numRows = ceil(yearEntries.length / numCols);
-  let fixedHeight = 895;
-  cnv = createCanvas(initialWidth, fixedHeight);
-  cnv.parent('sketch-container');
-
-  // Create caption
-  let caption = createP("Image from Pexels");
-  caption.style('text-align', 'left', true);
-  caption.class('image-caption');
-  caption.parent('sketch-container');
-  
-  // YEAR BUTTONS
- let timelineContainer = createDiv().id('timeline');
- timelineContainer.style('text-align', 'center', true);
- timelineContainer.parent('sketch-container');
-
-  availableYears.forEach((year, index) => {
-  let yearDiv = createDiv().class('timeline-year');
-  yearDiv.parent(timelineContainer);
-
-  let label = createP(year).class('year-label');
-  label.parent(yearDiv);
-  if (index % 2 === 0) {
-    label.addClass('above');
-  } else {
-    label.addClass('below');
-  }
-
-  let node = createDiv().class('year-node');
-  node.parent(yearDiv);
-
-  label.mousePressed(() => {
-    selectedYear = year;
-    windowResized();
-    updateCounters(entriesByYear[selectedYear]);
-
-    selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
-    label.addClass('active');
-  });
-
-  if (index === 0) label.addClass('active');
-  });
-  
-  textFont('Helvetica');
-  textSize(32);
-  textAlign(CENTER, CENTER);
-  rectMode(CENTER);
-  noLoop();
-}
-
-function windowResized() {
-  let yearEntries = entriesByYear[selectedYear] || [];
-  let shapeSize = 150;
-  let padding = 60;
-  let numCols = floor((windowWidth * 0.9 - padding) / (shapeSize + padding));
-  numCols = max(numCols, 1);
-
-  let numRows = ceil(yearEntries.length / numCols);
-  let fixedHeight = 885;
-  resizeCanvas(windowWidth * 0.9, fixedHeight);
-  
-  redraw();
-}
-
-
-function draw() {
-  // Draw background image dimmed and semi-transparent
-  image(bgImg, 0, 0, width, height);
-  noStroke();
-  rectMode(CORNER);          
-  fill(0, 145);              
-  rect(0, 0, width, height); 
-  rectMode(CENTER);          
-  
-  fill(255);
-  textSize(24);
-  textAlign(CENTER, TOP);
-  text("Year: " + selectedYear, width / 2, 30);
-
-  let yearEntries = entriesByYear[selectedYear] || [];
-  if (yearEntries.length === 0) {
-    text("No data available for this year.", width / 2, height / 2);
-    return;
-  }
-
-  let startY = 80;
-  let count = yearEntries.length;
-  let minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
-  let maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
-  let baseShapeSize = map(count, 10, 120, 140, 50);
-  let padding = map(count, 10, 120, 60, 15);
-  let numCols = floor((width - padding) / (baseShapeSize + padding));
-  numCols = max(numCols, 1);
-  let numRows = ceil(count / numCols);
-  let maxCellHeight = (height - startY - 50) / numRows;
-
-  for (let i = 0; i < yearEntries.length; i++) {
-    let entry = yearEntries[i];
-    let col = i % numCols;
-    let row = floor(i / numCols);
-    let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
-    let centerY = startY + row * maxCellHeight + maxCellHeight / 2;
-    let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
-    entryShapeSize = constrain(entryShapeSize, 30, maxCellHeight * 0.85);
-    let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 0.5, 3);
-    strokeW = constrain(strokeW, 0.5, 4);
-    let baseColor = getActivityColor(entry.activities?.[0] || '');
-
-    // Determine scale for hover or selection
-    let isSelected = selectedEntry && selectedEntry.name === entry.name;
-    let isHovered = hoveredEntry && hoveredEntry.name === entry.name;
-    let scaleFactor = (isSelected || isHovered) ? 1.2 : 1;
-    let scaledSize = entryShapeSize * scaleFactor;
-
-    push();
-    translate(centerX, centerY);
-    scale(scaleFactor);
-
-    if (entry.arrayType && entry.activities?.length) {
-      drawPVWarpStyle(entry.arrayType, entry.activities, 0, 0, entryShapeSize);
-    }
-
-    let shadowInfo = drawSuprematistOpShadowRect(entryShapeSize, entry.megawatts, entry.habitat);
-
-    if (entry.arrayType) {
-      push();
-      translate(shadowInfo.offsetX, shadowInfo.offsetY);
-      rotate(shadowInfo.angle);
-      drawArrayOverlay(
-        entry.arrayType,
-        entry.activities,
-        0, 0,
-        shadowInfo.size,
-        1.2,
-        10
-      );
-      pop();
-    }
-
-    if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-      drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor);
-    }
-
-    if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
-        Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-      drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize);
-    }
-
-    if (entry.cropType && entry.cropType.length > 0) {
-      drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
-    }
-
-    if (entry.animalType && entry.animalType.length > 0) {
-      drawAnimalLine(entry.animalType, entry.activities, 0, 0, entryShapeSize, strokeW);
-    }
-    pop();
-
-    // Save position for tooltip positioning if selected or hovered
-    if (isSelected || isHovered) {
-      entry.x = centerX;
-      entry.y = centerY;
-    }
-  }
-
-  // Show tooltip only for selected entry
-  if (selectedEntry) {
-    showTooltip(selectedEntry);
-  } else {
-    showTooltip(null);
-  }
-}
-
-function showTooltip(entry) {
-  tooltipEntry = entry; // Keep track of current tooltip for keyboard nav
-  const tooltip = document.getElementById('tooltip');
-
-  if (!entry) {
-    tooltip.style.display = 'none';
-    return;
-  }
-
-  const capitalizeWords = (str) =>
-    str.replace(/\b\w/g, c => c.toUpperCase());
-
-  const formatArray = (arr) =>
-    Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
-
-  let lines = [];
-
-if (entry.name) {
-  if (entry.url) {
-    lines.push(`<strong>Name:</strong> <a href="${entry.url}" target="_blank" rel="noopener noreferrer" class="external-link">
-      ${entry.name} <span aria-hidden="true">🔗</span>
-    </a>`);
-  } else {
-    lines.push(`<strong>Name:</strong> ${entry.name}`);
-  }
-};
-if (entry.activities && entry.activities.length) lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
-if (!isNaN(entry.megawatts)) lines.push(`<strong>System Size:</strong> ${entry.megawatts} MW`);
-if (!isNaN(entry.acres)) lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
-if (entry.year) lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
-if (entry.arrayType) lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
-if (entry.habitat && entry.habitat.length) lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
-if (entry.cropType && entry.cropType.length) lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
-if (entry.animalType && entry.animalType.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
-
-
-tooltip.innerHTML = `
-  <div id="tooltip-header">
-    <strong>Name:</strong>
-    <button id="tooltip-close" aria-label="Close tooltip">✕</button>
+        <div class="accordion-item my-4">
+          <h3 class="accordion-header" id="headingPVTech">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePVTech" aria-expanded="true" aria-controls="collapsePVTech">
+              PV Technology — Light Distortion Patterns
+            </button>
+          </h3>
+          <div id="collapsePVTech" class="accordion-collapse collapse" aria-labelledby="headingPVTech" data-bs-parent="#helpAccordion">
+            <div class="accordion-body">
+             <table class="table table-dark table-striped align-middle">
+                <thead>
+                  <tr>
+                    <th>PV Technology</th>
+                    <th>Warp Style</th>
+                    <th>Visual</th>
+                    <th>Rationale</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Monofacial PV</td>
+                    <td>Linear Warp</td>
+                     <td>
+                      <svg class="pv-icon pv-monofacial" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 50 Q60 10 110 50" />
+                        <line x1="20" y1="50" x2="100" y2="50" stroke="white" stroke-width="2" />
+                      </svg>
+                    </td>
+                    <td>Mimics single-direction light collection with lens-like planar flow</td>
+                  </tr>
+                  <tr>
+                    <td>Bifacial PV</td>
+                    <td>Symmetric Warp / Mirror</td>
+                      <td>
+                      <svg class="pv-icon pv-bifacial" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 50 Q40 10 60 50 Q80 10 110 50" />
+                        <line x1="30" y1="50" x2="50" y2="10" stroke="white" stroke-width="2" />
+                        <line x1="70" y1="10" x2="90" y2="50" stroke="white" stroke-width="2" />
+                      </svg>
+                    </td>
+                    <td>Reflects dual light intake; symmetry suggests front and rear absorption</td>
+                  </tr>
+                  <tr>
+                    <td>Translucent PV</td>
+                    <td>Radial / Organic Warp</td>
+                    <td>
+                      <svg class="pv-icon pv-translucent" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="30" cy="30" r="20" stroke="white" stroke-width="2" fill="none" />
+                        <circle cx="30" cy="30" r="12" stroke="white" stroke-width="2" fill="none" />
+                        <circle cx="30" cy="30" r="6" stroke="white" stroke-width="2" fill="none" />
+                      </svg>
+                    </td>
+                    <td>Suggests permeability, diffusion, greenhouse light conditions</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item my-4">
+          <h3 class="accordion-header" id="headingArray">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseArray" aria-expanded="true" aria-controls="collapseArray">
+              Type of Array — Texture Overlay
+            </button>
+          </h3>
+          <div id="collapseArray" class="accordion-collapse collapse" aria-labelledby="headingArray" data-bs-parent="#helpAccordion">
+            <div class="accordion-body">
+            <table class="table table-dark table-striped align-middle">
+              <thead>
+                <tr>
+                  <th>Type of Array</th>
+                  <th>Overlay</th>
+                   <th>Visual</th>
+                  <th>Rationale</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Fixed</td>
+                  <td>Crosshatch Grid</td>
+                    <td>
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="white" stroke-width="1">
+                      <path d="M0 10 H40 M10 0 V40 M0 30 H40 M30 0 V40" />
+                    </svg>
+                  </td>
+                  <td>Rigid, stable structure</td>
+                </tr>
+                <tr>
+                  <td>Single-axis Tracking</td>
+                  <td>Isometric Grid</td>
+                   <td>
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="white" stroke-width="1">
+                      <path d="M0 30 L40 10 M10 40 L30 0" />
+                    </svg>
+                  </td>
+                  <td>Directional tilt, limited motion</td>
+                </tr>
+                <tr>
+                  <td>Dual-axis Tracking</td>
+                  <td>Dotted Matrix</td>
+                   <td>
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="white" stroke-width="2">
+                      <circle cx="10" cy="10" r="2" />
+                      <circle cx="30" cy="10" r="2" />
+                      <circle cx="10" cy="30" r="2" />
+                      <circle cx="30" cy="30" r="2" />
+                    </svg>
+                  </td>
+                  <td>Fluid, high-resolution movement</td>
+                </tr>
+              </tbody>
+            </table>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item my-4">
+          <h3 class="accordion-header" id="headingHabitat">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHabitat" aria-expanded="true" aria-controls="collapseHabitat">
+              Habitat Type — Shape Coding
+            </button>
+          </h3>
+          <div id="collapseHabitat" class="accordion-collapse collapse" aria-labelledby="headingHabitat" data-bs-parent="#helpAccordion">
+            <div class="accordion-body">
+            <table class="table table-dark table-striped align-middle">
+              <thead>
+                <tr>
+                  <th>Habitat Type</th>
+                  <th>Shape</th>
+                   <th>Visual</th>
+                  <th>Rationale</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Pollinator</td>
+                  <td>Hexagon</td>
+                   <td><div class="legend-shape legend-hexagon"></div></td>
+                  <td>Symbolizes beehive structure; modular and dynamic visual</td>
+                </tr>
+                <tr>
+                  <td>Native Grasses</td>
+                  <td>Vertical Rectangle</td>
+                   <td><div class="legend-shape legend-rectangle"></div></td>
+                  <td>Evokes grass blades; references Lissitzky and Vasarely patterns</td>
+                </tr>
+                <tr>
+                  <td>Naturalized</td>
+                  <td>Circle</td>
+                   <td><div class="legend-shape legend-circle"></div></td>
+                  <td>Represents balance, organic growth; cosmic unity and flow in art</td>
+                </tr>
+              </tbody>
+            </table>
+            <p><strong>Combined Habitat Treatment:</strong></p> 
+            <ul>
+              <li>Superimpose shapes with varying opacity/rotation (Suprematist overlay style).</li>
+            </ul>
+            </div>
+          </div>
+        </div>
+         <div class="accordion-item my-4">
+          <h3 class="accordion-header" id="headingCrop">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCrop" aria-expanded="true" aria-controls="collapseCrop">
+              Crop Types — Edge Style / Curvature
+            </button>
+          </h3>
+          <div id="collapseCrop" class="accordion-collapse collapse" aria-labelledby="headingCrop" data-bs-parent="#helpAccordion">
+            <div class="accordion-body">
+           <table class="table table-dark table-striped align-middle">
+    <thead>
+      <tr>
+        <th>Crop Types</th>
+        <th>Edge Style / Curvature</th>
+        <th>Visual</th>
+        <th>Rationale</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Root vegetables (carrots, beets, radish, garlic, onions, yams, turnips, potatoes)</td>
+        <td>Pointed / tapered edges</td>
+        <td>
+          <svg class="crop-edge edge-pointed" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 20 L10 0 L20 20 L30 0 L40 20 L50 0 L60 20" />
+          </svg>
+        </td>
+        <td>Jagged tips mimic downward root growth</td>
+      </tr>
+      <tr>
+        <td>Leafy greens & herbs (spinach, kale, chard, lettuce, cabbage, arugula, parsley, basil)</td>
+        <td>Wavy / frilled edges</td>
+         <td>
+          <svg class="crop-edge edge-wavy" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 10 Q5 0 10 10 T20 10 T30 10 T40 10 T50 10 T60 10" />
+          </svg>
+        </td>
+        <td>Soft rippling textures of leaves</td>
+      </tr>
+      <tr>
+        <td>Fruit-bearing crops (tomatoes, squash, peppers, melons, eggplant, cucumbers)</td>
+        <td>Bulbous / lobed outlines</td>
+        <td>
+          <svg class="crop-edge edge-lobed" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 10 Q15 0 25 10 Q35 20 45 10 Q55 0 60 10" />
+          </svg>
+        </td>
+        <td>Curved and multi-lobed fruit forms</td>
+      </tr>
+      <tr>
+        <td>Berry / small fruits (berries, strawberries, blueberries, raspberries)</td>
+        <td>Concentric dot rings</td>
+         <td>
+          <svg class="crop-edge edge-dotring" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10" cy="10" r="3" />
+            <circle cx="20" cy="10" r="3" />
+            <circle cx="30" cy="10" r="3" />
+            <circle cx="40" cy="10" r="3" />
+            <circle cx="50" cy="10" r="3" />
+          </svg>
+        </td>
+        <td>Clustered, modular small fruit bodies</td>
+      </tr>
+      <tr>
+        <td>Grains & grasses (hay, wheat, corn, saffron, sorghum)</td>
+        <td>Straight, fine, linear spikes</td>
+        <td>
+          <svg class="crop-edge edge-linearspikes" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 20 L10 0 L15 20 L20 0 L25 20 L30 0 L35 20 L40 0 L45 20 L50 0 L55 20" />
+          </svg>
+        </td>
+        <td>Upright narrow grain spikes in linear repetition</td>
+      </tr>
+      <tr>
+        <td>Vining / perennial crops (grapes, vanilla, tea, kiwi, lavender, peppercorn, maile)</td>
+        <td>Spiraled / looping overlays</td>
+        <td>
+          <svg class="crop-edge edge-spiral" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 15 C15 5 25 15 30 5 35 15 45 5 50 15" />
+          </svg>
+        </td>
+        <td>Twisting vines with looping patterns</td>
+      </tr>
+      <tr>
+        <td>Mixed / assorted crops (kale, tomatoes, herbs, beans, squash, etc.)</td>
+        <td>Layered overlays / composite edges</td>
+         <td>
+          <svg class="crop-edge edge-composite" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 10 Q5 0 10 10 L20 0 L30 10 L40 0 L50 10 L60 0" />
+          </svg>
+        </td>
+        <td>Combines multiple shapes and curvature patterns</td>
+      </tr>
+    </tbody>
+  </table>
+ <p><strong>Combined Crop Types Treatment:</strong></p>
+  <ul>
+    <li>Morphological blending using Bézier curves to create compound outlines.</li>
+    <li>Edge complexity increases with diversity (1–2 crops simple; 6+ irregular, organic forms).</li>
+    <li>Edge wave frequency/amplitude modulated by crop count and type contribution.</li>
+  </ul>
+      </div>
+    </div>
   </div>
-  ${entry.url
-    ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer">${entry.name}</a><br>`
-    : `${entry.name}<br>`}
-  ${lines.join('<br>')}
-`;
-
-const closeButton = document.getElementById('tooltip-close');
-if (closeButton) {
-  closeButton.addEventListener('click', () => {
-    selectedEntry = null;
-    tooltipEntry = null;
-    tooltip.style.display = 'none';
-  });
-}
-
-
-  // Position tooltip relative to canvas on the page
-  let canvasRect = cnv.elt.getBoundingClientRect();
-
-  let left = canvasRect.left + entry.x + 15;
-  let top = canvasRect.top + entry.y + 15;
-
-  // Adjust horizontal position
-  left = Math.min(
-    Math.max(left, 10), // don't go past left edge
-    window.innerWidth - tooltip.offsetWidth - 10 // don't overflow right
-  );
-
-  // Adjust vertical position
-  top = Math.min(
-    Math.max(top, 10), // don't go past top edge
-    window.innerHeight - tooltip.offsetHeight - 10 // don't overflow bottom
-  );
-
-  tooltip.style.left = left + 'px';
-  tooltip.style.top = top + 'px';
-  tooltip.style.display = 'block';
-}
-
-function mouseMoved() {
-  let yearEntries = entriesByYear[selectedYear] || [];
-  let shapeSizeEstimate = 150; // base size used for hit test approx
-  let padding = map(yearEntries.length, 10, 120, 60, 15);
-  let startY = 80;
-  let count = yearEntries.length;
-  let baseShapeSize = map(count, 10, 120, 140, 50);
-  let numCols = floor((width - padding) / (baseShapeSize + padding));
-  numCols = max(numCols, 1);
-
-  hoveredEntry = null;
-  let hovering = false;
-
-  for (let i = 0; i < yearEntries.length; i++) {
-    let col = i % numCols;
-    let row = floor(i / numCols);
-    let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
-    let centerY = startY + row * ((height - startY - 50) / ceil(count / numCols)) + ((height - startY - 50) / ceil(count / numCols)) / 2;
-    let entry = yearEntries[i];
-
-    let minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
-    let maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
-    let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
-    entryShapeSize = constrain(entryShapeSize, 30, ((height - startY - 50) / ceil(count / numCols)) * 0.85);
-
-    let d = dist(mouseX, mouseY, centerX, centerY);
-    if (d < entryShapeSize / 2) {
-      hoveredEntry = entry;
-      hovering = true;
-      break;
-    }
-  }
-  cursor(hovering ? 'pointer' : 'default');
-}
-
-  function mousePressed() {
-    // Check if mouse is inside tooltip
-  const tooltip = document.getElementById('tooltip');
-  const target = document.elementFromPoint(mouseX, mouseY);
-
-  // If the click target is inside the tooltip or IS the tooltip itself, do nothing
-  if (tooltip.contains(target)) {
-    return;
-  }
-
-  let yearEntries = entriesByYear[selectedYear] || [];
-  let padding = map(yearEntries.length, 10, 120, 60, 15);
-  let shapeSizeEstimate = 150;
-  let startY = 80;
-  let baseShapeSize = map(yearEntries.length, 10, 120, 140, 50);
-  let numCols = floor((width - padding) / (baseShapeSize + padding));
-  numCols = max(numCols, 1);
-
-  let foundEntry = null;
-
-  for (let i = 0; i < yearEntries.length; i++) {
-    let col = i % numCols;
-    let row = floor(i / numCols);
-    let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
-    let centerY = startY + row * ((height - startY - 50) / ceil(yearEntries.length / numCols)) +
-                  ((height - startY - 50) / ceil(yearEntries.length / numCols)) / 2;
-    
-    let entry = yearEntries[i];
-    let minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
-    let maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
-    let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
-    entryShapeSize = constrain(entryShapeSize, 30, ((height - startY - 50) / ceil(yearEntries.length / numCols)) * 0.85);
-
-    let d = dist(mouseX, mouseY, centerX, centerY);
-    if (d < entryShapeSize / 2) {
-      foundEntry = { ...entry, x: centerX, y: centerY };
-      break;
-    }
-  }
-
-  if (foundEntry) {
-    selectedEntry = foundEntry;
-    showTooltip(selectedEntry);
-  } else {
-    selectedEntry = null;
-    showTooltip(null);
-  }
-}
-
-function keyPressed() {
-  let yearEntries = entriesByYear[selectedYear];
-  if (!yearEntries) return;
-
-  if (selectedEntry) {
-    let currentIndex = yearEntries.findIndex(e => e.name === selectedEntry.name);
-    if (currentIndex === -1) return;
-
-    let shapeSizeEstimate = 150;
-    let padding = map(yearEntries.length, 10, 120, 60, 15);
-    let startY = 80;
-    let count = yearEntries.length;
-    let baseShapeSize = map(count, 10, 120, 140, 50);
-    let numCols = floor((width - padding) / (baseShapeSize + padding));
-    numCols = max(numCols, 1);
-
-    let newIndex = currentIndex;
-
-    if (keyCode === ESCAPE) {
-      selectedEntry = null;
-      showTooltip(null);
-      return;
-    } else if (keyCode === RIGHT_ARROW && currentIndex < yearEntries.length - 1) {
-      newIndex = currentIndex + 1;
-    } else if (keyCode === LEFT_ARROW && currentIndex > 0) {
-      newIndex = currentIndex - 1;
-    }
-
-    if (newIndex !== currentIndex) {
-      let col = newIndex % numCols;
-      let row = floor(newIndex / numCols);
-      let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
-      let centerY = startY + row * ((height - startY - 50) / ceil(count / numCols)) + ((height - startY - 50) / ceil(count / numCols)) / 2;
-
-      selectedEntry = { ...yearEntries[newIndex], x: centerX, y: centerY };
-      showTooltip(selectedEntry);
-    }
-  }
-
-  let currentYearIndex = availableYears.indexOf(selectedYear);
-
-  if (keyCode === HOME) {
-    selectedYear = availableYears[0];
-    updateYear(selectedYear, 0);
-  } else if (keyCode === END) {
-    selectedYear = availableYears[availableYears.length - 1];
-    updateYear(selectedYear, availableYears.length - 1);
-  }
-
-  if (!selectedEntry && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
-    let delta = keyCode === RIGHT_ARROW ? 1 : -1;
-    let nextIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
-    if (nextIndex !== currentYearIndex) {
-      selectedYear = availableYears[nextIndex];
-      updateYear(selectedYear, nextIndex);
-    }
-  }
-}
-
-function updateYear(year, index) {
-  windowResized();
-  updateCounters(entriesByYear[year]);
-
-  // Optional: visually update year button highlights
-  document.querySelectorAll('.year-btn').forEach(btn => {
-    btn.classList.remove('selected');
-  });
-  let selectedBtn = document.querySelector(`.year-btn[data-year="${year}"]`);
-  if (selectedBtn) selectedBtn.classList.add('selected');
-
-  // Screen reader update
-  const srLive = document.getElementById('sr-live');
-  if (srLive) {
-    srLive.textContent = `Year changed to ${year}`;
-  }
-}
-
-function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW = 2) {
-  if (!Array.isArray(cropTypes) || cropTypes.length === 0) return;
-  if (!Array.isArray(activities) || activities.length === 0) return;
-
-  const groups = cropTypes
-    .map(crop => cropEdgeGroups[crop.trim().toLowerCase()])
-    .filter(Boolean);
-  const uniqueGroups = [...new Set(groups)];
-  if (uniqueGroups.length === 0) return;
-
-  const baseShape = getHabitatShapeType(habitat);
-
-  push();
-  translate(x, y);
-  angleMode(RADIANS);
-
-  // Create clipping mask with habitat shape
-  beginShape();
-  drawingContext.save(); // Save global canvas state
-  drawingContext.beginPath();
-
-  // Approximate the clipping region
-  pathShapeByType(baseShape, size); // defines path only (no fill/stroke)
-  drawingContext.clip(); // Activate clip
-
-  // Draw the crop edge overlays (they will now be clipped to the shape)
-  noFill();
-  strokeWeight(strokeW);
-
-  for (let i = 0; i < activities.length; i++) {
-    let activity = activities[i];
-    let strokeColor = getActivityColor(activity);
-    if (!strokeColor) continue;
-
-    stroke(strokeColor);
-
-    for (let j = 0; j < uniqueGroups.length; j++) {
-      let group = uniqueGroups[j];
-      switch (group) {
-        case 'root':
-        case 'cruciferous':
-          drawPointedEdge(size, j + i);
-          break;
-        case 'leafy':
-        case 'herb':
-          drawWavyEdge(size, j + i);
-          break;
-        case 'fruit':
-        case 'berry':
-          drawLobedEdge(size, j + i);
-          break;
-        case 'grain':
-        case 'legume':
-          drawLinearSpikes(size, j + i);
-          break;
-        case 'vine':
-          drawSpiralOverlay(size, j + i);
-          break;
-        case 'mixed':
-        case 'various':
-          drawDotRing(size, j + i);
-          break;
-      }
-    }
-  }
-
-  drawingContext.restore(); // Restore drawing context
-  pop();
-}
-
-function drawPointedEdge(size, offsetIndex = 0) {
-  let steps = 72;
-  beginShape();
-  for (let i = 0; i <= steps; i++) {
-    let angle = TWO_PI * i / steps;
-    let radius = size * 0.45 + (i % 2 === 0 ? 10 : -10);
-    let x = cos(angle) * radius;
-    let y = sin(angle) * radius;
-    vertex(x, y);
-  }
-  endShape(CLOSE);
-}
-
-function drawWavyEdge(size, offsetIndex = 0) {
-  let waves = 8 + offsetIndex * 2;
-  beginShape();
-  for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
-    let r = size * 0.4 + 10 * sin(waves * angle);
-    let x = cos(angle) * r;
-    let y = sin(angle) * r;
-    curveVertex(x, y);
-  }
-  endShape(CLOSE);
-}
-
-function drawLobedEdge(size, offsetIndex = 0) {
-  let lobes = 5 + offsetIndex;
-  beginShape();
-  for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
-    let r = size * 0.4 + 8 * sin(lobes * angle);
-    let x = cos(angle) * r;
-    let y = sin(angle) * r;
-    curveVertex(x, y);
-  }
-  endShape(CLOSE);
-}
-
-function drawLinearSpikes(size, offsetIndex = 0) {
-  let lines = 12;
-  for (let i = 0; i < lines; i++) {
-    let angle = TWO_PI * i / lines + offsetIndex * 0.05;
-    let x1 = cos(angle) * size * 0.3;
-    let y1 = sin(angle) * size * 0.3;
-    let x2 = cos(angle) * size * 0.5;
-    let y2 = sin(angle) * size * 0.5;
-    line(x1, y1, x2, y2);
-  }
-}
-
-function drawSpiralOverlay(size, offsetIndex = 0) {
-  noFill();
-  beginShape();
-  for (let a = 0; a < TWO_PI * 3; a += 0.1) {
-    let r = size * 0.05 * a + offsetIndex * 2;
-    let x = cos(a) * r;
-    let y = sin(a) * r;
-    vertex(x, y);
-  }
-  endShape();
-}
-
-function drawDotRing(size, offsetIndex = 0) {
-  let dots = 12 + offsetIndex;
-  for (let i = 0; i < dots; i++) {
-    let angle = TWO_PI * i / dots;
-    let r = size * 0.4;
-    let x = cos(angle) * r;
-    let y = sin(angle) * r;
-    ellipse(x, y, 4);
-  }
-}
-
-
-// Draw different line styles based on Animal Type
-function drawAnimalLine(animalType, activities, x, y, size, strokeW = 2) {
-  if (!animalType || activities.length === 0) return;
-  let style = getLineStyle(animalType);
-  if (!style) return;
-
-  push();
-  noFill();
-  strokeWeight(strokeW || style.weight);
-
-  for (let i = 0; i < activities.length; i++) {
-    let strokeColor = getActivityColor(activities[i]);
-    if (!strokeColor) continue;
-    stroke(strokeColor);
-
-    switch (style.type) {
-      case 'wavy': drawWavyLine(x, y + i * 4, size); break;
-      case 'dashed': drawDashedLine(x, y + i * 4, size); break;
-      case 'bezier': drawBezierLine(x, y + i * 4, size); break;
-      case 'straight': line(x - size / 2, y + i * 4, x + size / 2, y + i * 4); break;
-      case 'textured': drawTexturedLine(x, y + i * 4, size); break;
-    }
-  }
-
-  pop();
-}
-
-function getLineStyle(animalType) {
-  let typeStr = String(animalType || '').trim().toLowerCase();
-  if (!typeStr) return null;
-
-  switch (typeStr) {
-    case 'sheep': return { type: 'wavy', weight: 2 };
-    case 'llamas and alpacas': return { type: 'dashed', weight: 2 };
-    case 'horse': return { type: 'bezier', weight: 3 };
-    case 'cows': return { type: 'straight', weight: 5 };
-    case 'cattle': return { type: 'textured', weight: 3 };
-    default: return null;
-  }
-}
-
-
-// Wavy line: sinusoidal wave along the horizontal axis
-function drawWavyLine(x, y, length) {
-  noFill();
-  beginShape();
-  let amplitude = 5;
-  let waves = 6;
-  for (let i = 0; i <= waves; i++) {
-    let px = x - length / 2 + (length / waves) * i;
-    let py = y + sin(i * TWO_PI / waves) * amplitude;
-    vertex(px, py);
-  }
-  endShape();
-}
-
-// Dashed line: repeated short dashes with gaps
-function drawDashedLine(x, y, length) {
-  let dashLength = 10;
-  let gapLength = 7;
-  let startX = x - length / 2;
-  let endX = x + length / 2;
-  for (let px = startX; px < endX; px += dashLength + gapLength) {
-    line(px, y, px + dashLength, y);
-  }
-}
-
-// Bezier curved line with smooth S shape
-function drawBezierLine(x, y, length) {
-  noFill();
-  bezier(
-    x - length / 2, y,
-    x - length / 4, y - length / 3,
-    x + length / 4, y + length / 3,
-    x + length / 2, y
-  );
-}
-
-// Textured line: short broken segments with jitter
-function drawTexturedLine(x, y, length) {
-  let segmentLength = 6;
-  let gap = 4;
-  let startX = x - length / 2;
-  let endX = x + length / 2;
-  for (let px = startX; px < endX; px += segmentLength + gap) {
-    let jitterY = random(-2, 2);
-    line(px, y + jitterY, px + segmentLength, y + jitterY);
-  }
-}
-
-function drawHabitatShape(habitatList, x, y, size, baseColor) {
-  if (!Array.isArray(habitatList)) return;
-
-  // Filter out empty strings, null, undefined, or whitespace-only values
-  habitatList = habitatList
-    .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
-    .filter(h => h !== '');
-
-  // Stop if nothing valid remains
-  if (habitatList.length === 0) return;
-
-  push();
-  translate(x, y);
-  rectMode(CENTER);
-  angleMode(RADIANS);
-  noStroke();
-
-  for (let i = 0; i < habitatList.length; i++) {
-    let habitat = habitatList[i];
-    let angleOffset = PI / 8 * i;
-    let alpha = map(i, 0, habitatList.length, 180, 100);
-    let fillColor = color(baseColor.levels[0], baseColor.levels[1], baseColor.levels[2], alpha);
-
-    fill(fillColor);
-    rotate(angleOffset);
-
-    switch (habitat) {
-      case 'pollinator':
-        beginShape();
-        for (let j = 0; j < 6; j++) {
-          let angle = TWO_PI / 6 * j - PI / 2;
-          let vx = cos(angle) * size * 0.5;
-          let vy = sin(angle) * size * 0.5;
-          vertex(vx, vy);
-        }
-        endShape(CLOSE);
-        break;
-
-      case 'native grasses':
-        rect(0, 0, size * 0.3, size);
-        break;
-
-      case 'naturalized':
-        ellipse(0, 0, size, size);
-        break;
-    }
-  }
-
-  pop();
-}
-
-function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
-  if (!Array.isArray(habitatList) || !Array.isArray(activities)) return;
-
-  const cleanedHabitats = habitatList
-    .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
-    .filter(h => h !== '');
-
-  const cleanedActivities = activities
-    .map(a => (typeof a === 'string' ? a.trim().toLowerCase() : ''))
-    .filter(a => a !== '');
-
-  if (cleanedHabitats.length === 0 || cleanedActivities.length === 0) return;
-
-  // Determine number of layers to draw — always one per activity
-  const nestingCount = cleanedActivities.length;
-
-  push();
-  translate(x, y);
-  angleMode(RADIANS);
-  rectMode(CENTER);
-  noStroke();
-
-  const layerStep = 0.85 / nestingCount;
-
-  for (let i = 0; i < nestingCount; i++) {
-    // Repeat habitat shapes if fewer than activities
-    const habitat = cleanedHabitats[i % cleanedHabitats.length];
-    const shapeType = getHabitatShapeType(habitat);
-
-    // Cycle activity color
-    const activity = cleanedActivities[i];
-    const fillCol = getActivityColor(activity);
-    if (!fillCol) continue;
-
-    const angleOffset = radians(i * 10); // rotation for contrast
-    const scaleFactor = 1 - i * layerStep;
-    const shapeSize = size * scaleFactor;
-
-    fill(fillCol);
-
-    push();
-    rotate(angleOffset);
-
-    // Tall/narrow for "native grasses"
-    if (shapeType === 'rect') {
-      drawShapeByType(shapeType, shapeSize * 0.55, shapeSize * 1.6);
-    } else {
-      drawShapeByType(shapeType, shapeSize, shapeSize);
-    }
-
-    pop();
-  }
-
-  pop();
-}
-
-function getHabitatShapeType(habitat) {
-  if (habitat.includes('pollinator')) return 'hexagon';
-  if (habitat.includes('native grasses')) return 'rect';
-  if (habitat.includes('naturalized')) return 'ellipse';
-}
-
-
-function pointInHexagon(px, py, r) {
-  px = abs(px);
-  py = abs(py);
-
-  if (px > r * 0.8660254 || py > r * 0.5 + r * 0.288675) return false;
-  return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
-}
-
-function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, density = 5) {
-  if (!arrayType || !Array.isArray(activities) || activities.length === 0) return;
-
-  push();
-  translate(x, y);
-  rectMode(CENTER);
-  strokeWeight(strokeW);
-  noFill();
-
-  switch (arrayType) {
-   case 'fixed':
-    drawCrosshatchGridMultiColor(activities, size, density); break;
-  case 'single-axis tracking':
-    drawIsometricGridMultiColor(activities, size, density, 1.35); break;
-  case 'dual-axis tracking':
-    drawDottedMatrixMultiColor(activities, size, density); break;
-  }
-
-  pop();
-}
-
-function drawCrosshatchGridMultiColor(activities, size, density = 11) {
-  let colorCount = activities.length;
-
-  push();
-  rotate(PI / 4); // Rotate 45 degrees for diamond orientation
-
-  for (let i = -size / 2, idx = 0; i <= size / 2; i += density, idx++) {
-    let col = getActivityColor(activities[idx % colorCount]);
-    stroke(col);
-    line(i, -size / 2, i, size / 2); // vertical
-    line(-size / 2, i, size / 2, i); // horizontal
-  }
-
-  pop();
-}
-
-function drawIsometricGridMultiColor(activities, size, density = 7, slope = 1.35) {
-  let colorCount = activities.length;
-  let idx = 0;
-  let halfSize = size / 2;
-
-  push(); // Start inner transformation for rotation
-  rotate(HALF_PI);
-
-  for (let x = -halfSize; x <= halfSize; x += density) {
-    // Forward-slanting lines
-    stroke(getActivityColor(activities[idx % colorCount]));
-    let y1a = -halfSize * slope;
-    let y2a = halfSize * slope;
-    line(x, y1a, x + halfSize, y2a);
-    idx++;
-
-    // Backward-slanting lines
-    stroke(getActivityColor(activities[idx % colorCount]));
-    let y1b = -halfSize * slope;
-    let y2b = halfSize * slope;
-    line(x + halfSize, y1b, x, y2b);
-    idx++;
-  }
-
-  pop(); // End inner transformation
-}
-
-
-function drawDottedMatrixMultiColor(activities, size, density = 10) {
-  let step = 10;
-  let colorCount = activities.length;
-  let dotSize = 3;
-  let idx = 0;
-
-  for (let x = -size / 2; x < size / 2; x += density) {
-  for (let y = -size / 2; y < size / 2; y += density) {
-      fill(getActivityColor(activities[idx % colorCount]));
-      noStroke();
-      ellipse(x, y, dotSize, dotSize);
-      idx++;
-    }
-  }
-}
-  
-function getActivityColor(activity) {
-  switch (activity.trim().toLowerCase()) {
- case 'crop production':
-      return color('#E4572E'); // Vivd Orange
-    case 'habitat':
-      return color('#2E8B57'); // Sea Green
-    case 'grazing':
-      return color('#005A99'); // Deep Blue
-    case 'greenhouse':
-      return color('#FFD100'); // Solar Gold
-    default:
-        pop(); 
-        return;
-  }
-}
-
-function drawMinimalSite(x, y, activity = 'habitat', systemSize = 0.1, siteSize = 0.1) {
-  const baseColor = getActivityColor(activity); 
-  const size = map(siteSize, 0, 10, 2, 40); 
-  const shadowOffset = map(systemSize, 0, 10, 0.5, 6); 
-
-  push();
-  translate(x, y);
-  noStroke();
-
-  // Draw hard-edged drop shadow (Suprematist-inspired block)
-  fill(0, 100); // semi-opaque black for shadow
-  rectMode(CENTER);
-  ellipse(shadowOffset, shadowOffset, size, size);
-
-  // Draw minimal primary dot (filled shape)
-  fill(baseColor);
-  ellipse(0, 0, size, size); // dot
-  pop();
-}
-
-function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
-  let sz = constrain(systemSize || 0.1, 0.1, 10);
-
-  // Determine shape based on habitat
-  let shapeType = 'square'; // default
-  if (Array.isArray(habitat) && habitat.length > 0) {
-    const cleaned = habitat.map(h => (h || '').trim().toLowerCase());
-    if (cleaned.includes('pollinator')) shapeType = 'hexagon';
-    else if (cleaned.includes('naturalized')) shapeType = 'ellipse';
-    else if (cleaned.includes('native grasses')) shapeType = 'rect';
-  }
-
-  // Define offsets and base sizes
-  let offset = map(sz, 0, 10, 2, 10);
-  let shadowSize = map(sz, 0, 10, baseSize * 0.9, baseSize * 1.4);
-  let highlightSize = shadowSize * 0.95;
-
-  // Aspect ratio adjustment and rotation flag
-  let widthFactor = 1;
-  let heightFactor = 1;
-  let rotateRectVertical = false;
-
-  if (shapeType === 'square') {
-    widthFactor = 1;
-    heightFactor = 1.15; // slightly taller square
-  } else if (shapeType === 'rect') {
-    widthFactor = 0.55;  // narrow
-    heightFactor = 1.6;  // tall
-    rotateRectVertical = true;
-  }
-
-  let shadowW = shadowSize * widthFactor;
-  let shadowH = shadowSize * heightFactor;
-  let highlightW = highlightSize * widthFactor;
-  let highlightH = highlightSize * heightFactor;
-
-  push();
-  rectMode(CENTER);
-  noStroke();
-
-  // Base black shadow
-  fill('#0A0A0A');
-  push();
-  rotate(radians(-12));
-  translate(offset, offset);
-  if (rotateRectVertical) rotate(PI);
-  drawShapeByType(shapeType, shadowW, shadowH);
-  pop();
-
-  // White tilted highlight
-  fill(255);
-  push();
-  rotate(radians(8));
-  translate(offset * 1.4, offset * 0.8);
-  if (rotateRectVertical) rotate(PI);
-  drawShapeByType(shapeType, highlightW, highlightH);
-  pop();
-
-  // Reverse shadow
-  fill('#0A0A0A');
-  push();
-  rotate(radians(3));
-  translate(-offset * 0.6, offset * 0.5);
-  if (rotateRectVertical) rotate(PI);
-  drawShapeByType(shapeType, shadowW * 0.88, shadowH * 0.88);
-  pop();
-
-  // White outline
-  stroke(255);
-  noFill();
-  strokeWeight(1);
-  if (rotateRectVertical) {
-    push();
-    rotate(PI);
-    drawShapeByType(shapeType, shadowW * 0.7, shadowH * 0.7);
-    pop();
-  } else {
-    drawShapeByType(shapeType, shadowW * 0.7, shadowH * 0.7);
-  }
-
-  pop();
-
-  return {
-    offsetX: offset * 1.4,
-    offsetY: offset * 0.8,
-    angle: radians(8),
-    size: highlightSize
-  };
-}
-
-function drawShapeByType(type, w, h) {
-  switch (type) {
-    case 'hexagon':
-      beginShape();
-      for (let i = 0; i < 6; i++) {
-        let angle = TWO_PI / 6 * i - PI / 2;
-        vertex(cos(angle) * w / 2, sin(angle) * h / 2);
-      }
-      endShape(CLOSE);
-      break;
-    case 'ellipse':
-      ellipse(0, 0, w, h);
-      break;
-    case 'rect':
-      rect(0, 0, w, h);
-      break;
-    case 'square':
-    default:
-      rect(0, 0, w, h);
-      break;
-  }
-}
-
-function pathShapeByType(type, size) {
-  let r = size / 2;
-  let ctx = drawingContext;
-
-  switch (type) {
-    case 'hexagon':
-      for (let i = 0; i < 6; i++) {
-        let angle = TWO_PI / 6 * i - PI / 6;
-        let x = cos(angle) * r;
-        let y = sin(angle) * r;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.closePath();
-      break;
-
-    case 'ellipse':
-      ctx.ellipse(0, 0, size, size);
-      break;
-
-    case 'rect':
-      ctx.rect(-size * 0.275, -size * 0.5, size * 0.55, size);
-      break;
-
-    case 'square':
-    default:
-      ctx.rect(-r, -r, size, size);
-      break;
-  }
-}
-
-function drawPVWarpStyle(pvType, activities, x, y, size) {
-  if (!pvType || !activities || activities.length === 0) return;
-
-  let type = pvType.trim().toLowerCase();
-  let warpStyle = pvWarpStyles[type];
-  if (!warpStyle) return;
-
-  push();
-  translate(x, y);
-  noFill();
-  strokeWeight(3.5);
-
-  switch (warpStyle) {
-    case 'linear':
-      for (let i = -size; i <= size; i += 10) {
-        let colorIndex = Math.floor((i + size) / 10) % activities.length;
-        stroke(getActivityColor(activities[colorIndex]));
-        line(i, -size, 0, size);
-      }
-      break;
-
-    case 'symmetric':
-      for (let i = 0; i < size; i += 5) {
-        let yOffset = sin(i * 0.1) * 10;
-        let colorIndex = Math.floor(i / 5) % activities.length;
-        stroke(getActivityColor(activities[colorIndex]));
-        line(-size / 2 + i, -yOffset, -size / 2 + i, yOffset);
-      }
-      break;
-
-    case 'radial':
-      for (let r = 10, idx = 0; r < size / 2; r += 10, idx++) {
-        stroke(getActivityColor(activities[idx % activities.length]));
-        ellipse(0, 0, r * 2, r * 2);
-      }
-      break;
-  }
-
-  pop();
-}
-
-function updateCounters(yearEntries) {
-  let siteCount = yearEntries.length;
-  let totalMegawatts = 0;
-  let totalAcres = 0;
-
-  for (let entry of yearEntries) {
-    if (!isNaN(entry.megawatts)) totalMegawatts += entry.megawatts;
-    if (!isNaN(entry.acres)) totalAcres += entry.acres;
-  }
-
-  // Animate with Counter-Up 2
-  $('#site-count').text(Math.round(siteCount).toLocaleString());
-  $('#megawatt-count').text(Math.round(totalMegawatts).toLocaleString());
-  $('#acre-count').text(Math.round(totalAcres).toLocaleString());
-
-  counterUp(document.getElementById('site-count'), { duration: 1000 });
-  counterUp(document.getElementById('megawatt-count'), { duration: 1000 });
-  counterUp(document.getElementById('acre-count'), { duration: 1000 });
-}
+    <div class="accordion-item my-4">
+  <h3 class="accordion-header" id="headingAnimal">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAnimal" aria-expanded="false" aria-controls="collapseAnimal">
+      Animal Type — Line Style
+    </button>
+  </h3>
+  <div id="collapseAnimal" class="accordion-collapse collapse" aria-labelledby="headingAnimal" data-bs-parent="#helpAccordion">
+    <div class="accordion-body">
+            <table class="table table-dark table-striped align-middle">
+    <thead>
+      <tr>
+        <th>Animal Type</th>
+        <th>Line Type</th>
+        <th>Visual</th>
+        <th>Rationale</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Sheep</td>
+        <td>Soft wavy line</td>
+         <td>
+          <svg class="animal-line line-soft-wavy" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 10 Q10 0 20 10 T60 10" />
+          </svg>
+        </td>
+        <td>Gentle, meandering</td>
+      </tr>
+      <tr>
+        <td>Llamas & Alpacas</td>
+        <td>Dashed / zigzag line</td>
+          <td>
+          <svg class="animal-line line-dashed" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 10 L55 10" />
+          </svg>
+        </td>
+        <td>Alert, segmented</td>
+      </tr>
+      <tr>
+        <td>Horse</td>
+        <td>Bold, curved / Bezier line</td>
+         <td>
+          <svg class="animal-line line-bold-curved" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 15 C20 0 40 20 55 5" />
+          </svg>
+        </td>
+        <td>Graceful, dynamic</td>
+      </tr>
+      <tr>
+        <td>Cows</td>
+        <td>Thick, straight / bent line</td>
+         <td>
+          <svg class="animal-line line-thick-straight" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 10 L55 10" />
+          </svg>
+        </td>
+        <td>Heavy, calm</td>
+      </tr>
+      <tr>
+        <td>Cattle</td>
+        <td>Rough, textured, broken line</td>
+        <td>
+          <svg class="animal-line line-rough-broken" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 10 L10 14 L15 6 L20 14 L25 10 L30 14 L35 6 L40 14 L45 10 L50 14 L55 6" />
+          </svg>
+        </td>
+        <td>Rugged, wild, strong</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><strong>Combined Shape Treatment: Suprematist Overlays</strong></p>
+  <ul>
+    <li>Overlapping forms signify shared spatial and environmental presence.</li>
+    <li>Diagonal and non-orthogonal arrangements, drawn from El Lissitzky’s Constructivist practice, introduce visual disruption and modernist abstraction.</li>
+  </ul>
+ </div>
+</div>
+</div>
+</div>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
