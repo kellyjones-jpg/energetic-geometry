@@ -926,6 +926,12 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
   pop();
 }
 
+function getHabitatShapeType(habitat) {
+  if (habitat.includes('pollinator')) return 'hexagon';
+  if (habitat.includes('native grasses')) return 'rect';
+  if (habitat.includes('naturalized')) return 'ellipse';
+}
+
 
 function pointInHexagon(px, py, r) {
   px = abs(px);
