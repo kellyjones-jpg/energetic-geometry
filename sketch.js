@@ -166,7 +166,7 @@ function setup() {
     let year = table.getString(i, 'Year Installed') || 'Unknown';
     let megawatts = parseFloat(table.getString(i, 'System Size') || 0);
     let acres = parseFloat(table.getString(i, 'Site Size') || 0);
-
+    let url = table.getString(i, 'URL') || '';
 
     let entry = {
       name,
@@ -177,7 +177,8 @@ function setup() {
       arrayType: arrayTypeStr.trim().toLowerCase(), 
       year,
       megawatts,
-      acres
+      acres,
+      url: url.trim()
     };
 
     entries.push(entry);
@@ -377,7 +378,13 @@ function showTooltip(entry) {
 
   let lines = [];
 
-if (entry.name) lines.push(`<strong>Name:</strong> ${entry.name}`);
+if (entry.name) {
+  if (entry.url) {
+    lines.push(`<strong>Name:</strong> <a href="${entry.url}" target="_blank" rel="noopener noreferrer">${entry.name}</a>`);
+  } else {
+    lines.push(`<strong>Name:</strong> ${entry.name}`);
+  }
+};
 if (entry.activities && entry.activities.length) lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
 if (!isNaN(entry.megawatts)) lines.push(`<strong>System Size:</strong> ${entry.megawatts} MW`);
 if (!isNaN(entry.acres)) lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
