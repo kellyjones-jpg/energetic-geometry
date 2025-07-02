@@ -801,60 +801,94 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
   pop();
 }
 
-function drawSpiralWedges(activities, habitat, x, y, size) {
-  if (!Array.isArray(activities) || activities.length === 0) return;
+function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
+  let sz = constrain(systemSize || 0.1, 0.1, 10);
+
+  // Determine shape based on habitat
+  let shapeType = 'square'; // default
+  if (Array.isArray(habitat) && habitat.length > 0) {
+    const cleaned = habitat.map(h => (h || '').trim().toLowerCase());
+    if (cleaned.includes('pollinator')) shapeType = 'hexagon';
+    else if (cleaned.includes('naturalized')) shapeType = 'ellipse';
+    else if (cleaned.includes('native grasses')) shapeType = 'rect';
+  }
+
+  // Define offsets and base sizes
+  let offset = map(sz, 0, 10, 2, 10);
+  let shadowSize = map(sz, 0, 10, baseSize * 0.9, baseSize * 1.4);
+  let highlightSize = shadowSize * 0.95;
+
+  // Aspect ratio adjustment and rotation flag
+  let widthFactor = 1;
+  let heightFactor = 1;
+  let rotateRectVertical = false;
+
+  if (shapeType === 'square') {
+    widthFactor = 1;
+    heightFactor = 1.15; // slightly taller square
+  } else if (shapeType === 'rect') {
+    widthFactor = 0.55;  // narrow
+    heightFactor = 1.6;  // tall
+    rotateRectVertical = true;
+  }
+
+  let shadowW = shadowSize * widthFactor;
+  let shadowH = shadowSize * heightFactor;
+  let highlightW = highlightSize * widthFactor;
+  let highlightH = highlightSize * heightFactor;
 
   push();
-  translate(x, y);
-  angleMode(RADIANS);
+  rectMode(CENTER);
   noStroke();
 
-  const numWedges = activities.length;
-  const wedgeAngle = TWO_PI / numWedges;
+  // Base black shadow
+  fill('#0A0A0A');
+  push();
+  rotate(radians(-12));
+  translate(offset, offset);
+  if (rotateRectVertical) rotate(HALF_PI);
+  drawShapeByType(shapeType, shadowW, shadowH);
+  pop();
 
-  let innerRadius = size * 0.12;
-  let outerRadius = size * 0.4;
+  // White tilted highlight
+  fill(255);
+  push();
+  rotate(radians(8));
+  translate(offset * 1.4, offset * 0.8);
+  if (rotateRectVertical) rotate(HALF_PI);
+  drawShapeByType(shapeType, highlightW, highlightH);
+  pop();
 
-  for (let i = 0; i < numWedges; i++) {
-    let activity = activities[i];
-    let fillColor = getActivityColor(activity);
-    if (!fillColor) continue;
+  // Reverse shadow
+  fill('#0A0A0A');
+  push();
+  rotate(radians(3));
+  translate(-offset * 0.6, offset * 0.5);
+  if (rotateRectVertical) rotate(HALF_PI);
+  drawShapeByType(shapeType, shadowW * 0.88, shadowH * 0.88);
+  pop();
 
-    // Suprematist-style: bold, high-contrast, semi-transparent
-    fillColor.setAlpha(170 - i * 10); // decreasing alpha for layering
-    fill(fillColor);
-
-    let rotationOffset = radians(i * 12); // subtle angular shift
-    rotate(rotationOffset);
-
-    beginShape();
-    vertex(0, 0); // center
-    for (let a = 0; a <= wedgeAngle; a += 0.06) {
-      let r = map(a, 0, wedgeAngle, innerRadius, outerRadius);
-      let vx = cos(a) * r;
-      let vy = sin(a) * r;
-      vertex(vx, vy);
-    }
-    endShape(CLOSE);
-
-    // Op Art-style: add white edge wedge between every other slice
-    if (i % 2 === 0) {
-      fill(255, 40);
-      beginShape();
-      vertex(0, 0);
-      for (let a = 0; a <= wedgeAngle; a += 0.06) {
-        let r = map(a, 0, wedgeAngle, innerRadius * 0.9, outerRadius * 1.05);
-        let vx = cos(a + 0.01) * r;
-        let vy = sin(a + 0.01) * r;
-        vertex(vx, vy);
-      }
-      endShape(CLOSE);
-    }
-
-    rotate(-rotationOffset); // reset
+  // White outline
+  stroke(255);
+  noFill();
+  strokeWeight(1);
+  if (rotateRectVertical) {
+    push();
+    rotate(HALF_PI);
+    drawShapeByType(shapeType, shadowW * 0.7, shadowH * 0.7);
+    pop();
+  } else {
+    drawShapeByType(shapeType, shadowW * 0.7, shadowH * 0.7);
   }
 
   pop();
+
+  return {
+    offsetX: offset * 1.4,
+    offsetY: offset * 0.8,
+    angle: radians(8),
+    size: highlightSize
+  };
 }
 
 function pointInHexagon(px, py, r) {
