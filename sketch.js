@@ -886,7 +886,6 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
 function drawCombinedHabitatOverlay(habitatList, x, y, size) {
   if (!Array.isArray(habitatList)) return;
 
-  // Clean and filter habitat list
   const cleanedHabitats = habitatList
     .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
     .filter(h => h !== '');
@@ -901,14 +900,13 @@ function drawCombinedHabitatOverlay(habitatList, x, y, size) {
   for (let i = 0; i < cleanedHabitats.length; i++) {
     const habitat = cleanedHabitats[i];
     const shapeType = getHabitatShapeType(habitat);
-    
-    // Alternate angles for slight asymmetry
-    const angleOffset = radians(i * 15 + 8);
-    const scaleFactor = 1 - (i * 0.08); // progressively smaller layers
+    const shapeColor = getHabitatHexColor(habitat); // new color logic
 
-    let fillCol = color(255);
-    fillCol.setAlpha(140 - i * 25); // decreasing opacity
-    fill(fillCol);
+    // Rotation + scale for abstract visual layering
+    const angleOffset = radians(i * 15 + 8);
+    const scaleFactor = 1 - (i * 0.08);
+
+    fill(shapeColor);
 
     push();
     rotate(angleOffset);
@@ -919,11 +917,13 @@ function drawCombinedHabitatOverlay(habitatList, x, y, size) {
   pop();
 }
 
-function getHabitatShapeType(habitat) {
-  if (habitat.includes('pollinator')) return 'hexagon';
-  if (habitat.includes('native grasses')) return 'rect';
-  if (habitat.includes('naturalized')) return 'ellipse';
-  return 'square';
+
+function getHabitatHexColor(habitat) {
+  switch (habitat) {
+    case 'pollinator': return '#F94144';      // bold red
+    case 'native grasses': return '#F3722C';  // orange
+    case 'naturalized': return '#577590';     // muted blue
+  }
 }
 
 
