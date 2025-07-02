@@ -992,12 +992,18 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
   let shadowSize = map(sz, 0, 10, baseSize * 0.9, baseSize * 1.4);
   let highlightSize = shadowSize * 0.95;
 
-  // Aspect ratio adjustment for rects/squares
+  // Aspect ratio adjustment and rotation flag
   let widthFactor = 1;
   let heightFactor = 1;
-  if (shapeType === 'rect' || shapeType === 'square') {
-    widthFactor = 1.6;
-    heightFactor = 0.55;
+  let rotateRectVertical = false;
+
+  if (shapeType === 'square') {
+    widthFactor = 1;
+    heightFactor = 1.15; // slightly taller square
+  } else if (shapeType === 'rect') {
+    widthFactor = 0.55;  // narrow
+    heightFactor = 1.6;  // tall
+    rotateRectVertical = true;
   }
 
   let shadowW = shadowSize * widthFactor;
@@ -1014,6 +1020,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
   push();
   rotate(radians(-12));
   translate(offset, offset);
+  if (rotateRectVertical) rotate(HALF_PI);
   drawShapeByType(shapeType, shadowW, shadowH);
   pop();
 
@@ -1022,6 +1029,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
   push();
   rotate(radians(8));
   translate(offset * 1.4, offset * 0.8);
+  if (rotateRectVertical) rotate(HALF_PI);
   drawShapeByType(shapeType, highlightW, highlightH);
   pop();
 
@@ -1030,6 +1038,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
   push();
   rotate(radians(3));
   translate(-offset * 0.6, offset * 0.5);
+  if (rotateRectVertical) rotate(HALF_PI);
   drawShapeByType(shapeType, shadowW * 0.88, shadowH * 0.88);
   pop();
 
@@ -1037,7 +1046,14 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
   stroke(255);
   noFill();
   strokeWeight(1);
-  drawShapeByType(shapeType, shadowW * 0.7, shadowH * 0.7);
+  if (rotateRectVertical) {
+    push();
+    rotate(HALF_PI);
+    drawShapeByType(shapeType, shadowW * 0.7, shadowH * 0.7);
+    pop();
+  } else {
+    drawShapeByType(shapeType, shadowW * 0.7, shadowH * 0.7);
+  }
 
   pop();
 
