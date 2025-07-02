@@ -981,7 +981,7 @@ function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, dens
    case 'fixed':
     drawCrosshatchGridMultiColor(activities, size, density); break;
   case 'single-axis tracking':
-    drawIsometricGridMultiColor(activities, size, density, 1.35); break;
+    drawIsometricGridMultiColor(activities, size, density, 1.1); break;
   case 'dual-axis tracking':
     drawDottedMatrixMultiColor(activities, size, density); break;
   }
@@ -989,7 +989,7 @@ function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, dens
   pop();
 }
 
-function drawCrosshatchGridMultiColor(activities, size, density = 11) {
+function drawCrosshatchGridMultiColor(activities, size, density = 9) {
   let colorCount = activities.length;
 
   push();
@@ -1005,13 +1005,13 @@ function drawCrosshatchGridMultiColor(activities, size, density = 11) {
   pop();
 }
 
-function drawIsometricGridMultiColor(activities, size, density = 7, slope = 1.35) {
+function drawIsometricGridMultiColor(activities, size, density = 3, slope = 1.1) {
   let colorCount = activities.length;
   let idx = 0;
   let halfSize = size / 2;
 
   push(); // Start inner transformation for rotation
-  rotate(HALF_PI);
+  rotate(PI);
 
   for (let x = -halfSize; x <= halfSize; x += density) {
     // Forward-slanting lines
