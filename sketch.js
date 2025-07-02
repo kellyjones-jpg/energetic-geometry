@@ -345,7 +345,7 @@ function draw() {
 
     if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
         Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-      drawCombinedHabitatOverlay(entry.habitat, 0, 0, entryShapeSize);
+      drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize);
     }
 
     if (entry.cropType && entry.cropType.length > 0) {
@@ -883,14 +883,19 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
   pop();
 }
 
-function drawCombinedHabitatOverlay(habitatList, x, y, size) {
-  if (!Array.isArray(habitatList)) return;
+function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
+  if (!Array.isArray(habitatList) || !Array.isArray(activities)) return;
 
+  // Clean and filter habitat list
   const cleanedHabitats = habitatList
     .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
     .filter(h => h !== '');
 
-  if (cleanedHabitats.length === 0) return;
+  const cleanedActivities = activities
+    .map(a => (typeof a === 'string' ? a.trim().toLowerCase() : ''))
+    .filter(a => a !== '');
+
+  if (cleanedHabitats.length === 0 || cleanedActivities.length === 0) return;
 
   push();
   translate(x, y);
@@ -900,13 +905,17 @@ function drawCombinedHabitatOverlay(habitatList, x, y, size) {
   for (let i = 0; i < cleanedHabitats.length; i++) {
     const habitat = cleanedHabitats[i];
     const shapeType = getHabitatShapeType(habitat);
-    const shapeColor = getHabitatHexColor(habitat); // new color logic
 
-    // Rotation + scale for abstract visual layering
-    const angleOffset = radians(i * 15 + 8);
-    const scaleFactor = 1 - (i * 0.08);
+    // Pick activity color (cycling through if needed)
+    const activity = cleanedActivities[i % cleanedActivities.length];
+    const fillCol = getActivityColor(activity);
+    if (!fillCol) continue;
 
-    fill(shapeColor);
+    // Slight angle and size offsets to create layered effect
+    const angleOffset = radians(i * 15 + 5);
+    const scaleFactor = 1 - (i * 0.07);
+
+    fill(fillCol);
 
     push();
     rotate(angleOffset);
@@ -915,15 +924,6 @@ function drawCombinedHabitatOverlay(habitatList, x, y, size) {
   }
 
   pop();
-}
-
-
-function getHabitatHexColor(habitat) {
-  switch (habitat) {
-    case 'pollinator': return '#F94144';      // bold red
-    case 'native grasses': return '#F3722C';  // orange
-    case 'naturalized': return '#577590';     // muted blue
-  }
 }
 
 
