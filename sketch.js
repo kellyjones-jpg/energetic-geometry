@@ -345,7 +345,7 @@ function draw() {
 
     if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
         Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-      drawSpiralWedges(entry.activities, entry.habitat, 0, 0, entryShapeSize);
+      drawCombinedHabitatOverlay(entry.habitat, 0, 0, entryShapeSize);
     }
 
     if (entry.cropType && entry.cropType.length > 0) {
@@ -883,60 +883,47 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
   pop();
 }
 
-function drawSpiralWedges(activities, habitat, x, y, size) {
-  if (!Array.isArray(activities) || activities.length === 0) return;
+function drawCombinedHabitatOverlay(habitatList, x, y, size) {
+  if (!Array.isArray(habitatList)) return;
+
+  // Clean and filter habitat list
+  const cleanedHabitats = habitatList
+    .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
+    .filter(h => h !== '');
+
+  if (cleanedHabitats.length === 0) return;
 
   push();
   translate(x, y);
   angleMode(RADIANS);
   noStroke();
 
-  const numWedges = activities.length;
-  const wedgeAngle = TWO_PI / numWedges;
+  for (let i = 0; i < cleanedHabitats.length; i++) {
+    const habitat = cleanedHabitats[i];
+    const shapeType = getHabitatShapeType(habitat);
+    
+    // Alternate angles for slight asymmetry
+    const angleOffset = radians(i * 15 + 8);
+    const scaleFactor = 1 - (i * 0.08); // progressively smaller layers
 
-  let innerRadius = size * 0.12;
-  let outerRadius = size * 0.4;
+    let fillCol = color(255);
+    fillCol.setAlpha(140 - i * 25); // decreasing opacity
+    fill(fillCol);
 
-  for (let i = 0; i < numWedges; i++) {
-    let activity = activities[i];
-    let fillColor = getActivityColor(activity);
-    if (!fillColor) continue;
-
-    // Suprematist-style: bold, high-contrast, semi-transparent
-    fillColor.setAlpha(170 - i * 10); // decreasing alpha for layering
-    fill(fillColor);
-
-    let rotationOffset = radians(i * 12); // subtle angular shift
-    rotate(rotationOffset);
-
-    beginShape();
-    vertex(0, 0); // center
-    for (let a = 0; a <= wedgeAngle; a += 0.06) {
-      let r = map(a, 0, wedgeAngle, innerRadius, outerRadius);
-      let vx = cos(a) * r;
-      let vy = sin(a) * r;
-      vertex(vx, vy);
-    }
-    endShape(CLOSE);
-
-    // Op Art-style: add white edge wedge between every other slice
-    if (i % 2 === 0) {
-      fill(255, 40);
-      beginShape();
-      vertex(0, 0);
-      for (let a = 0; a <= wedgeAngle; a += 0.06) {
-        let r = map(a, 0, wedgeAngle, innerRadius * 0.9, outerRadius * 1.05);
-        let vx = cos(a + 0.01) * r;
-        let vy = sin(a + 0.01) * r;
-        vertex(vx, vy);
-      }
-      endShape(CLOSE);
-    }
-
-    rotate(-rotationOffset); // reset
+    push();
+    rotate(angleOffset);
+    drawShapeByType(shapeType, size * scaleFactor, size * scaleFactor);
+    pop();
   }
 
   pop();
+}
+
+function getHabitatShapeType(habitat) {
+  if (habitat.includes('pollinator')) return 'hexagon';
+  if (habitat.includes('native grasses')) return 'rect';
+  if (habitat.includes('naturalized')) return 'ellipse';
+  return 'square';
 }
 
 
