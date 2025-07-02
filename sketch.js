@@ -942,7 +942,7 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
 
     // Tall/narrow for "native grasses"
     if (shapeType === 'rect') {
-      drawShapeByType(shapeType, shapeSize * 0.22, shapeSize * 1.3);
+      drawShapeByType(shapeType, shapeSize * 0.35, shapeSize * 1.1);
     } else {
       drawShapeByType(shapeType, shapeSize, shapeSize);
     }
