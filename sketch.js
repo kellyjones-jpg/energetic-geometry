@@ -304,8 +304,8 @@ function draw() {
     let centerY = startY + row * maxCellHeight + maxCellHeight / 2;
     let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
     entryShapeSize = constrain(entryShapeSize, 30, maxCellHeight * 0.85);
-    let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 1.5, 5.5);
-    strokeW = constrain(strokeW, 1.5, 5.5);
+    let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 2, 5.5);
+    strokeW = constrain(strokeW, 2, 5.5);
     let baseColor = getActivityColor(entry.activities?.[0] || '');
 
     // Determine scale for hover or selection
@@ -324,7 +324,16 @@ function draw() {
 
     let shadowInfo = drawSuprematistOpShadowRect(entryShapeSize, entry.megawatts, entry.habitat);
 
-    if (entry.arrayType) {
+    if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
+      drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor);
+    }
+
+    if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
+        Array.isArray(entry.habitat) && entry.habitat.length > 0) {
+      drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize);
+    }
+
+     if (entry.arrayType) {
       push();
       translate(shadowInfo.offsetX, shadowInfo.offsetY);
       rotate(shadowInfo.angle);
@@ -337,15 +346,6 @@ function draw() {
         10
       );
       pop();
-    }
-
-    if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-      drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor);
-    }
-
-    if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
-        Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-      drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize);
     }
 
     if (entry.cropType && entry.cropType.length > 0) {
