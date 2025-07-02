@@ -391,7 +391,9 @@ function showTooltip(entry) {
 
 if (entry.name) {
   if (entry.url) {
-    lines.push(`<strong>Name:</strong> <a href="${entry.url}" target="_blank" rel="noopener noreferrer">${entry.name}</a>`);
+    lines.push(`<strong>Name:</strong> <a href="${entry.url}" target="_blank" rel="noopener noreferrer" class="external-link">
+      ${entry.name} <span aria-hidden="true">🔗</span>
+    </a>`);
   } else {
     lines.push(`<strong>Name:</strong> ${entry.name}`);
   }
@@ -495,10 +497,11 @@ function mousePressed() {
     mouseY >= rect.top - window.scrollY &&
     mouseY <= rect.bottom - window.scrollY;
 
-  // If click is inside tooltip, do nothing
-  if (overTooltip) {
-    return;
-  }
+    // If click is inside tooltip or on a link within it, do nothing
+    if (overTooltip || document.activeElement.closest('#tooltip a')) {
+      return;
+    }
+
 
   let yearEntries = entriesByYear[selectedYear] || [];
   let padding = map(yearEntries.length, 10, 120, 60, 15);
