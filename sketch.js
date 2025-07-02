@@ -406,7 +406,26 @@ if (entry.cropType && entry.cropType.length) lines.push(`<strong>Crop Type:</str
 if (entry.animalType && entry.animalType.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
 
 
-  tooltip.innerHTML = lines.join('<br>');
+tooltip.innerHTML = `
+  <div id="tooltip-header">
+    <strong>Name:</strong>
+    <button id="tooltip-close" aria-label="Close tooltip">✕</button>
+  </div>
+  ${entry.url
+    ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer">${entry.name}</a><br>`
+    : `${entry.name}<br>`}
+  ${lines.join('<br>')}
+`;
+
+const closeButton = document.getElementById('tooltip-close');
+if (closeButton) {
+  closeButton.addEventListener('click', () => {
+    selectedEntry = null;
+    tooltipEntry = null;
+    tooltip.style.display = 'none';
+  });
+}
+
 
   // Position tooltip relative to canvas on the page
   let canvasRect = cnv.elt.getBoundingClientRect();
