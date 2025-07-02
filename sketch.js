@@ -1005,7 +1005,7 @@ function drawCrosshatchGridMultiColor(activities, size, density = 9) {
   pop();
 }
 
-function drawIsometricGridMultiColor(activities, size, density = 3, slope = 1.1) {
+function drawIsometricGridMultiColor(activities, size, density = 1, slope = 1.1) {
   let colorCount = activities.length;
   let idx = 0;
   let halfSize = size / 2;
