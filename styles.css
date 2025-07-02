@@ -519,7 +519,7 @@ a.hyperlink {
   }
 }
 
- #tooltip {
+#tooltip {
   background: white;
   color: #0A0A0A;
   font-family: Helvetica, Arial, sans-serif;
@@ -534,10 +534,35 @@ a.hyperlink {
     -2px 2px 0 #0A0A0A;
   border-radius: 0;
   max-width: 500px;
-  cursor: pointer;
-  user-select: none;
   transition: opacity 0.2s ease;
   position: absolute;
   z-index: 1000;
   display: none;
+  pointer-events: auto;     /* Enable interaction */
+  user-select: text;        /* Allow link selection */
+  cursor: default;          /* Normal cursor */
 }
+
+#tooltip-close {
+  background: none;
+  border: none;
+  color: #0A0A0A;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: auto;
+  padding: 0;
+  line-height: 1;
+}
+
+#tooltip-close:hover {
+  color: #353839;
+}
+
+#tooltip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
