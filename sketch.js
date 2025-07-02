@@ -304,8 +304,8 @@ function draw() {
     let centerY = startY + row * maxCellHeight + maxCellHeight / 2;
     let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
     entryShapeSize = constrain(entryShapeSize, 30, maxCellHeight * 0.85);
-    let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 3, 7);
-    strokeW = constrain(strokeW, 3, 7);
+    let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 1.5, 5.5);
+    strokeW = constrain(strokeW, 1.5, 5.5);
     let baseColor = getActivityColor(entry.activities?.[0] || '');
 
     // Determine scale for hover or selection
