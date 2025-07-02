@@ -900,7 +900,7 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
 function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
   if (!Array.isArray(habitatList) || !Array.isArray(activities)) return;
 
-  const cleanedHabitat = habitatList
+  const cleanedHabitats = habitatList
     .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
     .filter(h => h !== '');
 
@@ -908,16 +908,10 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
     .map(a => (typeof a === 'string' ? a.trim().toLowerCase() : ''))
     .filter(a => a !== '');
 
-  if (cleanedHabitat.length === 0 || cleanedActivities.length === 0) return;
+  if (cleanedHabitats.length === 0 || cleanedActivities.length === 0) return;
 
-  // If only one habitat, repeat its shape per activity
-  const nestingCount = (cleanedHabitat.length === 1)
-    ? cleanedActivities.length
-    : cleanedHabitat.length;
-
-  const habitatShapes = (cleanedHabitat.length === 1)
-    ? Array(nestingCount).fill(cleanedHabitat[0])
-    : cleanedHabitat;
+  // Determine number of layers to draw — always one per activity
+  const nestingCount = cleanedActivities.length;
 
   push();
   translate(x, y);
@@ -928,13 +922,16 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
   const layerStep = 0.85 / nestingCount;
 
   for (let i = 0; i < nestingCount; i++) {
-    const habitat = habitatShapes[i];
+    // Repeat habitat shapes if fewer than activities
+    const habitat = cleanedHabitats[i % cleanedHabitats.length];
     const shapeType = getHabitatShapeType(habitat);
-    const activity = cleanedActivities[i % cleanedActivities.length];
+
+    // Cycle activity color
+    const activity = cleanedActivities[i];
     const fillCol = getActivityColor(activity);
     if (!fillCol) continue;
 
-    const angleOffset = radians(i * 10);
+    const angleOffset = radians(i * 10); // rotation for contrast
     const scaleFactor = 1 - i * layerStep;
     const shapeSize = size * scaleFactor;
 
@@ -943,7 +940,7 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
     push();
     rotate(angleOffset);
 
-    // Match drop shadow ratio for native grasses
+    // Tall/narrow for "native grasses"
     if (shapeType === 'rect') {
       drawShapeByType(shapeType, shapeSize * 0.55, shapeSize * 1.6);
     } else {
