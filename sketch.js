@@ -270,7 +270,7 @@ function draw() {
   image(bgImg, 0, 0, width, height);
   noStroke();
   rectMode(CORNER);          
-  fill(0, 145);              
+  fill(0, 155);              
   rect(0, 0, width, height); 
   rectMode(CENTER);          
   
@@ -968,7 +968,7 @@ function pointInHexagon(px, py, r) {
   return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
 }
 
-function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, density = 5) {
+function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, density = 3) {
   if (!arrayType || !Array.isArray(activities) || activities.length === 0) return;
 
   push();
