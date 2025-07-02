@@ -343,9 +343,10 @@ function draw() {
     }
 
      if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
-     Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-      drawCheckerboardPattern(entry.activities, entry.habitat, 0, 0, entryShapeSize);
-    }
+          Array.isArray(entry.habitat) && entry.habitat.length > 0) {
+        drawSpiralWedges(entry.activities, entry.habitat, 0, 0, entryShapeSize);
+      }
+
      if (entry.cropType && entry.cropType.length > 0) {
       drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize, strokeW);
 
@@ -793,85 +794,39 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
   pop();
 }
 
-function drawCheckerboardPattern(activities, habitat, x, y, size) {
-  habitat = habitat
-    .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
-    .filter(h => h !== '');
-  if (habitat.length === 0) return;
-
+function drawSpiralWedges(activities, habitat, x, y, size) {
   if (!Array.isArray(activities) || activities.length === 0) return;
-  if (!Array.isArray(habitat) || habitat.length === 0) return;
 
- push();
-translate(x, y);
-rectMode(CENTER);
-noStroke();
+  push();
+  translate(x, y);
+  angleMode(RADIANS);
+  noStroke();
 
-  fill(255, 10); // almost invisible, but gives subtle boundary edge
-  switch (habitat[0]) {
-  case 'pollinator':
+  const numWedges = activities.length;
+  const totalRotation = TWO_PI;
+  const wedgeAngle = totalRotation / numWedges;
+
+  for (let i = 0; i < numWedges; i++) {
+    let activity = activities[i];
+    let fillColor = getActivityColor(activity);
+    if (!fillColor) continue;
+
+    fill(fillColor);
     beginShape();
-    for (let j = 0; j < 6; j++) {
-      let angle = TWO_PI / 6 * j - PI / 2;
-      vertex(cos(angle) * size * 0.5, sin(angle) * size * 0.5);
+    for (let angle = 0; angle <= wedgeAngle; angle += 0.1) {
+      let a = angle + i * wedgeAngle;
+      let r = size * 0.5 * (1 + 0.1 * angle); // slight outward spiral
+      let vx = cos(a) * r;
+      let vy = sin(a) * r;
+      vertex(vx, vy);
     }
+    vertex(0, 0); // close to center
     endShape(CLOSE);
-    break;
-  case 'native grasses':
-    rect(0, 0, size * 0.3, size);
-    break;
-  case 'naturalized':
-    ellipse(0, 0, size, size);
-    break;
-}
-
-  let gridCount = 8;
-  let cellSize = size / gridCount;
-  let colors = activities.map(act => getActivityColor(act)).filter(Boolean);
-  let colorCount = colors.length;
-  if (colorCount === 0) return;
-
-  for (let row = 0; row < gridCount; row++) {
-    for (let col = 0; col < gridCount; col++) {
-      let index = (row + col) % colorCount;
-      let fillColor = colors[index];
-
-      let cx = col * cellSize - size / 2 + cellSize / 2;
-      let cy = row * cellSize - size / 2 + cellSize / 2;
-
-      // Only draw the square if it falls within the habitat shape
-      if (isPointInHabitatShape(habitat, cx, cy, size)) {
-        fill(fillColor);
-        rect(cx, cy, cellSize, cellSize); // traditional square cell
-      }
-    }
   }
 
   pop();
 }
 
-function isPointInHabitatShape(habitat, px, py, size) {
-  let habitats = Array.isArray(habitat) ? habitat : [habitat];
-
-  for (let h of habitats) {
-    if (typeof h !== 'string') continue;
-
-    let cleaned = h.trim().toLowerCase();
-    switch (cleaned) {
-      case 'pollinator':
-        if (pointInHexagon(px, py, size * 0.5)) return true;
-        break;
-      case 'native grasses':
-        if (abs(px) <= size * 0.15 && abs(py) <= size * 0.5) return true;
-        break;
-      case 'naturalized':
-        if (px * px + py * py <= (size / 2) * (size / 2)) return true;
-        break;
-    }
-  }
-
-  return false;
-}
 
 function pointInHexagon(px, py, r) {
   px = abs(px);
