@@ -1082,7 +1082,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
   push();
   rotate(radians(-12));
   translate(offset, offset);
-  if (rotateRectVertical) rotate(HALF_PI);
+  if (rotateRectVertical) rotate(PI);
   drawShapeByType(shapeType, shadowW, shadowH);
   pop();
 
@@ -1091,7 +1091,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
   push();
   rotate(radians(8));
   translate(offset * 1.4, offset * 0.8);
-  if (rotateRectVertical) rotate(HALF_PI);
+  if (rotateRectVertical) rotate(PI);
   drawShapeByType(shapeType, highlightW, highlightH);
   pop();
 
@@ -1100,7 +1100,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
   push();
   rotate(radians(3));
   translate(-offset * 0.6, offset * 0.5);
-  if (rotateRectVertical) rotate(HALF_PI);
+  if (rotateRectVertical) rotate(PI);
   drawShapeByType(shapeType, shadowW * 0.88, shadowH * 0.88);
   pop();
 
@@ -1110,7 +1110,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
   strokeWeight(1);
   if (rotateRectVertical) {
     push();
-    rotate(HALF_PI);
+    rotate(PI);
     drawShapeByType(shapeType, shadowW * 0.7, shadowH * 0.7);
     pop();
   } else {
