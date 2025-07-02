@@ -324,6 +324,15 @@ function draw() {
 
     let shadowInfo = drawSuprematistOpShadowRect(entryShapeSize, entry.megawatts, entry.habitat);
 
+    if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
+      drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor);
+    }
+
+    if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
+        Array.isArray(entry.habitat) && entry.habitat.length > 0) {
+      drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize);
+    }
+
     if (entry.arrayType) {
       push();
       translate(shadowInfo.offsetX, shadowInfo.offsetY);
@@ -337,15 +346,6 @@ function draw() {
         10
       );
       pop();
-    }
-
-    if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-      drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor);
-    }
-
-    if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
-        Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-      drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize);
     }
 
     if (entry.cropType && entry.cropType.length > 0) {
@@ -968,7 +968,7 @@ function pointInHexagon(px, py, r) {
   return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
 }
 
-function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, density = 10) {
+function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, density = 5) {
   if (!arrayType || !Array.isArray(activities) || activities.length === 0) return;
 
   push();
