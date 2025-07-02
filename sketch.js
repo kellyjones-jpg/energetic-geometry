@@ -989,7 +989,7 @@ function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, dens
   pop();
 }
 
-function drawCrosshatchGridMultiColor(activities, size, density = 9) {
+function drawCrosshatchGridMultiColor(activities, size, density = 5) {
   let colorCount = activities.length;
 
   push();
