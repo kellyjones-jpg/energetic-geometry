@@ -803,35 +803,52 @@ function drawSpiralWedges(activities, habitat, x, y, size) {
   noStroke();
 
   const numWedges = activities.length;
-  const totalRotation = TWO_PI;
-  const wedgeAngle = totalRotation / numWedges;
+  const wedgeAngle = TWO_PI / numWedges;
 
-  let innerRadius = size * 0.15;  // smaller to fit within the main shape
-  let outerRadius = size * 0.4;   // conservative fill area
+  let innerRadius = size * 0.12;
+  let outerRadius = size * 0.4;
 
   for (let i = 0; i < numWedges; i++) {
     let activity = activities[i];
     let fillColor = getActivityColor(activity);
     if (!fillColor) continue;
 
-    fillColor.setAlpha(160); // semi-transparent for layering
+    // Suprematist-style: bold, high-contrast, semi-transparent
+    fillColor.setAlpha(170 - i * 10); // decreasing alpha for layering
     fill(fillColor);
 
+    let rotationOffset = radians(i * 12); // subtle angular shift
+    rotate(rotationOffset);
+
     beginShape();
-    vertex(0, 0); // center point
-    for (let angle = 0; angle <= wedgeAngle; angle += 0.05) {
-      let a = i * wedgeAngle + angle;
-      let spiralRadius = map(angle, 0, wedgeAngle, innerRadius, outerRadius);
-      let vx = cos(a) * spiralRadius;
-      let vy = sin(a) * spiralRadius;
+    vertex(0, 0); // center
+    for (let a = 0; a <= wedgeAngle; a += 0.06) {
+      let r = map(a, 0, wedgeAngle, innerRadius, outerRadius);
+      let vx = cos(a) * r;
+      let vy = sin(a) * r;
       vertex(vx, vy);
     }
     endShape(CLOSE);
+
+    // Op Art-style: add white edge wedge between every other slice
+    if (i % 2 === 0) {
+      fill(255, 40);
+      beginShape();
+      vertex(0, 0);
+      for (let a = 0; a <= wedgeAngle; a += 0.06) {
+        let r = map(a, 0, wedgeAngle, innerRadius * 0.9, outerRadius * 1.05);
+        let vx = cos(a + 0.01) * r;
+        let vy = sin(a + 0.01) * r;
+        vertex(vx, vy);
+      }
+      endShape(CLOSE);
+    }
+
+    rotate(-rotationOffset); // reset
   }
 
   pop();
 }
-
 
 function pointInHexagon(px, py, r) {
   px = abs(px);
@@ -970,10 +987,23 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
     else if (cleaned.includes('native grasses')) shapeType = 'rect';
   }
 
-  // Define offsets and sizes
+  // Define offsets and base sizes
   let offset = map(sz, 0, 10, 2, 10);
   let shadowSize = map(sz, 0, 10, baseSize * 0.9, baseSize * 1.4);
   let highlightSize = shadowSize * 0.95;
+
+  // Aspect ratio adjustment for rects/squares
+  let widthFactor = 1;
+  let heightFactor = 1;
+  if (shapeType === 'rect' || shapeType === 'square') {
+    widthFactor = 1.6;
+    heightFactor = 0.55;
+  }
+
+  let shadowW = shadowSize * widthFactor;
+  let shadowH = shadowSize * heightFactor;
+  let highlightW = highlightSize * widthFactor;
+  let highlightH = highlightSize * heightFactor;
 
   push();
   rectMode(CENTER);
@@ -984,7 +1014,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
   push();
   rotate(radians(-12));
   translate(offset, offset);
-  drawShapeByType(shapeType, shadowSize, shadowSize);
+  drawShapeByType(shapeType, shadowW, shadowH);
   pop();
 
   // White tilted highlight
@@ -992,7 +1022,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
   push();
   rotate(radians(8));
   translate(offset * 1.4, offset * 0.8);
-  drawShapeByType(shapeType, highlightSize, highlightSize);
+  drawShapeByType(shapeType, highlightW, highlightH);
   pop();
 
   // Reverse shadow
@@ -1000,14 +1030,14 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
   push();
   rotate(radians(3));
   translate(-offset * 0.6, offset * 0.5);
-  drawShapeByType(shapeType, shadowSize * 0.88, shadowSize * 0.88);
+  drawShapeByType(shapeType, shadowW * 0.88, shadowH * 0.88);
   pop();
 
   // White outline
   stroke(255);
   noFill();
   strokeWeight(1);
-  drawShapeByType(shapeType, shadowSize * 0.7, shadowSize * 0.7);
+  drawShapeByType(shapeType, shadowW * 0.7, shadowH * 0.7);
 
   pop();
 
