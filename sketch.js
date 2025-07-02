@@ -487,21 +487,15 @@ function mouseMoved() {
   cursor(hovering ? 'pointer' : 'default');
 }
 
-function mousePressed() {
-  // Check if mouse is inside tooltip
+  function mousePressed() {
+    // Check if mouse is inside tooltip
   const tooltip = document.getElementById('tooltip');
-  const rect = tooltip.getBoundingClientRect();
-  const overTooltip =
-    mouseX >= rect.left - window.scrollX &&
-    mouseX <= rect.right - window.scrollX &&
-    mouseY >= rect.top - window.scrollY &&
-    mouseY <= rect.bottom - window.scrollY;
+  const target = document.elementFromPoint(mouseX, mouseY);
 
-    // If click is inside tooltip or on a link within it, do nothing
-    if (overTooltip || document.activeElement.closest('#tooltip a')) {
-      return;
-    }
-
+  // If the click target is inside the tooltip or IS the tooltip itself, do nothing
+  if (tooltip.contains(target)) {
+    return;
+  }
 
   let yearEntries = entriesByYear[selectedYear] || [];
   let padding = map(yearEntries.length, 10, 120, 60, 15);
