@@ -900,7 +900,7 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
 function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
   if (!Array.isArray(habitatList) || !Array.isArray(activities)) return;
 
-  const cleanedHabitats = habitatList
+  const cleanedHabitat = habitatList
     .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
     .filter(h => h !== '');
 
@@ -908,7 +908,16 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
     .map(a => (typeof a === 'string' ? a.trim().toLowerCase() : ''))
     .filter(a => a !== '');
 
-  if (cleanedHabitats.length === 0 || cleanedActivities.length === 0) return;
+  if (cleanedHabitat.length === 0 || cleanedActivities.length === 0) return;
+
+  // If only one habitat, repeat its shape per activity
+  const nestingCount = (cleanedHabitat.length === 1)
+    ? cleanedActivities.length
+    : cleanedHabitat.length;
+
+  const habitatShapes = (cleanedHabitat.length === 1)
+    ? Array(nestingCount).fill(cleanedHabitat[0])
+    : cleanedHabitat;
 
   push();
   translate(x, y);
@@ -916,34 +925,31 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
   rectMode(CENTER);
   noStroke();
 
-  const maxLayers = cleanedHabitats.length;
-  const layerStep = 0.85 / maxLayers; // how much to shrink each layer
+  const layerStep = 0.85 / nestingCount;
 
-  for (let i = 0; i < maxLayers; i++) {
-    const habitat = cleanedHabitats[i];
+  for (let i = 0; i < nestingCount; i++) {
+    const habitat = habitatShapes[i];
     const shapeType = getHabitatShapeType(habitat);
-
-    // Use activity color (cycle through if fewer activities than habitats)
     const activity = cleanedActivities[i % cleanedActivities.length];
     const fillCol = getActivityColor(activity);
     if (!fillCol) continue;
 
-    // Nesting scale: smaller shapes drawn on top
+    const angleOffset = radians(i * 10);
     const scaleFactor = 1 - i * layerStep;
     const shapeSize = size * scaleFactor;
 
-    // Optional rotation for slight tension/separation
-    const angleOffset = radians(i * 10);
-
     fill(fillCol);
+
     push();
     rotate(angleOffset);
+
+    // Match drop shadow ratio for native grasses
     if (shapeType === 'rect') {
-        // Tall, narrow rectangle like native grasses
-        drawShapeByType(shapeType, shapeSize * 0.4, shapeSize); // width x height
-      } else {
-        drawShapeByType(shapeType, shapeSize, shapeSize);
-      }
+      drawShapeByType(shapeType, shapeSize * 0.55, shapeSize * 1.6);
+    } else {
+      drawShapeByType(shapeType, shapeSize, shapeSize);
+    }
+
     pop();
   }
 
