@@ -270,7 +270,7 @@ function draw() {
   image(bgImg, 0, 0, width, height);
   noStroke();
   rectMode(CORNER);          
-  fill(0, 130);              
+  fill(0, 145);              
   rect(0, 0, width, height); 
   rectMode(CENTER);          
   
