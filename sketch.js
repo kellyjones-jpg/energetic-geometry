@@ -886,7 +886,6 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
 function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
   if (!Array.isArray(habitatList) || !Array.isArray(activities)) return;
 
-  // Clean and filter habitat list
   const cleanedHabitats = habitatList
     .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
     .filter(h => h !== '');
@@ -900,26 +899,32 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
   push();
   translate(x, y);
   angleMode(RADIANS);
+  rectMode(CENTER);
   noStroke();
 
-  for (let i = 0; i < cleanedHabitats.length; i++) {
+  const maxLayers = cleanedHabitats.length;
+  const layerStep = 0.85 / maxLayers; // how much to shrink each layer
+
+  for (let i = 0; i < maxLayers; i++) {
     const habitat = cleanedHabitats[i];
     const shapeType = getHabitatShapeType(habitat);
 
-    // Pick activity color (cycling through if needed)
+    // Use activity color (cycle through if fewer activities than habitats)
     const activity = cleanedActivities[i % cleanedActivities.length];
     const fillCol = getActivityColor(activity);
     if (!fillCol) continue;
 
-    // Slight angle and size offsets to create layered effect
-    const angleOffset = radians(i * 15 + 5);
-    const scaleFactor = 1 - (i * 0.07);
+    // Nesting scale: smaller shapes drawn on top
+    const scaleFactor = 1 - i * layerStep;
+    const shapeSize = size * scaleFactor;
+
+    // Optional rotation for slight tension/separation
+    const angleOffset = radians(i * 10);
 
     fill(fillCol);
-
     push();
     rotate(angleOffset);
-    drawShapeByType(shapeType, size * scaleFactor, size * scaleFactor);
+    drawShapeByType(shapeType, shapeSize, shapeSize);
     pop();
   }
 
