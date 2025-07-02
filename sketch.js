@@ -466,14 +466,26 @@ function mouseMoved() {
   cursor(hovering ? 'pointer' : 'default');
 }
 
-
 function mousePressed() {
+  // Check if mouse is inside tooltip
+  const tooltip = document.getElementById('tooltip');
+  const rect = tooltip.getBoundingClientRect();
+  const overTooltip =
+    mouseX >= rect.left - window.scrollX &&
+    mouseX <= rect.right - window.scrollX &&
+    mouseY >= rect.top - window.scrollY &&
+    mouseY <= rect.bottom - window.scrollY;
+
+  // If click is inside tooltip, do nothing
+  if (overTooltip) {
+    return;
+  }
+
   let yearEntries = entriesByYear[selectedYear] || [];
-  let shapeSizeEstimate = 150;
   let padding = map(yearEntries.length, 10, 120, 60, 15);
+  let shapeSizeEstimate = 150;
   let startY = 80;
-  let count = yearEntries.length;
-  let baseShapeSize = map(count, 10, 120, 140, 50);
+  let baseShapeSize = map(yearEntries.length, 10, 120, 140, 50);
   let numCols = floor((width - padding) / (baseShapeSize + padding));
   numCols = max(numCols, 1);
 
@@ -483,13 +495,14 @@ function mousePressed() {
     let col = i % numCols;
     let row = floor(i / numCols);
     let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
-    let centerY = startY + row * ((height - startY - 50) / ceil(count / numCols)) + ((height - startY - 50) / ceil(count / numCols)) / 2;
+    let centerY = startY + row * ((height - startY - 50) / ceil(yearEntries.length / numCols)) +
+                  ((height - startY - 50) / ceil(yearEntries.length / numCols)) / 2;
+    
     let entry = yearEntries[i];
-
     let minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
     let maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
     let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
-    entryShapeSize = constrain(entryShapeSize, 30, ((height - startY - 50) / ceil(count / numCols)) * 0.85);
+    entryShapeSize = constrain(entryShapeSize, 30, ((height - startY - 50) / ceil(yearEntries.length / numCols)) * 0.85);
 
     let d = dist(mouseX, mouseY, centerX, centerY);
     if (d < entryShapeSize / 2) {
@@ -506,7 +519,6 @@ function mousePressed() {
     showTooltip(null);
   }
 }
-
 
 function keyPressed() {
   let yearEntries = entriesByYear[selectedYear];
