@@ -1283,7 +1283,7 @@ function updateCounters(yearEntries) {
     if (!isNaN(entry.acres)) totalAcres += entry.acres;
   }
 
-  const siteCounter = new CountUp('site-count', siteCount, { duration: 1, useGrouping: true });
+  const siteCounter = new CountUp('site-count', siteCount, { duration: 1 });
   const mwCounter = new CountUp('megawatt-count', totalMegawatts, { duration: 1, decimalPlaces: 1, useGrouping: true });
   const acreCounter = new CountUp('acre-count', totalAcres, { duration: 1, decimalPlaces: 1, useGrouping: true });
 
