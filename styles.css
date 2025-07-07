@@ -405,11 +405,11 @@ a.hyperlink {
 /* Accordion items */
 .accordion-item {
   background-color: #353839;  /* match page bg */
-  border: 2px solid white;   /* sharp white border */
-  border-radius: 0;          /* hard edges, no rounding */
+  border: 2px solid white;    /* sharp white border */
+  border-radius: 0;
   margin-bottom: 1rem;
   box-shadow:
-    3px 1.5px 0 #0A0A0A,   /* layered drop shadow effect */
+    3px 1.5px 0 #0A0A0A,
     5px 3px 0 white,
     -2px 2px 0 #0A0A0A;
 }
@@ -441,7 +441,7 @@ a.hyperlink {
 /* Accordion button hover and focus */
 .accordion-button:hover,
 .accordion-button:focus {
-  background-color: #E4572E;  /* accent orange */
+  background-color: #1A1A1A; /* subtle dark highlight */
   color: white;
   text-shadow:
     1px 1px 0 #0A0A0A;
@@ -458,12 +458,12 @@ a.hyperlink {
 
 /* Accordion button expanded */
 .accordion-button:not(.collapsed) {
-  background-color: #E4572E;
+  background-color: #0A0A0A; /* darker background when open */
   color: white;
   font-weight: bold;
 }
 
-/* Remove Bootstrap's default chevron and add custom one using ::after */
+/* Remove Bootstrap's default chevron and add custom one */
 .accordion-button::after {
   content: '\25B6';  /* right-pointing triangle */
   color: white;
@@ -487,32 +487,14 @@ a.hyperlink {
   border-top: 2px solid white;
   padding: 1.25rem 1.5rem;
   box-shadow:
-    inset 3px 0 0 #E4572E,
-    inset -3px 0 0 white;
-  /* subtle vertical bars referencing Suprematism's geometric lines */
+    inset 3px 0 0 white,  /* replace orange with white */
+    inset -3px 0 0 white; /* subtle geometric bars */
 }
 
-/* Table styling inside accordion body */
-.accordion-body table {
-  border-collapse: collapse;
-  width: 100%;
-  color: white;
-}
-
-.accordion-body th,
-.accordion-body td {
-  border: 1.5px solid white;
-  padding: 0.6rem 1rem;
-  text-align: left;
-  vertical-align: middle;
-  font-size: 0.9rem;
-  font-weight: normal;
-}
-
-/* Accent header rows with solid orange background */
+/* Table header inside accordion body */
 .accordion-body thead tr {
-  background-color: #E4572E;
-  color: white;
+  background-color: white;  /* replace orange with white */
+  color: #0A0A0A;           /* dark text for contrast */
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 0.05em;
