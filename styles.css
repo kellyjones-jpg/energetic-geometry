@@ -150,7 +150,7 @@ a.hyperlink-tooltip {
 }
 
 .year-label {
-  font-size: 14px;
+  font-size: 16px;
   margin: 0;
   text-transform: uppercase;
   color: white;
@@ -165,13 +165,11 @@ a.hyperlink-tooltip {
 .year-label.active {
   color: #66D9EF;
   font-weight: bold;
-  font-size: 18px;
 }
 
 .year-label:hover {
   color: #007ACC;
   font-weight: bold;
-  font-size: 18px;
 }
 
 .year-label.above {
