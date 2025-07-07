@@ -76,7 +76,7 @@
     
     .nav-link:hover,
     .nav-link:focus {
-          color: #3399CC;
+          color: #66D9EF;
     }
  a.title,
     a.title:hover,
@@ -87,7 +87,7 @@
     }
 
 a.hyperlink {
-  color: #3399CC;
+  color: #66D9EF;
   text-decoration: underline;
   transition: color 0.2s ease;
 }
@@ -146,13 +146,13 @@ a.hyperlink {
 }
 
 .year-label.active {
-  color: #3399CC;
+  color: #66D9EF;
   font-weight: bold;
   font-size: 18px;
 }
 
 .year-label:hover {
-  color: #3399CC;
+  color: #66D9EF;
   font-weight: bold;
   font-size: 18px;
 }
