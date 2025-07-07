@@ -1272,7 +1272,7 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
 }
 
 function updateCounters(yearEntries) {
-  const { CountUp } = window;
+  const { CountUp } = window; 
 
   let siteCount = yearEntries.length;
   let totalMegawatts = 0;
@@ -1283,20 +1283,12 @@ function updateCounters(yearEntries) {
     if (!isNaN(entry.acres)) totalAcres += entry.acres;
   }
 
-  const siteCounter = new CountUp('site-count', siteCount, {
-  duration: 1,
-  useGrouping: true
-  });
-  const mwCounter = new CountUp('megawatt-count', totalMegawatts, {
-    duration: 1,
-    decimalPlaces: 1,
-  });
-  const acreCounter = new CountUp('acre-count', totalAcres, {
-    duration: 1,
-    decimalPlaces: 1,
-  });
+  const siteCounter = new CountUp('site-count', siteCount, { duration: 1, useGrouping: true });
+  const mwCounter = new CountUp('megawatt-count', totalMegawatts, { duration: 1, decimalPlaces: 1, useGrouping: true });
+  const acreCounter = new CountUp('acre-count', totalAcres, { duration: 1, decimalPlaces: 1, useGrouping: true });
 
   if (!siteCounter.error) siteCounter.start();
   if (!mwCounter.error) mwCounter.start();
   if (!acreCounter.error) acreCounter.start();
 }
+
