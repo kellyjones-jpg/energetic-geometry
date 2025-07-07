@@ -77,7 +77,7 @@
     
     .nav-link:hover,
     .nav-link:focus {
-          color: #66D9EF;
+          color: #007ACC;
     }
  a.title,
     a.title:hover,
@@ -93,6 +93,11 @@ a.hyperlink {
   letter-spacing: 0.05em;
   transition: color 0.2s ease;
 }
+
+a.hyperlink:hover,
+a.hyperlink:focus {
+          color: #007ACC;
+    }
 
 a.hyperlink-tooltip {
   color: #007ACC;
