@@ -345,10 +345,26 @@ function draw() {
   rect(0, 0, width, height); 
   rectMode(CENTER);          
   
-  fill(255);
-  textSize(24);
-  textAlign(CENTER, TOP);
-  text("Year: " + selectedYear, width / 2, 30);
+  // === YEAR LABEL STYLE ===
+  let yearText = "Year: " + selectedYear;
+  textFont('Helvetica');      // Or another available font
+  textStyle(BOLD);            // Make it bold
+  textSize(36);               // Larger, more prominent
+  textAlign(CENTER, CENTER);  // Center align vertically for background bar
+
+  let textW = textWidth(yearText) + 30; // Add horizontal padding
+  let textH = 50;                       // Set height of background bar
+  let textY = 40;                       // Y position of the center of the bar
+
+  // Draw background bar (Suprematist color block)
+  fill('#E4572E');                      // Accent color
+  rectMode(CENTER);
+  rect(width / 2, textY, textW, textH);
+
+  // Draw the year text
+  fill(255);                            // White text
+  text(yearText, width / 2, textY);
+
 
   let yearEntries = entriesByYear[selectedYear] || [];
   if (yearEntries.length === 0) {
