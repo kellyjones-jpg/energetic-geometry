@@ -141,6 +141,40 @@ const pvWarpStyles = {
   'translucent': 'radial'
 };
 
+const combinedIcon = `
+  <svg
+    width="16" height="16" viewBox="0 0 16 16"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    style="vertical-align: middle; margin-left: 4px;"
+  >
+    <!-- Diamond frame -->
+    <rect
+      x="3" y="3" width="10" height="10"
+      fill="white"
+      stroke="black"
+      stroke-width="2"
+      transform="rotate(45 8 8)"
+    />
+    <!-- Arrow: a chevron pointing top-right -->
+    <polyline
+      points="7,10 11,6 11,9"
+      fill="none"
+      stroke="black"
+      stroke-width="2"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+    />
+    <line
+      x1="7" y1="10"
+      x2="7" y2="7"
+      stroke="black"
+      stroke-width="2"
+      stroke-linecap="round"
+    />
+  </svg>
+`;
+
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250702.csv', 'csv', 'header');
   bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
@@ -440,7 +474,7 @@ if (entry.animalType && entry.animalType.length) lines.push(`<strong>Animal Type
     <div id="tooltip-header" style="display:flex; justify-content: space-between; align-items: center;">
       <h4 style="margin:0;">
         ${entry.url
-          ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer">${entry.name} <span aria-hidden="true">🔗</span></a>`
+          ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" title="Open in new window">${entry.name} <span aria-hidden="true">${combinedIcon}</span></a>`
           : entry.name}
       </h4>
       <button id="tooltip-close" aria-label="Close tooltip" style="font-size:1.2em; cursor:pointer;">✕</button>
