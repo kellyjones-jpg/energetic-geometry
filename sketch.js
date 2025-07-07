@@ -142,35 +142,37 @@ const pvWarpStyles = {
 };
 
 const combinedIcon = `
-  <svg
-    width="16" height="16" viewBox="0 0 16 16"
+<svg
+    width="16" height="16" viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg"
     aria-hidden="true"
     style="vertical-align: middle; margin-left: 4px;"
   >
-    <!-- Diamond frame -->
+    <!-- Rotated square frame -->
     <rect
-      x="3" y="3" width="10" height="10"
+      x="4" y="4" width="16" height="16"
       fill="white"
       stroke="black"
       stroke-width="2"
-      transform="rotate(45 8 8)"
+      transform="rotate(45 12 12)"
+      rx="1"
+      ry="1"
     />
-    <!-- Arrow: a chevron pointing top-right -->
+    <!-- Arrow shaft -->
+    <line
+      x1="9" y1="15"
+      x2="15" y2="9"
+      stroke="black"
+      stroke-width="2.5"
+      stroke-linecap="round"
+    />
+    <!-- Arrowhead -->
     <polyline
-      points="7,10 11,6 11,9"
+      points="9,9 15,9 15,15"
       fill="none"
       stroke="black"
-      stroke-width="2"
+      stroke-width="2.5"
       stroke-linejoin="round"
-      stroke-linecap="round"
-    />
-    <line
-      x1="7" y1="10"
-      x2="7" y2="7"
-      stroke="black"
-      stroke-width="2"
-      stroke-linecap="round"
     />
   </svg>
 `;
