@@ -424,15 +424,7 @@ function showTooltip(entry) {
 
   let lines = [];
 
-if (entry.name) {
-  if (entry.url) {
-    lines.push(`<strong>Name:</strong> <a href="${entry.url}" target="_blank" rel="noopener noreferrer" class="external-link">
-      ${entry.name} <span aria-hidden="true">🔗</span>
-    </a>`);
-  } else {
-    lines.push(`<strong>Name:</strong> ${entry.name}`);
-  }
-};
+
 if (entry.activities && entry.activities.length) lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
 if (!isNaN(entry.megawatts)) lines.push(`<strong>System Size:</strong> ${entry.megawatts} MW`);
 if (!isNaN(entry.acres)) lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
@@ -443,43 +435,43 @@ if (entry.cropType && entry.cropType.length) lines.push(`<strong>Crop Type:</str
 if (entry.animalType && entry.animalType.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
 
 
-tooltip.innerHTML = `
-  <div id="tooltip-header">
-    <strong>Name:</strong>
-    <button id="tooltip-close" aria-label="Close tooltip">✕</button>
-  </div>
-  ${entry.url
-    ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer">${entry.name}</a><br>`
-    : `${entry.name}<br>`}
-  ${lines.join('<br>')}
-`;
+ // Build tooltip HTML with name shown once in <h4> at top
+  tooltip.innerHTML = `
+    <div id="tooltip-header" style="display:flex; justify-content: space-between; align-items: center;">
+      <h4 style="margin:0;">
+        ${entry.url
+          ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer">${entry.name} <span aria-hidden="true">🔗</span></a>`
+          : entry.name}
+      </h4>
+      <button id="tooltip-close" aria-label="Close tooltip" style="font-size:1.2em; cursor:pointer;">✕</button>
+    </div>
+    <div id="tooltip-content" style="margin-top: 0.5em;">
+      ${lines.join('<br>')}
+    </div>
+  `;
 
-const closeButton = document.getElementById('tooltip-close');
-if (closeButton) {
-  closeButton.addEventListener('click', () => {
-    selectedEntry = null;
-    tooltipEntry = null;
-    tooltip.style.display = 'none';
-  });
-}
+  const closeButton = document.getElementById('tooltip-close');
+  if (closeButton) {
+    closeButton.addEventListener('click', () => {
+      selectedEntry = null;
+      tooltipEntry = null;
+      tooltip.style.display = 'none';
+    });
+  }
 
-
-  // Position tooltip relative to canvas on the page
+  // Position tooltip (your existing code below)
   let canvasRect = cnv.elt.getBoundingClientRect();
-
   let left = canvasRect.left + entry.x + 15;
   let top = canvasRect.top + entry.y + 15;
 
-  // Adjust horizontal position
   left = Math.min(
-    Math.max(left, 10), // don't go past left edge
-    window.innerWidth - tooltip.offsetWidth - 10 // don't overflow right
+    Math.max(left, 10),
+    window.innerWidth - tooltip.offsetWidth - 10
   );
 
-  // Adjust vertical position
   top = Math.min(
-    Math.max(top, 10), // don't go past top edge
-    window.innerHeight - tooltip.offsetHeight - 10 // don't overflow bottom
+    Math.max(top, 10),
+    window.innerHeight - tooltip.offsetHeight - 10
   );
 
   tooltip.style.left = left + 'px';
@@ -634,7 +626,6 @@ function updateYear(year, index) {
   windowResized();
   updateCounters(entriesByYear[year]);
 
-  // Optional: visually update year button highlights
   document.querySelectorAll('.year-btn').forEach(btn => {
     btn.classList.remove('selected');
   });
@@ -1304,3 +1295,4 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
 
   pop();
 }
+
