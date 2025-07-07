@@ -149,17 +149,20 @@ a.hyperlink {
   color: white;
   text-decoration: underline;
   cursor: pointer;
+  letter-spacing: 0.05em;
+  filter:
+    drop-shadow(1px 1px 0 #353839);
   transition: color 0.2s ease;
 }
 
 .year-label.active {
-  color: #66D9EF;
+  color: #007ACC;
   font-weight: bold;
   font-size: 18px;
 }
 
 .year-label:hover {
-  color: #66D9EF;
+  color: #007ACC;
   font-weight: bold;
   font-size: 18px;
 }
