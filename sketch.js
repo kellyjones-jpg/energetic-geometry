@@ -248,6 +248,7 @@ function setup() {
   textAlign(CENTER, CENTER);
   rectMode(CENTER);
   noLoop();
+  updateCounters(entriesByYear[selectedYear]);
 }
 
 function windowResized() {
@@ -1271,6 +1272,8 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
 }
 
 function updateCounters(yearEntries) {
+  const { CountUp } = window;
+
   let siteCount = yearEntries.length;
   let totalMegawatts = 0;
   let totalAcres = 0;
@@ -1280,12 +1283,20 @@ function updateCounters(yearEntries) {
     if (!isNaN(entry.acres)) totalAcres += entry.acres;
   }
 
-  // Animate with Counter-Up 2
-  $('#site-count').text(Math.round(siteCount).toLocaleString());
-  $('#megawatt-count').text(Math.round(totalMegawatts).toLocaleString());
-  $('#acre-count').text(Math.round(totalAcres).toLocaleString());
+  const siteCounter = new CountUp('site-count', siteCount, {
+  duration: 1,
+  useGrouping: true
+  });
+  const mwCounter = new CountUp('megawatt-count', totalMegawatts, {
+    duration: 1,
+    decimalPlaces: 1,
+  });
+  const acreCounter = new CountUp('acre-count', totalAcres, {
+    duration: 1,
+    decimalPlaces: 1,
+  });
 
-  counterUp(document.getElementById('site-count'), { duration: 1000 });
-  counterUp(document.getElementById('megawatt-count'), { duration: 1000 });
-  counterUp(document.getElementById('acre-count'), { duration: 1000 });
+  if (!siteCounter.error) siteCounter.start();
+  if (!mwCounter.error) mwCounter.start();
+  if (!acreCounter.error) acreCounter.start();
 }
