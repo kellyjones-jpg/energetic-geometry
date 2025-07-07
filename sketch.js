@@ -345,25 +345,27 @@ function draw() {
   rect(0, 0, width, height); 
   rectMode(CENTER);          
   
-  // === YEAR LABEL STYLE ===
-  let yearText = "Year: " + selectedYear;
-  textFont('Helvetica');      // Or another available font
-  textStyle(BOLD);            // Make it bold
-  textSize(36);               // Larger, more prominent
-  textAlign(CENTER, CENTER);  // Center align vertically for background bar
+ // === MINIMAL SUPREMATIST YEAR LABEL ===
+let yearText = "Year: " + selectedYear;
+textFont('Helvetica');       // Use your preferred font
+textStyle(BOLD);             // Emphasize hierarchy
+textSize(36);                // Large and clear
+textAlign(CENTER, BOTTOM);   // Align above the bar
 
-  let textW = textWidth(yearText) + 30; // Add horizontal padding
-  let textH = 50;                       // Set height of background bar
-  let textY = 40;                       // Y position of the center of the bar
+let centerX = width / 2;
+let textY = 50;              // Bottom of text
+let lineY = textY + 6;       // Slight gap before line
+let lineWidth = textWidth(yearText) + 40; // Width of line slightly wider than text
 
-  // Draw background bar (Suprematist color block)
-  fill('#E4572E');                      // Accent color
-  rectMode(CENTER);
-  rect(width / 2, textY, textW, textH);
+// Draw year label
+fill(255);                   // White text
+text(yearText, centerX, textY);
 
-  // Draw the year text
-  fill(255);                            // White text
-  text(yearText, width / 2, textY);
+// Draw minimal black underline bar (Suprematist-inspired)
+stroke('#0A0A0A');
+strokeWeight(6);
+line(centerX - lineWidth / 2, lineY, centerX + lineWidth / 2, lineY);
+noStroke(); // Reset stroke state
 
 
   let yearEntries = entriesByYear[selectedYear] || [];
