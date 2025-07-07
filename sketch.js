@@ -146,6 +146,40 @@ function preload() {
   bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
 }
 
+// Animate number count from start to end over 'duration' milliseconds
+function animateCount(id, start, end, duration) {
+  const element = document.getElementById(id);
+  if (!element) return; // safety check
+
+  let startTime = null;
+
+  function step(timestamp) {
+    if (!startTime) startTime = timestamp;
+    const progress = Math.min((timestamp - startTime) / duration, 1);
+    const currentValue = Math.floor(progress * (end - start) + start);
+    element.textContent = currentValue;
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    }
+  }
+
+  requestAnimationFrame(step);
+}
+
+// Update counters given entries of the selected year
+function updateCounters(entries) {
+  // Sum up the counts from the entries
+  let siteCount = entries.length;
+  let megawattCount = entries.reduce((sum, e) => sum + (e.megawatts || 0), 0);
+  let acreCount = entries.reduce((sum, e) => sum + (e.acres || 0), 0);
+
+  // Animate each counter
+  animateCount('site-count', 0, siteCount, 1000);
+  animateCount('megawatt-count', 0, Math.round(megawattCount), 1000);
+  animateCount('acre-count', 0, Math.round(acreCount), 1000);
+}
+
+
 function setup() {
   // Load and organize data
   for (let i = 0; i < table.getRowCount(); i++) {
@@ -1270,25 +1304,3 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
 
   pop();
 }
-
-function updateCounters(yearEntries) {
-  const { CountUp } = window; 
-
-  let siteCount = yearEntries.length;
-  let totalMegawatts = 0;
-  let totalAcres = 0;
-
-  for (let entry of yearEntries) {
-    if (!isNaN(entry.megawatts)) totalMegawatts += entry.megawatts;
-    if (!isNaN(entry.acres)) totalAcres += entry.acres;
-  }
-
-  const siteCounter = new countUp.CountUp('site-count', siteCount, { duration: 1 });
-  const megawattCounter = new countUp.CountUp('megawatt-count', megawattCount, { duration: 1 });
-  const acreCounter = new countUp.CountUp('acre-count', acreCount, { duration: 1 });
-
-  if (!siteCounter.error) siteCounter.start();
-  if (!mwCounter.error) mwCounter.start();
-  if (!acreCounter.error) acreCounter.start();
-}
-
