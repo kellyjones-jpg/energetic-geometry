@@ -72,8 +72,6 @@
         padding-top: 4.25rem;
         padding-bottom: 0;
         letter-spacing: 0.05em;
-      filter:
-        drop-shadow(1px 1px 0 #353839);
       transition: color 0.2s ease;
     }
     
@@ -156,7 +154,7 @@ a.hyperlink {
 }
 
 .year-label.active {
-  color: #007ACC;
+  color: #66D9EF;
   font-weight: bold;
   font-size: 18px;
 }
