@@ -460,30 +460,14 @@ function showTooltip(entry) {
 
   let lines = [];
 
-  if (entry.activities && entry.activities.length)
-    lines.push(`<p><strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}</p>`);
-
-  if (!isNaN(entry.megawatts))
-    lines.push(`<p><strong>System Size:</strong> ${entry.megawatts} MW</p>`);
-
-  if (!isNaN(entry.acres))
-    lines.push(`<p><strong>Site Size:</strong> ${entry.acres} Acres</p>`);
-
-  if (entry.year)
-    lines.push(`<p><strong>Year Installed:</strong> ${entry.year}</p>`);
-
-  if (entry.arrayType)
-    lines.push(`<p><strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}</p>`);
-
-  if (entry.habitat && entry.habitat.length)
-    lines.push(`<p><strong>Habitat Types:</strong> ${formatArray(entry.habitat)}</p>`);
-
-  if (entry.cropType && entry.cropType.length)
-    lines.push(`<p><strong>Crop Type:</strong> ${formatArray(entry.cropType)}</p>`);
-
-  if (entry.animalType && entry.animalType.length)
-    lines.push(`<p><strong>Animal Type:</strong> ${formatArray(entry.animalType)}</p>`);
-
+  if (entry.activities && entry.activities.length) lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
+  if (!isNaN(entry.megawatts)) lines.push(`<strong>System Size:</strong> ${entry.megawatts} MW`);
+  if (!isNaN(entry.acres)) lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
+  if (entry.year) lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
+  if (entry.arrayType) lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
+  if (entry.habitat && entry.habitat.length) lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
+  if (entry.cropType && entry.cropType.length) lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
+  if (entry.animalType && entry.animalType.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
 
 
  // Build tooltip HTML with name shown once in <h4> at top
@@ -497,7 +481,7 @@ function showTooltip(entry) {
       <button id="tooltip-close" aria-label="Close tooltip" style="font-size:1.2em; cursor:pointer;">✕</button>
     </div>
     <div id="tooltip-content" style="margin-top: 0.5em;">
-      ${lines.join('')}
+      ${lines.join('<br>')}
     </div>
   `;
 
