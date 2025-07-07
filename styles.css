@@ -146,13 +146,13 @@ a.hyperlink {
 }
 
 .year-label.active {
-  color: #E4572E;
+  color: #3399CC;
   font-weight: bold;
   font-size: 18px;
 }
 
 .year-label:hover {
-  color: #E4572E;
+  color: #3399CC;
   font-weight: bold;
   font-size: 18px;
 }
