@@ -124,7 +124,7 @@ a.hyperlink {
   left: 0;
   right: 0;
   top: 50%;
-  height: 3px;
+  height: 2.25px;
   background: #0A0A0A;
 }
 
@@ -168,8 +168,8 @@ a.hyperlink {
 }
 
 .year-node {
-  width: 3px;
-  height: 45px;
+  width: 2px;
+  height: 55px;
   background-color: #0A0A0A;
   transform: rotate(45deg);
   pointer-events: none; /* disables click events */
