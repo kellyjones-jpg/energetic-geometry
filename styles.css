@@ -577,3 +577,6 @@ a.hyperlink {
   margin-bottom: 8px;
 }
 
+#tooltip-content p {
+  margin: 0.5em 0;
+}
