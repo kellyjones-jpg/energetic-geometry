@@ -441,7 +441,7 @@ a.hyperlink {
 /* Accordion button hover and focus */
 .accordion-button:hover,
 .accordion-button:focus {
-  background-color: #1A1A1A; /* subtle dark highlight */
+  background-color: #353839; /* subtle dark highlight */
   color: white;
   text-shadow:
     1px 1px 0 #0A0A0A;
