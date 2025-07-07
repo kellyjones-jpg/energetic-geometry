@@ -353,7 +353,7 @@ textSize(36);                // Large and clear
 textAlign(CENTER, BOTTOM);   // Align above the bar
 
 let centerX = width / 2;
-let textY = 50;              // Bottom of text
+let textY = 55;              // Bottom of text
 let lineY = textY + 6;       // Slight gap before line
 let lineWidth = textWidth(yearText) + 40; // Width of line slightly wider than text
 
