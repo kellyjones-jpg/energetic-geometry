@@ -88,12 +88,16 @@
     }
 
 a.hyperlink {
+  color: #66D9EF;
+  text-decoration: underline;
+  letter-spacing: 0.05em;
+  transition: color 0.2s ease;
+}
+
+a.hyperlink-tooltip {
   color: #007ACC;
   text-decoration: underline;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
-  filter:
-    drop-shadow(1px 1px 0 #353839);
   transition: color 0.2s ease;
 }
 
