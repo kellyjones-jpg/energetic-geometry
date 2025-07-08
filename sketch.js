@@ -567,16 +567,21 @@ function mouseMoved() {
   cursor(hovering ? 'pointer' : 'default');
 }
 
-  function mousePressed() {
-    // Check if mouse is inside tooltip
+function mousePressed() {
   const tooltip = document.getElementById('tooltip');
-  const target = document.elementFromPoint(mouseX, mouseY);
 
-  // If the click target is inside the tooltip or IS the tooltip itself, do nothing
+  // Convert p5 canvas-relative mouseX/mouseY to screen coords
+  const canvasRect = cnv.elt.getBoundingClientRect();
+  const absMouseX = canvasRect.left + mouseX;
+  const absMouseY = canvasRect.top + mouseY;
+  const target = document.elementFromPoint(absMouseX, absMouseY);
+
+  // If clicking inside the tooltip, do nothing (allow interaction)
   if (tooltip.contains(target)) {
     return;
   }
 
+  // Check if clicked on any site entry
   let yearEntries = entriesByYear[selectedYear] || [];
   let padding = map(yearEntries.length, 10, 120, 60, 15);
   let shapeSizeEstimate = 150;
@@ -593,7 +598,7 @@ function mouseMoved() {
     let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
     let centerY = startY + row * ((height - startY - 50) / ceil(yearEntries.length / numCols)) +
                   ((height - startY - 50) / ceil(yearEntries.length / numCols)) / 2;
-    
+
     let entry = yearEntries[i];
     let minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
     let maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
@@ -616,9 +621,18 @@ function mouseMoved() {
   }
 }
 
+
 function keyPressed() {
   let yearEntries = entriesByYear[selectedYear];
   if (!yearEntries) return;
+
+  // Escape closes tooltip
+  if (keyCode === ESCAPE) {
+    selectedEntry = null;
+    tooltipEntry = null;
+    document.getElementById('tooltip').style.display = 'none';
+    return;
+  }
 
   if (selectedEntry) {
     let currentIndex = yearEntries.findIndex(e => e.name === selectedEntry.name);
@@ -634,11 +648,7 @@ function keyPressed() {
 
     let newIndex = currentIndex;
 
-    if (keyCode === ESCAPE) {
-      selectedEntry = null;
-      showTooltip(null);
-      return;
-    } else if (keyCode === RIGHT_ARROW && currentIndex < yearEntries.length - 1) {
+    if (keyCode === RIGHT_ARROW && currentIndex < yearEntries.length - 1) {
       newIndex = currentIndex + 1;
     } else if (keyCode === LEFT_ARROW && currentIndex > 0) {
       newIndex = currentIndex - 1;
@@ -657,14 +667,6 @@ function keyPressed() {
 
   let currentYearIndex = availableYears.indexOf(selectedYear);
 
-  if (keyCode === HOME) {
-    selectedYear = availableYears[0];
-    updateYear(selectedYear, 0);
-  } else if (keyCode === END) {
-    selectedYear = availableYears[availableYears.length - 1];
-    updateYear(selectedYear, availableYears.length - 1);
-  }
-
   if (!selectedEntry && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
     let delta = keyCode === RIGHT_ARROW ? 1 : -1;
     let nextIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
@@ -673,7 +675,16 @@ function keyPressed() {
       updateYear(selectedYear, nextIndex);
     }
   }
+
+  if (keyCode === HOME) {
+    selectedYear = availableYears[0];
+    updateYear(selectedYear, 0);
+  } else if (keyCode === END) {
+    selectedYear = availableYears[availableYears.length - 1];
+    updateYear(selectedYear, availableYears.length - 1);
+  }
 }
+
 
 function updateYear(year, index) {
   windowResized();
@@ -1349,20 +1360,3 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
   pop();
 }
 
-document.addEventListener('mousedown', function (event) {
-  const tooltip = document.getElementById('tooltip');
-  if (!tooltip.contains(event.target)) {
-    selectedEntry = null;
-    tooltipEntry = null;
-    tooltip.style.display = 'none';
-  }
-});
-
-document.addEventListener('keydown', function (event) {
-  if (event.key === 'Escape' || event.key === 'Esc') {
-    const tooltip = document.getElementById('tooltip');
-    selectedEntry = null;
-    tooltipEntry = null;
-    tooltip.style.display = 'none';
-  }
-});
