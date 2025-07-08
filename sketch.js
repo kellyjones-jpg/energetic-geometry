@@ -329,7 +329,7 @@ function windowResized() {
   numCols = max(numCols, 1);
 
   let numRows = ceil(yearEntries.length / numCols);
-  let fixedHeight = 885;
+  let fixedHeight = 865;
   resizeCanvas(windowWidth * 0.9, fixedHeight);
   
   redraw();
