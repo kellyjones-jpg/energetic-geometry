@@ -576,20 +576,7 @@ function mouseMoved() {
 
 
 function mousePressed() {
-  const tooltip = document.getElementById('tooltip');
-
-  // Convert p5 canvas-relative mouseX/mouseY to screen coords
-  const canvasRect = cnv.elt.getBoundingClientRect();
-  const absMouseX = canvasRect.left + mouseX;
-  const absMouseY = canvasRect.top + mouseY;
-  const target = document.elementFromPoint(absMouseX, absMouseY);
-
-  // If clicking inside the tooltip, do nothing (allow interaction)
-  if (tooltip.contains(target)) {
-    return;
-  }
-
-  // Check if clicked on any site entry
+   // Check if clicked on any site entry
   let yearEntries = entriesByYear[selectedYear] || [];
   let padding = map(yearEntries.length, 10, 120, 60, 15);
   let shapeSizeEstimate = 150;
@@ -1368,3 +1355,14 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
   pop();
 }
 
+document.addEventListener('mousedown', (event) => {
+  const tooltip = document.getElementById('tooltip');
+  const isInsideTooltip = tooltip.contains(event.target);
+
+  // If clicked outside the tooltip, close it
+  if (!isInsideTooltip) {
+    selectedEntry = null;
+    tooltipEntry = null;
+    tooltip.style.display = 'none';
+  }
+});
