@@ -130,6 +130,7 @@ a.hyperlink-tooltip {
   justify-content: space-between;
   align-items: center;
   width: 90%;
+  margin-top: 0.5em;
 }
 
 #timeline::before {
