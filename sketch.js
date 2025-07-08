@@ -254,6 +254,8 @@ function setup() {
     };
 
     entries.push(entry);
+    entry.currentScale = 1; // for smooth animation
+
     if (!entriesByYear[year]) {
       entriesByYear[year] = [];
     }
@@ -317,7 +319,7 @@ function setup() {
   textSize(32);
   textAlign(CENTER, CENTER);
   rectMode(CENTER);
-  noLoop();
+  loop();
   updateCounters(entriesByYear[selectedYear]);
 }
 
@@ -397,15 +399,18 @@ noStroke(); // Reset stroke state
     strokeW = constrain(strokeW, 2, 5.5);
     let baseColor = getActivityColor(entry.activities?.[0] || '');
 
-    // Determine scale for hover or selection
     let isSelected = selectedEntry && selectedEntry.name === entry.name;
     let isHovered = hoveredEntry && hoveredEntry.name === entry.name;
-    let scaleFactor = (isSelected || isHovered) ? 1.2 : 1;
+    let targetScale = (isSelected || isHovered) ? 1.2 : 1;
+
+    // Smooth transition between current and target scale
+    entry.currentScale = lerp(entry.currentScale || 1, targetScale, 0.1);
+
     let scaledSize = entryShapeSize * scaleFactor;
 
     push();
     translate(centerX, centerY);
-    scale(scaleFactor);
+    scale(entry.currentScale);
 
     if (entry.arrayType && entry.activities?.length) {
       drawPVWarpStyle(entry.arrayType, entry.activities, 0, 0, entryShapeSize);
