@@ -1349,3 +1349,20 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
   pop();
 }
 
+document.addEventListener('mousedown', function (event) {
+  const tooltip = document.getElementById('tooltip');
+  if (!tooltip.contains(event.target)) {
+    selectedEntry = null;
+    tooltipEntry = null;
+    tooltip.style.display = 'none';
+  }
+});
+
+document.addEventListener('keydown', function (event) {
+  if (event.key === 'Escape' || event.key === 'Esc') {
+    const tooltip = document.getElementById('tooltip');
+    selectedEntry = null;
+    tooltipEntry = null;
+    tooltip.style.display = 'none';
+  }
+});
