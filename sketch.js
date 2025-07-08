@@ -449,11 +449,12 @@ noStroke(); // Reset stroke state
     }
     pop();
 
-    // Save position for tooltip positioning if selected or hovered
-    if (isSelected || isHovered) {
-      entry.x = centerX;
-      entry.y = centerY;
-    }
+    if (isSelected) {
+      // Calculate tooltip position relative to scaled size
+      let scaledOffset = entry.currentScale * 20; // Optional tweak to offset tooltip a bit
+      entry.x = centerX + scaledOffset;
+      entry.y = centerY + scaledOffset;
+      }
   }
 
   // Show tooltip only for selected entry
