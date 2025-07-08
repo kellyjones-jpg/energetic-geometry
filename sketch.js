@@ -406,8 +406,6 @@ noStroke(); // Reset stroke state
     // Smooth transition between current and target scale
     entry.currentScale = lerp(entry.currentScale || 1, targetScale, 0.1);
 
-    let scaledSize = entryShapeSize * scaleFactor;
-
     push();
     translate(centerX, centerY);
     scale(entry.currentScale);
