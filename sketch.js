@@ -363,7 +363,7 @@ text(yearText, centerX, textY);
 
 // Draw minimal black underline bar (Suprematist-inspired)
 stroke('#0A0A0A');
-strokeWeight(6);
+strokeWeight(3);
 line(centerX - lineWidth / 2, lineY, centerX + lineWidth / 2, lineY);
 noStroke(); // Reset stroke state
 
