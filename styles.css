@@ -589,8 +589,8 @@ a.hyperlink-tooltip {
 }
 
 .underline-line {
-  width: 40%;
-  height: 3px;
+  width: 15%;
+  height: 2px;
   background-color: #0A0A0A;
   margin: 4px auto;
 }
