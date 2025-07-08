@@ -546,7 +546,8 @@ a.hyperlink-tooltip {
   position: absolute;
   z-index: 1000;
   display: none;
-  pointer-events: auto;     /* Enable interaction */
+  pointer-events: auto; /* Ensure links inside tooltip are clickable */
+  cursor: pointer;
   user-select: text;        /* Allow link selection */
   cursor: default;          /* Normal cursor */
 }
