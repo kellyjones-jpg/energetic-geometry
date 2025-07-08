@@ -538,8 +538,11 @@ function showTooltip(entry) {
 }
 
 function mouseMoved() {
+  // Skip hover detection on touch devices
+  if ('ontouchstart' in window) return;
+
   let yearEntries = entriesByYear[selectedYear] || [];
-  let shapeSizeEstimate = 150; // base size used for hit test approx
+  let shapeSizeEstimate = 150;
   let padding = map(yearEntries.length, 10, 120, 60, 15);
   let startY = 80;
   let count = yearEntries.length;
@@ -571,6 +574,7 @@ function mouseMoved() {
   }
   cursor(hovering ? 'pointer' : 'default');
 }
+
 
 function mousePressed() {
   const tooltip = document.getElementById('tooltip');
