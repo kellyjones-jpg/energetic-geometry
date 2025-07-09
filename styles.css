@@ -120,6 +120,7 @@ a.hyperlink-tooltip {
   color: white;
   font-style: italic;
   margin-bottom: 2.15em;
+  text-align: left !important;
 }
 
 #timeline {
