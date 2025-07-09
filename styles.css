@@ -88,7 +88,7 @@ a.title:visited {
 
 a.hyperlink {
   color: #4C8CF5;
-  
+  font-weight: bold;
   letter-spacing: 0.05em;
   transition: color 0.2s ease;
 }
@@ -100,7 +100,6 @@ a.hyperlink:focus {
 
 a.hyperlink-tooltip {
   color: #2A6ACF;
-  
   letter-spacing: 0.05em;
   transition: color 0.2s ease;
 }
@@ -153,6 +152,7 @@ a.hyperlink-tooltip {
   font-size: 16px;
   margin: 0;
   text-transform: uppercase;
+  font-weight: bold;
   color: white;
   cursor: pointer;
   letter-spacing: 0.05em;
@@ -161,11 +161,13 @@ a.hyperlink-tooltip {
 }
 .year-label.active {
   color: #4C8CF5;
+  font-size: 18px;
   font-weight: bold;
 }
 .year-label:hover,
 .year-label:focus {
   color: #00D9F5;
+  font-size: 18px;
   font-weight: bold;
 }
 
