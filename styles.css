@@ -572,7 +572,9 @@ a.hyperlink-tooltip {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-top: 0.5em;
+  margin-right: 0.5em;
+  margin-bottom: 0.5em;
 }
 
 #tooltip-content p {
