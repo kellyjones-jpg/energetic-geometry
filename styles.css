@@ -631,11 +631,11 @@ a.hyperlink-tooltip {
 
 .suprematist-underline:hover::after,
 .suprematist-underline:focus::after {
-  width: 90%;
+  width: 95%;
   background-color: #007ACC;
 }
 
 .suprematist-underline.active::after {
   background-color: #66D9EF;
-  width: 90%;
+  width: 95%;
 }
