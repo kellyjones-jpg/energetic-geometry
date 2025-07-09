@@ -86,8 +86,7 @@ a.title:visited {
   text-decoration: none;
 }
 
-a.hyperlink,
-a.hyperlink-tooltip {
+a.hyperlink {
   color: #66D9EF;
   letter-spacing: 0.05em;
   font-weight: 500;
@@ -100,14 +99,11 @@ a.hyperlink-tooltip {
 }
 
 a.hyperlink:hover,
-a.hyperlink:focus,
-a.hyperlink-tooltip:hover,
-a.hyperlink-tooltip:focus {
+a.hyperlink:focus {
   color: #007ACC;
 }
 
-a.hyperlink::after,
-a.hyperlink-tooltip::after {
+a.hyperlink::after {
   content: '';
   position: absolute;
   bottom: -2px;
@@ -120,6 +116,12 @@ a.hyperlink-tooltip::after {
   transition: background 0.3s ease;
 }
 
+a.hyperlink-tooltip {
+  color: #007ACC;
+  
+  letter-spacing: 0.05em;
+  transition: color 0.2s ease;
+}
 
 .thick-num {
     font-weight: bold;
@@ -621,7 +623,7 @@ a.hyperlink-tooltip::after {
   left: 50%;
   bottom: -3px;
   transform: translateX(-50%);
-  width: 60%;
+  width: 80%;
   height: 2px;
   background-color: #0A0A0A;
   transition: background-color 0.2s ease, width 0.2s ease;
@@ -629,11 +631,11 @@ a.hyperlink-tooltip::after {
 
 .suprematist-underline:hover::after,
 .suprematist-underline:focus::after {
-  width: 80%;
+  width: 90%;
   background-color: #007ACC;
 }
 
 .suprematist-underline.active::after {
   background-color: #66D9EF;
-  width: 80%;
+  width: 90%;
 }
