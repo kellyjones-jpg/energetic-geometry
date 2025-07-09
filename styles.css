@@ -613,3 +613,9 @@ a.hyperlink-tooltip {
   width: 35%;
   background-color: #007ACC;
 }
+
+.suprematist-underline.active::after {
+  background-color: #66D9EF;
+  width: 80%;
+}
+
