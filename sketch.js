@@ -177,6 +177,13 @@ const combinedIcon = `
   </svg>
 `;
 
+document.addEventListener("DOMContentLoaded", () => {
+  const aboutLink = document.getElementById("about-link");
+  if (aboutLink) {
+    aboutLink.insertAdjacentHTML("beforeend", combinedIcon);
+  }
+});
+
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250702.csv', 'csv', 'header');
   bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
@@ -353,7 +360,7 @@ function draw() {
  // === MINIMAL SUPREMATIST YEAR LABEL ===
     let centerX = width / 2;
     let labelY = 40;
-    let yearY = labelY + 36;
+    let yearY = labelY + 38;
 
     // Label: smaller
     textFont('Helvetica');
