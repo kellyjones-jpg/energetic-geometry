@@ -28,16 +28,6 @@
       color: white;
     }
 
-    #sketch-container {
-      width: 100%;
-      max-width: 1650px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 20px;
-      align-items: center;
-    }
-
     .landing-border {
      /* Asymmetric border */
           border-top: 6px solid #0A0A0A;      /* heavier top */
@@ -50,6 +40,75 @@
       border-left: 6px solid white;
       border-top: 2px solid #0A0A0A;
       padding-left: 1.5rem;
+    }
+
+    #tooltip a {
+      pointer-events: auto !important;
+      cursor: pointer;
+    }
+
+    #tooltip {
+      background: white;
+      color: #0A0A0A;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      text-align: left;
+      line-height: 1.6;
+      padding: 12px 18px;
+      border-left: 6px solid #353839;
+      box-shadow:
+        3px 1.5px 0 #0A0A0A,
+        5px 3px 0 white,
+        -2px 2px 0 #0A0A0A;
+      border-radius: 0;
+      max-width: 500px;
+      transition: opacity 0.2s ease;
+      position: absolute;
+      z-index: 1000;
+      display: none;
+      pointer-events: auto; /* Ensure links inside tooltip are clickable */
+      cursor: pointer;
+      user-select: text;        /* Allow link selection */
+      cursor: default;          /* Normal cursor */
+    }
+
+    #tooltip-close {
+      background: none;
+      border: none;
+      color: #0A0A0A;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-left: auto;
+      padding: 0;
+      line-height: 1;
+    }
+
+    #tooltip-close:hover {
+      color: #353839;
+    }
+
+    #tooltip-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.5em;
+      margin-right: 1em;
+      margin-bottom: 0.5em;
+    }
+
+    #tooltip-content p {
+      margin: 1em 0;
+    }
+  
+    #sketch-container {
+      width: 100%;
+      max-width: 1650px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+      align-items: center;
     }
 
     #sketch-container canvas {
@@ -523,65 +582,6 @@ a.hyperlink-tooltip {
     font-size: 0.85rem;
     padding: 0.5rem;
   }
-}
-
-#tooltip a {
-  pointer-events: auto !important;
-  cursor: pointer;
-}
-
-#tooltip {
-  background: white;
-  color: #0A0A0A;
-  font-family: Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  text-align: left;
-  line-height: 1.6;
-  padding: 12px 18px;
-  border-left: 6px solid #353839;
-  box-shadow:
-    3px 1.5px 0 #0A0A0A,
-    5px 3px 0 white,
-    -2px 2px 0 #0A0A0A;
-  border-radius: 0;
-  max-width: 500px;
-  transition: opacity 0.2s ease;
-  position: absolute;
-  z-index: 1000;
-  display: none;
-  pointer-events: auto; /* Ensure links inside tooltip are clickable */
-  cursor: pointer;
-  user-select: text;        /* Allow link selection */
-  cursor: default;          /* Normal cursor */
-}
-
-#tooltip-close {
-  background: none;
-  border: none;
-  color: #0A0A0A;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-left: auto;
-  padding: 0;
-  line-height: 1;
-}
-
-#tooltip-close:hover {
-  color: #353839;
-}
-
-#tooltip-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 0.5em;
-  margin-right: 1em;
-  margin-bottom: 0.5em;
-}
-
-#tooltip-content p {
-  margin: 1em 0;
 }
 
 .label-with-lines {
