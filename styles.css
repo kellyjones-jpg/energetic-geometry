@@ -64,54 +64,40 @@
       max-width: 400px;
     }
 
-    .nav-link {
-        color: white;
-        font-weight: bold;
-        line-height: 1.2;
-        padding-top: 4.25rem;
-        padding-bottom: 0;
-        letter-spacing: 0.05em;
-      transition: color 0.2s ease;
-    }
-    .nav-link::after {
-      content: '';
-      position: absolute;
-      left: 50%;
-      bottom: -3px; /* Adjust spacing from text */
-      transform: translateX(-50%);
-      width: 60%;
-      height: 2px;
-      background-color: #0A0A0A;
-      transition: background-color 0.2s ease, width 0.2s ease;
-    }
-
-    .nav-link:hover,
-    .nav-link:focus {
-          color: #007ACC;
-    }
- a.title,
-    a.title:hover,
-    a.title:focus,
-    a.title:visited {
-      color: white;
-      text-decoration: none;
-    }
-
-a.hyperlink {
-  color: #66D9EF;
-  
+  .nav-link {
+  color: white;
+  font-weight: bold;
+  line-height: 1.2;
+  padding-top: 4.25rem;
+  padding-bottom: 0;
   letter-spacing: 0.05em;
   transition: color 0.2s ease;
 }
+.nav-link:hover,
+.nav-link:focus {
+  color: #007ACC;
+}
 
+a.title,
+a.title:hover,
+a.title:focus,
+a.title:visited {
+  color: white;
+  text-decoration: none;
+}
+
+a.hyperlink {
+  color: #66D9EF;
+  letter-spacing: 0.05em;
+  transition: color 0.2s ease;
+}
 a.hyperlink:hover,
 a.hyperlink:focus {
-          color: #007ACC;
-    }
+  color: #007ACC;
+}
 
 a.hyperlink-tooltip {
   color: #007ACC;
-  
   letter-spacing: 0.05em;
   transition: color 0.2s ease;
 }
@@ -165,20 +151,17 @@ a.hyperlink-tooltip {
   margin: 0;
   text-transform: uppercase;
   color: white;
-  
   cursor: pointer;
   letter-spacing: 0.05em;
-  filter:
-    drop-shadow(1px 1px 0 #353839);
+  filter: drop-shadow(1px 1px 0 #353839);
   transition: color 0.2s ease;
 }
-
 .year-label.active {
   color: #66D9EF;
   font-weight: bold;
 }
-
-.year-label:hover {
+.year-label:hover,
+.year-label:focus {
   color: #007ACC;
   font-weight: bold;
 }
@@ -607,4 +590,26 @@ a.hyperlink-tooltip {
   height: 2px;
   background-color: #0A0A0A;
   margin: 4px auto;
+}
+.suprematist-underline {
+  position: relative;
+  text-decoration: none;
+}
+
+.suprematist-underline::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -3px;
+  transform: translateX(-50%);
+  width: 30%;
+  height: 2px;
+  background-color: #0A0A0A;
+  transition: background-color 0.2s ease, width 0.2s ease;
+}
+
+.suprematist-underline:hover::after,
+.suprematist-underline:focus::after {
+  width: 35%;
+  background-color: #007ACC;
 }
