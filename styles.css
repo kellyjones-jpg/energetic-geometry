@@ -42,6 +42,15 @@
       padding-left: 1.5rem;
     }
 
+    .image-caption {
+      font-size: 10px;
+      padding-left: 10px;
+      color: white;
+      font-style: italic;
+      margin-bottom: 2.15em;
+      text-align: left !important;
+    }
+
     #tooltip a {
       pointer-events: auto !important;
       cursor: pointer;
@@ -116,6 +125,9 @@
       height: 865px;
       display: block;
       max-width: 100%; /* prevent overflow */
+      position: relative;       /* Ensure canvas is stackable */
+      z-index: 10;              /* Put canvas below tooltip */
+      pointer-events: auto;     /* Allow interaction normally */
     }
 
     #sketch-container input[type="range"] {
@@ -171,14 +183,6 @@ a.hyperlink-tooltip {
 .lead {
     font-size: 1.15rem;
     font-weight: 300;
-}
-
-.image-caption {
-  font-size: 10px;
-  padding-left: 10px;
-  color: white;
-  font-style: italic;
-  margin-bottom: 2.15em;
 }
 
 #timeline {
