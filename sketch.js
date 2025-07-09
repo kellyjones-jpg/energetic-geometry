@@ -353,7 +353,7 @@ function draw() {
  // === MINIMAL SUPREMATIST YEAR LABEL ===
     let centerX = width / 2;
     let labelY = 40;
-    let yearY = labelY + 30;
+    let yearY = labelY + 36;
 
     // Label: smaller
     textFont('Helvetica');
@@ -504,7 +504,7 @@ function showTooltip(entry) {
     <div id="tooltip-header" style="display:flex; justify-content: space-between; align-items: center;">
       <h4 style="margin:0;">
         ${entry.url
-          ? `<a class="hyperlink-tooltip" href="${entry.url}" target="_blank" rel="noopener noreferrer" title="Open in new window">${entry.name} <span aria-hidden="true">${combinedIcon}</span></a>`
+          ? `<a class="hyperlink-tooltip suprematist-underline" href="${entry.url}" target="_blank" rel="noopener noreferrer" title="Open in new window">${entry.name} <span aria-hidden="true">${combinedIcon}</span></a>`
           : entry.name}
       </h4>
       <button id="tooltip-close" aria-label="Close tooltip" style="font-size:1.2em; cursor:pointer;">✕</button>
