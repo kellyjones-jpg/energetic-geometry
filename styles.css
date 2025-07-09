@@ -86,21 +86,40 @@ a.title:visited {
   text-decoration: none;
 }
 
-a.hyperlink {
+a.hyperlink,
+a.hyperlink-tooltip {
   color: #66D9EF;
   letter-spacing: 0.05em;
+  font-weight: 500;
+  position: relative;
+  text-decoration: none;
   transition: color 0.2s ease;
+  filter:
+    drop-shadow(1px 1px 0 #0A0A0A)
+    drop-shadow(-1px -1px 0 white);
 }
+
 a.hyperlink:hover,
-a.hyperlink:focus {
+a.hyperlink:focus,
+a.hyperlink-tooltip:hover,
+a.hyperlink-tooltip:focus {
   color: #007ACC;
 }
 
-a.hyperlink-tooltip {
-  color: #007ACC;
-  letter-spacing: 0.05em;
-  transition: color 0.2s ease;
+a.hyperlink::after,
+a.hyperlink-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-image: linear-gradient(to right, #0A0A0A 25%, white 25%, white 50%, #0A0A0A 50%, #0A0A0A 75%, white 75%);
+  background-size: 8px 2px;
+  background-repeat: repeat-x;
+  transition: background 0.3s ease;
 }
+
 
 .thick-num {
     font-weight: bold;
