@@ -576,10 +576,9 @@ function mouseMoved() {
 
 
 function mousePressed() {
-   // Check if clicked on any site entry
+  // Check if a site shape was clicked
   let yearEntries = entriesByYear[selectedYear] || [];
   let padding = map(yearEntries.length, 10, 120, 60, 15);
-  let shapeSizeEstimate = 150;
   let startY = 80;
   let baseShapeSize = map(yearEntries.length, 10, 120, 140, 50);
   let numCols = floor((width - padding) / (baseShapeSize + padding));
@@ -610,12 +609,8 @@ function mousePressed() {
   if (foundEntry) {
     selectedEntry = foundEntry;
     showTooltip(selectedEntry);
-  } else {
-    selectedEntry = null;
-    showTooltip(null);
   }
 }
-
 
 function keyPressed() {
   let yearEntries = entriesByYear[selectedYear];
@@ -1359,7 +1354,6 @@ document.addEventListener('mousedown', (event) => {
   const tooltip = document.getElementById('tooltip');
   const isInsideTooltip = tooltip.contains(event.target);
 
-  // If clicked outside the tooltip, close it
   if (!isInsideTooltip) {
     selectedEntry = null;
     tooltipEntry = null;
