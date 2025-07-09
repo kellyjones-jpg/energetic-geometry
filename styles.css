@@ -88,21 +88,15 @@ a.title:visited {
 
 a.hyperlink {
   color: #66D9EF;
+  
   letter-spacing: 0.05em;
-  font-weight: 500;
-  position: relative;
-  text-decoration: none;
   transition: color 0.2s ease;
-  filter:
-    drop-shadow(1px 1px 0 #0A0A0A)
-    drop-shadow(-1px -1px 0 white);
 }
 
 a.hyperlink:hover,
 a.hyperlink:focus {
-  color: #007ACC;
-}
-
+          color: #007ACC;
+    }
 a.hyperlink::after {
   content: '';
   position: absolute;
