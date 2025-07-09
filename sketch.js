@@ -458,7 +458,7 @@ function draw() {
 
     if (isSelected) {
       // Calculate tooltip position relative to scaled size
-      let scaledOffset = entry.currentScale * 20; // Optional tweak to offset tooltip a bit
+      let scaledOffset = entry.currentScale * 20; 
       entry.x = centerX + scaledOffset;
       entry.y = centerY + scaledOffset;
       }
@@ -478,6 +478,7 @@ function showTooltip(entry) {
 
   if (!entry) {
     tooltip.style.display = 'none';
+    cnv.elt.style.pointerEvents = 'auto';  // Restore canvas interactivity
     return;
   }
 
@@ -541,6 +542,8 @@ function showTooltip(entry) {
   tooltip.style.left = left + 'px';
   tooltip.style.top = top + 'px';
   tooltip.style.display = 'block';
+
+  cnv.elt.style.pointerEvents = 'none';  // Allow tooltip elements to receive clicks
 }
 
 function mouseMoved() {
