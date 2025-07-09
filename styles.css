@@ -617,6 +617,12 @@ a.hyperlink-tooltip {
   background-color: #00D9F5;
 }
 
+.suprematist-underline.active:hover::after,
+.suprematist-underline.active:focus::after {
+  width: 95%;
+  background-color: #00D9F5;
+}
+
 .suprematist-underline.active::after {
   background-color: #4C8CF5;
   width: 95%;
