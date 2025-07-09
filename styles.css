@@ -75,7 +75,7 @@
 }
 .nav-link:hover,
 .nav-link:focus {
-  color: #C8102E;
+  color: #00D9F5;
 }
 
 a.title,
@@ -95,7 +95,7 @@ a.hyperlink {
 
 a.hyperlink:hover,
 a.hyperlink:focus {
-          color: #C8102E;
+          color: #00D9F5;
     }
 
 a.hyperlink-tooltip {
@@ -165,7 +165,7 @@ a.hyperlink-tooltip {
 }
 .year-label:hover,
 .year-label:focus {
-  color: #C8102E;
+  color: #00D9F5;
   font-weight: bold;
 }
 
@@ -614,7 +614,7 @@ a.hyperlink-tooltip {
 .suprematist-underline:hover::after,
 .suprematist-underline:focus::after {
   width: 95%;
-  background-color: #C8102E;
+  background-color: #00D9F5;
 }
 
 .suprematist-underline.active::after {
