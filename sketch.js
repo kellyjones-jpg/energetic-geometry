@@ -351,25 +351,30 @@ function draw() {
   rectMode(CENTER);          
   
  // === MINIMAL SUPREMATIST YEAR LABEL ===
-let yearText = "Year: " + selectedYear;
-textFont('Helvetica');       // Use your preferred font
-textSize(36);                // Large and clear
-textAlign(CENTER, BOTTOM);   // Align above the bar
+    let centerX = width / 2;
+    let labelY = 40;
+    let yearY = labelY + 30;
 
-let centerX = width / 2;
-let textY = 55;              // Bottom of text
-let lineY = textY + 6;       // Slight gap before line
-let lineWidth = textWidth(yearText) + 40; // Width of line slightly wider than text
+    // Label: smaller
+    textFont('Helvetica');
+    textSize(30);
+    textAlign(CENTER, BOTTOM);
+    fill(255);
+    text("Year Installed:", centerX, labelY);
 
-// Draw year label
-fill(255);                   // White text
-text(yearText, centerX, textY);
+    // Year: larger + bold
+    textStyle(BOLD);
+    textSize(36);
+    text(" " + selectedYear, centerX, yearY);
+    textStyle(NORMAL); // Reset for future text
 
-// Draw minimal black underline bar (Suprematist-inspired)
-stroke('#0A0A0A');
-strokeWeight(3);
-line(centerX - lineWidth / 2, lineY, centerX + lineWidth / 2, lineY);
-noStroke(); // Reset stroke state
+    // Underline (aligned with selectedYear)
+    let lineY = yearY + 6;
+    let lineWidth = textWidth(selectedYear) + 40;
+    stroke('#0A0A0A');
+    strokeWeight(3);
+    line(centerX - lineWidth / 2, lineY, centerX + lineWidth / 2, lineY);
+    noStroke();
 
 
   let yearEntries = entriesByYear[selectedYear] || [];
