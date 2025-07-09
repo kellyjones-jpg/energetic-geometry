@@ -151,8 +151,8 @@ const combinedIcon = `
     <!-- Rotated square frame -->
     <rect
       x="4" y="4" width="16" height="16"
-      fill="white"
-      stroke="black"
+      fill="none"
+      stroke="currentColor"
       stroke-width="2"
       transform="rotate(45 12 12)"
       rx="1"
@@ -162,7 +162,7 @@ const combinedIcon = `
     <line
       x1="9" y1="15"
       x2="15" y2="9"
-      stroke="black"
+      stroke="currentColor"
       stroke-width="2.5"
       stroke-linecap="round"
     />
@@ -170,7 +170,7 @@ const combinedIcon = `
     <polyline
       points="9,9 15,9 15,15"
       fill="none"
-      stroke="black"
+      stroke="currentColor"
       stroke-width="2.5"
       stroke-linejoin="round"
     />
