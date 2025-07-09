@@ -120,7 +120,6 @@ a.hyperlink-tooltip {
   color: white;
   font-style: italic;
   margin-bottom: 2.15em;
-  text-align: left !important;
 }
 
 #timeline {
@@ -524,6 +523,11 @@ a.hyperlink-tooltip {
     font-size: 0.85rem;
     padding: 0.5rem;
   }
+}
+
+#tooltip a {
+  pointer-events: auto !important;
+  cursor: pointer;
 }
 
 #tooltip {
