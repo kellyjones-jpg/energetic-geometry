@@ -283,44 +283,47 @@ function setup() {
   caption.class('image-caption');
   caption.parent('sketch-container');
   
-  // YEAR BUTTONS
- let timelineContainer = createDiv().id('timeline');
- timelineContainer.style('text-align', 'center', true);
- timelineContainer.parent('sketch-container');
+    // YEAR BUTTONS
+    let timelineContainer = createDiv().id('timeline');
+    timelineContainer.style('text-align', 'center', true);
+    timelineContainer.parent('sketch-container');
 
-  availableYears.forEach((year, index) => {
-  let yearDiv = createDiv().class('timeline-year');
-  yearDiv.parent(timelineContainer);
+    availableYears.forEach((year, index) => {
+      let yearDiv = createDiv().class('timeline-year');
+      yearDiv.parent(timelineContainer);
 
-  let label = createP(year).class('year-label');
-  label.parent(yearDiv);
-  if (index % 2 === 0) {
-    label.addClass('above');
-  } else {
-    label.addClass('below');
-  }
+      let label = createP(year)
+        .class('year-label')
+        .addClass('suprematist-underline'); 
+      label.parent(yearDiv);
 
-  let node = createDiv().class('year-node');
-  node.parent(yearDiv);
+      if (index % 2 === 0) {
+        label.addClass('above');
+      } else {
+        label.addClass('below');
+      }
 
-  label.mousePressed(() => {
-    selectedYear = year;
-    windowResized();
+      let node = createDiv().class('year-node');
+      node.parent(yearDiv);
+
+      label.mousePressed(() => {
+        selectedYear = year;
+        windowResized();
+        updateCounters(entriesByYear[selectedYear]);
+
+        selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
+        label.addClass('active');
+      });
+
+      if (index === 0) label.addClass('active');
+    });
+
+    textFont('Helvetica');
+    textSize(32);
+    textAlign(CENTER, CENTER);
+    rectMode(CENTER);
+    loop();
     updateCounters(entriesByYear[selectedYear]);
-
-    selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
-    label.addClass('active');
-  });
-
-  if (index === 0) label.addClass('active');
-  });
-  
-  textFont('Helvetica');
-  textSize(32);
-  textAlign(CENTER, CENTER);
-  rectMode(CENTER);
-  loop();
-  updateCounters(entriesByYear[selectedYear]);
 }
 
 function windowResized() {
@@ -497,7 +500,7 @@ function showTooltip(entry) {
     <div id="tooltip-header" style="display:flex; justify-content: space-between; align-items: center;">
       <h4 style="margin:0;">
         ${entry.url
-          ? `<a class="hyperlink-tooltip" href="${entry.url}" target="_blank" rel="noopener noreferrer" title="Open in new window">${entry.name} <span aria-hidden="true">${combinedIcon}</span></a>`
+          ? `<a class="hyperlink-tooltip suprematist-underline " href="${entry.url}" target="_blank" rel="noopener noreferrer" title="Open in new window">${entry.name} <span aria-hidden="true">${combinedIcon}</span></a>`
           : entry.name}
       </h4>
       <button id="tooltip-close" aria-label="Close tooltip" style="font-size:1.2em; cursor:pointer;">✕</button>
