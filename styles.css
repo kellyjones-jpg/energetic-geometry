@@ -621,7 +621,7 @@ a.hyperlink-tooltip::after {
   left: 50%;
   bottom: -3px;
   transform: translateX(-50%);
-  width: 30%;
+  width: 60%;
   height: 2px;
   background-color: #0A0A0A;
   transition: background-color 0.2s ease, width 0.2s ease;
@@ -629,7 +629,7 @@ a.hyperlink-tooltip::after {
 
 .suprematist-underline:hover::after,
 .suprematist-underline:focus::after {
-  width: 35%;
+  width: 80%;
   background-color: #007ACC;
 }
 
