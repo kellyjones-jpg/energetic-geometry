@@ -87,7 +87,8 @@ a.title:visited {
 }
 
 a.hyperlink {
-  color: #00D9F5;
+  color: white;
+  font-weight: bold;
   letter-spacing: 0.05em;
   transition: color 0.2s ease;
 }
