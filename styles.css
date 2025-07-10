@@ -73,7 +73,7 @@
       max-width: 500px;
       transition: opacity 0.2s ease;
       position: absolute;
-      z-index: 1000;
+      z-index: 9999;
       display: none;
       pointer-events: auto; /* Ensure links inside tooltip are clickable */
       cursor: pointer;
