@@ -126,7 +126,7 @@
       display: block;
       max-width: 100%; /* prevent overflow */
       position: relative;       /* Ensure canvas is stackable */
-      z-index: 10;              /* Put canvas below tooltip */
+      z-index: 0;              /* Put canvas below tooltip */
     }
 
     #sketch-container input[type="range"] {
