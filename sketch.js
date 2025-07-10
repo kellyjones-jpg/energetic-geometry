@@ -283,6 +283,9 @@ function setup() {
   caption.style('text-align', 'left', true);
   caption.class('image-caption');
   caption.parent('sketch-container');
+
+    // Ensure canvas doesn't block tooltip clicks
+    cnv.elt.style.pointerEvents = 'none';
   
     // YEAR BUTTONS
     let timelineContainer = createDiv().id('timeline');
