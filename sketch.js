@@ -1,3 +1,4 @@
+
 let table;
 let entries = [];
 let entriesByYear = {};
@@ -503,11 +504,11 @@ function showTooltip(entry) {
  // Build tooltip HTML with name shown once in <h4> at top
   tooltip.innerHTML = `
     <div id="tooltip-header" style="display:flex; justify-content: space-between; align-items: center;">
-      <h4 style="margin:0;">
-        ${entry.url
-          ? `<a class="hyperlink-tooltip" href="${entry.url}" target="_blank" rel="noopener noreferrer" title="Open in new window">${entry.name}<span aria-hidden="true">${combinedIcon}</span></a>`
-          : entry.name}
-      </h4>
+      <a class="hyperlink-tooltip" href="${entry.url}" target="_blank" rel="noopener noreferrer" title="Open in new window">
+        <h4 style="margin:0; display: inline;">
+          ${entry.name} <span aria-hidden="true">${combinedIcon}</span>
+        </h4>
+      </a>
       <button id="tooltip-close" aria-label="Close tooltip" style="font-size:1.2em; cursor:pointer;">✕</button>
     </div>
     <div id="tooltip-content" style="margin-top: 0.5em;">
