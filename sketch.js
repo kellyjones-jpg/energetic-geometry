@@ -648,59 +648,62 @@ function mousePressed() {
 }
 
 function keyPressed() {
-  let yearEntries = entriesByYear[selectedYear];
+  const tooltip = document.getElementById('tooltip');
+  const yearEntries = entriesByYear[selectedYear];
   if (!yearEntries) return;
 
-  // Escape closes tooltip
+  // ESC closes tooltip
   if (keyCode === ESCAPE) {
     selectedEntry = null;
     tooltipEntry = null;
-    document.getElementById('tooltip').style.display = 'none';
+    tooltip.style.display = 'none';
     return;
   }
 
+  // If a site is selected, allow arrow navigation between entries
   if (selectedEntry) {
-    let currentIndex = yearEntries.findIndex(e => e.name === selectedEntry.name);
+    const currentIndex = yearEntries.findIndex(e => e.name === selectedEntry.name);
     if (currentIndex === -1) return;
 
-    let shapeSizeEstimate = 150;
     let padding = map(yearEntries.length, 10, 120, 60, 15);
+    let baseShapeSize = map(yearEntries.length, 10, 120, 140, 50);
     let startY = 80;
-    let count = yearEntries.length;
-    let baseShapeSize = map(count, 10, 120, 140, 50);
     let numCols = floor((width - padding) / (baseShapeSize + padding));
     numCols = max(numCols, 1);
 
     let newIndex = currentIndex;
 
     if (keyCode === RIGHT_ARROW && currentIndex < yearEntries.length - 1) {
-      newIndex = currentIndex + 1;
+      newIndex++;
     } else if (keyCode === LEFT_ARROW && currentIndex > 0) {
-      newIndex = currentIndex - 1;
+      newIndex--;
     }
 
     if (newIndex !== currentIndex) {
       let col = newIndex % numCols;
       let row = floor(newIndex / numCols);
       let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
-      let centerY = startY + row * ((height - startY - 50) / ceil(count / numCols)) + ((height - startY - 50) / ceil(count / numCols)) / 2;
+      let centerY = startY + row * ((height - startY - 50) / ceil(yearEntries.length / numCols)) +
+                    ((height - startY - 50) / ceil(yearEntries.length / numCols)) / 2;
 
       selectedEntry = { ...yearEntries[newIndex], x: centerX, y: centerY };
       showTooltip(selectedEntry);
     }
   }
 
-  let currentYearIndex = availableYears.indexOf(selectedYear);
+  // If no site is selected, allow year navigation with LEFT/RIGHT arrows
+  const currentYearIndex = availableYears.indexOf(selectedYear);
 
   if (!selectedEntry && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
-    let delta = keyCode === RIGHT_ARROW ? 1 : -1;
-    let nextIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
-    if (nextIndex !== currentYearIndex) {
-      selectedYear = availableYears[nextIndex];
-      updateYear(selectedYear, nextIndex);
+    const delta = keyCode === RIGHT_ARROW ? 1 : -1;
+    const newIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
+    if (newIndex !== currentYearIndex) {
+      selectedYear = availableYears[newIndex];
+      updateYear(selectedYear, newIndex);
     }
   }
 
+  // HOME/END to jump to first/last year
   if (keyCode === HOME) {
     selectedYear = availableYears[0];
     updateYear(selectedYear, 0);
