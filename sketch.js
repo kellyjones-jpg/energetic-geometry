@@ -1,3 +1,4 @@
+
 let table;
 let entries = [];
 let entriesByYear = {};
