@@ -5,9 +5,9 @@ let selectedYear;
 let availableYears = [];
 let cnv;
 let tooltipEntry = null; 
-let bgImg;
 let selectedEntry = null; // Currently selected entry (for tooltip & enlargement)
 let hoveredEntry = null;  // Currently hovered entry (for hover enlargement)
+let bgImg;
 
 const cropEdgeGroups = {
   // Root vegetables
