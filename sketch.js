@@ -1,4 +1,3 @@
-
 let table;
 let entries = [];
 let entriesByYear = {};
@@ -278,14 +277,14 @@ function setup() {
   cnv = createCanvas(initialWidth, fixedHeight);
   cnv.parent('sketch-container');
 
+    // Ensure canvas doesn't block tooltip clicks
+    cnv.elt.style.pointerEvents = 'none';
+
   // Create caption
   let caption = createP("Image from Pexels");
   caption.style('text-align', 'left', true);
   caption.class('image-caption');
   caption.parent('sketch-container');
-
-    // Ensure canvas doesn't block tooltip clicks
-    cnv.elt.style.pointerEvents = 'none';
   
     // YEAR BUTTONS
     let timelineContainer = createDiv().id('timeline');
