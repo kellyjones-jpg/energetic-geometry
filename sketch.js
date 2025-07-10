@@ -327,6 +327,14 @@ function setup() {
     rectMode(CENTER);
     loop();
     updateCounters(entriesByYear[selectedYear]);
+
+    document.addEventListener('click', (event) => {
+    const anchor = event.target.closest('a.hyperlink-tooltip');
+    if (anchor) {
+        event.stopPropagation(); // prevent p5 interference
+        window.open(anchor.href, '_blank', 'noopener');
+    }
+    });
 }
 
 function windowResized() {
