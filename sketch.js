@@ -1,4 +1,3 @@
-
 let table;
 let entries = [];
 let entriesByYear = {};
@@ -590,9 +589,26 @@ function mouseMoved() {
 
 
 function mousePressed() {
-  // Check if a site shape was clicked
+  const tooltip = document.getElementById('tooltip');
+  const canvasRect = cnv.elt.getBoundingClientRect();
+  const absMouseX = canvasRect.left + mouseX;
+  const absMouseY = canvasRect.top + mouseY;
+  const target = document.elementFromPoint(absMouseX, absMouseY);
+
+  // Allow link clicks inside tooltip
+  if (tooltip.contains(target) && (target.tagName === 'A' || target.closest('a'))) {
+    return true;
+  }
+
+  // Do nothing if clicking inside tooltip (but not a link)
+  if (tooltip.contains(target)) {
+    return false;
+  }
+
+  // Handle clicking on a site shape
   let yearEntries = entriesByYear[selectedYear] || [];
   let padding = map(yearEntries.length, 10, 120, 60, 15);
+  let shapeSizeEstimate = 150;
   let startY = 80;
   let baseShapeSize = map(yearEntries.length, 10, 120, 140, 50);
   let numCols = floor((width - padding) / (baseShapeSize + padding));
@@ -620,9 +636,14 @@ function mousePressed() {
     }
   }
 
+  // Show tooltip if a site is clicked, otherwise close it
   if (foundEntry) {
     selectedEntry = foundEntry;
     showTooltip(selectedEntry);
+  } else {
+    selectedEntry = null;
+    tooltipEntry = null;
+    tooltip.style.display = 'none';
   }
 }
 
@@ -1363,14 +1384,3 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
 
   pop();
 }
-
-document.addEventListener('mousedown', (event) => {
-  const tooltip = document.getElementById('tooltip');
-  const isInsideTooltip = tooltip.contains(event.target);
-
-  if (!isInsideTooltip) {
-    selectedEntry = null;
-    tooltipEntry = null;
-    tooltip.style.display = 'none';
-  }
-});
