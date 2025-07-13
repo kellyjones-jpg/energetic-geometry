@@ -141,10 +141,80 @@ const pvWarpStyles = {
   'translucent': 'radial'
 };
 
+const combinedIcon = `
+<svg
+    width="16" height="16" viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    style="vertical-align: middle; margin-left: 4px;"
+  >
+    <!-- Rotated square frame -->
+    <rect
+      x="4" y="4" width="16" height="16"
+      fill="white"
+      stroke="black"
+      stroke-width="2"
+      transform="rotate(45 12 12)"
+      rx="1"
+      ry="1"
+    />
+    <!-- Arrow shaft -->
+    <line
+      x1="9" y1="15"
+      x2="15" y2="9"
+      stroke="black"
+      stroke-width="2.5"
+      stroke-linecap="round"
+    />
+    <!-- Arrowhead -->
+    <polyline
+      points="9,9 15,9 15,15"
+      fill="none"
+      stroke="black"
+      stroke-width="2.5"
+      stroke-linejoin="round"
+    />
+  </svg>
+`;
+
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250702.csv', 'csv', 'header');
   bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
 }
+
+// Animate number count from start to end over 'duration' milliseconds
+function animateCount(id, start, end, duration) {
+  const element = document.getElementById(id);
+  if (!element) return; // safety check
+
+  let startTime = null;
+
+  function step(timestamp) {
+    if (!startTime) startTime = timestamp;
+    const progress = Math.min((timestamp - startTime) / duration, 1);
+    const currentValue = Math.floor(progress * (end - start) + start);
+    element.textContent = currentValue;
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    }
+  }
+
+  requestAnimationFrame(step);
+}
+
+// Update counters given entries of the selected year
+function updateCounters(entries) {
+  // Sum up the counts from the entries
+  let siteCount = entries.length;
+  let megawattCount = entries.reduce((sum, e) => sum + (e.megawatts || 0), 0);
+  let acreCount = entries.reduce((sum, e) => sum + (e.acres || 0), 0);
+
+  // Animate each counter
+  animateCount('site-count', 0, siteCount, 1000);
+  animateCount('megawatt-count', 0, Math.round(megawattCount), 1000);
+  animateCount('acre-count', 0, Math.round(acreCount), 1000);
+}
+
 
 function setup() {
   // Load and organize data
@@ -201,7 +271,7 @@ function setup() {
   let numCols = floor((initialWidth - padding) / (shapeSize + padding));
   numCols = max(numCols, 1);
   let numRows = ceil(yearEntries.length / numCols);
-  let fixedHeight = 895;
+  let fixedHeight = 885;
   cnv = createCanvas(initialWidth, fixedHeight);
   cnv.parent('sketch-container');
 
@@ -248,6 +318,7 @@ function setup() {
   textAlign(CENTER, CENTER);
   rectMode(CENTER);
   noLoop();
+  updateCounters(entriesByYear[selectedYear]);
 }
 
 function windowResized() {
@@ -274,10 +345,28 @@ function draw() {
   rect(0, 0, width, height); 
   rectMode(CENTER);          
   
-  fill(255);
-  textSize(24);
-  textAlign(CENTER, TOP);
-  text("Year: " + selectedYear, width / 2, 30);
+ // === MINIMAL SUPREMATIST YEAR LABEL ===
+let yearText = "Year: " + selectedYear;
+textFont('Helvetica');       // Use your preferred font
+textStyle(BOLD);             // Emphasize hierarchy
+textSize(36);                // Large and clear
+textAlign(CENTER, BOTTOM);   // Align above the bar
+
+let centerX = width / 2;
+let textY = 55;              // Bottom of text
+let lineY = textY + 6;       // Slight gap before line
+let lineWidth = textWidth(yearText) + 40; // Width of line slightly wider than text
+
+// Draw year label
+fill(255);                   // White text
+text(yearText, centerX, textY);
+
+// Draw minimal black underline bar (Suprematist-inspired)
+stroke('#0A0A0A');
+strokeWeight(6);
+line(centerX - lineWidth / 2, lineY, centerX + lineWidth / 2, lineY);
+noStroke(); // Reset stroke state
+
 
   let yearEntries = entriesByYear[selectedYear] || [];
   if (yearEntries.length === 0) {
@@ -389,62 +478,53 @@ function showTooltip(entry) {
 
   let lines = [];
 
-if (entry.name) {
-  if (entry.url) {
-    lines.push(`<strong>Name:</strong> <a href="${entry.url}" target="_blank" rel="noopener noreferrer" class="external-link">
-      ${entry.name} <span aria-hidden="true">🔗</span>
-    </a>`);
-  } else {
-    lines.push(`<strong>Name:</strong> ${entry.name}`);
+  if (entry.activities && entry.activities.length) lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
+  if (!isNaN(entry.megawatts)) lines.push(`<strong>System Size:</strong> ${entry.megawatts} MW`);
+  if (!isNaN(entry.acres)) lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
+  if (entry.year) lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
+  if (entry.arrayType) lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
+  if (entry.habitat && entry.habitat.length) lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
+  if (entry.cropType && entry.cropType.length) lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
+  if (entry.animalType && entry.animalType.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
+
+
+ // Build tooltip HTML with name shown once in <h4> at top
+  tooltip.innerHTML = `
+    <div id="tooltip-header" style="display:flex; justify-content: space-between; align-items: center;">
+      <h4 style="margin:0;">
+        ${entry.url
+          ? `<a class="hyperlink-tooltip" href="${entry.url}" target="_blank" rel="noopener noreferrer" title="Open in new window">${entry.name} <span aria-hidden="true">${combinedIcon}</span></a>`
+          : entry.name}
+      </h4>
+      <button id="tooltip-close" aria-label="Close tooltip" style="font-size:1.2em; cursor:pointer;">✕</button>
+    </div>
+    <div id="tooltip-content" style="margin-top: 0.5em;">
+      ${lines.join('<br>')}
+    </div>
+  `;
+
+  const closeButton = document.getElementById('tooltip-close');
+  if (closeButton) {
+    closeButton.addEventListener('click', () => {
+      selectedEntry = null;
+      tooltipEntry = null;
+      tooltip.style.display = 'none';
+    });
   }
-};
-if (entry.activities && entry.activities.length) lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
-if (!isNaN(entry.megawatts)) lines.push(`<strong>System Size:</strong> ${entry.megawatts} MW`);
-if (!isNaN(entry.acres)) lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
-if (entry.year) lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
-if (entry.arrayType) lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
-if (entry.habitat && entry.habitat.length) lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
-if (entry.cropType && entry.cropType.length) lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
-if (entry.animalType && entry.animalType.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
 
-
-tooltip.innerHTML = `
-  <div id="tooltip-header">
-    <strong>Name:</strong>
-    <button id="tooltip-close" aria-label="Close tooltip">✕</button>
-  </div>
-  ${entry.url
-    ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer">${entry.name}</a><br>`
-    : `${entry.name}<br>`}
-  ${lines.join('<br>')}
-`;
-
-const closeButton = document.getElementById('tooltip-close');
-if (closeButton) {
-  closeButton.addEventListener('click', () => {
-    selectedEntry = null;
-    tooltipEntry = null;
-    tooltip.style.display = 'none';
-  });
-}
-
-
-  // Position tooltip relative to canvas on the page
+  // Position tooltip (your existing code below)
   let canvasRect = cnv.elt.getBoundingClientRect();
-
   let left = canvasRect.left + entry.x + 15;
   let top = canvasRect.top + entry.y + 15;
 
-  // Adjust horizontal position
   left = Math.min(
-    Math.max(left, 10), // don't go past left edge
-    window.innerWidth - tooltip.offsetWidth - 10 // don't overflow right
+    Math.max(left, 10),
+    window.innerWidth - tooltip.offsetWidth - 10
   );
 
-  // Adjust vertical position
   top = Math.min(
-    Math.max(top, 10), // don't go past top edge
-    window.innerHeight - tooltip.offsetHeight - 10 // don't overflow bottom
+    Math.max(top, 10),
+    window.innerHeight - tooltip.offsetHeight - 10
   );
 
   tooltip.style.left = left + 'px';
@@ -599,7 +679,6 @@ function updateYear(year, index) {
   windowResized();
   updateCounters(entriesByYear[year]);
 
-  // Optional: visually update year button highlights
   document.querySelectorAll('.year-btn').forEach(btn => {
     btn.classList.remove('selected');
   });
@@ -1268,24 +1347,4 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
   }
 
   pop();
-}
-
-function updateCounters(yearEntries) {
-  let siteCount = yearEntries.length;
-  let totalMegawatts = 0;
-  let totalAcres = 0;
-
-  for (let entry of yearEntries) {
-    if (!isNaN(entry.megawatts)) totalMegawatts += entry.megawatts;
-    if (!isNaN(entry.acres)) totalAcres += entry.acres;
-  }
-
-  // Animate with Counter-Up 2
-  $('#site-count').text(Math.round(siteCount).toLocaleString());
-  $('#megawatt-count').text(Math.round(totalMegawatts).toLocaleString());
-  $('#acre-count').text(Math.round(totalAcres).toLocaleString());
-
-  counterUp(document.getElementById('site-count'), { duration: 1000 });
-  counterUp(document.getElementById('megawatt-count'), { duration: 1000 });
-  counterUp(document.getElementById('acre-count'), { duration: 1000 });
 }
