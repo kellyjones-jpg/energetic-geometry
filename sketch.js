@@ -151,8 +151,8 @@ const combinedIcon = `
     <!-- Rotated square frame -->
     <rect
       x="4" y="4" width="16" height="16"
-      fill="white"
-      stroke="black"
+      fill="none"
+      stroke="currentColor"
       stroke-width="2"
       transform="rotate(45 12 12)"
       rx="1"
@@ -162,7 +162,7 @@ const combinedIcon = `
     <line
       x1="9" y1="15"
       x2="15" y2="9"
-      stroke="black"
+      stroke="currentColor"
       stroke-width="2.5"
       stroke-linecap="round"
     />
@@ -170,7 +170,7 @@ const combinedIcon = `
     <polyline
       points="9,9 15,9 15,15"
       fill="none"
-      stroke="black"
+      stroke="currentColor"
       stroke-width="2.5"
       stroke-linejoin="round"
     />
@@ -254,6 +254,8 @@ function setup() {
     };
 
     entries.push(entry);
+    entry.currentScale = 1; // for smooth animation
+
     if (!entriesByYear[year]) {
       entriesByYear[year] = [];
     }
@@ -271,7 +273,7 @@ function setup() {
   let numCols = floor((initialWidth - padding) / (shapeSize + padding));
   numCols = max(numCols, 1);
   let numRows = ceil(yearEntries.length / numCols);
-  let fixedHeight = 885;
+  let fixedHeight = 865;
   cnv = createCanvas(initialWidth, fixedHeight);
   cnv.parent('sketch-container');
 
@@ -281,44 +283,47 @@ function setup() {
   caption.class('image-caption');
   caption.parent('sketch-container');
   
-  // YEAR BUTTONS
- let timelineContainer = createDiv().id('timeline');
- timelineContainer.style('text-align', 'center', true);
- timelineContainer.parent('sketch-container');
+    // YEAR BUTTONS
+    let timelineContainer = createDiv().id('timeline');
+    timelineContainer.style('text-align', 'center', true);
+    timelineContainer.parent('sketch-container');
 
-  availableYears.forEach((year, index) => {
-  let yearDiv = createDiv().class('timeline-year');
-  yearDiv.parent(timelineContainer);
+    availableYears.forEach((year, index) => {
+      let yearDiv = createDiv().class('timeline-year');
+      yearDiv.parent(timelineContainer);
 
-  let label = createP(year).class('year-label');
-  label.parent(yearDiv);
-  if (index % 2 === 0) {
-    label.addClass('above');
-  } else {
-    label.addClass('below');
-  }
+      let label = createP(year)
+        .class('year-label')
+        .addClass('suprematist-underline'); 
+      label.parent(yearDiv);
 
-  let node = createDiv().class('year-node');
-  node.parent(yearDiv);
+      if (index % 2 === 0) {
+        label.addClass('above');
+      } else {
+        label.addClass('below');
+      }
 
-  label.mousePressed(() => {
-    selectedYear = year;
-    windowResized();
+      let node = createDiv().class('year-node');
+      node.parent(yearDiv);
+
+      label.mousePressed(() => {
+        selectedYear = year;
+        windowResized();
+        updateCounters(entriesByYear[selectedYear]);
+
+        selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
+        label.addClass('active');
+      });
+
+      if (index === 0) label.addClass('active');
+    });
+
+    textFont('Helvetica');
+    textSize(32);
+    textAlign(CENTER, CENTER);
+    rectMode(CENTER);
+    loop();
     updateCounters(entriesByYear[selectedYear]);
-
-    selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
-    label.addClass('active');
-  });
-
-  if (index === 0) label.addClass('active');
-  });
-  
-  textFont('Helvetica');
-  textSize(32);
-  textAlign(CENTER, CENTER);
-  rectMode(CENTER);
-  noLoop();
-  updateCounters(entriesByYear[selectedYear]);
 }
 
 function windowResized() {
@@ -329,7 +334,7 @@ function windowResized() {
   numCols = max(numCols, 1);
 
   let numRows = ceil(yearEntries.length / numCols);
-  let fixedHeight = 885;
+  let fixedHeight = 865;
   resizeCanvas(windowWidth * 0.9, fixedHeight);
   
   redraw();
@@ -346,26 +351,30 @@ function draw() {
   rectMode(CENTER);          
   
  // === MINIMAL SUPREMATIST YEAR LABEL ===
-let yearText = "Year: " + selectedYear;
-textFont('Helvetica');       // Use your preferred font
-textStyle(BOLD);             // Emphasize hierarchy
-textSize(36);                // Large and clear
-textAlign(CENTER, BOTTOM);   // Align above the bar
+    let centerX = width / 2;
+    let labelY = 40;
+    let yearY = labelY + 40;
 
-let centerX = width / 2;
-let textY = 55;              // Bottom of text
-let lineY = textY + 6;       // Slight gap before line
-let lineWidth = textWidth(yearText) + 40; // Width of line slightly wider than text
+    // Label: smaller
+    textFont('Helvetica');
+    textSize(28);
+    textAlign(CENTER, BOTTOM);
+    fill(255);
+    text("Year Installed:", centerX, labelY);
 
-// Draw year label
-fill(255);                   // White text
-text(yearText, centerX, textY);
+    // Year: larger + bold
+    textStyle(BOLD);
+    textSize(36);
+    text(" " + selectedYear, centerX, yearY);
+    textStyle(NORMAL); // Reset for future text
 
-// Draw minimal black underline bar (Suprematist-inspired)
-stroke('#0A0A0A');
-strokeWeight(6);
-line(centerX - lineWidth / 2, lineY, centerX + lineWidth / 2, lineY);
-noStroke(); // Reset stroke state
+    // Underline (aligned with selectedYear)
+    let lineY = yearY + 6;
+    let lineWidth = textWidth(selectedYear) + 40;
+    stroke('#0A0A0A');
+    strokeWeight(3);
+    line(centerX - lineWidth / 2, lineY, centerX + lineWidth / 2, lineY);
+    noStroke();
 
 
   let yearEntries = entriesByYear[selectedYear] || [];
@@ -397,15 +406,16 @@ noStroke(); // Reset stroke state
     strokeW = constrain(strokeW, 2, 5.5);
     let baseColor = getActivityColor(entry.activities?.[0] || '');
 
-    // Determine scale for hover or selection
     let isSelected = selectedEntry && selectedEntry.name === entry.name;
     let isHovered = hoveredEntry && hoveredEntry.name === entry.name;
-    let scaleFactor = (isSelected || isHovered) ? 1.2 : 1;
-    let scaledSize = entryShapeSize * scaleFactor;
+    let targetScale = (isSelected || isHovered) ? 1.2 : 1;
+
+    // Smooth transition between current and target scale
+    entry.currentScale = lerp(entry.currentScale || 1, targetScale, 0.1);
 
     push();
     translate(centerX, centerY);
-    scale(scaleFactor);
+    scale(entry.currentScale);
 
     if (entry.arrayType && entry.activities?.length) {
       drawPVWarpStyle(entry.arrayType, entry.activities, 0, 0, entryShapeSize);
@@ -446,11 +456,12 @@ noStroke(); // Reset stroke state
     }
     pop();
 
-    // Save position for tooltip positioning if selected or hovered
-    if (isSelected || isHovered) {
-      entry.x = centerX;
-      entry.y = centerY;
-    }
+    if (isSelected) {
+      // Calculate tooltip position relative to scaled size
+      let scaledOffset = entry.currentScale * 20; 
+      entry.x = centerX + scaledOffset;
+      entry.y = centerY + scaledOffset;
+      }
   }
 
   // Show tooltip only for selected entry
@@ -467,6 +478,7 @@ function showTooltip(entry) {
 
   if (!entry) {
     tooltip.style.display = 'none';
+    cnv.elt.style.pointerEvents = 'auto';  // Restore canvas interactivity
     return;
   }
 
@@ -493,7 +505,7 @@ function showTooltip(entry) {
     <div id="tooltip-header" style="display:flex; justify-content: space-between; align-items: center;">
       <h4 style="margin:0;">
         ${entry.url
-          ? `<a class="hyperlink-tooltip" href="${entry.url}" target="_blank" rel="noopener noreferrer" title="Open in new window">${entry.name} <span aria-hidden="true">${combinedIcon}</span></a>`
+          ? `<a class="hyperlink-tooltip" href="${entry.url}" target="_blank" rel="noopener noreferrer" title="Open in new window">${entry.name}<span aria-hidden="true">${combinedIcon}</span></a>`
           : entry.name}
       </h4>
       <button id="tooltip-close" aria-label="Close tooltip" style="font-size:1.2em; cursor:pointer;">✕</button>
@@ -530,11 +542,16 @@ function showTooltip(entry) {
   tooltip.style.left = left + 'px';
   tooltip.style.top = top + 'px';
   tooltip.style.display = 'block';
+
+  cnv.elt.style.pointerEvents = 'none';  // Allow tooltip elements to receive clicks
 }
 
 function mouseMoved() {
+  // Skip hover detection on touch devices
+  if ('ontouchstart' in window) return;
+
   let yearEntries = entriesByYear[selectedYear] || [];
-  let shapeSizeEstimate = 150; // base size used for hit test approx
+  let shapeSizeEstimate = 150;
   let padding = map(yearEntries.length, 10, 120, 60, 15);
   let startY = 80;
   let count = yearEntries.length;
@@ -567,19 +584,11 @@ function mouseMoved() {
   cursor(hovering ? 'pointer' : 'default');
 }
 
-  function mousePressed() {
-    // Check if mouse is inside tooltip
-  const tooltip = document.getElementById('tooltip');
-  const target = document.elementFromPoint(mouseX, mouseY);
 
-  // If the click target is inside the tooltip or IS the tooltip itself, do nothing
-  if (tooltip.contains(target)) {
-    return;
-  }
-
+function mousePressed() {
+  // Check if a site shape was clicked
   let yearEntries = entriesByYear[selectedYear] || [];
   let padding = map(yearEntries.length, 10, 120, 60, 15);
-  let shapeSizeEstimate = 150;
   let startY = 80;
   let baseShapeSize = map(yearEntries.length, 10, 120, 140, 50);
   let numCols = floor((width - padding) / (baseShapeSize + padding));
@@ -593,7 +602,7 @@ function mouseMoved() {
     let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
     let centerY = startY + row * ((height - startY - 50) / ceil(yearEntries.length / numCols)) +
                   ((height - startY - 50) / ceil(yearEntries.length / numCols)) / 2;
-    
+
     let entry = yearEntries[i];
     let minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
     let maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
@@ -610,15 +619,20 @@ function mouseMoved() {
   if (foundEntry) {
     selectedEntry = foundEntry;
     showTooltip(selectedEntry);
-  } else {
-    selectedEntry = null;
-    showTooltip(null);
   }
 }
 
 function keyPressed() {
   let yearEntries = entriesByYear[selectedYear];
   if (!yearEntries) return;
+
+  // Escape closes tooltip
+  if (keyCode === ESCAPE) {
+    selectedEntry = null;
+    tooltipEntry = null;
+    document.getElementById('tooltip').style.display = 'none';
+    return;
+  }
 
   if (selectedEntry) {
     let currentIndex = yearEntries.findIndex(e => e.name === selectedEntry.name);
@@ -634,11 +648,7 @@ function keyPressed() {
 
     let newIndex = currentIndex;
 
-    if (keyCode === ESCAPE) {
-      selectedEntry = null;
-      showTooltip(null);
-      return;
-    } else if (keyCode === RIGHT_ARROW && currentIndex < yearEntries.length - 1) {
+    if (keyCode === RIGHT_ARROW && currentIndex < yearEntries.length - 1) {
       newIndex = currentIndex + 1;
     } else if (keyCode === LEFT_ARROW && currentIndex > 0) {
       newIndex = currentIndex - 1;
@@ -657,14 +667,6 @@ function keyPressed() {
 
   let currentYearIndex = availableYears.indexOf(selectedYear);
 
-  if (keyCode === HOME) {
-    selectedYear = availableYears[0];
-    updateYear(selectedYear, 0);
-  } else if (keyCode === END) {
-    selectedYear = availableYears[availableYears.length - 1];
-    updateYear(selectedYear, availableYears.length - 1);
-  }
-
   if (!selectedEntry && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
     let delta = keyCode === RIGHT_ARROW ? 1 : -1;
     let nextIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
@@ -673,7 +675,16 @@ function keyPressed() {
       updateYear(selectedYear, nextIndex);
     }
   }
+
+  if (keyCode === HOME) {
+    selectedYear = availableYears[0];
+    updateYear(selectedYear, 0);
+  } else if (keyCode === END) {
+    selectedYear = availableYears[availableYears.length - 1];
+    updateYear(selectedYear, availableYears.length - 1);
+  }
 }
+
 
 function updateYear(year, index) {
   windowResized();
@@ -1348,3 +1359,14 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
 
   pop();
 }
+
+document.addEventListener('mousedown', (event) => {
+  const tooltip = document.getElementById('tooltip');
+  const isInsideTooltip = tooltip.contains(event.target);
+
+  if (!isInsideTooltip) {
+    selectedEntry = null;
+    tooltipEntry = null;
+    tooltip.style.display = 'none';
+  }
+});
