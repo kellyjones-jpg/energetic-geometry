@@ -151,8 +151,8 @@ const combinedIcon = `
     <!-- Rotated square frame -->
     <rect
       x="4" y="4" width="16" height="16"
-      fill="none"
-      stroke="currentColor"
+      fill="white"
+      stroke="black"
       stroke-width="2"
       transform="rotate(45 12 12)"
       rx="1"
@@ -162,7 +162,7 @@ const combinedIcon = `
     <line
       x1="9" y1="15"
       x2="15" y2="9"
-      stroke="currentColor"
+      stroke="black"
       stroke-width="2.5"
       stroke-linecap="round"
     />
@@ -170,7 +170,7 @@ const combinedIcon = `
     <polyline
       points="9,9 15,9 15,15"
       fill="none"
-      stroke="currentColor"
+      stroke="black"
       stroke-width="2.5"
       stroke-linejoin="round"
     />
@@ -353,11 +353,11 @@ function draw() {
  // === MINIMAL SUPREMATIST YEAR LABEL ===
     let centerX = width / 2;
     let labelY = 40;
-    let yearY = labelY + 40;
+    let yearY = labelY + 30;
 
     // Label: smaller
     textFont('Helvetica');
-    textSize(28);
+    textSize(30);
     textAlign(CENTER, BOTTOM);
     fill(255);
     text("Year Installed:", centerX, labelY);
@@ -458,7 +458,7 @@ function draw() {
 
     if (isSelected) {
       // Calculate tooltip position relative to scaled size
-      let scaledOffset = entry.currentScale * 20; 
+      let scaledOffset = entry.currentScale * 20; // Optional tweak to offset tooltip a bit
       entry.x = centerX + scaledOffset;
       entry.y = centerY + scaledOffset;
       }
@@ -478,7 +478,6 @@ function showTooltip(entry) {
 
   if (!entry) {
     tooltip.style.display = 'none';
-    cnv.elt.style.pointerEvents = 'auto';  // Restore canvas interactivity
     return;
   }
 
@@ -505,7 +504,7 @@ function showTooltip(entry) {
     <div id="tooltip-header" style="display:flex; justify-content: space-between; align-items: center;">
       <h4 style="margin:0;">
         ${entry.url
-          ? `<a class="hyperlink-tooltip" href="${entry.url}" target="_blank" rel="noopener noreferrer" title="Open in new window">${entry.name}<span aria-hidden="true">${combinedIcon}</span></a>`
+          ? `<a class="hyperlink-tooltip" href="${entry.url}" target="_blank" rel="noopener noreferrer" title="Open in new window">${entry.name} <span aria-hidden="true">${combinedIcon}</span></a>`
           : entry.name}
       </h4>
       <button id="tooltip-close" aria-label="Close tooltip" style="font-size:1.2em; cursor:pointer;">✕</button>
@@ -542,8 +541,6 @@ function showTooltip(entry) {
   tooltip.style.left = left + 'px';
   tooltip.style.top = top + 'px';
   tooltip.style.display = 'block';
-
-  cnv.elt.style.pointerEvents = 'none';  // Allow tooltip elements to receive clicks
 }
 
 function mouseMoved() {
