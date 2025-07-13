@@ -5,9 +5,9 @@ let selectedYear;
 let availableYears = [];
 let cnv;
 let tooltipEntry = null; 
-let bgImg;
 let selectedEntry = null; // Currently selected entry (for tooltip & enlargement)
 let hoveredEntry = null;  // Currently hovered entry (for hover enlargement)
+let bgImg;
 
 const cropEdgeGroups = {
   // Root vegetables
@@ -151,8 +151,8 @@ const combinedIcon = `
     <!-- Rotated square frame -->
     <rect
       x="4" y="4" width="16" height="16"
-      fill="white"
-      stroke="black"
+      fill="none"
+      stroke="currentColor"
       stroke-width="2"
       transform="rotate(45 12 12)"
       rx="1"
@@ -162,7 +162,7 @@ const combinedIcon = `
     <line
       x1="9" y1="15"
       x2="15" y2="9"
-      stroke="black"
+      stroke="currentColor"
       stroke-width="2.5"
       stroke-linecap="round"
     />
@@ -170,7 +170,7 @@ const combinedIcon = `
     <polyline
       points="9,9 15,9 15,15"
       fill="none"
-      stroke="black"
+      stroke="currentColor"
       stroke-width="2.5"
       stroke-linejoin="round"
     />
@@ -277,6 +277,9 @@ function setup() {
   cnv = createCanvas(initialWidth, fixedHeight);
   cnv.parent('sketch-container');
 
+    // Ensure canvas doesn't block tooltip clicks
+    cnv.elt.style.pointerEvents = 'none';
+
   // Create caption
   let caption = createP("Image from Pexels");
   caption.style('text-align', 'left', true);
@@ -324,6 +327,14 @@ function setup() {
     rectMode(CENTER);
     loop();
     updateCounters(entriesByYear[selectedYear]);
+
+    document.addEventListener('click', (event) => {
+    const anchor = event.target.closest('a.hyperlink-tooltip');
+    if (anchor) {
+        event.stopPropagation(); // prevent p5 interference
+        window.open(anchor.href, '_blank', 'noopener');
+    }
+    });
 }
 
 function windowResized() {
@@ -353,11 +364,11 @@ function draw() {
  // === MINIMAL SUPREMATIST YEAR LABEL ===
     let centerX = width / 2;
     let labelY = 40;
-    let yearY = labelY + 30;
+    let yearY = labelY + 40;
 
     // Label: smaller
     textFont('Helvetica');
-    textSize(30);
+    textSize(28);
     textAlign(CENTER, BOTTOM);
     fill(255);
     text("Year Installed:", centerX, labelY);
@@ -458,7 +469,7 @@ function draw() {
 
     if (isSelected) {
       // Calculate tooltip position relative to scaled size
-      let scaledOffset = entry.currentScale * 20; // Optional tweak to offset tooltip a bit
+      let scaledOffset = entry.currentScale * 20; 
       entry.x = centerX + scaledOffset;
       entry.y = centerY + scaledOffset;
       }
@@ -478,6 +489,7 @@ function showTooltip(entry) {
 
   if (!entry) {
     tooltip.style.display = 'none';
+    cnv.elt.style.pointerEvents = 'auto';  // Restore canvas interactivity
     return;
   }
 
@@ -502,11 +514,11 @@ function showTooltip(entry) {
  // Build tooltip HTML with name shown once in <h4> at top
   tooltip.innerHTML = `
     <div id="tooltip-header" style="display:flex; justify-content: space-between; align-items: center;">
-      <h4 style="margin:0;">
-        ${entry.url
-          ? `<a class="hyperlink-tooltip" href="${entry.url}" target="_blank" rel="noopener noreferrer" title="Open in new window">${entry.name} <span aria-hidden="true">${combinedIcon}</span></a>`
-          : entry.name}
-      </h4>
+      <a class="hyperlink-tooltip" href="${entry.url}" target="_blank" rel="noopener noreferrer" title="Open in new window">
+        <h4 style="margin:0; display: inline;">
+          ${entry.name} <span aria-hidden="true">${combinedIcon}</span>
+        </h4>
+      </a>
       <button id="tooltip-close" aria-label="Close tooltip" style="font-size:1.2em; cursor:pointer;">✕</button>
     </div>
     <div id="tooltip-content" style="margin-top: 0.5em;">
@@ -541,6 +553,8 @@ function showTooltip(entry) {
   tooltip.style.left = left + 'px';
   tooltip.style.top = top + 'px';
   tooltip.style.display = 'block';
+
+  cnv.elt.style.pointerEvents = 'none';  // Allow tooltip elements to receive clicks
 }
 
 function mouseMoved() {
@@ -583,9 +597,26 @@ function mouseMoved() {
 
 
 function mousePressed() {
-  // Check if a site shape was clicked
+  const tooltip = document.getElementById('tooltip');
+  const canvasRect = cnv.elt.getBoundingClientRect();
+  const absMouseX = canvasRect.left + mouseX;
+  const absMouseY = canvasRect.top + mouseY;
+  const target = document.elementFromPoint(absMouseX, absMouseY);
+
+  // Allow link clicks inside tooltip
+  if (tooltip.contains(target) && (target.tagName === 'A' || target.closest('a'))) {
+    return true;
+  }
+
+  // Do nothing if clicking inside tooltip (but not a link)
+  if (tooltip.contains(target)) {
+    return false;
+  }
+
+  // Handle clicking on a site shape
   let yearEntries = entriesByYear[selectedYear] || [];
   let padding = map(yearEntries.length, 10, 120, 60, 15);
+  let shapeSizeEstimate = 150;
   let startY = 80;
   let baseShapeSize = map(yearEntries.length, 10, 120, 140, 50);
   let numCols = floor((width - padding) / (baseShapeSize + padding));
@@ -613,66 +644,74 @@ function mousePressed() {
     }
   }
 
+  // Show tooltip if a site is clicked, otherwise close it
   if (foundEntry) {
     selectedEntry = foundEntry;
     showTooltip(selectedEntry);
+  } else {
+    selectedEntry = null;
+    tooltipEntry = null;
+    tooltip.style.display = 'none';
   }
 }
 
 function keyPressed() {
-  let yearEntries = entriesByYear[selectedYear];
+  const tooltip = document.getElementById('tooltip');
+  const yearEntries = entriesByYear[selectedYear];
   if (!yearEntries) return;
 
-  // Escape closes tooltip
+  // ESC closes tooltip
   if (keyCode === ESCAPE) {
     selectedEntry = null;
     tooltipEntry = null;
-    document.getElementById('tooltip').style.display = 'none';
+    tooltip.style.display = 'none';
     return;
   }
 
+  // If a site is selected, allow arrow navigation between entries
   if (selectedEntry) {
-    let currentIndex = yearEntries.findIndex(e => e.name === selectedEntry.name);
+    const currentIndex = yearEntries.findIndex(e => e.name === selectedEntry.name);
     if (currentIndex === -1) return;
 
-    let shapeSizeEstimate = 150;
     let padding = map(yearEntries.length, 10, 120, 60, 15);
+    let baseShapeSize = map(yearEntries.length, 10, 120, 140, 50);
     let startY = 80;
-    let count = yearEntries.length;
-    let baseShapeSize = map(count, 10, 120, 140, 50);
     let numCols = floor((width - padding) / (baseShapeSize + padding));
     numCols = max(numCols, 1);
 
     let newIndex = currentIndex;
 
     if (keyCode === RIGHT_ARROW && currentIndex < yearEntries.length - 1) {
-      newIndex = currentIndex + 1;
+      newIndex++;
     } else if (keyCode === LEFT_ARROW && currentIndex > 0) {
-      newIndex = currentIndex - 1;
+      newIndex--;
     }
 
     if (newIndex !== currentIndex) {
       let col = newIndex % numCols;
       let row = floor(newIndex / numCols);
       let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
-      let centerY = startY + row * ((height - startY - 50) / ceil(count / numCols)) + ((height - startY - 50) / ceil(count / numCols)) / 2;
+      let centerY = startY + row * ((height - startY - 50) / ceil(yearEntries.length / numCols)) +
+                    ((height - startY - 50) / ceil(yearEntries.length / numCols)) / 2;
 
       selectedEntry = { ...yearEntries[newIndex], x: centerX, y: centerY };
       showTooltip(selectedEntry);
     }
   }
 
-  let currentYearIndex = availableYears.indexOf(selectedYear);
+  // If no site is selected, allow year navigation with LEFT/RIGHT arrows
+  const currentYearIndex = availableYears.indexOf(selectedYear);
 
   if (!selectedEntry && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
-    let delta = keyCode === RIGHT_ARROW ? 1 : -1;
-    let nextIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
-    if (nextIndex !== currentYearIndex) {
-      selectedYear = availableYears[nextIndex];
-      updateYear(selectedYear, nextIndex);
+    const delta = keyCode === RIGHT_ARROW ? 1 : -1;
+    const newIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
+    if (newIndex !== currentYearIndex) {
+      selectedYear = availableYears[newIndex];
+      updateYear(selectedYear, newIndex);
     }
   }
 
+  // HOME/END to jump to first/last year
   if (keyCode === HOME) {
     selectedYear = availableYears[0];
     updateYear(selectedYear, 0);
@@ -1356,14 +1395,3 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
 
   pop();
 }
-
-document.addEventListener('mousedown', (event) => {
-  const tooltip = document.getElementById('tooltip');
-  const isInsideTooltip = tooltip.contains(event.target);
-
-  if (!isInsideTooltip) {
-    selectedEntry = null;
-    tooltipEntry = null;
-    tooltip.style.display = 'none';
-  }
-});
