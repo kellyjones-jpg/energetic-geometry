@@ -177,10 +177,6 @@ const combinedIcon = `
   </svg>
 `;
 
-const HOME = 36;
-const END = 35;
-const ESCAPE = 27;
-
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250702.csv', 'csv', 'header');
   bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
@@ -314,12 +310,6 @@ function setup() {
       node.parent(yearDiv);
 
       label.mousePressed(() => {
-         // Clean up popover on year switch
-        const activePopover = document.querySelector('[data-bs-toggle="popover"].active-popover');
-        if (activePopover) {
-          bootstrap.Popover.getInstance(activePopover)?.dispose();
-          activePopover.remove();
-        }
         selectedYear = year;
         windowResized();
         updateCounters(entriesByYear[selectedYear]);
@@ -337,6 +327,14 @@ function setup() {
     rectMode(CENTER);
     loop();
     updateCounters(entriesByYear[selectedYear]);
+
+    document.addEventListener('click', (event) => {
+    const anchor = event.target.closest('a.hyperlink-tooltip');
+    if (anchor) {
+        event.stopPropagation(); // prevent p5 interference
+        window.open(anchor.href, '_blank', 'noopener');
+    }
+    });
 }
 
 function windowResized() {
@@ -486,65 +484,77 @@ function draw() {
 }
 
 function showTooltip(entry) {
-  // Remove any existing popover triggers
-  const existing = document.querySelector('[data-bs-toggle="popover"].active-popover');
-  if (existing) {
-    bootstrap.Popover.getInstance(existing)?.dispose();
-    existing.remove();
+  tooltipEntry = entry; // Keep track of current tooltip for keyboard nav
+  const tooltip = document.getElementById('tooltip');
+
+  if (!entry) {
+    tooltip.style.display = 'none';
+    cnv.elt.style.pointerEvents = 'auto';  // Restore canvas interactivity
+    return;
   }
 
-  if (!entry || !entry.url) return;
+  const capitalizeWords = (str) =>
+    str.replace(/\b\w/g, c => c.toUpperCase());
 
-  // Create a temporary popover trigger element
-  const trigger = document.createElement('button');
-  trigger.type = 'button';
-  trigger.className = 'btn btn-link p-0 m-0 position-absolute active-popover';
-  trigger.style.position = 'absolute';
+  const formatArray = (arr) =>
+    Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
 
-  // Place the popover relative to the canvas position
-  const canvasRect = cnv.elt.getBoundingClientRect();
-  trigger.style.left = `${canvasRect.left + entry.x}px`;
-  trigger.style.top = `${canvasRect.top + entry.y}px`;
+  let lines = [];
 
-  trigger.style.zIndex = '9999';
-  trigger.setAttribute('data-bs-toggle', 'popover');
-  trigger.setAttribute('data-bs-html', 'true');
-  trigger.setAttribute('data-bs-placement', 'auto');
-  trigger.setAttribute('title', entry.name);
-
-  // Format content
-  const capitalizeWords = str => str.replace(/\b\w/g, c => c.toUpperCase());
-  const formatArray = arr => Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
-
-  const lines = [];
-  if (entry.activities?.length) lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
+  if (entry.activities && entry.activities.length) lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
   if (!isNaN(entry.megawatts)) lines.push(`<strong>System Size:</strong> ${entry.megawatts} MW`);
   if (!isNaN(entry.acres)) lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
   if (entry.year) lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
   if (entry.arrayType) lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
-  if (entry.habitat?.length) lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
-  if (entry.cropType?.length) lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
-  if (entry.animalType?.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
+  if (entry.habitat && entry.habitat.length) lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
+  if (entry.cropType && entry.cropType.length) lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
+  if (entry.animalType && entry.animalType.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
 
-  const link = `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" class="hyperlink-tooltip">Visit site ${combinedIcon}</a>`;
 
-  // Set popover content
-  trigger.setAttribute('data-bs-content', `${link}<br><br>${lines.join('<br>')}`);
+ // Build tooltip HTML with name shown once in <h4> at top
+  tooltip.innerHTML = `
+    <div id="tooltip-header" style="display:flex; justify-content: space-between; align-items: center;">
+      <a class="hyperlink-tooltip" href="${entry.url}" target="_blank" rel="noopener noreferrer" title="Open in new window">
+        <h4 style="margin:0; display: inline;">
+          ${entry.name} <span aria-hidden="true">${combinedIcon}</span>
+        </h4>
+      </a>
+      <button id="tooltip-close" aria-label="Close tooltip" style="font-size:1.2em; cursor:pointer;">✕</button>
+    </div>
+    <div id="tooltip-content" style="margin-top: 0.5em;">
+      ${lines.join('<br>')}
+    </div>
+  `;
 
-  // Append and activate the popover
-  document.body.appendChild(trigger);
-  const popover = new bootstrap.Popover(trigger);
-  popover.show();
-
-  // Optional: close on Escape key
-  document.addEventListener('keydown', function escListener(e) {
-    if (e.key === 'Escape') {
-      popover.hide();
-      trigger.remove();
+  const closeButton = document.getElementById('tooltip-close');
+  if (closeButton) {
+    closeButton.addEventListener('click', () => {
       selectedEntry = null;
-      document.removeEventListener('keydown', escListener);
-    }
-  });
+      tooltipEntry = null;
+      tooltip.style.display = 'none';
+    });
+  }
+
+  // Position tooltip (your existing code below)
+  let canvasRect = cnv.elt.getBoundingClientRect();
+  let left = canvasRect.left + entry.x + 15;
+  let top = canvasRect.top + entry.y + 15;
+
+  left = Math.min(
+    Math.max(left, 10),
+    window.innerWidth - tooltip.offsetWidth - 10
+  );
+
+  top = Math.min(
+    Math.max(top, 10),
+    window.innerHeight - tooltip.offsetHeight - 10
+  );
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+  tooltip.style.display = 'block';
+
+  cnv.elt.style.pointerEvents = 'none';  // Allow tooltip elements to receive clicks
 }
 
 function mouseMoved() {
@@ -582,34 +592,28 @@ function mouseMoved() {
       break;
     }
   }
-  if (!cnv || !cnv.elt) return;
   cursor(hovering ? 'pointer' : 'default');
 }
 
 
 function mousePressed() {
-   if (!cnv || !cnv.elt) return; // Early exit to avoid .elt errors
-  if ('ontouchstart' in window) return;
-
+  const tooltip = document.getElementById('tooltip');
   const canvasRect = cnv.elt.getBoundingClientRect();
   const absMouseX = canvasRect.left + mouseX;
   const absMouseY = canvasRect.top + mouseY;
   const target = document.elementFromPoint(absMouseX, absMouseY);
 
-  if (!target) return; // Defensive fix for null target
-
-  const existing = document.querySelector('[data-bs-toggle="popover"].active-popover');
-
-  // Allow link clicks inside popover
-  if (existing && (target.tagName === 'A' || target.closest('a'))) {
+  // Allow link clicks inside tooltip
+  if (tooltip.contains(target) && (target.tagName === 'A' || target.closest('a'))) {
     return true;
   }
 
-  // Do nothing if clicked inside the popover
-  if (existing && existing.contains(target)) {
+  // Do nothing if clicking inside tooltip (but not a link)
+  if (tooltip.contains(target)) {
     return false;
   }
-  
+
+  // Handle clicking on a site shape
   let yearEntries = entriesByYear[selectedYear] || [];
   let padding = map(yearEntries.length, 10, 120, 60, 15);
   let shapeSizeEstimate = 150;
@@ -640,39 +644,27 @@ function mousePressed() {
     }
   }
 
-  // Show Bootstrap popover if a site is clicked
+  // Show tooltip if a site is clicked, otherwise close it
   if (foundEntry) {
-    // Skip if the same site is already selected
-    if (selectedEntry?.name === foundEntry.name) {
-      return;
-    }
-
     selectedEntry = foundEntry;
     showTooltip(selectedEntry);
   } else {
     selectedEntry = null;
-
-    // Clean up popover
-    const existing = document.querySelector('[data-bs-toggle="popover"].active-popover');
-    if (existing) {
-      bootstrap.Popover.getInstance(existing)?.dispose();
-      existing.remove();
-    }
+    tooltipEntry = null;
+    tooltip.style.display = 'none';
   }
 }
 
 function keyPressed() {
+  const tooltip = document.getElementById('tooltip');
   const yearEntries = entriesByYear[selectedYear];
   if (!yearEntries) return;
 
-  // Escape closes Bootstrap popover
+  // ESC closes tooltip
   if (keyCode === ESCAPE) {
-    const existing = document.querySelector('[data-bs-toggle="popover"].active-popover');
-    if (existing) {
-      bootstrap.Popover.getInstance(existing)?.dispose();
-      existing.remove();
-    }
     selectedEntry = null;
+    tooltipEntry = null;
+    tooltip.style.display = 'none';
     return;
   }
 
