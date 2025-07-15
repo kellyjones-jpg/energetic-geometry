@@ -51,19 +51,13 @@
       text-align: left !important;
     }
 
-    #tooltip a {
-      pointer-events: auto !important;
-      cursor: pointer;
-    }
-
-    #tooltip {
-      background: white;
+   /* Override Bootstrap Popover to match custom tooltip styling */
+    .popover {
+      background-color: white;
       color: #0A0A0A;
       font-family: Helvetica, Arial, sans-serif;
       font-size: 14px;
-      text-align: left;
       line-height: 1.6;
-      padding: 12px 18px;
       border-left: 6px solid #353839;
       box-shadow:
         3px 1.5px 0 #0A0A0A,
@@ -71,17 +65,35 @@
         -2px 2px 0 #0A0A0A;
       border-radius: 0;
       max-width: 500px;
-      transition: opacity 0.2s ease;
-      position: absolute;
       z-index: 9999;
-      display: none;
-      pointer-events: auto; /* Ensure links inside tooltip are clickable */
-      cursor: pointer;
-      user-select: text;        /* Allow link selection */
-      cursor: default;          /* Normal cursor */
     }
 
-    #tooltip-close {
+    .popover-header {
+      background-color: white;
+      color: #0A0A0A;
+      font-weight: bold;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      border-bottom: none;
+      padding: 0.5rem 1rem;
+    }
+
+    .popover-body {
+      padding: 12px 18px;
+    }
+
+    .popover-body a.hyperlink-tooltip {
+      color: #2A6ACF;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .popover-body a.hyperlink-tooltip:hover {
+      color: #4C8CF5;
+    }
+        
+    .popover-close {
       background: none;
       border: none;
       color: #0A0A0A;
@@ -93,21 +105,8 @@
       line-height: 1;
     }
 
-    #tooltip-close:hover {
+    .popover-close:hover {
       color: #353839;
-    }
-
-    #tooltip-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 0.5em;
-      margin-right: 1em;
-      margin-bottom: 0.5em;
-    }
-
-    #tooltip-content p {
-      margin: 1em 0;
     }
   
     #sketch-container {
@@ -167,12 +166,6 @@ a.hyperlink:hover,
 a.hyperlink:focus {
           color: #4C8CF5;
     }
-
-a.hyperlink-tooltip {
-  color: #2A6ACF;
-  letter-spacing: 0.05em;
-  transition: color 0.2s ease;
-}
 
 .thick-num {
     font-weight: bold;
