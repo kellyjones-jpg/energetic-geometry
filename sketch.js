@@ -327,14 +327,6 @@ function setup() {
     rectMode(CENTER);
     loop();
     updateCounters(entriesByYear[selectedYear]);
-
-    document.addEventListener('click', (event) => {
-    const anchor = event.target.closest('a.hyperlink-tooltip');
-    if (anchor) {
-        event.stopPropagation(); // prevent p5 interference
-        window.open(anchor.href, '_blank', 'noopener');
-    }
-    });
 }
 
 function windowResized() {
@@ -1395,3 +1387,12 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
 
   pop();
 }
+
+// Allow hyperlink inside tooltip to open despite p5.js event interference
+document.addEventListener('click', (event) => {
+  const anchor = event.target.closest('a.hyperlink-tooltip');
+  if (anchor) {
+    event.stopPropagation(); // stop p5 mousePressed from hijacking
+    window.open(anchor.href, '_blank', 'noopener');
+  }
+});
