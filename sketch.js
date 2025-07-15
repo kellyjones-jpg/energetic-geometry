@@ -506,11 +506,11 @@ function showTooltip(entry) {
  // Build tooltip HTML with name shown once in <h4> at top
   tooltip.innerHTML = `
     <div id="tooltip-header" style="display:flex; justify-content: space-between; align-items: center;">
-      <a class="hyperlink-tooltip" href="${entry.url}" target="_blank" rel="noopener noreferrer" title="Open in new window">
-        <h4 style="margin:0; display: inline;">
-          ${entry.name} <span aria-hidden="true">${combinedIcon}</span>
-        </h4>
-      </a>
+    <button class="hyperlink-tooltip" data-url="${entry.url}" title="Open in new window" style="all: unset; cursor: pointer; font: inherit;">
+      <span class="h4" style="display: inline-block;">
+        <strong>${entry.name}</strong> <span aria-hidden="true">${combinedIcon}</span>
+      </span>
+    </button>
       <button id="tooltip-close" aria-label="Close tooltip" style="font-size:1.2em; cursor:pointer;">✕</button>
     </div>
     <div id="tooltip-content" style="margin-top: 0.5em;">
@@ -1387,3 +1387,11 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
 
   pop();
 }
+
+document.addEventListener('click', (event) => {
+  const btn = event.target.closest('.hyperlink-tooltip');
+  if (btn && btn.dataset.url) {
+    window.open(btn.dataset.url, '_blank', 'noopener');
+  }
+});
+
