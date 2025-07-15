@@ -574,23 +574,27 @@ function mouseMoved() {
 
 
 function mousePressed() {
-  // Remove existing Bootstrap popover if clicking outside a site
-  const existing = document.querySelector('[data-bs-toggle="popover"].active-popover');
+   if (!cnv || !cnv.elt) return;
+
   const canvasRect = cnv.elt.getBoundingClientRect();
   const absMouseX = canvasRect.left + mouseX;
   const absMouseY = canvasRect.top + mouseY;
   const target = document.elementFromPoint(absMouseX, absMouseY);
 
-  // If user clicked on a popover link/button, allow it
+  if (!target) return; // Defensive fix for null target
+
+  const existing = document.querySelector('[data-bs-toggle="popover"].active-popover');
+
+  // Allow link clicks inside popover
   if (existing && (target.tagName === 'A' || target.closest('a'))) {
     return true;
   }
 
-  // If user clicked inside popover, do nothing
+  // Do nothing if clicked inside the popover
   if (existing && existing.contains(target)) {
     return false;
   }
-
+  
   let yearEntries = entriesByYear[selectedYear] || [];
   let padding = map(yearEntries.length, 10, 120, 60, 15);
   let shapeSizeEstimate = 150;
