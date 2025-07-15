@@ -177,6 +177,10 @@ const combinedIcon = `
   </svg>
 `;
 
+const HOME = 36;
+const END = 35;
+const ESCAPE = 27;
+
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250702.csv', 'csv', 'header');
   bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
@@ -310,6 +314,12 @@ function setup() {
       node.parent(yearDiv);
 
       label.mousePressed(() => {
+         // Clean up popover on year switch
+        const activePopover = document.querySelector('[data-bs-toggle="popover"].active-popover');
+        if (activePopover) {
+          bootstrap.Popover.getInstance(activePopover)?.dispose();
+          activePopover.remove();
+        }
         selectedYear = year;
         windowResized();
         updateCounters(entriesByYear[selectedYear]);
@@ -490,8 +500,12 @@ function showTooltip(entry) {
   trigger.type = 'button';
   trigger.className = 'btn btn-link p-0 m-0 position-absolute active-popover';
   trigger.style.position = 'absolute';
-  trigger.style.left = `${entry.x}px`;
-  trigger.style.top = `${entry.y}px`;
+
+  // Place the popover relative to the canvas position
+  const canvasRect = cnv.elt.getBoundingClientRect();
+  trigger.style.left = `${canvasRect.left + entry.x}px`;
+  trigger.style.top = `${canvasRect.top + entry.y}px`;
+
   trigger.style.zIndex = '9999';
   trigger.setAttribute('data-bs-toggle', 'popover');
   trigger.setAttribute('data-bs-html', 'true');
@@ -533,7 +547,6 @@ function showTooltip(entry) {
   });
 }
 
-
 function mouseMoved() {
   // Skip hover detection on touch devices
   if ('ontouchstart' in window) return;
@@ -569,12 +582,14 @@ function mouseMoved() {
       break;
     }
   }
+  if (!cnv || !cnv.elt) return;
   cursor(hovering ? 'pointer' : 'default');
 }
 
 
 function mousePressed() {
-   if (!cnv || !cnv.elt) return;
+   if (!cnv || !cnv.elt) return; // Early exit to avoid .elt errors
+  if ('ontouchstart' in window) return;
 
   const canvasRect = cnv.elt.getBoundingClientRect();
   const absMouseX = canvasRect.left + mouseX;
@@ -627,12 +642,18 @@ function mousePressed() {
 
   // Show Bootstrap popover if a site is clicked
   if (foundEntry) {
+    // Skip if the same site is already selected
+    if (selectedEntry?.name === foundEntry.name) {
+      return;
+    }
+
     selectedEntry = foundEntry;
     showTooltip(selectedEntry);
   } else {
     selectedEntry = null;
 
     // Clean up popover
+    const existing = document.querySelector('[data-bs-toggle="popover"].active-popover');
     if (existing) {
       bootstrap.Popover.getInstance(existing)?.dispose();
       existing.remove();
