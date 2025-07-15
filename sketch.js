@@ -476,78 +476,63 @@ function draw() {
 }
 
 function showTooltip(entry) {
-  tooltipEntry = entry; // Keep track of current tooltip for keyboard nav
-  const tooltip = document.getElementById('tooltip');
-
-  if (!entry) {
-    tooltip.style.display = 'none';
-    cnv.elt.style.pointerEvents = 'auto';  // Restore canvas interactivity
-    return;
+  // Remove any existing popover triggers
+  const existing = document.querySelector('[data-bs-toggle="popover"].active-popover');
+  if (existing) {
+    bootstrap.Popover.getInstance(existing)?.dispose();
+    existing.remove();
   }
 
-  const capitalizeWords = (str) =>
-    str.replace(/\b\w/g, c => c.toUpperCase());
+  if (!entry || !entry.url) return;
 
-  const formatArray = (arr) =>
-    Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
+  // Create a temporary popover trigger element
+  const trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.className = 'btn btn-link p-0 m-0 position-absolute active-popover';
+  trigger.style.position = 'absolute';
+  trigger.style.left = `${entry.x}px`;
+  trigger.style.top = `${entry.y}px`;
+  trigger.style.zIndex = '9999';
+  trigger.setAttribute('data-bs-toggle', 'popover');
+  trigger.setAttribute('data-bs-html', 'true');
+  trigger.setAttribute('data-bs-placement', 'auto');
+  trigger.setAttribute('title', entry.name);
 
-  let lines = [];
+  // Format content
+  const capitalizeWords = str => str.replace(/\b\w/g, c => c.toUpperCase());
+  const formatArray = arr => Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
 
-  if (entry.activities && entry.activities.length) lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
+  const lines = [];
+  if (entry.activities?.length) lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
   if (!isNaN(entry.megawatts)) lines.push(`<strong>System Size:</strong> ${entry.megawatts} MW`);
   if (!isNaN(entry.acres)) lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
   if (entry.year) lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
   if (entry.arrayType) lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
-  if (entry.habitat && entry.habitat.length) lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
-  if (entry.cropType && entry.cropType.length) lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
-  if (entry.animalType && entry.animalType.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
+  if (entry.habitat?.length) lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
+  if (entry.cropType?.length) lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
+  if (entry.animalType?.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
 
+  const link = `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" class="hyperlink-tooltip">Visit site ${combinedIcon}</a>`;
 
- // Build tooltip HTML with name shown once in <h4> at top
-  tooltip.innerHTML = `
-    <div id="tooltip-header" style="display:flex; justify-content: space-between; align-items: center;">
-      <a class="hyperlink-tooltip" href="${entry.url}" target="_blank" rel="noopener noreferrer" title="Open in new window">
-        <h4 style="margin:0; display: inline;">
-          ${entry.name} <span aria-hidden="true">${combinedIcon}</span>
-        </h4>
-      </a>
-      <button id="tooltip-close" aria-label="Close tooltip" style="font-size:1.2em; cursor:pointer;">✕</button>
-    </div>
-    <div id="tooltip-content" style="margin-top: 0.5em;">
-      ${lines.join('<br>')}
-    </div>
-  `;
+  // Set popover content
+  trigger.setAttribute('data-bs-content', `${link}<br><br>${lines.join('<br>')}`);
 
-  const closeButton = document.getElementById('tooltip-close');
-  if (closeButton) {
-    closeButton.addEventListener('click', () => {
+  // Append and activate the popover
+  document.body.appendChild(trigger);
+  const popover = new bootstrap.Popover(trigger);
+  popover.show();
+
+  // Optional: close on Escape key
+  document.addEventListener('keydown', function escListener(e) {
+    if (e.key === 'Escape') {
+      popover.hide();
+      trigger.remove();
       selectedEntry = null;
-      tooltipEntry = null;
-      tooltip.style.display = 'none';
-    });
-  }
-
-  // Position tooltip (your existing code below)
-  let canvasRect = cnv.elt.getBoundingClientRect();
-  let left = canvasRect.left + entry.x + 15;
-  let top = canvasRect.top + entry.y + 15;
-
-  left = Math.min(
-    Math.max(left, 10),
-    window.innerWidth - tooltip.offsetWidth - 10
-  );
-
-  top = Math.min(
-    Math.max(top, 10),
-    window.innerHeight - tooltip.offsetHeight - 10
-  );
-
-  tooltip.style.left = left + 'px';
-  tooltip.style.top = top + 'px';
-  tooltip.style.display = 'block';
-
-  cnv.elt.style.pointerEvents = 'none';  // Allow tooltip elements to receive clicks
+      document.removeEventListener('keydown', escListener);
+    }
+  });
 }
+
 
 function mouseMoved() {
   // Skip hover detection on touch devices
@@ -589,23 +574,23 @@ function mouseMoved() {
 
 
 function mousePressed() {
-  const tooltip = document.getElementById('tooltip');
+  // Remove existing Bootstrap popover if clicking outside a site
+  const existing = document.querySelector('[data-bs-toggle="popover"].active-popover');
   const canvasRect = cnv.elt.getBoundingClientRect();
   const absMouseX = canvasRect.left + mouseX;
   const absMouseY = canvasRect.top + mouseY;
   const target = document.elementFromPoint(absMouseX, absMouseY);
 
-  // Allow link clicks inside tooltip
-  if (tooltip.contains(target) && (target.tagName === 'A' || target.closest('a'))) {
+  // If user clicked on a popover link/button, allow it
+  if (existing && (target.tagName === 'A' || target.closest('a'))) {
     return true;
   }
 
-  // Do nothing if clicking inside tooltip (but not a link)
-  if (tooltip.contains(target)) {
+  // If user clicked inside popover, do nothing
+  if (existing && existing.contains(target)) {
     return false;
   }
 
-  // Handle clicking on a site shape
   let yearEntries = entriesByYear[selectedYear] || [];
   let padding = map(yearEntries.length, 10, 120, 60, 15);
   let shapeSizeEstimate = 150;
@@ -636,27 +621,33 @@ function mousePressed() {
     }
   }
 
-  // Show tooltip if a site is clicked, otherwise close it
+  // Show Bootstrap popover if a site is clicked
   if (foundEntry) {
     selectedEntry = foundEntry;
     showTooltip(selectedEntry);
   } else {
     selectedEntry = null;
-    tooltipEntry = null;
-    tooltip.style.display = 'none';
+
+    // Clean up popover
+    if (existing) {
+      bootstrap.Popover.getInstance(existing)?.dispose();
+      existing.remove();
+    }
   }
 }
 
 function keyPressed() {
-  const tooltip = document.getElementById('tooltip');
   const yearEntries = entriesByYear[selectedYear];
   if (!yearEntries) return;
 
-  // ESC closes tooltip
+  // Escape closes Bootstrap popover
   if (keyCode === ESCAPE) {
+    const existing = document.querySelector('[data-bs-toggle="popover"].active-popover');
+    if (existing) {
+      bootstrap.Popover.getInstance(existing)?.dispose();
+      existing.remove();
+    }
     selectedEntry = null;
-    tooltipEntry = null;
-    tooltip.style.display = 'none';
     return;
   }
 
@@ -1387,12 +1378,3 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
 
   pop();
 }
-
-// Allow hyperlink inside tooltip to open despite p5.js event interference
-document.addEventListener('click', (event) => {
-  const a = event.target.closest('a.hyperlink-tooltip');
-  if (a) {
-    event.stopPropagation(); // stop p5 mousePressed from hijacking
-    window.open(anchor.href, '_blank', 'noopener');
-  }
-});
