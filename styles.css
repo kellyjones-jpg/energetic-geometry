@@ -637,3 +637,64 @@ a.hyperlink-tooltip {
   background-color: #00D9F5;
   width: 95%;
 }
+
+.shadow-glow-box {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin: 0 auto;
+}
+
+.small-system {
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+  animation: pulse-small 3s ease-in-out infinite;
+  background: radial-gradient(circle, #00cfff 30%, #001f3f 100%);
+}
+
+.medium-system {
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+  animation: pulse-medium 2.5s ease-in-out infinite;
+  background: radial-gradient(circle, #00ffcc 30%, #004d40 100%);
+}
+
+.large-system {
+  box-shadow: 6px 6px 10px rgba(0, 0, 0, 0.7);
+  animation: pulse-large 1.8s ease-in-out infinite;
+  background: radial-gradient(circle, #ff4d00 30%, #330000 100%);
+}
+
+/* Pulsating animations */
+@keyframes pulse-small {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-medium {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.07);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-large {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
