@@ -110,35 +110,59 @@
         <div class="accordion-item my-4">
           <h3 class="accordion-header" id="headingSystemSize">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSystemSize" aria-expanded="true" aria-controls="collapseSystemSize">
-              System Size — Drop Shadow Effect
+              System Size — Layered Shadow + Pulsating Glow
             </button>
           </h3>
           <div id="collapseSystemSize" class="accordion-collapse collapse" aria-labelledby="headingSystemSize" data-bs-parent="#helpAccordion">
             <div class="accordion-body">
               <table class="table table-dark table-striped align-middle">
-                <thead>
-                  <tr>
-                    <th>System Size</th>
-                    <th>Shadow Characteristics</th>
-                    <th>Visual</th>
-                    <th>Rationale</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Small systems</td>
-                    <td>Tight, subtle shadows</td>
-                    <td><span class="shadow-box shadow-small suprematist-op-dropshadow"></span></td>
-                    <td>Minimal tension, soft geometric weight</td>
-                  </tr>
-                  <tr>
-                    <td>Large systems</td>
-                    <td>Bold, angular, hard-edged shadows</td>
-                    <td><span class="shadow-box shadow-large suprematist-op-dropshadow"></span></td>
-                    <td>Suprematist tension, visual density scaled with power</td>
-                  </tr>
-                </tbody>
-              </table>
+                  <thead>
+                    <tr>
+                      <th>System Size</th>
+                      <th>Shadow + Glow Characteristics</th>
+                      <th>Visual</th>
+                      <th>Rationale</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Small systems</td>
+                      <td>
+                        Tight, subtle shadow layered with slow, low-amplitude glow (cool hue)
+                      </td>
+                      <td>
+                        <span class="shadow-glow-box small-system"></span>
+                      </td>
+                      <td>
+                        Minimal tension, gentle energy field; soft visual weight that invites exploration
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Medium systems</td>
+                      <td>
+                        Medium shadow with moderate glow pulse (neutral hue, medium blur)
+                      </td>
+                      <td>
+                        <span class="shadow-glow-box medium-system"></span>
+                      </td>
+                      <td>
+                        Balanced Suprematist tension; steady energy suggests functional scale
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Large systems</td>
+                      <td>
+                        Bold, angular shadow with fast, strong glow (warm hue, high amplitude)
+                      </td>
+                      <td>
+                        <span class="shadow-glow-box large-system"></span>
+                      </td>
+                      <td>
+                        High visual density and dynamic rhythm; suggests system importance and urgency
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
             </div>
           </div>
         </div>
