@@ -4,8 +4,6 @@ let entriesByYear = {};
 let selectedYear;
 let availableYears = [];
 let cnv;
-let tooltipEntry = null; 
-let selectedEntry = null; // Currently selected entry (for tooltip & enlargement)
 let hoveredEntry = null;  // Currently hovered entry (for hover enlargement)
 let bgImg;
 
@@ -277,9 +275,6 @@ function setup() {
   cnv = createCanvas(initialWidth, fixedHeight);
   cnv.parent('sketch-container');
 
-    // Ensure canvas doesn't block tooltip clicks
-    cnv.elt.style.pointerEvents = 'none';
-
   // Create caption
   let caption = createP("Image from Pexels");
   caption.style('text-align', 'left', true);
@@ -327,14 +322,6 @@ function setup() {
     rectMode(CENTER);
     loop();
     updateCounters(entriesByYear[selectedYear]);
-
-    document.addEventListener('click', (event) => {
-    const anchor = event.target.closest('a.hyperlink-tooltip');
-    if (anchor) {
-        event.stopPropagation(); // prevent p5 interference
-        window.open(anchor.href, '_blank', 'noopener');
-    }
-    });
 }
 
 function windowResized() {
@@ -417,9 +404,8 @@ function draw() {
     strokeW = constrain(strokeW, 2, 5.5);
     let baseColor = getActivityColor(entry.activities?.[0] || '');
 
-    let isSelected = selectedEntry && selectedEntry.name === entry.name;
     let isHovered = hoveredEntry && hoveredEntry.name === entry.name;
-    let targetScale = (isSelected || isHovered) ? 1.2 : 1;
+    let targetScale = isHovered ? 1.2 : 1;
 
     // Smooth transition between current and target scale
     entry.currentScale = lerp(entry.currentScale || 1, targetScale, 0.1);
@@ -466,100 +452,50 @@ function draw() {
       drawAnimalLine(entry.animalType, entry.activities, 0, 0, entryShapeSize, strokeW);
     }
     pop();
-
-    if (isSelected) {
-      // Calculate tooltip position relative to scaled size
-      let scaledOffset = entry.currentScale * 20; 
-      entry.x = centerX + scaledOffset;
-      entry.y = centerY + scaledOffset;
-      }
-  }
-
-  // Show tooltip only for selected entry
-  if (selectedEntry) {
-    showTooltip(selectedEntry);
-  } else {
-    showTooltip(null);
   }
 }
 
-function showTooltip(entry) {
-  tooltipEntry = entry; // Keep track of current tooltip for keyboard nav
-  const tooltip = document.getElementById('tooltip');
+function showModalWithEntry(entry) {
+  const modalTitle = document.getElementById('siteModalLabel');
+  const modalBody = document.getElementById('siteModalBody');
 
-  if (!entry) {
-    tooltip.style.display = 'none';
-    cnv.elt.style.pointerEvents = 'auto';  // Restore canvas interactivity
-    return;
-  }
-
-  const capitalizeWords = (str) =>
-    str.replace(/\b\w/g, c => c.toUpperCase());
-
+  const capitalizeWords = (str) => str.replace(/\b\w/g, c => c.toUpperCase());
   const formatArray = (arr) =>
     Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
 
   let lines = [];
 
-  if (entry.activities && entry.activities.length) lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
+  if (entry.activities?.length) lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
   if (!isNaN(entry.megawatts)) lines.push(`<strong>System Size:</strong> ${entry.megawatts} MW`);
   if (!isNaN(entry.acres)) lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
   if (entry.year) lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
   if (entry.arrayType) lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
-  if (entry.habitat && entry.habitat.length) lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
-  if (entry.cropType && entry.cropType.length) lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
-  if (entry.animalType && entry.animalType.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
+  if (entry.habitat?.length) lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
+  if (entry.cropType?.length) lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
+  if (entry.animalType?.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
 
-
- // Build tooltip HTML with name shown once in <h4> at top
-  tooltip.innerHTML = `
-    <div id="tooltip-header" style="display:flex; justify-content: space-between; align-items: center;">
-      <a class="hyperlink-tooltip" href="${entry.url}" target="_blank" rel="noopener noreferrer" title="Open in new window">
-        <h4 style="margin:0; display: inline;">
-          ${entry.name} <span aria-hidden="true">${combinedIcon}</span>
-        </h4>
-      </a>
-      <button id="tooltip-close" aria-label="Close tooltip" style="font-size:1.2em; cursor:pointer;">✕</button>
-    </div>
-    <div id="tooltip-content" style="margin-top: 0.5em;">
-      ${lines.join('<br>')}
-    </div>
+  modalTitle.textContent = entry.name;
+  modalBody.innerHTML = `
+    ${lines.join('<br>')}
+    ${entry.url ? `<br><a href="${entry.url}" target="_blank" rel="noopener noreferrer">Visit Site</a>` : ''}
   `;
 
-  const closeButton = document.getElementById('tooltip-close');
-  if (closeButton) {
-    closeButton.addEventListener('click', () => {
-      selectedEntry = null;
-      tooltipEntry = null;
-      tooltip.style.display = 'none';
-    });
-  }
-
-  // Position tooltip (your existing code below)
-  let canvasRect = cnv.elt.getBoundingClientRect();
-  let left = canvasRect.left + entry.x + 15;
-  let top = canvasRect.top + entry.y + 15;
-
-  left = Math.min(
-    Math.max(left, 10),
-    window.innerWidth - tooltip.offsetWidth - 10
-  );
-
-  top = Math.min(
-    Math.max(top, 10),
-    window.innerHeight - tooltip.offsetHeight - 10
-  );
-
-  tooltip.style.left = left + 'px';
-  tooltip.style.top = top + 'px';
-  tooltip.style.display = 'block';
-
-  cnv.elt.style.pointerEvents = 'none';  // Allow tooltip elements to receive clicks
+  const siteModal = new bootstrap.Modal(document.getElementById('siteModal'));
+  siteModal.show();
 }
+
 
 function mouseMoved() {
   // Skip hover detection on touch devices
   if ('ontouchstart' in window) return;
+
+  // Disable hover when Bootstrap modal is open
+  const modalElement = document.getElementById('siteModal');
+  if (modalElement && modalElement.classList.contains('show')) {
+    hoveredEntry = null;
+    cursor('default');
+    return;
+  }
 
   let yearEntries = entriesByYear[selectedYear] || [];
   let shapeSizeEstimate = 150;
@@ -592,28 +528,11 @@ function mouseMoved() {
       break;
     }
   }
+
   cursor(hovering ? 'pointer' : 'default');
 }
 
-
 function mousePressed() {
-  const tooltip = document.getElementById('tooltip');
-  const canvasRect = cnv.elt.getBoundingClientRect();
-  const absMouseX = canvasRect.left + mouseX;
-  const absMouseY = canvasRect.top + mouseY;
-  const target = document.elementFromPoint(absMouseX, absMouseY);
-
-  // Allow link clicks inside tooltip
-  if (tooltip.contains(target) && (target.tagName === 'A' || target.closest('a'))) {
-    return true;
-  }
-
-  // Do nothing if clicking inside tooltip (but not a link)
-  if (tooltip.contains(target)) {
-    return false;
-  }
-
-  // Handle clicking on a site shape
   let yearEntries = entriesByYear[selectedYear] || [];
   let padding = map(yearEntries.length, 10, 120, 60, 15);
   let shapeSizeEstimate = 150;
@@ -621,8 +540,6 @@ function mousePressed() {
   let baseShapeSize = map(yearEntries.length, 10, 120, 140, 50);
   let numCols = floor((width - padding) / (baseShapeSize + padding));
   numCols = max(numCols, 1);
-
-  let foundEntry = null;
 
   for (let i = 0; i < yearEntries.length; i++) {
     let col = i % numCols;
@@ -639,87 +556,71 @@ function mousePressed() {
 
     let d = dist(mouseX, mouseY, centerX, centerY);
     if (d < entryShapeSize / 2) {
-      foundEntry = { ...entry, x: centerX, y: centerY };
+      showModalWithEntry(entry); 
       break;
     }
-  }
-
-  // Show tooltip if a site is clicked, otherwise close it
-  if (foundEntry) {
-    selectedEntry = foundEntry;
-    showTooltip(selectedEntry);
-  } else {
-    selectedEntry = null;
-    tooltipEntry = null;
-    tooltip.style.display = 'none';
   }
 }
 
 function keyPressed() {
-  const tooltip = document.getElementById('tooltip');
   const yearEntries = entriesByYear[selectedYear];
-  if (!yearEntries) return;
+  if (!yearEntries || yearEntries.length === 0) return;
 
-  // ESC closes tooltip
-  if (keyCode === ESCAPE) {
-    selectedEntry = null;
-    tooltipEntry = null;
-    tooltip.style.display = 'none';
+  const modalElement = document.getElementById('siteModal');
+  const modalVisible = modalElement.classList.contains('show');
+
+  // ESC closes modal if open
+  if (keyCode === ESCAPE && modalVisible) {
+    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+    if (modalInstance) modalInstance.hide();
     return;
   }
 
-  // If a site is selected, allow arrow navigation between entries
-  if (selectedEntry) {
-    const currentIndex = yearEntries.findIndex(e => e.name === selectedEntry.name);
+  // Modal navigation: LEFT/RIGHT arrows move to previous/next entry
+  if (modalVisible && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
+    const modalTitle = document.getElementById('siteModalLabel');
+    if (!modalTitle) return;
+
+    const currentName = modalTitle.textContent.trim();
+    const currentIndex = yearEntries.findIndex(e => e.name === currentName);
     if (currentIndex === -1) return;
 
-    let padding = map(yearEntries.length, 10, 120, 60, 15);
-    let baseShapeSize = map(yearEntries.length, 10, 120, 140, 50);
-    let startY = 80;
-    let numCols = floor((width - padding) / (baseShapeSize + padding));
-    numCols = max(numCols, 1);
-
-    let newIndex = currentIndex;
-
-    if (keyCode === RIGHT_ARROW && currentIndex < yearEntries.length - 1) {
-      newIndex++;
-    } else if (keyCode === LEFT_ARROW && currentIndex > 0) {
-      newIndex--;
-    }
+    let newIndex = currentIndex + (keyCode === RIGHT_ARROW ? 1 : -1);
+    newIndex = constrain(newIndex, 0, yearEntries.length - 1);
 
     if (newIndex !== currentIndex) {
-      let col = newIndex % numCols;
-      let row = floor(newIndex / numCols);
-      let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
-      let centerY = startY + row * ((height - startY - 50) / ceil(yearEntries.length / numCols)) +
-                    ((height - startY - 50) / ceil(yearEntries.length / numCols)) / 2;
-
-      selectedEntry = { ...yearEntries[newIndex], x: centerX, y: centerY };
-      showTooltip(selectedEntry);
+      showModalWithEntry(yearEntries[newIndex]);
     }
+    return;
   }
 
-  // If no site is selected, allow year navigation with LEFT/RIGHT arrows
+  // Global year navigation (when modal is not open)
   const currentYearIndex = availableYears.indexOf(selectedYear);
-
-  if (!selectedEntry && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
+  if (!modalVisible && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
     const delta = keyCode === RIGHT_ARROW ? 1 : -1;
     const newIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
     if (newIndex !== currentYearIndex) {
       selectedYear = availableYears[newIndex];
       updateYear(selectedYear, newIndex);
     }
+    return;
   }
 
-  // HOME/END to jump to first/last year
-  if (keyCode === HOME) {
+  // HOME to go to first year
+  if (!modalVisible && keyCode === HOME) {
     selectedYear = availableYears[0];
     updateYear(selectedYear, 0);
-  } else if (keyCode === END) {
+    return;
+  }
+
+  // END to go to last year
+  if (!modalVisible && keyCode === END) {
     selectedYear = availableYears[availableYears.length - 1];
     updateYear(selectedYear, availableYears.length - 1);
+    return;
   }
 }
+
 
 
 function updateYear(year, index) {
