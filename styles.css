@@ -633,132 +633,106 @@ a.hyperlink:focus {
   }
 }
 
-/* Modal backdrop: dark, almost black but slightly textured */
+/* Modal backdrop */
 .modal-backdrop.show {
-  background-color: rgba(10, 10, 10, 0.9); /* heavy dark overlay */
-  backdrop-filter: contrast(120%) brightness(85%);
+  background-color: rgba(10, 10, 10, 0.85);
 }
 
-/* Modal container itself */
+/* Modal container */
 .modal-content {
-  background-color: #353839; /* your page bg */
-  border: 8px solid white;   /* strong white frame */
-  border-top-width: 12px;    /* asymmetry: heavier top */
-  border-left-width: 14px;   /* stronger left side */
-  border-bottom-width: 6px;  /* lighter bottom */
-  border-right-width: 4px;   /* minimal right side */
-  border-style: solid;
-  box-shadow:
-    4px 2px 0 #0A0A0A,
-    7px 5px 0 white,
-    -3px 4px 0 #0A0A0A; /* layered shadows for depth */
-  border-radius: 0; /* keep hard edges */
-  padding: 2rem 3rem;
-  font-family: Helvetica, Arial, sans-serif;
+  background-color: #353839; /* page background */
+  border: 6px solid white;  /* simple bold white frame */
+  border-left-width: 10px;  /* slight asymmetry on left */
+  border-top-width: 8px;    /* heavier top */
+  border-radius: 0;         /* sharp edges */
+  padding: 1.5rem 2rem;
   color: white;
-  position: relative;
-  overflow: hidden;
+  font-family: Helvetica, Arial, sans-serif;
+  box-shadow: none;         /* remove layered shadows for simplicity */
 }
 
 /* Modal header */
 .modal-header {
-  border-bottom: 3px solid white;
+  border-bottom: 2px solid white;
   padding-bottom: 0.5rem;
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   color: white;
-  filter:
-    drop-shadow(2px 1px 0 #0A0A0A)
-    drop-shadow(4px 3px 0 white);
   background: transparent;
 }
 
-/* Modal body: add subtle geometric accent lines */
+/* Modal body */
 .modal-body {
-  position: relative;
-  font-size: 1.125rem;
-  line-height: 1.4;
+  font-size: 1rem;
+  line-height: 1.5;
   color: white;
-  background: #353839;
+  background: transparent;
   padding-top: 1rem;
-  padding-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  position: relative;
 }
 
-/* Add subtle Op Art style geometric shapes inside modal body */
-/* For example, a faint diagonal stripe pattern overlay */
-.modal-body::before {
+/* Optional subtle geometric accent: a single thin white line in bottom-left corner */
+.modal-body::after {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background:
-    repeating-linear-gradient(
-      45deg,
-      rgba(255,255,255,0.05),
-      rgba(255,255,255,0.05) 4px,
-      transparent 4px,
-      transparent 8px
-    );
+  bottom: 10px;
+  left: 10px;
+  width: 40px;
+  height: 2px;
+  background: white;
+  transform: rotate(20deg);
+  opacity: 0.15;
   pointer-events: none;
-  z-index: 0;
 }
 
-/* Modal footer - align buttons with sharp edges */
+/* Modal footer */
 .modal-footer {
-  border-top: 3px solid white;
+  border-top: 2px solid white;
   padding-top: 0.5rem;
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
 }
 
-/* Buttons with Suprematism style */
+/* Buttons */
 .modal-footer .btn {
   background: white;
   color: #353839;
   font-weight: bold;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  border: 3px solid #0A0A0A;
+  letter-spacing: 0.05em;
+  border: none;
   border-radius: 0;
-  box-shadow:
-    2px 1px 0 #0A0A0A,
-    4px 3px 0 white;
   padding: 0.5rem 1.25rem;
   transition: background-color 0.3s ease, color 0.3s ease;
+  box-shadow: none;
 }
 
 .modal-footer .btn:hover,
 .modal-footer .btn:focus {
   background: #00D9F5;
   color: #0A0A0A;
-  border-color: #004C8F;
-  box-shadow:
-    3px 2px 0 #004C8F,
-    5px 4px 0 #00D9F5;
 }
 
-/* Close button in top right corner */
+/* Close button */
 .modal-header .btn-close {
-  filter:
-    drop-shadow(1px 1px 0 #0A0A0A)
-    drop-shadow(2px 2px 0 white);
+  filter: drop-shadow(1px 1px 0 #0A0A0A);
   opacity: 1;
   transition: filter 0.3s ease;
 }
 
 .modal-header .btn-close:hover {
-  filter:
-    drop-shadow(2px 2px 0 #004C8F)
-    drop-shadow(4px 4px 0 #00D9F5);
+  filter: drop-shadow(2px 2px 0 #00D9F5);
 }
 
-/* Responsive tweaks */
+/* Responsive adjustments */
 @media (max-width: 600px) {
   .modal-content {
-    padding: 1rem 1.5rem;
-    border-width: 6px 4px 4px 6px;
+    padding: 1rem 1.25rem;
+    border-width: 6px 4px 4px 8px;
   }
 
   .modal-header {
