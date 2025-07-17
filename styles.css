@@ -683,8 +683,8 @@ a.hyperlink:focus {
   transition: color 0.3s ease;
 }
 
-.modal-body a:hover,
-.modal-body a:focus {
+.modal-header a:hover,
+.modal-header a:focus {
   color: #4C8CF5;
   text-decoration: underline;
   outline-offset: 3px;
