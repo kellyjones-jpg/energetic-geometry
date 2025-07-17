@@ -474,16 +474,18 @@ function showModalWithEntry(entry) {
   if (entry.cropType?.length) lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
   if (entry.animalType?.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
 
-  modalTitle.textContent = entry.name;
-  modalBody.innerHTML = `
-    ${lines.join('<br>')}
-    ${entry.url ? `<br><a href="${entry.url}" target="_blank" rel="noopener noreferrer">Visit Site</a>` : ''}
-  `;
+  // If entry.url exists, wrap entry.name in an <a> tag, else just show the name
+  modalTitle.innerHTML = entry.url
+  ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">
+       ${entry.name}${combinedIcon}
+     </a>`
+  : entry.name;
+
+  modalBody.innerHTML = lines.join('<br>'); // No more Visit Site link
 
   const siteModal = new bootstrap.Modal(document.getElementById('siteModal'));
   siteModal.show();
 }
-
 
 function mouseMoved() {
   // Skip hover detection on touch devices
