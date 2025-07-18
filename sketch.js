@@ -1127,7 +1127,7 @@ function getActivityColor(activity) {
 
 function drawMinimalSite(x, y, activity = 'habitat', systemSize = 0.1, siteSize = 0.1) {
   const baseColor = getActivityColor(activity); 
-  const size = map(siteSize, 0, 10, 2, 40); 
+  const dotBaseSize = map(siteSize, 0, 10, 6, 40);       // increased minimum size from 2 to 6
   const shadowOffset = map(systemSize, 0, 10, 0.5, 6); 
 
   push();
@@ -1135,13 +1135,19 @@ function drawMinimalSite(x, y, activity = 'habitat', systemSize = 0.1, siteSize 
   noStroke();
 
   // Draw hard-edged drop shadow (Suprematist-inspired block)
-  fill(0, 100); // semi-opaque black for shadow
-  rectMode(CENTER);
-  ellipse(shadowOffset, shadowOffset, size, size);
+  fill(0, 120); // slightly stronger semi-opaque black for shadow
+  ellipse(shadowOffset, shadowOffset, dotBaseSize, dotBaseSize);
+
+  // Draw a white glow outline around the dot for contrast
+  stroke(255, 150);
+  strokeWeight(2);
+  ellipse(0, 0, dotBaseSize * 1.3, dotBaseSize * 1.3);
 
   // Draw minimal primary dot (filled shape)
+  noStroke();
   fill(baseColor);
-  ellipse(0, 0, size, size); // dot
+  ellipse(0, 0, dotBaseSize, dotBaseSize); // dot
+  
   pop();
 }
 
