@@ -404,9 +404,6 @@ function draw() {
     strokeW = constrain(strokeW, 2, 5.5);
     let baseColor = getActivityColor(entry.activities?.[0] || '');
 
-    let isHovered = hoveredEntry && hoveredEntry.name === entry.name;
-    let targetScale = isHovered ? 1.2 : 1;
-
     // Smooth transition between current and target scale
     entry.currentScale = lerp(entry.currentScale || 1, targetScale, 0.1);
 
@@ -418,11 +415,19 @@ function draw() {
       drawPVWarpStyle(entry.arrayType, entry.activities, 0, 0, entryShapeSize);
     }
 
-      let isHovered = checkHover(entry); // define how to detect hover
-      let baseGlow = map(entry.megawatts, 0, maxMW, 5, 30); // scale glow by size
-      let glowStrength = isHovered ? baseGlow * 1.5 : baseGlow;
+    let isHovered = (hoveredEntry && hoveredEntry.name === entry.name) || checkHover(entry);
+    let baseGlow = map(entry.megawatts, 0, maxMW, 5, 30);
+    let glowStrength = isHovered ? baseGlow * 1.5 : baseGlow;
+    let targetScale = isHovered ? 1.2 : 1;
 
-    let shadowInfo = drawSuprematistOpShadowRect(entryShapeSize, entry.megawatts, entry.habitat, mouseX, mouseY, entry.x, entry.y);
+    let shadowInfo = drawSuprematistOpShadowRect(
+      entryShapeSize,
+      entry.megawatts,
+      entry.habitat,
+      entry.x,
+      entry.y,
+      glowStrength
+    );
 
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
       drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor);
