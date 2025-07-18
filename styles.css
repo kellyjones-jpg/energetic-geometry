@@ -663,12 +663,6 @@ a.hyperlink:focus {
   color: #00D9F5;
 }
 
-/* Optional geometric underline */
-.modal-header h5, .modal-header h4, .modal-title {
-  position: relative;
-  display: inline-block;
-}
-
 .modal-header h5::after,
 .modal-header h4::after,
 .modal-title::after {
