@@ -418,7 +418,11 @@ function draw() {
       drawPVWarpStyle(entry.arrayType, entry.activities, 0, 0, entryShapeSize);
     }
 
-    let shadowInfo = drawSuprematistOpShadowRect(entryShapeSize, entry.megawatts, entry.habitat);
+      let isHovered = checkHover(entry); // define how to detect hover
+      let baseGlow = map(entry.megawatts, 0, maxMW, 5, 30); // scale glow by size
+      let glowStrength = isHovered ? baseGlow * 1.5 : baseGlow;
+
+    let shadowInfo = drawSuprematistOpShadowRect(entryShapeSize, entry.megawatts, entry.habitat, mouseX, mouseY, entry.x, entry.y);
 
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
       drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor);
@@ -863,14 +867,14 @@ function drawBezierLine(x, y, length) {
   );
 }
 
-// Textured line: short broken segments with jitter
 function drawTexturedLine(x, y, length) {
   let segmentLength = 6;
   let gap = 4;
   let startX = x - length / 2;
   let endX = x + length / 2;
+  let jitterY = 0; // No jitter
+
   for (let px = startX; px < endX; px += segmentLength + gap) {
-    let jitterY = random(-2, 2);
     line(px, y + jitterY, px + segmentLength, y + jitterY);
   }
 }
@@ -1114,11 +1118,11 @@ function drawMinimalSite(x, y, activity = 'habitat', systemSize = 0.1, siteSize 
   pop();
 }
 
-function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
+drawSuprematistOpShadowRect(entryShapeSize, entry.megawatts, entry.habitat, entry.x, entry.y, glowStrength); {
   let sz = constrain(systemSize || 0.1, 0.1, 10);
 
-  // Determine shape based on habitat
-  let shapeType = 'square'; // default
+  // Default shape: diamond
+  let shapeType = 'diamond';
   if (Array.isArray(habitat) && habitat.length > 0) {
     const cleaned = habitat.map(h => (h || '').trim().toLowerCase());
     if (cleaned.includes('pollinator')) shapeType = 'hexagon';
@@ -1126,22 +1130,25 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
     else if (cleaned.includes('native grasses')) shapeType = 'rect';
   }
 
-  // Define offsets and base sizes
+  // Map offsets and sizes based on system size
   let offset = map(sz, 0, 10, 2, 10);
   let shadowSize = map(sz, 0, 10, baseSize * 0.9, baseSize * 1.4);
   let highlightSize = shadowSize * 0.95;
 
-  // Aspect ratio adjustment and rotation flag
+  // Aspect ratio and rotation flag for rectangles
   let widthFactor = 1;
   let heightFactor = 1;
   let rotateRectVertical = false;
 
-  if (shapeType === 'square') {
+  if (shapeType === 'diamond') {
     widthFactor = 1;
-    heightFactor = 1.15; // slightly taller square
+    heightFactor = 1.15; // similar to square
+  } else if (shapeType === 'square') {
+    widthFactor = 1;
+    heightFactor = 1.15;
   } else if (shapeType === 'rect') {
-    widthFactor = 0.55;  // narrow
-    heightFactor = 1.6;  // tall
+    widthFactor = 0.55;
+    heightFactor = 1.6;
     rotateRectVertical = true;
   }
 
@@ -1150,11 +1157,40 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
   let highlightW = highlightSize * widthFactor;
   let highlightH = highlightSize * heightFactor;
 
+  // ----------- Glow calculations -----------
+
+  // Pulsate between 0.3 and 0.7
+  let pulse = map(sin(frameCount * 0.1), -1, 1, 0.3, 0.7);
+
+  // Check hover - simple bounding box check for diamond shape
+  // More accurate point-in-diamond test below
+  const isHover = pointInDiamond(mouseX, mouseY, posX, posY, shadowW * 0.7, shadowH * 0.7);
+
+  // Glow alpha base scaled by size and pulse
+  let baseGlowAlpha = map(sz, 0.1, 10, 50, 150) * pulse;
+
+  // Boost alpha if hovered
+  let glowAlpha = isHover ? min(baseGlowAlpha * 2.5, 255) : baseGlowAlpha;
+
+  // Glow size scaled by system size
+  let glowW = shadowW * map(sz, 0.1, 10, 1.2, 1.6);
+  let glowH = shadowH * map(sz, 0.1, 10, 1.2, 1.6);
+
+  // Glow color - cyan with alpha
+  let glowColor = color(0, 200, 255, glowAlpha);
+
   push();
   rectMode(CENTER);
   noStroke();
 
-  // Base black shadow
+  // ---- Glow layer ----
+  push();
+  fill(glowColor);
+  drawShapeByType('diamond', glowW, glowH);
+  pop();
+
+  // ---- Shadows and highlights ----
+
   fill('#0A0A0A');
   push();
   rotate(radians(-12));
@@ -1163,7 +1199,6 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
   drawShapeByType(shapeType, shadowW, shadowH);
   pop();
 
-  // White tilted highlight
   fill(255);
   push();
   rotate(radians(8));
@@ -1172,7 +1207,6 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
   drawShapeByType(shapeType, highlightW, highlightH);
   pop();
 
-  // Reverse shadow
   fill('#0A0A0A');
   push();
   rotate(radians(3));
@@ -1196,11 +1230,14 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = []) {
 
   pop();
 
+  // Return hover state & glow info if needed
   return {
     offsetX: offset * 1.4,
     offsetY: offset * 0.8,
     angle: radians(8),
-    size: highlightSize
+    size: highlightSize,
+    isHover,
+    glowAlpha,
   };
 }
 
@@ -1219,6 +1256,12 @@ function drawShapeByType(type, w, h) {
       break;
     case 'rect':
       rect(0, 0, w, h);
+      break;
+    case 'diamond':
+      push();
+      rotate(PI / 4); // Rotate square 45 degrees to get diamond
+      rect(0, 0, w, h);
+      pop();
       break;
     case 'square':
     default:
@@ -1251,6 +1294,14 @@ function pathShapeByType(type, size) {
       ctx.rect(-size * 0.275, -size * 0.5, size * 0.55, size);
       break;
 
+    case 'diamond':
+      ctx.moveTo(0, -r);
+      ctx.lineTo(r, 0);
+      ctx.lineTo(0, r);
+      ctx.lineTo(-r, 0);
+      ctx.closePath();
+      break;
+
     case 'square':
     default:
       ctx.rect(-r, -r, size, size);
@@ -1269,28 +1320,31 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
   translate(x, y);
   noFill();
   strokeWeight(3.5);
+  blendMode(ADD); // Optional: enhances glow-style overlap
 
   switch (warpStyle) {
     case 'linear':
-      for (let i = -size; i <= size; i += 10) {
-        let colorIndex = Math.floor((i + size) / 10) % activities.length;
-        stroke(getActivityColor(activities[colorIndex]));
-        line(i, -size, 0, size);
+      for (let i = -size; i <= size; i += 8) {
+        let offset = sin((frameCount + i) * 0.05) * 10; // wave for movement
+        let colorIndex = Math.floor((i + size) / 8) % activities.length;
+        stroke(getActivityColor(activities[colorIndex])); // Bright contrasting color
+        line(i, -size + offset, -i * 0.2, size - offset); // Diagonal distortion
       }
       break;
 
     case 'symmetric':
-      for (let i = 0; i < size; i += 5) {
-        let yOffset = sin(i * 0.1) * 10;
-        let colorIndex = Math.floor(i / 5) % activities.length;
+      for (let i = 0; i < size; i += 4) {
+        let yOffset = sin((i + frameCount) * 0.12) * 12; // More pronounced wave
+        let colorIndex = Math.floor(i / 4) % activities.length;
         stroke(getActivityColor(activities[colorIndex]));
         line(-size / 2 + i, -yOffset, -size / 2 + i, yOffset);
       }
       break;
 
     case 'radial':
-      for (let r = 10, idx = 0; r < size / 2; r += 10, idx++) {
+      for (let r = 12, idx = 0; r < size; r += 10, idx++) {
         stroke(getActivityColor(activities[idx % activities.length]));
+        strokeWeight(2 + sin((frameCount + r) * 0.1) * 1.5); // Pulse thickness
         ellipse(0, 0, r * 2, r * 2);
       }
       break;
