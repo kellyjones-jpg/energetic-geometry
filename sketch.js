@@ -404,7 +404,7 @@ function draw() {
     strokeW = constrain(strokeW, 2, 5.5);
     let baseColor = getActivityColor(entry.activities?.[0] || '');
 
-    let isHovered = (hoveredEntry && hoveredEntry.name === entry.name) || checkHover(entry);
+    let isHovered = hoveredEntry && hoveredEntry.name === entry.name;
     let baseGlow = map(entry.megawatts, 0, maxMW, 5, 30);
     let glowStrength = isHovered ? baseGlow * 1.5 : baseGlow;
     let targetScale = isHovered ? 1.2 : 1;
