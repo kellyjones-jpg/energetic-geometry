@@ -434,13 +434,14 @@ function draw() {
 
     // Draw suprematist shadow shape with glow
     const shadowInfo = drawSuprematistOpShadowRect(
-      entryShapeSize,
-      entry.megawatts,
-      entry.habitat,
-      entry.x,
-      entry.y,
-      glowStrength,
-      isHovered
+      baseSize,
+      systemSize,
+      site.habitatArray,
+      x,
+      y,
+      10,
+      isHovered,
+      site.animalLineType // pass this in as the last argument
     );
 
     // Draw habitat shapes
@@ -1125,42 +1126,50 @@ function getActivityColor(activity) {
   }
 }
 
-function drawMinimalSite(x, y, activity = 'habitat', systemSize = 0.1, siteSize = 0.1) {
+function drawMinimalSite(site) {
+  const { x, y, activity = 'habitat', systemSize = 0.1, siteSize = 0.1 } = site;
+
   const baseColor = getActivityColor(activity); 
-  const dotBaseSize = map(siteSize, 0, 15, 11, 45);      
-  const shadowOffset = map(systemSize, 0, 10, 0.5, 6); 
+  const dotBaseSize = map(siteSize, 0, 10, 16, 60);       // Boosted min/max size
+  const shadowOffset = map(systemSize, 0, 10, 1, 8);      // Optional: adjust if larger systems need more offset
 
   push();
   translate(x, y);
   noStroke();
 
-  // Draw hard-edged drop shadow (Suprematist-inspired block)
-  fill(0, 120); // slightly stronger semi-opaque black for shadow
+  // Suprematist-style drop shadow
+  fill(0, 140); 
   ellipse(shadowOffset, shadowOffset, dotBaseSize, dotBaseSize);
 
-  // Draw a white glow outline around the dot for contrast
-  stroke(255, 150);
-  strokeWeight(2);
-  ellipse(0, 0, dotBaseSize * 1.3, dotBaseSize * 1.3);
+  // White glow ring
+  stroke(255, 200);              // Brighter glow
+  strokeWeight(dotBaseSize * 0.25); // Glow thickness scales with dot size
+  ellipse(0, 0, dotBaseSize * 1.5, dotBaseSize * 1.5);
 
-  // Draw minimal primary dot (filled shape)
+  // Core dot
   noStroke();
   fill(baseColor);
-  ellipse(0, 0, dotBaseSize, dotBaseSize); // dot
-  
+  ellipse(0, 0, dotBaseSize, dotBaseSize);
   pop();
 }
 
-function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, posY, glowStrength = 10, isHover = false) {
+function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, posY, glowStrength = 10, isHover = false, animalLineType = '') {
   let sz = constrain(systemSize || 0.1, 0.1, 10);
 
-  // Default shape: diamond
-  let shapeType = 'diamond';
+  let shapeType = 'diamond'; // fallback
+
   if (Array.isArray(habitat) && habitat.length > 0) {
     const cleaned = habitat.map(h => (h || '').trim().toLowerCase());
-    if (cleaned.includes('pollinator')) shapeType = 'hexagon';
-    else if (cleaned.includes('naturalized')) shapeType = 'ellipse';
-    else if (cleaned.includes('native grasses')) shapeType = 'rect';
+    if (cleaned.includes('pollinator')) {
+      shapeType = 'hexagon';
+    } else if (cleaned.includes('naturalized')) {
+      shapeType = 'ellipse';
+    } else if (cleaned.includes('native grasses')) {
+      shapeType = 'rect';
+    }
+  } else if (animalLineType) {
+    // Use animal line type as shapeType fallback
+    shapeType = animalLineType.toLowerCase();
   }
 
   // Map offsets and sizes based on system size
