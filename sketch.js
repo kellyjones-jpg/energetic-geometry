@@ -1169,7 +1169,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], x, y, g
 
   // Check hover - simple bounding box check for diamond shape
   // More accurate point-in-diamond test below
-  const isHover = pointInDiamond(mouseX, mouseY, posX, posY, shadowW * 0.7, shadowH * 0.7);
+ isHover = pointInDiamond(mouseX, mouseY, posX, posY, shadowW * 0.7, shadowH * 0.7);
 
   // Glow alpha base scaled by size and pulse
   let baseGlowAlpha = map(sz, 0.1, 10, 50, 150) * pulse;
