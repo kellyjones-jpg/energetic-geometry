@@ -459,14 +459,12 @@ function showModalWithEntry(entry) {
   const modalTitle = document.getElementById('siteModalLabel');
   const modalBody = document.querySelector('#modal .modal-body');
 
-  // If entry.url exists, wrap entry.name in an <a> tag
   modalTitle.innerHTML = entry.url
     ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">
-         ${entry.name}${combinedIcon}
+         ${entry.name}${combinedIcon || ''}
        </a>`
     : entry.name;
 
-  // Use the new builder function
   modalBody.innerHTML = buildModalContent(entry);
 
   const siteModal = new bootstrap.Modal(document.getElementById('siteModal'));
@@ -535,46 +533,63 @@ function buildModalContent(site) {
     habitat: '#d33682'
   };
 
-  const activitySpans = site['Agrivoltaic Activities']
-    .split(',')
-    .map(a => a.trim().toLowerCase())
-    .map(a => colorDot(activityColors[a] || '#ccc') + a.charAt(0).toUpperCase() + a.slice(1))
-    .join(', ');
+  // Utility function to split, trim, lowercase
+  const splitAndClean = (str) =>
+    str && typeof str === 'string'
+      ? str.split(',').map(s => s.trim().toLowerCase()).filter(s => s.length > 0)
+      : [];
 
-  const contentHTML = `
-    <h5 class="mb-3">Site: ${site['Name']}</h5>
+  // Process Agrivoltaic Activities
+  const activities = splitAndClean(site['Agrivoltaic Activities']);
+  const activitySpans = activities.length > 0
+    ? activities.map(a => colorDot(activityColors[a] || '#ccc') + a.charAt(0).toUpperCase() + a.slice(1)).join(', ')
+    : '(None)';
+
+  // Process Crop Types
+  const cropTypes = splitAndClean(site['Crop Type']);
+  const cropTypeSpans = cropTypes.length > 0
+    ? cropTypes.map(t => cropVisual(t) + t.charAt(0).toUpperCase() + t.slice(1)).join(', ')
+    : '(None)';
+
+  // Process Habitat Types
+  const habitatTypes = splitAndClean(site['Habitat Type']);
+  const habitatTypeSpans = habitatTypes.length > 0
+    ? habitatTypes.map(t => habitatShape(t) + t.charAt(0).toUpperCase() + t.slice(1)).join(', ')
+    : '(None)';
+
+  // Process Animal Types
+  const animalTypes = splitAndClean(site['Animal Type']);
+  const animalTypeSpans = animalTypes.length > 0
+    ? animalTypes.map(t => animalLine(t) + t.charAt(0).toUpperCase() + t.slice(1)).join(', ')
+    : '(None)';
+
+  // Process Array Type (often single, but handle multiple anyway)
+  const arrayTypes = splitAndClean(site['Array Type']);
+  const arrayTypeSpans = arrayTypes.length > 0
+    ? arrayTypes.map(t => arrayVisual(t) + t.charAt(0).toUpperCase() + t.slice(1)).join(', ')
+    : '(Unknown)';
+
+  // System Size fallback
+  const systemSize = site['System Size'] || 'N/A';
+
+  // Site name fallback
+  const siteName = site['Name'] || 'Unnamed Site';
+
+  return `
+    <h5 class="mb-3">Site: ${siteName}</h5>
     <p>
-      <strong>System Size:</strong>
-      ${systemSizeVisual()}
-      ${site['System Size']}<br>
-
-      <strong>Array Type:</strong>
-      ${arrayVisual(site['Array Type'])}
-      ${site['Array Type']}<br>
-
-      <strong>Agrivoltaic Activities:</strong>
-      ${activitySpans}<br>
-
-      <strong>Crop Type:</strong>
-      ${cropVisual(site['Crop Type'])}
-      ${site['Crop Type']}<br>
-
-      <strong>Habitat Type:</strong>
-      ${habitatShape(site['Habitat Type'])}
-      ${site['Habitat Type']}<br>
-
-      <strong>Animal Type:</strong>
-      ${animalLine(site['Animal Type'])}
-      ${site['Animal Type']}<br>
+      <strong>System Size:</strong> ${systemSizeVisual()} ${systemSize}<br>
+      <strong>Array Type:</strong> ${arrayTypeSpans}<br>
+      <strong>Agrivoltaic Activities:</strong> ${activitySpans}<br>
+      <strong>Crop Type:</strong> ${cropTypeSpans}<br>
+      <strong>Habitat Type:</strong> ${habitatTypeSpans}<br>
+      <strong>Animal Type:</strong> ${animalTypeSpans}<br>
     </p>
-
     <hr>
     <p class="text-muted small mt-2">
       View full encoding guide on the <a href="help.html" target="_blank">Help page</a>.
     </p>
   `;
-
-  return contentHTML;
 }
 
 function mouseMoved() {
@@ -712,8 +727,6 @@ function keyPressed() {
     return;
   }
 }
-
-
 
 function updateYear(year, index) {
   windowResized();
