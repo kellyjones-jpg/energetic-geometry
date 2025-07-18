@@ -1198,7 +1198,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
   let glowH = shadowH * map(sz, 0.1, 10, 1.2, 1.6);
 
   // Glow color 
-  let glowColor = color(10, 10, 10, glowAlpha);
+  let glowColor = color(255, 255, 255, glowAlpha);
 
   push();
   rectMode(CENTER);
