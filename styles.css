@@ -635,32 +635,49 @@ a.hyperlink:focus {
 
 /* Modal backdrop */
 .modal-backdrop.show {
-  background-color: rgba(10, 10, 10, 0.9);
+  background-color: rgba(0, 0, 0, 0.92); /* deeper black */
 }
 
 /* Modal container */
 .modal-content {
-  background-color: #353839;
+  background-color: #0A0A0A;  /* pure black for bold contrast */
   border: 8px solid white;
-  border-left-width: 12px; /* subtle asymmetry */
+  border-left-width: 12px;
   border-top-width: 12px;
   border-radius: 0;
   padding: 2rem 2rem;
   color: white;
   font-family: Helvetica, Arial, sans-serif;
-  box-shadow: none;
 }
 
 /* Modal header */
 .modal-header {
   border-bottom: 2px solid white;
+  background-color: transparent;
+  padding-bottom: 0.5rem;
   font-weight: bold;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   font-size: 1.6rem;
-  color: white;
-  padding-bottom: 0.5rem;
-  background: transparent;
+  color: #00D9F5; /* hyperlink blue applied here */
+}
+
+/* Optional: Suprematist-style underline for header */
+.modal-header h5, .modal-header h4, .modal-title {
+  position: relative;
+  display: inline-block;
+}
+
+.modal-header h5::after,
+.modal-header h4::after,
+.modal-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 2px;
+  background-color: #00D9F5;
 }
 
 /* Modal body */
@@ -668,34 +685,32 @@ a.hyperlink:focus {
   font-size: 1rem;
   line-height: 1.5;
   color: white;
-  background: transparent;
+  background-color: #0A0A0A;
   padding-top: 1rem;
   padding-bottom: 1.5rem;
 }
 
-/* Hyperlinks styled in blue with strong contrast */
+/* Hyperlinks inside modal */
 .modal-body a,
 .modal-body a:visited {
   color: #00D9F5;
   font-weight: bold;
   text-decoration: none;
   letter-spacing: 0.03em;
-  transition: color 0.3s ease;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
 }
 
-.modal-header a:hover,
-.modal-header a:focus {
+.modal-body a:hover,
+.modal-body a:focus {
   color: #4C8CF5;
   text-decoration: underline;
-  outline-offset: 3px;
-  outline-color: #4C8CF5;
-  outline-style: solid;
-  outline-width: 1.5px;
+  outline: none;
 }
 
 /* Modal footer */
 .modal-footer {
   border-top: 2px solid white;
+  background-color: #0A0A0A;
   padding-top: 0.5rem;
   display: flex;
   justify-content: flex-end;
@@ -705,14 +720,13 @@ a.hyperlink:focus {
 /* Buttons */
 .modal-footer .btn {
   background: white;
-  color: #353839;
+  color: #0A0A0A;
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border: none;
   border-radius: 0;
   padding: 0.5rem 1.25rem;
-  box-shadow: none;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -726,14 +740,13 @@ a.hyperlink:focus {
 .modal-header .btn-close {
   filter: drop-shadow(1px 1px 0 #0A0A0A);
   opacity: 1;
-  transition: filter 0.3s ease;
 }
 
 .modal-header .btn-close:hover {
   filter: drop-shadow(2px 2px 0 #00D9F5);
 }
 
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 600px) {
   .modal-content {
     padding: 1rem 1.25rem;
@@ -749,4 +762,3 @@ a.hyperlink:focus {
     font-size: 0.9rem;
   }
 }
-
