@@ -1127,7 +1127,7 @@ function getActivityColor(activity) {
 
 function drawMinimalSite(x, y, activity = 'habitat', systemSize = 0.1, siteSize = 0.1) {
   const baseColor = getActivityColor(activity); 
-  const dotBaseSize = map(siteSize, 0, 10, 6, 40);       // increased minimum size from 2 to 6
+  const dotBaseSize = map(siteSize, 0, 15, 11, 45);      
   const shadowOffset = map(systemSize, 0, 10, 0.5, 6); 
 
   push();
