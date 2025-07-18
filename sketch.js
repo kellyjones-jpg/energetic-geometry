@@ -457,34 +457,124 @@ function draw() {
 
 function showModalWithEntry(entry) {
   const modalTitle = document.getElementById('siteModalLabel');
-  const modalBody = document.getElementById('siteModalBody');
+  const modalBody = document.querySelector('#modal .modal-body');
 
-  const capitalizeWords = (str) => str.replace(/\b\w/g, c => c.toUpperCase());
-  const formatArray = (arr) =>
-    Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
-
-  let lines = [];
-
-  if (entry.activities?.length) lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
-  if (!isNaN(entry.megawatts)) lines.push(`<strong>System Size:</strong> ${entry.megawatts} MW`);
-  if (!isNaN(entry.acres)) lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
-  if (entry.year) lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
-  if (entry.arrayType) lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
-  if (entry.habitat?.length) lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
-  if (entry.cropType?.length) lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
-  if (entry.animalType?.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
-
-  // If entry.url exists, wrap entry.name in an <a> tag, else just show the name
+  // If entry.url exists, wrap entry.name in an <a> tag
   modalTitle.innerHTML = entry.url
-  ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">
-       ${entry.name}${combinedIcon}
-     </a>`
-  : entry.name;
+    ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">
+         ${entry.name}${combinedIcon}
+       </a>`
+    : entry.name;
 
-  modalBody.innerHTML = lines.join('<br>'); // No more Visit Site link
+  // Use the new builder function
+  modalBody.innerHTML = buildModalContent(entry);
 
   const siteModal = new bootstrap.Modal(document.getElementById('siteModal'));
   siteModal.show();
+}
+
+function buildModalContent(site) {
+  // Helper: creates colored dot
+  const colorDot = (color) =>
+    `<span style="display:inline-block;width:12px;height:12px;background:${color};margin-right:4px;border-radius:50%;"></span>`;
+
+  // Helper: creates simple stroke-line animal visual
+  const animalLine = (type) => {
+    let stroke = "#000";
+    let pattern = "0";
+    if (type === "sheep") pattern = "4,2";
+    if (type === "goats") pattern = "2,2";
+    return `<svg width="20" height="10" style="margin-right:4px;vertical-align:middle;">
+              <line x1="0" y1="5" x2="20" y2="5" stroke="${stroke}" stroke-width="2" stroke-dasharray="${pattern}" />
+            </svg>`;
+  };
+
+  // Helper: habitat shape visual
+  const habitatShape = (type) => {
+    let shape = '';
+    if (type === 'herbaceous') {
+      shape = `<rect x="2" y="2" width="10" height="10" stroke="#222" fill="#f0f0f0" stroke-width="2"/>`;
+    } else if (type === 'woody') {
+      shape = `<circle cx="7" cy="7" r="5" stroke="#222" fill="#e0e0e0" stroke-width="2"/>`;
+    }
+    return `<svg width="14" height="14" style="margin-right:4px;vertical-align:middle;">${shape}</svg>`;
+  };
+
+  // Helper: crop type visual
+  const cropVisual = (type) => {
+    let path = '';
+    if (type.includes("leafy")) {
+      path = `<path d="M2,12 Q7,2 12,12" stroke="#222" fill="none" stroke-width="2"/>`;
+    } else if (type.includes("root")) {
+      path = `<path d="M2,2 Q7,12 12,2" stroke="#222" fill="none" stroke-width="2"/>`;
+    } else {
+      path = `<circle cx="7" cy="7" r="4" stroke="#222" fill="none" stroke-width="2"/>`;
+    }
+    return `<svg width="14" height="14" style="margin-right:4px;vertical-align:middle;">${path}</svg>`;
+  };
+
+  // Helper: system size shape
+  const systemSizeVisual = () => {
+    return `<span style="display:inline-block;width:12px;height:12px;background:#000;margin-right:4px;border-radius:2px;box-shadow:0 0 4px 2px #000;"></span>`;
+  };
+
+  // Helper: array type pattern
+  const arrayVisual = (type) => {
+    let bg = 'linear-gradient(45deg, #999 25%, #fff 25%, #fff 50%, #999 50%, #999 75%, #fff 75%)';
+    if (type.toLowerCase().includes('single-axis')) {
+      bg = 'repeating-linear-gradient(135deg, #000, #000 2px, #fff 2px, #fff 4px)';
+    }
+    return `<span style="display:inline-block;width:12px;height:12px;background:${bg};margin-right:4px;"></span>`;
+  };
+
+  // Activity colors (match your encoded styles)
+  const activityColors = {
+    grazing: '#b5d334',
+    cultivation: '#f69d29',
+    research: '#39a0ed',
+    habitat: '#d33682'
+  };
+
+  const activitySpans = site['Agrivoltaic Activities']
+    .split(',')
+    .map(a => a.trim().toLowerCase())
+    .map(a => colorDot(activityColors[a] || '#ccc') + a.charAt(0).toUpperCase() + a.slice(1))
+    .join(', ');
+
+  const contentHTML = `
+    <h5 class="mb-3">Site: ${site['Name']}</h5>
+    <p>
+      <strong>System Size:</strong>
+      ${systemSizeVisual()}
+      ${site['System Size']}<br>
+
+      <strong>Array Type:</strong>
+      ${arrayVisual(site['Array Type'])}
+      ${site['Array Type']}<br>
+
+      <strong>Agrivoltaic Activities:</strong>
+      ${activitySpans}<br>
+
+      <strong>Crop Type:</strong>
+      ${cropVisual(site['Crop Type'])}
+      ${site['Crop Type']}<br>
+
+      <strong>Habitat Type:</strong>
+      ${habitatShape(site['Habitat Type'])}
+      ${site['Habitat Type']}<br>
+
+      <strong>Animal Type:</strong>
+      ${animalLine(site['Animal Type'])}
+      ${site['Animal Type']}<br>
+    </p>
+
+    <hr>
+    <p class="text-muted small mt-2">
+      View full encoding guide on the <a href="help.html" target="_blank">Help page</a>.
+    </p>
+  `;
+
+  return contentHTML;
 }
 
 function mouseMoved() {
