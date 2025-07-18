@@ -1123,7 +1123,7 @@ function drawMinimalSite(x, y, activity = 'habitat', systemSize = 0.1, siteSize 
   pop();
 }
 
-drawSuprematistOpShadowRect(entryShapeSize, entry.megawatts, entry.habitat, entry.x, entry.y, glowStrength); {
+function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], x, y, glowStrength, isHover = false) {
   let sz = constrain(systemSize || 0.1, 0.1, 10);
 
   // Default shape: diamond
@@ -1235,7 +1235,7 @@ drawSuprematistOpShadowRect(entryShapeSize, entry.megawatts, entry.habitat, entr
 
   pop();
 
-  // Return hover state & glow info if needed
+ // Return hover state & glow info
   return {
     offsetX: offset * 1.4,
     offsetY: offset * 0.8,
