@@ -1207,7 +1207,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
   // Glow layer
   push();
   fill(glowColor);
-  drawShapeByType('diamond', glowW, glowH);
+  drawShapeByType(shapeType, glowW, glowH);
   pop();
 
   // Shadows and highlights
