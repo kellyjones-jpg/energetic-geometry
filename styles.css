@@ -756,7 +756,7 @@ a.hyperlink:focus {
     font-size: 1.3rem;
     margin-top: 1em;
     margin-bottom: 1em;
-    margin-left: 0.5em;
+    margin-right: 0.5em;
   }
 
   .modal-footer .btn {
