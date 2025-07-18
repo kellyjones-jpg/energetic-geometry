@@ -343,102 +343,121 @@ function draw() {
   // Draw background image dimmed and semi-transparent
   image(bgImg, 0, 0, width, height);
   noStroke();
-  rectMode(CORNER);          
-  fill(0, 145);              
-  rect(0, 0, width, height); 
-  rectMode(CENTER);          
-  
- // === MINIMAL SUPREMATIST YEAR LABEL ===
-    let centerX = width / 2;
-    let labelY = 40;
-    let yearY = labelY + 40;
+  rectMode(CORNER);
+  fill(0, 145);
+  rect(0, 0, width, height);
+  rectMode(CENTER);
 
-    // Label: smaller
-    textFont('Helvetica');
-    textSize(28);
-    textAlign(CENTER, BOTTOM);
-    fill(255);
-    text("Year Installed:", centerX, labelY);
+  // === MINIMAL SUPREMATIST YEAR LABEL ===
+  const centerX = width / 2;
+  const labelY = 40;
+  const yearY = labelY + 40;
 
-    // Year: larger + bold
-    textStyle(BOLD);
-    textSize(36);
-    text(" " + selectedYear, centerX, yearY);
-    textStyle(NORMAL); // Reset for future text
+  textFont('Helvetica');
+  textSize(28);
+  textAlign(CENTER, BOTTOM);
+  fill(255);
+  text("Year Installed:", centerX, labelY);
 
-    // Underline (aligned with selectedYear)
-    let lineY = yearY + 6;
-    let lineWidth = textWidth(selectedYear) + 40;
-    stroke('#0A0A0A');
-    strokeWeight(3);
-    line(centerX - lineWidth / 2, lineY, centerX + lineWidth / 2, lineY);
-    noStroke();
+  textStyle(BOLD);
+  textSize(36);
+  text(" " + selectedYear, centerX, yearY);
+  textStyle(NORMAL);
 
+  // Underline aligned with selectedYear
+  const lineY = yearY + 6;
+  const lineWidth = textWidth(selectedYear) + 40;
+  stroke('#0A0A0A');
+  strokeWeight(3);
+  line(centerX - lineWidth / 2, lineY, centerX + lineWidth / 2, lineY);
+  noStroke();
 
-  let yearEntries = entriesByYear[selectedYear] || [];
+  // Get entries for the selected year
+  const yearEntries = entriesByYear[selectedYear] || [];
   if (yearEntries.length === 0) {
-    text("No data available for this year.", width / 2, height / 2);
+    text("No data available for this year.", centerX, height / 2);
     return;
   }
 
-  let startY = 80;
-  let count = yearEntries.length;
-  let minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
-  let maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
-  let baseShapeSize = map(count, 10, 120, 140, 50);
-  let padding = map(count, 10, 120, 60, 15);
+  // Calculate max megawatts safely
+  let maxMW = Math.max(...yearEntries.map(e => e.megawatts || 0));
+  if (maxMW <= 0) maxMW = 1;
+
+  // Layout parameters
+  const startY = 80;
+  const count = yearEntries.length;
+  const minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
+  const maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
+  const baseShapeSize = map(count, 10, 120, 140, 50);
+  const padding = map(count, 10, 120, 60, 15);
   let numCols = floor((width - padding) / (baseShapeSize + padding));
   numCols = max(numCols, 1);
-  let numRows = ceil(count / numCols);
-  let maxCellHeight = (height - startY - 50) / numRows;
+  const numRows = ceil(count / numCols);
+  const maxCellHeight = (height - startY - 50) / numRows;
 
-  for (let i = 0; i < yearEntries.length; i++) {
-    let entry = yearEntries[i];
-    let col = i % numCols;
-    let row = floor(i / numCols);
-    let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
-    let centerY = startY + row * maxCellHeight + maxCellHeight / 2;
+  for (let i = 0; i < count; i++) {
+    const entry = yearEntries[i];
+    const col = i % numCols;
+    const row = floor(i / numCols);
+
+    // Calculate center positions
+    const centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
+    const centerY = startY + row * maxCellHeight + maxCellHeight / 2;
+
+    // Calculate shape size and stroke weight scaled by acres
     let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
     entryShapeSize = constrain(entryShapeSize, 30, maxCellHeight * 0.85);
+
     let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 2, 5.5);
     strokeW = constrain(strokeW, 2, 5.5);
-    let baseColor = getActivityColor(entry.activities?.[0] || '');
 
-    let isHovered = hoveredEntry && hoveredEntry.name === entry.name;
-    let baseGlow = map(entry.megawatts, 0, maxMW, 5, 30);
-    let glowStrength = isHovered ? baseGlow * 1.5 : baseGlow;
-    let targetScale = isHovered ? 1.2 : 1;
+    // Base color from first activity
+    const baseColor = getActivityColor(entry.activities?.[0] || '');
 
-    // Smooth transition between current and target scale
+    // Hover check and glow strength
+    const isHovered = hoveredEntry && hoveredEntry.name === entry.name;
+    const baseGlow = map(entry.megawatts || 0, 0, maxMW, 5, 30);
+    const glowStrength = isHovered ? baseGlow * 1.5 : baseGlow;
+
+    // Target scale for smooth hover animation
+    const targetScale = isHovered ? 1.2 : 1;
     entry.currentScale = lerp(entry.currentScale || 1, targetScale, 0.1);
 
     push();
     translate(centerX, centerY);
     scale(entry.currentScale);
 
+    // Draw warp style if available
     if (entry.arrayType && entry.activities?.length) {
       drawPVWarpStyle(entry.arrayType, entry.activities, 0, 0, entryShapeSize);
     }
 
-    let shadowInfo = drawSuprematistOpShadowRect(
+    // Draw suprematist shadow shape with glow
+    const shadowInfo = drawSuprematistOpShadowRect(
       entryShapeSize,
       entry.megawatts,
       entry.habitat,
       entry.x,
       entry.y,
-      glowStrength
+      glowStrength,
+      isHovered
     );
 
+    // Draw habitat shapes
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
       drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor);
     }
 
-    if (Array.isArray(entry.activities) && entry.activities.length > 0 &&
-        Array.isArray(entry.habitat) && entry.habitat.length > 0) {
+    // Draw combined habitat overlay if both habitat & activities exist
+    if (
+      Array.isArray(entry.activities) && entry.activities.length > 0 &&
+      Array.isArray(entry.habitat) && entry.habitat.length > 0
+    ) {
       drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize);
     }
 
-     if (entry.arrayType) {
+    // Draw array overlay if present
+    if (entry.arrayType) {
       push();
       translate(shadowInfo.offsetX, shadowInfo.offsetY);
       rotate(shadowInfo.angle);
@@ -453,13 +472,16 @@ function draw() {
       pop();
     }
 
+    // Draw crop edge style
     if (entry.cropType && entry.cropType.length > 0) {
       drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
     }
 
+    // Draw animal line style
     if (entry.animalType && entry.animalType.length > 0) {
       drawAnimalLine(entry.animalType, entry.activities, 0, 0, entryShapeSize, strokeW);
     }
+
     pop();
   }
 }
@@ -1123,7 +1145,7 @@ function drawMinimalSite(x, y, activity = 'habitat', systemSize = 0.1, siteSize 
   pop();
 }
 
-function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], x, y, glowStrength, isHover = false) {
+function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, posY, glowStrength = 10, isHover = false) {
   let sz = constrain(systemSize || 0.1, 0.1, 10);
 
   // Default shape: diamond
@@ -1147,7 +1169,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], x, y, g
 
   if (shapeType === 'diamond') {
     widthFactor = 1;
-    heightFactor = 1.15; // similar to square
+    heightFactor = 1.15;
   } else if (shapeType === 'square') {
     widthFactor = 1;
     heightFactor = 1.15;
@@ -1162,20 +1184,14 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], x, y, g
   let highlightW = highlightSize * widthFactor;
   let highlightH = highlightSize * heightFactor;
 
-  // ----------- Glow calculations -----------
-
-  // Pulsate between 0.3 and 0.7
+  // Glow alpha pulsates between 0.3 and 0.7 of glowStrength
   let pulse = map(sin(frameCount * 0.1), -1, 1, 0.3, 0.7);
-
-  // Check hover - simple bounding box check for diamond shape
-  // More accurate point-in-diamond test below
- isHover = pointInDiamond(mouseX, mouseY, posX, posY, shadowW * 0.7, shadowH * 0.7);
-
-  // Glow alpha base scaled by size and pulse
-  let baseGlowAlpha = map(sz, 0.1, 10, 50, 150) * pulse;
+  let glowAlpha = glowStrength * pulse;
 
   // Boost alpha if hovered
-  let glowAlpha = isHover ? min(baseGlowAlpha * 2.5, 255) : baseGlowAlpha;
+  if (isHover) {
+    glowAlpha = min(glowAlpha * 2.5, 255);
+  }
 
   // Glow size scaled by system size
   let glowW = shadowW * map(sz, 0.1, 10, 1.2, 1.6);
@@ -1188,13 +1204,13 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], x, y, g
   rectMode(CENTER);
   noStroke();
 
-  // ---- Glow layer ----
+  // Glow layer
   push();
   fill(glowColor);
   drawShapeByType('diamond', glowW, glowH);
   pop();
 
-  // ---- Shadows and highlights ----
+  // Shadows and highlights
 
   fill('#0A0A0A');
   push();
@@ -1235,13 +1251,12 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], x, y, g
 
   pop();
 
- // Return hover state & glow info
+  // Return hover state & glow info if needed
   return {
     offsetX: offset * 1.4,
     offsetY: offset * 0.8,
     angle: radians(8),
     size: highlightSize,
-    isHover,
     glowAlpha,
   };
 }
