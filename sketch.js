@@ -457,7 +457,12 @@ function draw() {
 
 function showModalWithEntry(entry) {
   const modalTitle = document.getElementById('siteModalLabel');
-  const modalBody = document.querySelector('#modal .modal-body');
+  const modalBody = document.getElementById('siteModalBody'); 
+
+  if (!modalTitle || !modalBody) {
+    console.error('Modal elements missing');
+    return;
+  }
 
   modalTitle.innerHTML = entry.url
     ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">
