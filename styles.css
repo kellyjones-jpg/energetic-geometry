@@ -654,7 +654,8 @@ a.hyperlink:focus {
 .modal-header {
   background-color: transparent;
   border-bottom: 2px solid white;
-  padding-bottom: 0.5rem;
+  padding-bottom: 1.5rem;
+  padding-right: 0.5rem;
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -754,9 +755,6 @@ a.hyperlink:focus {
 
   .modal-header {
     font-size: 1.3rem;
-    margin-top: 1em;
-    margin-bottom: 1em;
-    margin-right: 0.5em;
   }
 
   .modal-footer .btn {
