@@ -1191,7 +1191,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
   let highlightH = highlightSize * heightFactor;
 
   // Glow alpha pulsates between 0.3 and 0.7 of glowStrength
-  let pulse = map(sin(frameCount * 0.1), -1, 1, 0.3, 0.7);
+  let pulse = map(sin(frameCount * 0.1), -1, 1, 0.7, 0.9);
   let glowAlpha = glowStrength * pulse;
 
   // Boost alpha if hovered
