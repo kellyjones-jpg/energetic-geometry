@@ -6,10 +6,6 @@ let availableYears = [];
 let cnv;
 let hoveredEntry = null;  // Currently hovered entry (for hover enlargement)
 let bgImg;
-let gridShader;
-let gridTexture;
-let maskBuffer;
-let maskedGrid;
 
 const cropEdgeGroups = {
   // Root vegetables
@@ -182,7 +178,6 @@ const combinedIcon = `
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250702.csv', 'csv', 'header');
   bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
-  gridShader = loadShader('shaders/grid.vert', 'shaders/grid.frag');
 }
 
 // Animate number count from start to end over 'duration' milliseconds
@@ -279,13 +274,6 @@ function setup() {
   cnv = createCanvas(initialWidth, fixedHeight);
   cnv.parent('sketch-container');
 
-  gridTexture = createGraphics(256, 256, WEBGL);
-  gridTexture.noStroke();
-
-  maskBuffer = createGraphics(256, 256);       // For drawing shape mask (P2D)
-  maskedGrid = createImage(256, 256);          // Final texture result after masking
-
-
   // Create caption
   let caption = createP("Image from Pexels");
   caption.style('text-align', 'left', true);
@@ -352,7 +340,7 @@ function windowResized() {
 
 
 function draw() {
-  // Background dimming
+  // Draw background image dimmed and semi-transparent
   image(bgImg, 0, 0, width, height);
   noStroke();
   rectMode(CORNER);
@@ -360,19 +348,23 @@ function draw() {
   rect(0, 0, width, height);
   rectMode(CENTER);
 
-  // Year label
+  // === MINIMAL SUPREMATIST YEAR LABEL ===
   const centerX = width / 2;
   const labelY = 40;
   const yearY = labelY + 40;
+
   textFont('Helvetica');
   textSize(28);
   textAlign(CENTER, BOTTOM);
   fill(255);
   text("Year Installed:", centerX, labelY);
+
   textStyle(BOLD);
   textSize(36);
   text(" " + selectedYear, centerX, yearY);
   textStyle(NORMAL);
+
+  // Underline aligned with selectedYear
   const lineY = yearY + 6;
   const lineWidth = textWidth(selectedYear) + 40;
   stroke('#0A0A0A');
@@ -380,16 +372,18 @@ function draw() {
   line(centerX - lineWidth / 2, lineY, centerX + lineWidth / 2, lineY);
   noStroke();
 
-  // Year entries
+  // Get entries for the selected year
   const yearEntries = entriesByYear[selectedYear] || [];
   if (yearEntries.length === 0) {
     text("No data available for this year.", centerX, height / 2);
     return;
   }
 
-  // Max megawatts & layout
+  // Calculate max megawatts safely
   let maxMW = Math.max(...yearEntries.map(e => e.megawatts || 0));
   if (maxMW <= 0) maxMW = 1;
+
+  // Layout parameters
   const startY = 80;
   const count = yearEntries.length;
   const minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
@@ -405,15 +399,21 @@ function draw() {
     const entry = yearEntries[i];
     const col = i % numCols;
     const row = floor(i / numCols);
+
+    // Calculate center positions
     const cx = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
     const cy = startY + row * maxCellHeight + maxCellHeight / 2;
 
+    // Shape size and stroke weight scaled by acres
     let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
     entryShapeSize = constrain(entryShapeSize, 30, maxCellHeight * 0.85);
     let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 2, 5.5);
     strokeW = constrain(strokeW, 2, 5.5);
 
+    // Base color from first activity
     const baseColor = getActivityColor(entry.activities?.[0] || '');
+
+    // Hover and glow animation
     const isHovered = hoveredEntry && hoveredEntry.name === entry.name;
     const baseGlow = map(entry.megawatts || 0, 0, maxMW, 5, 30);
     const glowStrength = isHovered ? baseGlow * 1.5 : baseGlow;
@@ -424,51 +424,58 @@ function draw() {
     translate(cx, cy);
     scale(entry.currentScale);
 
-    // Suprematist Op Shadow
-   const shadowInfo = drawSuprematistOpShadowRect(
+    // === Suprematist Op Shadow (with animalType and habitat influences) ===
+    const shadowInfo = drawSuprematistOpShadowRect(
       entryShapeSize,
       entry.megawatts,
       entry.habitat,
-      0, 0,
+      0,
+      0,
       glowStrength,
       isHovered,
-      (entry.animalType?.[0] || ''),
-      entry.activities
+     (entry.animalLineType?.[0] || '')
     );
 
-
-    // Base habitat fill
+    // === Main Habitat Shape Fill ===
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
       drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor);
     }
 
-    // Combined overlay
+    // === Texture from Activities on top ===
     if (entry.activities && entry.habitat) {
       drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize);
     }
 
-    // === NEW: Shader Grid Mask Overlay ===
-    if (entry.arrayType && entry.activities?.length > 0) {
+    // === Draw Array Overlay with shader (inside shadowInfo transform) ===
+    if (entry.arrayType) {
       push();
       translate(shadowInfo.offsetX, shadowInfo.offsetY);
       rotate(shadowInfo.angle);
-      drawMaskedGridOverlay(entry, 0, 0, shadowInfo.size);
+      drawArrayOverlay(
+        entry.arrayType,
+        entry.activities,
+        0, 0,
+        shadowInfo.size,
+        1.2,
+        10
+      );
       pop();
     }
 
-    // Crop Edge Style
-    if (entry.cropType?.length > 0) {
+    // === Crop Edge Style (outline) ===
+    if (entry.cropType && entry.cropType.length > 0) {
       drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
     }
 
-    // Animal Line Style
-    if (entry.animalType?.length > 0) {
+    // === Animal Line Type ===
+    if (entry.animalType && entry.animalType.length > 0) {
       drawAnimalLine(entry.animalType, entry.activities, 0, 0, entryShapeSize, strokeW);
     }
 
     pop();
   }
 }
+
 
 function showModalWithEntry(entry) {
   const modalTitle = document.getElementById('siteModalLabel');
@@ -890,26 +897,6 @@ function drawTexturedLine(x, y, length) {
   }
 }
 
-function drawAnimalLineMask(gfx, animalTypes, x, y, size) {
-  const type = Array.isArray(animalTypes) ? animalTypes[0]?.toLowerCase() : '';
-  const height = 6 * (Array.isArray(animalTypes) ? animalTypes.length : 1);
-
-  gfx.push();
-  gfx.translate(x - size / 2, y);
-
-  for (let i = 0; i < height; i += 6) {
-    switch (type) {
-      case 'sheep': gfx.rect(0, i, size, 3); break;
-      case 'llamas and alpacas': gfx.ellipse(size / 2, i, size, 3); break;
-      case 'horse': gfx.triangle(0, i, size / 2, i - 10, size, i); break;
-      case 'cows': gfx.rect(0, i, size, 5); break;
-      default: gfx.rect(0, i, size, 2);
-    }
-  }
-
-  gfx.pop();
-}
-
 function drawHabitatShape(habitatList, x, y, size, baseColor) {
   if (!Array.isArray(habitatList)) return;
 
@@ -1032,96 +1019,91 @@ function pointInHexagon(px, py, r) {
   return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
 }
 
-function drawHabitatMask(gfx, habitatList, x, y, size) {
-  if (!Array.isArray(habitatList)) return;
+function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, density = 7) {
+  if (!arrayType || !Array.isArray(activities) || activities.length === 0) return;
 
-  habitatList = habitatList
-    .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
-    .filter(h => h !== '');
+  push();
+  translate(x, y);
+  rectMode(CENTER);
+  strokeWeight(strokeW);
+  noFill();
 
-  let habitat = habitatList[0];
-  gfx.push();
-  gfx.translate(x, y);
-
-  switch (habitat) {
-    case 'pollinator':
-      gfx.beginShape();
-      for (let j = 0; j < 6; j++) {
-        let angle = TWO_PI / 6 * j - PI / 2;
-        let vx = cos(angle) * size * 0.5;
-        let vy = sin(angle) * size * 0.5;
-        gfx.vertex(vx, vy);
-      }
-      gfx.endShape(CLOSE);
-      break;
-
-    case 'native grasses':
-      gfx.rectMode(CENTER);
-      gfx.rect(0, 0, size * 0.3, size);
-      break;
-
-    case 'naturalized':
-      gfx.ellipse(0, 0, size, size);
-      break;
-
-    default:
-      gfx.ellipse(0, 0, size * 0.9, size * 0.9);
+  switch (arrayType) {
+   case 'fixed':
+    drawCrosshatchGridMultiColor(activities, size, density); break;
+  case 'single-axis tracking':
+    drawIsometricGridMultiColor(activities, size, density, 1.1); break;
+  case 'dual-axis tracking':
+    drawDottedMatrixMultiColor(activities, size, density); break;
   }
 
-  gfx.pop();
+  pop();
 }
 
-function drawMaskedGridOverlay(entry, x, y, size, density = 10) {
-  // Defensive: ensure we always get a valid color
-  const baseColor = getActivityColor(entry.activities?.[0] || '') || color(200); // fallback to light gray
-  const rgb = baseColor.levels?.slice(0, 3) || [200, 200, 200]; // fallback if levels is undefined
+function drawCrosshatchGridMultiColor(activities, size, density = 10) {
+  let colorCount = activities.length;
 
-  let mode = 'crosshatch';
-  if (entry.arrayType === 'single-axis tracking') mode = 'isometric';
-  else if (entry.arrayType === 'dual-axis tracking') mode = 'dotted';
+  push();
+  rotate(PI / 4); // Rotate 45 degrees for diamond orientation
 
-  // Step 1: Generate grid shader texture
-  generateGridTexture(rgb, density, mode);
-
-  // Step 2: Clear & draw mask shape into P2D buffer
-  maskBuffer.clear();
-  maskBuffer.push();
-  maskBuffer.translate(maskBuffer.width / 2, maskBuffer.height / 2);
-  maskBuffer.noStroke();
-  maskBuffer.fill(255);
-
-  if (entry.habitat && entry.habitat.length > 0) {
-    drawHabitatMask(maskBuffer, entry.habitat, 0, 0, 256);
-  } else if (entry.animalType && entry.animalType.length > 0) {
-    drawAnimalLineMask(maskBuffer, entry.animalType, 0, 0, 256);
-  } else {
-    maskBuffer.ellipse(0, 0, 256, 256); // fallback default shape
+  for (let i = -size / 2, idx = 0; i <= size / 2; i += density, idx++) {
+    let col = getActivityColor(activities[idx % colorCount]);
+    stroke(col);
+    line(i, -size / 2, i, size / 2); // vertical
+    line(-size / 2, i, size / 2, i); // horizontal
   }
 
-  maskBuffer.pop();
-
-  // Step 3: Apply mask
-  maskedGrid = gridTexture.get();     // Copy shader output
-  maskedGrid.mask(maskBuffer);        // Apply shape mask
-
-  // Step 4: Draw to main canvas
-  imageMode(CENTER);
-  image(maskedGrid, x, y, size, size);
+  pop();
 }
 
-function generateGridTexture(colorArray = [0, 0, 0], density = 20, mode = 'crosshatch') {
-  gridTexture.shader(gridShader);
-  gridShader.setUniform('resolution', [gridTexture.width, gridTexture.height]);
-  gridShader.setUniform('density', density);
-  gridShader.setUniform('lineColor', colorArray.map(c => c / 255.0));
-  gridShader.setUniform('mode', mode === 'isometric' ? 1 : mode === 'dotted' ? 2 : 0);
-  gridTexture.rect(-gridTexture.width / 2, -gridTexture.height / 2, gridTexture.width, gridTexture.height); // Centered rect
+function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1) {
+  let colorCount = activities.length;
+  let idx = 0;
+  let halfSize = size / 2;
+
+  push(); // Start inner transformation for rotation
+  rotate(PI);
+
+  for (let x = -halfSize; x <= halfSize; x += density) {
+    // Forward-slanting lines
+    stroke(getActivityColor(activities[idx % colorCount]));
+    let y1a = -halfSize * slope;
+    let y2a = halfSize * slope;
+    line(x, y1a, x + halfSize, y2a);
+    idx++;
+
+    // Backward-slanting lines
+    stroke(getActivityColor(activities[idx % colorCount]));
+    let y1b = -halfSize * slope;
+    let y2b = halfSize * slope;
+    line(x + halfSize, y1b, x, y2b);
+    idx++;
+  }
+
+  pop(); // End inner transformation
 }
 
+
+function drawDottedMatrixMultiColor(activities, size, density = 10) {
+  let step = 10;
+  let colorCount = activities.length;
+  let dotSize = 3;
+  let idx = 0;
+
+  for (let x = -size / 2; x < size / 2; x += density) {
+  for (let y = -size / 2; y < size / 2; y += density) {
+      fill(getActivityColor(activities[idx % colorCount]));
+      noStroke();
+      ellipse(x, y, dotSize, dotSize);
+      idx++;
+    }
+  }
+}
+  
 function getActivityColor(activity) {
-  switch ((activity || '').trim().toLowerCase()) {
-    case 'crop production':
-      return color('#E4572E'); // Vivid Orange
+  switch (activity.trim().toLowerCase()) {
+ case 'crop production':
+      return color('#E4572E'); // Vivd Orange
     case 'habitat':
       return color('#2E8B57'); // Sea Green
     case 'grazing':
@@ -1129,7 +1111,8 @@ function getActivityColor(activity) {
     case 'greenhouse':
       return color('#FFD100'); // Solar Gold
     default:
-      return color(200); // Light gray fallback instead of undefined
+        pop(); 
+        return;
   }
 }
 
@@ -1137,8 +1120,8 @@ function drawMinimalSite(site) {
   const { x, y, activity = 'habitat', systemSize = 0.1, siteSize = 0.1 } = site;
 
   const baseColor = getActivityColor(activity); 
-  const dotBaseSize = map(siteSize, 0, 30, 46, 90);       // Boosted min/max size
-  const shadowOffset = map(systemSize, 0, 10, 1, 8);      // adjust if larger systems need more offset
+  const dotBaseSize = map(siteSize, 0, 10, 16, 60);       // Boosted min/max size
+  const shadowOffset = map(systemSize, 0, 10, 1, 8);      // Optional: adjust if larger systems need more offset
 
   push();
   translate(x, y);
@@ -1160,27 +1143,40 @@ function drawMinimalSite(site) {
   pop();
 }
 
-function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, posY, glowStrength = 10, isHover = false, animalLineType = '', activities = []) {
+function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, posY, glowStrength = 10, isHover = false, animalLineType = '') {
   let sz = constrain(systemSize || 0.1, 0.1, 10);
 
-  // Determine shapeType
-  let shapeType = 'diamond';
+  let shapeType = 'diamond'; // fallback
+
   if (Array.isArray(habitat) && habitat.length > 0) {
     const cleaned = habitat.map(h => (h || '').trim().toLowerCase());
-    if (cleaned.includes('pollinator')) shapeType = 'hexagon';
-    else if (cleaned.includes('naturalized')) shapeType = 'ellipse';
-    else if (cleaned.includes('native grasses')) shapeType = 'rect';
+    if (cleaned.includes('pollinator')) {
+      shapeType = 'hexagon';
+    } else if (cleaned.includes('naturalized')) {
+      shapeType = 'ellipse';
+    } else if (cleaned.includes('native grasses')) {
+      shapeType = 'rect';
+    }
   } else if (animalLineType) {
+    // Use animal line type as shapeType fallback
     shapeType = animalLineType.toLowerCase();
   }
 
-  // Map sizes
+  // Map offsets and sizes based on system size
   let offset = map(sz, 0, 10, 2, 10);
   let shadowSize = map(sz, 0, 10, baseSize * 0.9, baseSize * 1.4);
   let highlightSize = shadowSize * 0.95;
 
-  let widthFactor = 1, heightFactor = 1, rotateRectVertical = false;
-  if (shapeType === 'diamond' || shapeType === 'square') {
+  // Aspect ratio and rotation flag for rectangles
+  let widthFactor = 1;
+  let heightFactor = 1;
+  let rotateRectVertical = false;
+
+  if (shapeType === 'diamond') {
+    widthFactor = 1;
+    heightFactor = 1.15;
+  } else if (shapeType === 'square') {
+    widthFactor = 1;
     heightFactor = 1.15;
   } else if (shapeType === 'rect') {
     widthFactor = 0.55;
@@ -1193,37 +1189,22 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
   let highlightW = highlightSize * widthFactor;
   let highlightH = highlightSize * heightFactor;
 
-  // === Glow animation ===
+  // Glow alpha pulsates between 0.3 and 0.7 of glowStrength
   let pulse = map(sin(frameCount * 0.1), -1, 1, 0.7, 0.9);
   let glowAlpha = glowStrength * pulse;
-  if (isHover) glowAlpha = min(glowAlpha * 2.5, 255);
 
+  // Boost alpha if hovered
+  if (isHover) {
+    glowAlpha = min(glowAlpha * 2.5, 255);
+  }
+
+  // Glow size scaled by system size
   let glowW = shadowW * map(sz, 0.1, 10, 1.2, 1.6);
   let glowH = shadowH * map(sz, 0.1, 10, 1.2, 1.6);
 
-// === Smoothly fading glow color with brightness boost ===
-let glowColor = color(255, 255, 255, glowAlpha); // default white
+  // Glow color 
+  let glowColor = color(255, 255, 255, glowAlpha);
 
-if (activities.length > 0) {
-  let t = (frameCount * 0.02) % 1; // fractional progress (0–1)
-  let total = activities.length;
-  let index1 = floor(frameCount * 0.02) % total;
-  let index2 = (index1 + 1) % total;
-
-  let c1 = getActivityColor(activities[index1]) || color(255, 255, 255);
-  let c2 = getActivityColor(activities[index2]) || color(255, 255, 255);
-
-  // Blend between the two activity colors
-  c1.setAlpha(glowAlpha);
-  c2.setAlpha(glowAlpha);
-
-  let baseGlow = lerpColor(c1, c2, t);
-
-  // Blend glow color with white to brighten it
-  glowColor = lerpColor(baseGlow, color(255, 255, 255, glowAlpha), 0.4); // 0.4 = 40% white
-}
-
-  // === Draw layered shadows and glow ===
   push();
   rectMode(CENTER);
   noStroke();
@@ -1234,7 +1215,8 @@ if (activities.length > 0) {
   drawShapeByType(shapeType, glowW, glowH);
   pop();
 
-  // Shadow 1
+  // Shadows and highlights
+
   fill('#0A0A0A');
   push();
   rotate(radians(-12));
@@ -1243,7 +1225,6 @@ if (activities.length > 0) {
   drawShapeByType(shapeType, shadowW, shadowH);
   pop();
 
-  // Highlight
   fill(255);
   push();
   rotate(radians(8));
@@ -1252,7 +1233,6 @@ if (activities.length > 0) {
   drawShapeByType(shapeType, highlightW, highlightH);
   pop();
 
-  // Shadow 2
   fill('#0A0A0A');
   push();
   rotate(radians(3));
@@ -1276,6 +1256,7 @@ if (activities.length > 0) {
 
   pop();
 
+  // Return hover state & glow info if needed
   return {
     offsetX: offset * 1.4,
     offsetY: offset * 0.8,
@@ -1284,7 +1265,6 @@ if (activities.length > 0) {
     glowAlpha,
   };
 }
-
 
 function drawShapeByType(type, w, h) {
   switch (type) {
