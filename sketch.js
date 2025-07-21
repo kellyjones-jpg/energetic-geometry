@@ -344,7 +344,7 @@ function draw() {
   image(bgImg, 0, 0, width, height);
   noStroke();
   rectMode(CORNER);
-  fill(0, 165);
+  fill(0, 215);
   rect(0, 0, width, height);
   rectMode(CENTER);
 
