@@ -1,55 +1,83 @@
-// grid.frag — Fragment Shader
-#ifdef GL_ES
+// grid.frag
 precision mediump float;
-#endif
+
+uniform vec2 resolution;
+uniform float density;
+
+uniform vec3 color0;
+uniform vec3 color1;
+uniform vec3 color2;
+uniform vec3 color3;
+uniform int colorCount;
+
+uniform int mode;
 
 varying vec2 vTexCoord;
 
-uniform float u_density;
-uniform int u_gridType;
-uniform vec3 u_colors[10];
-uniform int u_colorCount;
-
 vec3 getColor(int index) {
-  if (index == 0) return u_colors[0];
-  else if (index == 1) return u_colors[1];
-  else if (index == 2) return u_colors[2];
-  else if (index == 3) return u_colors[3];
-  else if (index == 4) return u_colors[4];
-  else if (index == 5) return u_colors[5];
-  else if (index == 6) return u_colors[6];
-  else if (index == 7) return u_colors[7];
-  else if (index == 8) return u_colors[8];
-  else if (index == 9) return u_colors[9];
-  return vec3(1.0); // fallback color (white)
+  if (index == 0) return color0;
+  else if (index == 1) return color1;
+  else if (index == 2) return color2;
+  else if (index == 3) return color3;
+  return vec3(1.0); // fallback white
 }
 
 void main() {
-  vec2 uv = fract(vTexCoord * u_density);
-  float threshold = 0.03;
-  vec3 color = vec3(0.0);
+  vec2 uv = vTexCoord;
+  vec2 pixel = uv * resolution;
 
-  // Choose color based on a hash of coordinates
-  int ci = int(mod(floor(vTexCoord.x * 10.0 + vTexCoord.y * 10.0), float(u_colorCount)));
-  color = getColor(ci);
+  float stepSize = density;
+  int idx;
 
-  float alpha = 0.0;
+  if (mode == 0) {
+    // CROSSHATCH
+    float x = floor(pixel.x / stepSize);
+    float y = floor(pixel.y / stepSize);
+    idx = int(mod(x + y, float(colorCount)));
+    vec3 col = getColor(idx);
 
-  if (u_gridType == 0) {
-    // Crosshatch
-    if (uv.x < threshold || uv.y < threshold) alpha = 1.0;
-  } else if (u_gridType == 1) {
-    // Isometric (approximate)
-    float s = 1.73205; // sqrt(3)
-    float fx = fract((vTexCoord.x + vTexCoord.y) * s * u_density);
-    float fy = fract((vTexCoord.x - vTexCoord.y) * s * u_density);
-    if (fx < threshold || fy < threshold) alpha = 1.0;
-  } else if (u_gridType == 2) {
-    // Dotted matrix
-    float dx = abs(uv.x - 0.5);
-    float dy = abs(uv.y - 0.5);
-    if (dx < 0.04 && dy < 0.04) alpha = 1.0;
+    float lineX = mod(pixel.x, stepSize);
+    float lineY = mod(pixel.y, stepSize);
+
+    if (lineX < 1.0 || lineY < 1.0) {
+      gl_FragColor = vec4(col, 1.0);
+    } else {
+      discard;
+    }
+  } else if (mode == 1) {
+    // ISOMETRIC LINES
+    float spacing = stepSize;
+    float angle = 1.1;
+
+    float fx = mod(pixel.x + pixel.y * angle, spacing);
+    float bx = mod(pixel.x - pixel.y * angle, spacing);
+
+    idx = int(mod(floor(pixel.x / stepSize), float(colorCount)));
+    vec3 col = getColor(idx);
+
+    if (fx < 1.0 || bx < 1.0) {
+      gl_FragColor = vec4(col, 1.0);
+    } else {
+      discard;
+    }
+  } else if (mode == 2) {
+    // DOTTED GRID
+    float x = floor(pixel.x / stepSize);
+    float y = floor(pixel.y / stepSize);
+    idx = int(mod(x + y, float(colorCount)));
+    vec3 col = getColor(idx);
+
+    float dx = mod(pixel.x, stepSize) - stepSize / 2.0;
+    float dy = mod(pixel.y, stepSize) - stepSize / 2.0;
+    float dist = sqrt(dx * dx + dy * dy);
+
+    if (dist < stepSize * 0.15) {
+      gl_FragColor = vec4(col, 1.0);
+    } else {
+      discard;
+    }
+  } else {
+    // fallback
+    gl_FragColor = vec4(1.0);
   }
-
-  gl_FragColor = vec4(color, alpha);
 }
