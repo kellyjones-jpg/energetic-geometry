@@ -7,9 +7,8 @@ let cnv;
 let hoveredEntry = null;  // Currently hovered entry (for hover enlargement)
 let bgImg;
 let gridShader;
-let gridTexture;
-let maskBuffer;
-let maskedGrid;
+let textureSize = 256; 
+let gridTexture, maskBuffer, maskedGrid;
 
 const cropEdgeGroups = {
   // Root vegetables
