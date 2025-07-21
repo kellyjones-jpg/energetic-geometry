@@ -1205,7 +1205,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
   // === Smoothly fading glow color ===
   let glowColor = color(255, 255, 255, glowAlpha); // default white
   if (activities.length > 0) {
-    let t = (frameCount * 0.02) % 1;
+    let t = (frameCount * 0.02) % 1; // fractional progress (0–1)
     let total = activities.length;
     let index1 = floor(frameCount * 0.02) % total;
     let index2 = (index1 + 1) % total;
@@ -1213,37 +1213,23 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
     let c1 = getActivityColor(activities[index1]) || color(255, 255, 255);
     let c2 = getActivityColor(activities[index2]) || color(255, 255, 255);
 
+    // Set alpha on both colors before blending
     c1.setAlpha(glowAlpha);
     c2.setAlpha(glowAlpha);
 
     glowColor = lerpColor(c1, c2, t);
   }
 
-  // === Tint the color to keep it from being too dark ===
-  let boostedGlowColor = lerpColor(glowColor, color(255, 255, 255, glowAlpha), 0.3);
-
-  // === Glow layer using offscreen buffer ===
-  let pg = createGraphics(width, height);
-  pg.clear();
-  pg.push();
-  pg.translate(posX, posY);
-  pg.noStroke();
-  pg.fill(boostedGlowColor);
-  pg.rectMode(CENTER);
-
-  // Draw shape to buffer
-  drawShapeByTypeTwo(pg, shapeType, glowW, glowH);
-  pg.pop();
-
-  // Blur and render
-  pg.filter(BLUR, 4);
-  image(pg, 0, 0);
-
-  // === Main shadow & highlight shapes ===
+  // === Draw layered shadows and glow ===
   push();
-  translate(posX, posY);
   rectMode(CENTER);
   noStroke();
+
+  // Glow layer
+  push();
+  fill(glowColor);
+  drawShapeByType(shapeType, glowW, glowH);
+  pop();
 
   // Shadow 1
   fill('#0A0A0A');
@@ -1296,6 +1282,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
   };
 }
 
+
 function drawShapeByType(type, w, h) {
   switch (type) {
     case 'hexagon':
@@ -1322,36 +1309,6 @@ function drawShapeByType(type, w, h) {
     default:
       rect(0, 0, w, h);
       break;
-  }
-}
-
-function drawShapeByTypeTwo(pg, type, w, h) {
-  switch (type) {
-    case 'ellipse':
-      pg.ellipse(0, 0, w, h);
-      break;
-    case 'hexagon':
-      pg.beginShape();
-      for (let i = 0; i < 6; i++) {
-        let angle = TWO_PI / 6 * i;
-        pg.vertex(cos(angle) * w / 2, sin(angle) * h / 2);
-      }
-      pg.endShape(CLOSE);
-      break;
-    case 'rect':
-    case 'square':
-      pg.rect(0, 0, w, h);
-      break;
-    case 'diamond':
-      pg.beginShape();
-      pg.vertex(0, -h / 2);
-      pg.vertex(w / 2, 0);
-      pg.vertex(0, h / 2);
-      pg.vertex(-w / 2, 0);
-      pg.endShape(CLOSE);
-      break;
-    default:
-      pg.ellipse(0, 0, w, h);
   }
 }
 
