@@ -1,8 +1,4 @@
-// shaders/grid.vert
-#ifdef GL_ES
-precision mediump float;
-#endif
-
+// grid.vert — Vertex Shader
 attribute vec3 aPosition;
 attribute vec2 aTexCoord;
 
