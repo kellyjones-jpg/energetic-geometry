@@ -1202,23 +1202,27 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
   let glowW = shadowW * map(sz, 0.1, 10, 1.2, 1.6);
   let glowH = shadowH * map(sz, 0.1, 10, 1.2, 1.6);
 
-  // === Smoothly fading glow color ===
-  let glowColor = color(255, 255, 255, glowAlpha); // default white
-  if (activities.length > 0) {
-    let t = (frameCount * 0.02) % 1; // fractional progress (0–1)
-    let total = activities.length;
-    let index1 = floor(frameCount * 0.02) % total;
-    let index2 = (index1 + 1) % total;
+// === Smoothly fading glow color with brightness boost ===
+let glowColor = color(255, 255, 255, glowAlpha); // default white
 
-    let c1 = getActivityColor(activities[index1]) || color(255, 255, 255);
-    let c2 = getActivityColor(activities[index2]) || color(255, 255, 255);
+if (activities.length > 0) {
+  let t = (frameCount * 0.02) % 1; // fractional progress (0–1)
+  let total = activities.length;
+  let index1 = floor(frameCount * 0.02) % total;
+  let index2 = (index1 + 1) % total;
 
-    // Set alpha on both colors before blending
-    c1.setAlpha(glowAlpha);
-    c2.setAlpha(glowAlpha);
+  let c1 = getActivityColor(activities[index1]) || color(255, 255, 255);
+  let c2 = getActivityColor(activities[index2]) || color(255, 255, 255);
 
-    glowColor = lerpColor(c1, c2, t);
-  }
+  // Blend between the two activity colors
+  c1.setAlpha(glowAlpha);
+  c2.setAlpha(glowAlpha);
+
+  let baseGlow = lerpColor(c1, c2, t);
+
+  // Blend glow color with white to brighten it
+  glowColor = lerpColor(baseGlow, color(255, 255, 255, glowAlpha), 0.4); // 0.4 = 40% white
+}
 
   // === Draw layered shadows and glow ===
   push();
