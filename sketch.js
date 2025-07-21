@@ -1143,7 +1143,7 @@ function drawMinimalSite(site) {
   pop();
 }
 
-function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, posY, glowStrength = 10, isHover = false, animalLineType = '') {
+function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, posY, glowStrength = 40, isHover = false, animalLineType = '', agrivoltaicColors = []) {
   let sz = constrain(systemSize || 0.1, 0.1, 10);
 
   let shapeType = 'diamond'; // fallback
@@ -1158,24 +1158,25 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
       shapeType = 'rect';
     }
   } else if (animalLineType) {
-    // Use animal line type as shapeType fallback
     shapeType = animalLineType.toLowerCase();
   }
 
-  // Map offsets and sizes based on system size
+  // Positioning
+  push();
+  translate(posX, posY);
+  rectMode(CENTER);
+  noStroke();
+
+  // Size & offsets
   let offset = map(sz, 0, 10, 2, 10);
   let shadowSize = map(sz, 0, 10, baseSize * 0.9, baseSize * 1.4);
   let highlightSize = shadowSize * 0.95;
 
-  // Aspect ratio and rotation flag for rectangles
   let widthFactor = 1;
   let heightFactor = 1;
   let rotateRectVertical = false;
 
-  if (shapeType === 'diamond') {
-    widthFactor = 1;
-    heightFactor = 1.15;
-  } else if (shapeType === 'square') {
+  if (shapeType === 'diamond' || shapeType === 'square') {
     widthFactor = 1;
     heightFactor = 1.15;
   } else if (shapeType === 'rect') {
@@ -1189,34 +1190,36 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
   let highlightW = highlightSize * widthFactor;
   let highlightH = highlightSize * heightFactor;
 
-  // Glow alpha pulsates between 0.3 and 0.7 of glowStrength
-  let pulse = map(sin(frameCount * 0.1), -1, 1, 0.7, 0.9);
-  let glowAlpha = glowStrength * pulse;
-
-  // Boost alpha if hovered
-  if (isHover) {
-    glowAlpha = min(glowAlpha * 2.5, 255);
-  }
-
-  // Glow size scaled by system size
   let glowW = shadowW * map(sz, 0.1, 10, 1.2, 1.6);
   let glowH = shadowH * map(sz, 0.1, 10, 1.2, 1.6);
 
-  // Glow color 
-  let glowColor = color(255, 255, 255, glowAlpha);
+  // Glow alpha pulsating
+  let pulse = map(sin(frameCount * 0.08), -1, 1, 0.8, 1);
+  let glowAlpha = glowStrength * pulse;
+  if (isHover) glowAlpha = min(glowAlpha * 3.5, 255);
 
-  push();
-  rectMode(CENTER);
-  noStroke();
+  // Default to white if no colors provided
+  if (agrivoltaicColors.length === 0) agrivoltaicColors = [color(255)];
 
-  // Glow layer
-  push();
-  fill(glowColor);
-  drawShapeByType(shapeType, glowW, glowH);
-  pop();
+  // Color cycling through agrivoltaicColors
+  let colorIndex = floor(frameCount / 60) % agrivoltaicColors.length;
+  let nextIndex = (colorIndex + 1) % agrivoltaicColors.length;
+  let lerpAmt = (frameCount % 60) / 60;
+  let baseGlowColor = lerpColor(agrivoltaicColors[colorIndex], agrivoltaicColors[nextIndex], lerpAmt);
+  baseGlowColor.setAlpha(glowAlpha);
 
-  // Shadows and highlights
+  // ✨ Blur-like glow layers
+  for (let i = 3; i > 0; i--) {
+    let layerW = glowW * (1 + i * 0.05);
+    let layerH = glowH * (1 + i * 0.05);
+    let layerAlpha = glowAlpha * (0.3 / i);
+    let layerColor = lerpColor(agrivoltaicColors[colorIndex], agrivoltaicColors[nextIndex], lerpAmt);
+    layerColor.setAlpha(layerAlpha);
+    fill(layerColor);
+    drawShapeByType(shapeType, layerW, layerH);
+  }
 
+  // Shadow layers
   fill('#0A0A0A');
   push();
   rotate(radians(-12));
@@ -1241,7 +1244,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
   drawShapeByType(shapeType, shadowW * 0.88, shadowH * 0.88);
   pop();
 
-  // White outline
+  // Outline
   stroke(255);
   noFill();
   strokeWeight(1);
@@ -1254,9 +1257,8 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
     drawShapeByType(shapeType, shadowW * 0.7, shadowH * 0.7);
   }
 
-  pop();
+  pop(); // pop positioning
 
-  // Return hover state & glow info if needed
   return {
     offsetX: offset * 1.4,
     offsetY: offset * 0.8,
