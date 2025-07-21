@@ -1296,36 +1296,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
   };
 }
 
-function drawShapeByType(type, w, h) {
-  switch (type) {
-    case 'hexagon':
-      beginShape();
-      for (let i = 0; i < 6; i++) {
-        let angle = TWO_PI / 6 * i - PI / 2;
-        vertex(cos(angle) * w / 2, sin(angle) * h / 2);
-      }
-      endShape(CLOSE);
-      break;
-    case 'ellipse':
-      ellipse(0, 0, w, h);
-      break;
-    case 'rect':
-      rect(0, 0, w, h);
-      break;
-    case 'diamond':
-      push();
-      rotate(PI / 4); // Rotate square 45 degrees to get diamond
-      rect(0, 0, w, h);
-      pop();
-      break;
-    case 'square':
-    default:
-      rect(0, 0, w, h);
-      break;
-  }
-}
-
-function drawShapeByTypeTwo(pg, type, w, h) {
+function drawShapeByType(pg, type, w, h) {
   switch (type) {
     case 'ellipse':
       pg.ellipse(0, 0, w, h);
