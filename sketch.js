@@ -215,7 +215,6 @@ function updateCounters(entries) {
 
 
 function setup() {
-  // Load and organize data
   for (let i = 0; i < table.getRowCount(); i++) {
     let name = table.getString(i, 'Name') || '';
     let activityStr = table.getString(i, 'Agrivoltaic Activities') || '';
@@ -244,15 +243,15 @@ function setup() {
       habitat,
       animalType,
       cropType,
-      arrayType: arrayTypeStr.trim().toLowerCase(), 
+      arrayType: arrayTypeStr.trim().toLowerCase(),
       year,
       megawatts,
       acres,
-      url: url.trim()
+      url: url.trim(),
+      currentScale: 1 // for smooth animation
     };
 
     entries.push(entry);
-    entry.currentScale = 1; // for smooth animation
 
     if (!entriesByYear[year]) {
       entriesByYear[year] = [];
@@ -280,49 +279,50 @@ function setup() {
   caption.style('text-align', 'left', true);
   caption.class('image-caption');
   caption.parent('sketch-container');
-  
-    // YEAR BUTTONS
-    let timelineContainer = createDiv().id('timeline');
-    timelineContainer.style('text-align', 'center', true);
-    timelineContainer.parent('sketch-container');
 
-    availableYears.forEach((year, index) => {
-      let yearDiv = createDiv().class('timeline-year');
-      yearDiv.parent(timelineContainer);
+  // YEAR BUTTONS
+  let timelineContainer = createDiv().id('timeline');
+  timelineContainer.style('text-align', 'center', true);
+  timelineContainer.parent('sketch-container');
 
-      let label = createP(year)
-        .class('year-label')
-        .addClass('suprematist-underline'); 
-      label.parent(yearDiv);
+  availableYears.forEach((year, index) => {
+    let yearDiv = createDiv().class('timeline-year');
+    yearDiv.parent(timelineContainer);
 
-      if (index % 2 === 0) {
-        label.addClass('above');
-      } else {
-        label.addClass('below');
-      }
+    let label = createP(year)
+      .class('year-label')
+      .addClass('suprematist-underline');
+    label.parent(yearDiv);
 
-      let node = createDiv().class('year-node');
-      node.parent(yearDiv);
+    if (index % 2 === 0) {
+      label.addClass('above');
+    } else {
+      label.addClass('below');
+    }
 
-      label.mousePressed(() => {
-        selectedYear = year;
-        windowResized();
-        updateCounters(entriesByYear[selectedYear]);
+    let node = createDiv().class('year-node');
+    node.parent(yearDiv);
 
-        selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
-        label.addClass('active');
-      });
+    label.mousePressed(() => {
+      selectedYear = year;
+      windowResized();
+      updateCounters(entriesByYear[selectedYear]);
 
-      if (index === 0) label.addClass('active');
+      selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
+      label.addClass('active');
     });
 
-    textFont('Helvetica');
-    textSize(32);
-    textAlign(CENTER, CENTER);
-    rectMode(CENTER);
-    loop();
-    updateCounters(entriesByYear[selectedYear]);
+    if (index === 0) label.addClass('active');
+  });
+
+  textFont('Helvetica');
+  textSize(32);
+  textAlign(CENTER, CENTER);
+  rectMode(CENTER);
+  loop();
+  updateCounters(entriesByYear[selectedYear]);
 }
+
 
 function windowResized() {
   let yearEntries = entriesByYear[selectedYear] || [];
@@ -401,63 +401,52 @@ function draw() {
     const row = floor(i / numCols);
 
     // Calculate center positions
-    const centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
-    const centerY = startY + row * maxCellHeight + maxCellHeight / 2;
+    const cx = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
+    const cy = startY + row * maxCellHeight + maxCellHeight / 2;
 
-    // Calculate shape size and stroke weight scaled by acres
+    // Shape size and stroke weight scaled by acres
     let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
     entryShapeSize = constrain(entryShapeSize, 30, maxCellHeight * 0.85);
-
     let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 2, 5.5);
     strokeW = constrain(strokeW, 2, 5.5);
 
     // Base color from first activity
     const baseColor = getActivityColor(entry.activities?.[0] || '');
 
-    // Hover check and glow strength
+    // Hover and glow animation
     const isHovered = hoveredEntry && hoveredEntry.name === entry.name;
     const baseGlow = map(entry.megawatts || 0, 0, maxMW, 5, 30);
     const glowStrength = isHovered ? baseGlow * 1.5 : baseGlow;
-
-    // Target scale for smooth hover animation
     const targetScale = isHovered ? 1.2 : 1;
     entry.currentScale = lerp(entry.currentScale || 1, targetScale, 0.1);
 
     push();
-    translate(centerX, centerY);
+    translate(cx, cy);
     scale(entry.currentScale);
 
-    // Draw warp style if available
-    if (entry.arrayType && entry.activities?.length) {
-      drawPVWarpStyle(entry.arrayType, entry.activities, 0, 0, entryShapeSize);
-    }
-
-    // Draw suprematist shadow shape with glow
+    // === Suprematist Op Shadow (with animalType and habitat influences) ===
     const shadowInfo = drawSuprematistOpShadowRect(
-      baseSize,
-      systemSize,
-      site.habitatArray,
-      x,
-      y,
-      10,
+      entryShapeSize,
+      entry.megawatts,
+      entry.habitat,
+      0,
+      0,
+      glowStrength,
       isHovered,
-      site.animalLineType // pass this in as the last argument
+      entry.animalType
     );
 
-    // Draw habitat shapes
+    // === Main Habitat Shape Fill ===
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
       drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor);
     }
 
-    // Draw combined habitat overlay if both habitat & activities exist
-    if (
-      Array.isArray(entry.activities) && entry.activities.length > 0 &&
-      Array.isArray(entry.habitat) && entry.habitat.length > 0
-    ) {
+    // === Texture from Activities on top ===
+    if (entry.activities && entry.habitat) {
       drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize);
     }
 
-    // Draw array overlay if present
+    // === Draw Array Overlay with shader (inside shadowInfo transform) ===
     if (entry.arrayType) {
       push();
       translate(shadowInfo.offsetX, shadowInfo.offsetY);
@@ -473,12 +462,12 @@ function draw() {
       pop();
     }
 
-    // Draw crop edge style
+    // === Crop Edge Style (outline) ===
     if (entry.cropType && entry.cropType.length > 0) {
       drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
     }
 
-    // Draw animal line style
+    // === Animal Line Type ===
     if (entry.animalType && entry.animalType.length > 0) {
       drawAnimalLine(entry.animalType, entry.activities, 0, 0, entryShapeSize, strokeW);
     }
@@ -486,6 +475,7 @@ function draw() {
     pop();
   }
 }
+
 
 function showModalWithEntry(entry) {
   const modalTitle = document.getElementById('siteModalLabel');
@@ -1355,7 +1345,7 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
   translate(x, y);
   noFill();
   strokeWeight(3.5);
-  blendMode(ADD); // Optional: enhances glow-style overlap
+  blendMode(ADD); // enhances glow-style overlap
 
   switch (warpStyle) {
     case 'linear':
