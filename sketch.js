@@ -6,6 +6,8 @@ let availableYears = [];
 let cnv;
 let hoveredEntry = null;  // Currently hovered entry (for hover enlargement)
 let bgImg;
+let gridShader;
+let gridTexture;
 
 const cropEdgeGroups = {
   // Root vegetables
@@ -178,6 +180,7 @@ const combinedIcon = `
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250702.csv', 'csv', 'header');
   bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
+  gridShader = loadShader('shaders/grid.vert', 'shaders/grid.frag');
 }
 
 // Animate number count from start to end over 'duration' milliseconds
@@ -273,6 +276,8 @@ function setup() {
   let fixedHeight = 865;
   cnv = createCanvas(initialWidth, fixedHeight);
   cnv.parent('sketch-container');
+
+  gridTexture = createGraphics(256, 256, WEBGL);
 
   // Create caption
   let caption = createP("Image from Pexels");
@@ -1025,79 +1030,35 @@ function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, dens
   push();
   translate(x, y);
   rectMode(CENTER);
-  strokeWeight(strokeW);
-  noFill();
+  noStroke();
+
+  const baseColor = getActivityColor(activities[0] || '');
+  const rgb = baseColor.levels.slice(0, 3);
 
   switch (arrayType) {
-   case 'fixed':
-    drawCrosshatchGridMultiColor(activities, size, density); break;
-  case 'single-axis tracking':
-    drawIsometricGridMultiColor(activities, size, density, 1.1); break;
-  case 'dual-axis tracking':
-    drawDottedMatrixMultiColor(activities, size, density); break;
+    case 'fixed':
+      generateGridTexture(rgb, density, 'crosshatch');
+      break;
+    case 'single-axis tracking':
+      generateGridTexture(rgb, density, 'isometric');
+      break;
+    case 'dual-axis tracking':
+      generateGridTexture(rgb, density, 'dotted');
+      break;
   }
 
+  texture(gridTexture);
+  plane(size, size);
   pop();
 }
 
-function drawCrosshatchGridMultiColor(activities, size, density = 10) {
-  let colorCount = activities.length;
-
-  push();
-  rotate(PI / 4); // Rotate 45 degrees for diamond orientation
-
-  for (let i = -size / 2, idx = 0; i <= size / 2; i += density, idx++) {
-    let col = getActivityColor(activities[idx % colorCount]);
-    stroke(col);
-    line(i, -size / 2, i, size / 2); // vertical
-    line(-size / 2, i, size / 2, i); // horizontal
-  }
-
-  pop();
-}
-
-function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1) {
-  let colorCount = activities.length;
-  let idx = 0;
-  let halfSize = size / 2;
-
-  push(); // Start inner transformation for rotation
-  rotate(PI);
-
-  for (let x = -halfSize; x <= halfSize; x += density) {
-    // Forward-slanting lines
-    stroke(getActivityColor(activities[idx % colorCount]));
-    let y1a = -halfSize * slope;
-    let y2a = halfSize * slope;
-    line(x, y1a, x + halfSize, y2a);
-    idx++;
-
-    // Backward-slanting lines
-    stroke(getActivityColor(activities[idx % colorCount]));
-    let y1b = -halfSize * slope;
-    let y2b = halfSize * slope;
-    line(x + halfSize, y1b, x, y2b);
-    idx++;
-  }
-
-  pop(); // End inner transformation
-}
-
-
-function drawDottedMatrixMultiColor(activities, size, density = 10) {
-  let step = 10;
-  let colorCount = activities.length;
-  let dotSize = 3;
-  let idx = 0;
-
-  for (let x = -size / 2; x < size / 2; x += density) {
-  for (let y = -size / 2; y < size / 2; y += density) {
-      fill(getActivityColor(activities[idx % colorCount]));
-      noStroke();
-      ellipse(x, y, dotSize, dotSize);
-      idx++;
-    }
-  }
+function generateGridTexture(colorArray = [0, 0, 0], density = 20, mode = 'crosshatch') {
+  gridTexture.shader(gridShader);
+  gridShader.setUniform('resolution', [gridTexture.width, gridTexture.height]);
+  gridShader.setUniform('density', density);
+  gridShader.setUniform('lineColor', colorArray.map(c => c / 255.0));
+  gridShader.setUniform('mode', mode === 'isometric' ? 1 : mode === 'dotted' ? 2 : 0);
+  gridTexture.rect(0, 0, gridTexture.width, gridTexture.height);
 }
   
 function getActivityColor(activity) {
