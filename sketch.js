@@ -433,7 +433,7 @@ function draw() {
       0,
       glowStrength,
       isHovered,
-      entry.animalType
+     (entry.animalLineType?.[0] || '')
     );
 
     // === Main Habitat Shape Fill ===
