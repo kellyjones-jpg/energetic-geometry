@@ -1072,8 +1072,9 @@ function drawHabitatMask(gfx, habitatList, x, y, size) {
 }
 
 function drawMaskedGridOverlay(entry, x, y, size, density = 10) {
-  const baseColor = getActivityColor(entry.activities[0] || '');
-  const rgb = baseColor.levels.slice(0, 3);
+  // Defensive: ensure we always get a valid color
+  const baseColor = getActivityColor(entry.activities?.[0] || '') || color(200); // fallback to light gray
+  const rgb = baseColor.levels?.slice(0, 3) || [200, 200, 200]; // fallback if levels is undefined
 
   let mode = 'crosshatch';
   if (entry.arrayType === 'single-axis tracking') mode = 'isometric';
@@ -1094,7 +1095,7 @@ function drawMaskedGridOverlay(entry, x, y, size, density = 10) {
   } else if (entry.animalType && entry.animalType.length > 0) {
     drawAnimalLineMask(maskBuffer, entry.animalType, 0, 0, 256);
   } else {
-    maskBuffer.ellipse(0, 0, 256, 256); // fallback default diamond
+    maskBuffer.ellipse(0, 0, 256, 256); // fallback default shape
   }
 
   maskBuffer.pop();
@@ -1108,7 +1109,6 @@ function drawMaskedGridOverlay(entry, x, y, size, density = 10) {
   image(maskedGrid, x, y, size, size);
 }
 
-
 function generateGridTexture(colorArray = [0, 0, 0], density = 20, mode = 'crosshatch') {
   gridTexture.shader(gridShader);
   gridShader.setUniform('resolution', [gridTexture.width, gridTexture.height]);
@@ -1119,9 +1119,9 @@ function generateGridTexture(colorArray = [0, 0, 0], density = 20, mode = 'cross
 }
 
 function getActivityColor(activity) {
-  switch (activity.trim().toLowerCase()) {
- case 'crop production':
-      return color('#E4572E'); // Vivd Orange
+  switch ((activity || '').trim().toLowerCase()) {
+    case 'crop production':
+      return color('#E4572E'); // Vivid Orange
     case 'habitat':
       return color('#2E8B57'); // Sea Green
     case 'grazing':
@@ -1129,8 +1129,7 @@ function getActivityColor(activity) {
     case 'greenhouse':
       return color('#FFD100'); // Solar Gold
     default:
-        pop(); 
-        return;
+      return color(200); // Light gray fallback instead of undefined
   }
 }
 
