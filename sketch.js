@@ -1148,138 +1148,162 @@ function drawMinimalSite(site) {
 
 function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, posY, glowStrength = 40, isHover = false, animalLineType = '', agrivoltaicColors = []) {
   let sz = constrain(systemSize || 0.1, 0.1, 10);
+  let cleaned = Array.isArray(habitat) ? habitat.map(h => (h || '').trim().toLowerCase()) : [];
+  if (cleaned.length === 0 && animalLineType) cleaned = [animalLineType.toLowerCase()];
 
-  let shapeType = 'diamond'; // fallback
-
-  if (Array.isArray(habitat) && habitat.length > 0) {
-    const cleaned = habitat.map(h => (h || '').trim().toLowerCase());
-    if (cleaned.includes('pollinator')) {
-      shapeType = 'hexagon';
-    } else if (cleaned.includes('naturalized')) {
-      shapeType = 'ellipse';
-    } else if (cleaned.includes('native grasses')) {
-      shapeType = 'rect';
-    }
-  } else if (animalLineType) {
-    shapeType = animalLineType.toLowerCase();
+  // Defensive fallback colors
+  if (!Array.isArray(agrivoltaicColors) || agrivoltaicColors.length === 0) {
+    agrivoltaicColors = [color(255)];
   }
 
-  // Positioning
+  // Helper: get shape type per habitat type
+  function getShapeType(h) {
+    switch (h) {
+      case 'pollinator': return 'hexagon';
+      case 'naturalized': return 'ellipse';
+      case 'native grasses': return 'rect';
+      default: return 'diamond';
+    }
+  }
+
+  // Calculate offsets around center so shapes don't fully overlap
+  let count = max(cleaned.length, 1);
+  let angleStep = TWO_PI / count;
+  let radiusOffset = baseSize * 0.15;
+
   push();
   translate(posX, posY);
   rectMode(CENTER);
   noStroke();
 
-  // Size & offsets
-  let offset = map(sz, 0, 10, 2, 10);
-  let shadowSize = map(sz, 0, 10, baseSize * 0.9, baseSize * 1.4);
-  let highlightSize = shadowSize * 0.95;
+  for (let i = 0; i < count; i++) {
+    let shapeType = getShapeType(cleaned[i]);
+    let baseColor = agrivoltaicColors[i % agrivoltaicColors.length];
+    
+    // Position each shape in a circle around center
+    let offsetX = cos(i * angleStep) * radiusOffset;
+    let offsetY = sin(i * angleStep) * radiusOffset;
+    
+    // Size & offsets (recalculated per shape if you want)
+    let offset = map(sz, 0, 10, 2, 10);
+    let shadowSize = map(sz, 0, 10, baseSize * 0.9, baseSize * 1.4);
+    let highlightSize = shadowSize * 0.95;
+    let widthFactor = 1;
+    let heightFactor = 1;
+    let rotateRectVertical = false;
 
-  let widthFactor = 1;
-  let heightFactor = 1;
-  let rotateRectVertical = false;
+    if (shapeType === 'diamond') {
+      widthFactor = 1;
+      heightFactor = 1.15;
+    } else if (shapeType === 'rect') {
+      widthFactor = 0.55;
+      heightFactor = 1.6;
+      rotateRectVertical = true;
+    }
 
-  if (shapeType === 'diamond' || shapeType === 'square') {
-    widthFactor = 1;
-    heightFactor = 1.15;
-  } else if (shapeType === 'rect') {
-    widthFactor = 0.55;
-    heightFactor = 1.6;
-    rotateRectVertical = true;
-  }
+    let shadowW = shadowSize * widthFactor;
+    let shadowH = shadowSize * heightFactor;
+    let highlightW = highlightSize * widthFactor;
+    let highlightH = highlightSize * heightFactor;
+    let glowW = shadowW * map(sz, 0.1, 10, 1.2, 1.6);
+    let glowH = shadowH * map(sz, 0.1, 10, 1.2, 1.6);
 
-  let shadowW = shadowSize * widthFactor;
-  let shadowH = shadowSize * heightFactor;
-  let highlightW = highlightSize * widthFactor;
-  let highlightH = highlightSize * heightFactor;
+    // Glow alpha pulsating
+    let pulse = map(sin(frameCount * 0.08), -1, 1, 0.8, 1);
+    let glowAlpha = glowStrength * pulse;
+    if (isHover) glowAlpha = min(glowAlpha * 3.5, 255);
 
-  let glowW = shadowW * map(sz, 0.1, 10, 1.2, 1.6);
-  let glowH = shadowH * map(sz, 0.1, 10, 1.2, 1.6);
+    // Color cycling between current and next color (looping)
+    let colorIndex = floor(frameCount / 60) % agrivoltaicColors.length;
+    let nextIndex = (colorIndex + 1) % agrivoltaicColors.length;
+    let lerpAmt = (frameCount % 60) / 60;
 
-  // Glow alpha pulsating
-  let pulse = map(sin(frameCount * 0.08), -1, 1, 0.8, 1);
-  let glowAlpha = glowStrength * pulse;
-  if (isHover) glowAlpha = min(glowAlpha * 3.5, 255);
+    let glowBaseColor = lerpColor(
+      agrivoltaicColors[colorIndex],
+      agrivoltaicColors[nextIndex],
+      lerpAmt
+    );
+    glowBaseColor.setAlpha(glowAlpha);
 
-  // Default to white if no colors provided
-  if (agrivoltaicColors.length === 0) agrivoltaicColors = [color(255)];
-
-  // Color cycling through agrivoltaicColors
-  let colorIndex = floor(frameCount / 60) % agrivoltaicColors.length;
-  let nextIndex = (colorIndex + 1) % agrivoltaicColors.length;
-  let lerpAmt = (frameCount % 60) / 60;
-  let baseGlowColor = lerpColor(agrivoltaicColors[colorIndex], agrivoltaicColors[nextIndex], lerpAmt);
-  baseGlowColor.setAlpha(glowAlpha);
-
-  // ✨ Blur-like glow layers
-  for (let i = 3; i > 0; i--) {
-    let layerW = glowW * (1 + i * 0.05);
-    let layerH = glowH * (1 + i * 0.05);
-    let layerAlpha = glowAlpha * (0.3 / i);
-    let layerColor = lerpColor(agrivoltaicColors[colorIndex], agrivoltaicColors[nextIndex], lerpAmt);
-    layerColor.setAlpha(layerAlpha);
-    fill(layerColor);
-    drawShapeByType(shapeType, layerW, layerH);
-  }
-
-  // Shadow layers
-  fill('#0A0A0A');
-  push();
-  rotate(radians(-12));
-  translate(offset, offset);
-  if (rotateRectVertical) rotate(PI);
-  drawShapeByType(shapeType, shadowW, shadowH);
-  pop();
-
-  fill(255);
-  push();
-  rotate(radians(8));
-  translate(offset * 1.4, offset * 0.8);
-  if (rotateRectVertical) rotate(PI);
-  drawShapeByType(shapeType, highlightW, highlightH);
-  pop();
-
-  fill('#0A0A0A');
-  push();
-  rotate(radians(3));
-  translate(-offset * 0.6, offset * 0.5);
-  if (rotateRectVertical) rotate(PI);
-  drawShapeByType(shapeType, shadowW * 0.88, shadowH * 0.88);
-  pop();
-
-  // Outline
-  stroke(255);
-  noFill();
-  strokeWeight(1);
-  if (rotateRectVertical) {
+    // Draw layered glow
     push();
-    rotate(PI);
-    drawShapeByType(shapeType, shadowW * 0.7, shadowH * 0.7);
+    translate(offsetX, offsetY);
+    for (let j = 3; j > 0; j--) {
+      let layerW = glowW * (1 + j * 0.05);
+      let layerH = glowH * (1 + j * 0.05);
+      let layerAlpha = glowAlpha * (0.3 / j);
+      let layerColor = lerpColor(
+        agrivoltaicColors[colorIndex],
+        agrivoltaicColors[nextIndex],
+        lerpAmt
+      );
+      layerColor.setAlpha(layerAlpha);
+      fill(layerColor);
+      drawShapeByType(shapeType, layerW, layerH);
+    }
     pop();
-  } else {
-    drawShapeByType(shapeType, shadowW * 0.7, shadowH * 0.7);
+
+    // Draw shadows and highlights
+    push();
+    translate(offsetX, offsetY);
+
+    fill('#0A0A0A');
+    push();
+    rotate(radians(-12));
+    translate(offset, offset);
+    if (rotateRectVertical) rotate(PI);
+    drawShapeByType(shapeType, shadowW, shadowH);
+    pop();
+
+    fill(255);
+    push();
+    rotate(radians(8));
+    translate(offset * 1.4, offset * 0.8);
+    if (rotateRectVertical) rotate(PI);
+    drawShapeByType(shapeType, highlightW, highlightH);
+    pop();
+
+    fill('#0A0A0A');
+    push();
+    rotate(radians(3));
+    translate(-offset * 0.6, offset * 0.5);
+    if (rotateRectVertical) rotate(PI);
+    drawShapeByType(shapeType, shadowW * 0.88, shadowH * 0.88);
+    pop();
+
+    // Outline
+    stroke(255);
+    noFill();
+    strokeWeight(1);
+    if (rotateRectVertical) {
+      push();
+      rotate(PI);
+      drawShapeByType(shapeType, shadowW * 0.7, shadowH * 0.7);
+      pop();
+    } else {
+      drawShapeByType(shapeType, shadowW * 0.7, shadowH * 0.7);
+    }
+
+    pop(); // pop translate offsetX/Y
   }
 
-  pop(); // pop positioning
+  pop(); // pop global translate
 
   return {
     offsetX: offset * 1.4,
     offsetY: offset * 0.8,
     angle: radians(8),
-    size: highlightSize,
+    size: baseSize,
     glowAlpha,
   };
 }
 
+
+// Draws different shapes based on type
 function drawShapeByType(type, w, h) {
   switch (type) {
     case 'hexagon':
-      beginShape();
-      for (let i = 0; i < 6; i++) {
-        let angle = TWO_PI / 6 * i - PI / 2;
-        vertex(cos(angle) * w / 2, sin(angle) * h / 2);
-      }
-      endShape(CLOSE);
+      polygon(0, 0, w / 2, 6);
       break;
     case 'ellipse':
       ellipse(0, 0, w, h);
@@ -1289,14 +1313,16 @@ function drawShapeByType(type, w, h) {
       break;
     case 'diamond':
       push();
-      rotate(PI / 4); // Rotate square 45 degrees to get diamond
-      rect(0, 0, w, h);
+      rotate(PI / 4); // 45° rotation
+      rect(0, 0, w, w);
       pop();
       break;
-    case 'square':
     default:
-      rect(0, 0, w, h);
-      break;
+      // Fallback to diamond-like shape
+      push();
+      rotate(PI / 4);
+      rect(0, 0, w, w);
+      pop();
   }
 }
 
@@ -1330,11 +1356,6 @@ function pathShapeByType(type, size) {
       ctx.lineTo(0, r);
       ctx.lineTo(-r, 0);
       ctx.closePath();
-      break;
-
-    case 'square':
-    default:
-      ctx.rect(-r, -r, size, size);
       break;
   }
 }
