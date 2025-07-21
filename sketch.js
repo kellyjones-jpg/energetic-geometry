@@ -279,7 +279,7 @@ function setup() {
   cnv = createCanvas(initialWidth, fixedHeight);
   cnv.parent('sketch-container');
 
-  gridTexture = createGraphics(256, 256, WEBGL);
+  gridTexture = createGraphics(textureSize, textureSize, WEBGL);
   gridTexture.noStroke();
 
   maskBuffer = createGraphics(256, 256);       // For drawing shape mask (P2D)
@@ -890,35 +890,88 @@ function drawTexturedLine(x, y, length) {
   }
 }
 
-function drawAnimalLineMask(gfx, animalTypes, x, y, size) {
-  const type = Array.isArray(animalTypes) ? animalTypes[0]?.toLowerCase() : '';
-  const height = 6 * (Array.isArray(animalTypes) ? animalTypes.length : 1);
+function drawAnimalLineMask(pg, animalType = '', x = 0, y = 0, textureSize = 256) {
+  const type = animalType.trim().toLowerCase();
+  const s = textureSize * 0.6; // overall size of line pattern area
+  const half = s / 2;
 
-  gfx.push();
-  gfx.translate(x - size / 2, y);
+  pg.push();
+  pg.translate(x, y);
+  pg.noFill();
+  pg.stroke(255);
+  pg.strokeWeight(textureSize * 0.04); // dynamically scale stroke thickness
 
-  for (let i = 0; i < height; i += 6) {
-    switch (type) {
-      case 'sheep': gfx.rect(0, i, size, 3); break;
-      case 'llamas and alpacas': gfx.ellipse(size / 2, i, size, 3); break;
-      case 'horse': gfx.triangle(0, i, size / 2, i - 10, size, i); break;
-      case 'cows': gfx.rect(0, i, size, 5); break;
-      default: gfx.rect(0, i, size, 2);
-    }
+  switch (type) {
+    case 'bee':
+      // Spiral path
+      pg.beginShape();
+      let turns = 2;
+      let angleStep = radians(5);
+      for (let a = 0; a < TWO_PI * turns; a += angleStep) {
+        let r = map(a, 0, TWO_PI * turns, 0, half);
+        let px = cos(a) * r;
+        let py = sin(a) * r;
+        pg.vertex(px, py);
+      }
+      pg.endShape();
+      break;
+
+    case 'sheep':
+      // Wavy path
+      pg.beginShape();
+      let waveStep = textureSize * 0.03;
+      let waveScale = textureSize * 0.1;
+      for (let i = -half; i <= half; i += waveStep) {
+        let y = sin(i * 0.05) * waveScale;
+        pg.vertex(i, y);
+      }
+      pg.endShape();
+      break;
+
+    case 'chicken':
+      // Zigzag path
+      pg.beginShape();
+      let zigStep = textureSize * 0.1;
+      let zigHeight = half * 0.6;
+      for (let i = -half; i <= half; i += zigStep) {
+        let y = ((i / zigStep) % 2 === 0) ? -zigHeight : zigHeight;
+        pg.vertex(i, y);
+      }
+      pg.endShape();
+      break;
+
+    default:
+      // Fallback: Diamond (rotated square)
+      pg.noStroke();
+      pg.fill(255);
+      pg.push();
+      pg.rotate(radians(45));
+      pg.rectMode(CENTER);
+      pg.rect(0, 0, s * 0.9, s * 0.9); // diamond scales with texture size
+      pg.pop();
+      break;
   }
 
-  gfx.pop();
+  pg.pop();
+}
+
+function drawHex(pg, x, y, radius) {
+  pg.beginShape();
+  for (let a = 0; a < TWO_PI; a += TWO_PI / 6) {
+    let vx = x + cos(a) * radius;
+    let vy = y + sin(a) * radius;
+    pg.vertex(vx, vy);
+  }
+  pg.endShape(CLOSE);
 }
 
 function drawHabitatShape(habitatList, x, y, size, baseColor) {
   if (!Array.isArray(habitatList)) return;
 
-  // Filter out empty strings, null, undefined, or whitespace-only values
   habitatList = habitatList
     .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
     .filter(h => h !== '');
 
-  // Stop if nothing valid remains
   if (habitatList.length === 0) return;
 
   push();
@@ -928,32 +981,25 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
   noStroke();
 
   for (let i = 0; i < habitatList.length; i++) {
-    let habitat = habitatList[i];
-    let angleOffset = PI / 8 * i;
-    let alpha = map(i, 0, habitatList.length, 180, 100);
-    let fillColor = color(baseColor.levels[0], baseColor.levels[1], baseColor.levels[2], alpha);
+    const habitat = habitatList[i];
+    const angleOffset = PI / 8 * i;
+    const alpha = map(i, 0, habitatList.length, 180, 100);
+    const fillColor = color(baseColor.levels[0], baseColor.levels[1], baseColor.levels[2], alpha);
 
     fill(fillColor);
     rotate(angleOffset);
 
     switch (habitat) {
       case 'pollinator':
-        beginShape();
-        for (let j = 0; j < 6; j++) {
-          let angle = TWO_PI / 6 * j - PI / 2;
-          let vx = cos(angle) * size * 0.5;
-          let vy = sin(angle) * size * 0.5;
-          vertex(vx, vy);
-        }
-        endShape(CLOSE);
+        drawHex(this, 0, 0, size * 0.3); // radius
         break;
 
       case 'native grasses':
-        rect(0, 0, size * 0.3, size);
+        rect(0, 0, size * 0.3, size * 0.9); // tall
         break;
 
       case 'naturalized':
-        ellipse(0, 0, size, size);
+        ellipse(0, 0, size * 0.9, size * 0.7);
         break;
     }
   }
@@ -974,7 +1020,6 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
 
   if (cleanedHabitats.length === 0 || cleanedActivities.length === 0) return;
 
-  // Determine number of layers to draw — always one per activity
   const nestingCount = cleanedActivities.length;
 
   push();
@@ -986,16 +1031,13 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
   const layerStep = 0.85 / nestingCount;
 
   for (let i = 0; i < nestingCount; i++) {
-    // Repeat habitat shapes if fewer than activities
     const habitat = cleanedHabitats[i % cleanedHabitats.length];
     const shapeType = getHabitatShapeType(habitat);
-
-    // Cycle activity color
     const activity = cleanedActivities[i];
     const fillCol = getActivityColor(activity);
     if (!fillCol) continue;
 
-    const angleOffset = radians(i * 10); // rotation for contrast
+    const angleOffset = radians(i * 10);
     const scaleFactor = 1 - i * layerStep;
     const shapeSize = size * scaleFactor;
 
@@ -1004,11 +1046,14 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
     push();
     rotate(angleOffset);
 
-    // Tall/narrow for "native grasses"
     if (shapeType === 'rect') {
-      drawShapeByType(shapeType, shapeSize * 0.35, shapeSize * 1.1);
+      drawShapeByType(shapeType, shapeSize * 0.35, shapeSize);
+    } else if (shapeType === 'ellipse') {
+      drawShapeByType(shapeType, shapeSize * 0.9, shapeSize * 0.7);
+    } else if (shapeType === 'hexagon') {
+      drawShapeByType(shapeType, shapeSize * 0.5); // radius
     } else {
-      drawShapeByType(shapeType, shapeSize, shapeSize);
+      drawShapeByType('diamond', shapeSize * 0.9); // fallback
     }
 
     pop();
@@ -1016,6 +1061,7 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
 
   pop();
 }
+
 
 function getHabitatShapeType(habitat) {
   if (habitat.includes('pollinator')) return 'hexagon';
@@ -1032,44 +1078,37 @@ function pointInHexagon(px, py, r) {
   return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
 }
 
-function drawHabitatMask(gfx, habitatList, x, y, size) {
-  if (!Array.isArray(habitatList)) return;
+function drawHabitatMask(pg, habitatList = [], x = 0, y = 0, textureSize = 256) {
+  const shapeType = getHabitatShape(habitatList); // your existing shape-mapping logic
+  const s = textureSize * 0.7; // scale factor to keep shape within canvas
 
-  habitatList = habitatList
-    .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
-    .filter(h => h !== '');
+  pg.push();
+  pg.translate(x, y);
+  pg.noStroke();
+  pg.fill(255);
 
-  let habitat = habitatList[0];
-  gfx.push();
-  gfx.translate(x, y);
-
-  switch (habitat) {
-    case 'pollinator':
-      gfx.beginShape();
-      for (let j = 0; j < 6; j++) {
-        let angle = TWO_PI / 6 * j - PI / 2;
-        let vx = cos(angle) * size * 0.5;
-        let vy = sin(angle) * size * 0.5;
-        gfx.vertex(vx, vy);
-      }
-      gfx.endShape(CLOSE);
+  switch (shapeType) {
+    case 'hexagon':
+      drawHex(pg, 0, 0, s / 2); // radius
       break;
-
-    case 'native grasses':
-      gfx.rectMode(CENTER);
-      gfx.rect(0, 0, size * 0.3, size);
+    case 'ellipse':
+      pg.ellipse(0, 0, s, s * 0.8);
       break;
-
-    case 'naturalized':
-      gfx.ellipse(0, 0, size, size);
+    case 'rect':
+      pg.rectMode(CENTER);
+      pg.rect(0, 0, s * 0.7, s * 1.2);
       break;
-
+    case 'diamond':
     default:
-      gfx.ellipse(0, 0, size * 0.9, size * 0.9);
+      pg.rotate(radians(45));
+      pg.rectMode(CENTER);
+      pg.rect(0, 0, s * 0.9, s * 0.9);
+      break;
   }
 
-  gfx.pop();
+  pg.pop();
 }
+
 
 function drawMaskedGridOverlay(entry, x, y, size, density = 10) {
   // Defensive: ensure we always get a valid color
