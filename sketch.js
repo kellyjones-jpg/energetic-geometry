@@ -425,15 +425,17 @@ function draw() {
     scale(entry.currentScale);
 
     // Suprematist Op Shadow
-    const shadowInfo = drawSuprematistOpShadowRect(
+   const shadowInfo = drawSuprematistOpShadowRect(
       entryShapeSize,
       entry.megawatts,
       entry.habitat,
       0, 0,
       glowStrength,
       isHovered,
-      (entry.animalType?.[0] || '')
+      (entry.animalType?.[0] || ''),
+      entry.activities
     );
+
 
     // Base habitat fill
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
@@ -1136,8 +1138,8 @@ function drawMinimalSite(site) {
   const { x, y, activity = 'habitat', systemSize = 0.1, siteSize = 0.1 } = site;
 
   const baseColor = getActivityColor(activity); 
-  const dotBaseSize = map(siteSize, 0, 10, 16, 60);       // Boosted min/max size
-  const shadowOffset = map(systemSize, 0, 10, 1, 8);      // Optional: adjust if larger systems need more offset
+  const dotBaseSize = map(siteSize, 0, 30, 46, 90);       // Boosted min/max size
+  const shadowOffset = map(systemSize, 0, 10, 1, 8);      // adjust if larger systems need more offset
 
   push();
   translate(x, y);
@@ -1159,40 +1161,27 @@ function drawMinimalSite(site) {
   pop();
 }
 
-function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, posY, glowStrength = 10, isHover = false, animalLineType = '') {
+function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, posY, glowStrength = 10, isHover = false, animalLineType = '', activities = []) {
   let sz = constrain(systemSize || 0.1, 0.1, 10);
 
-  let shapeType = 'diamond'; // fallback
-
+  // Determine shapeType
+  let shapeType = 'diamond';
   if (Array.isArray(habitat) && habitat.length > 0) {
     const cleaned = habitat.map(h => (h || '').trim().toLowerCase());
-    if (cleaned.includes('pollinator')) {
-      shapeType = 'hexagon';
-    } else if (cleaned.includes('naturalized')) {
-      shapeType = 'ellipse';
-    } else if (cleaned.includes('native grasses')) {
-      shapeType = 'rect';
-    }
+    if (cleaned.includes('pollinator')) shapeType = 'hexagon';
+    else if (cleaned.includes('naturalized')) shapeType = 'ellipse';
+    else if (cleaned.includes('native grasses')) shapeType = 'rect';
   } else if (animalLineType) {
-    // Use animal line type as shapeType fallback
     shapeType = animalLineType.toLowerCase();
   }
 
-  // Map offsets and sizes based on system size
+  // Map sizes
   let offset = map(sz, 0, 10, 2, 10);
   let shadowSize = map(sz, 0, 10, baseSize * 0.9, baseSize * 1.4);
   let highlightSize = shadowSize * 0.95;
 
-  // Aspect ratio and rotation flag for rectangles
-  let widthFactor = 1;
-  let heightFactor = 1;
-  let rotateRectVertical = false;
-
-  if (shapeType === 'diamond') {
-    widthFactor = 1;
-    heightFactor = 1.15;
-  } else if (shapeType === 'square') {
-    widthFactor = 1;
+  let widthFactor = 1, heightFactor = 1, rotateRectVertical = false;
+  if (shapeType === 'diamond' || shapeType === 'square') {
     heightFactor = 1.15;
   } else if (shapeType === 'rect') {
     widthFactor = 0.55;
@@ -1205,22 +1194,33 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
   let highlightW = highlightSize * widthFactor;
   let highlightH = highlightSize * heightFactor;
 
-  // Glow alpha pulsates between 0.3 and 0.7 of glowStrength
+  // === Glow animation ===
   let pulse = map(sin(frameCount * 0.1), -1, 1, 0.7, 0.9);
   let glowAlpha = glowStrength * pulse;
+  if (isHover) glowAlpha = min(glowAlpha * 2.5, 255);
 
-  // Boost alpha if hovered
-  if (isHover) {
-    glowAlpha = min(glowAlpha * 2.5, 255);
-  }
-
-  // Glow size scaled by system size
   let glowW = shadowW * map(sz, 0.1, 10, 1.2, 1.6);
   let glowH = shadowH * map(sz, 0.1, 10, 1.2, 1.6);
 
-  // Glow color 
-  let glowColor = color(255, 255, 255, glowAlpha);
+  // === Smoothly fading glow color ===
+  let glowColor = color(255, 255, 255, glowAlpha); // default white
+  if (activities.length > 0) {
+    let t = (frameCount * 0.02) % 1; // fractional progress (0–1)
+    let total = activities.length;
+    let index1 = floor(frameCount * 0.02) % total;
+    let index2 = (index1 + 1) % total;
 
+    let c1 = getActivityColor(activities[index1]) || color(255, 255, 255);
+    let c2 = getActivityColor(activities[index2]) || color(255, 255, 255);
+
+    // Set alpha on both colors before blending
+    c1.setAlpha(glowAlpha);
+    c2.setAlpha(glowAlpha);
+
+    glowColor = lerpColor(c1, c2, t);
+  }
+
+  // === Draw layered shadows and glow ===
   push();
   rectMode(CENTER);
   noStroke();
@@ -1231,8 +1231,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
   drawShapeByType(shapeType, glowW, glowH);
   pop();
 
-  // Shadows and highlights
-
+  // Shadow 1
   fill('#0A0A0A');
   push();
   rotate(radians(-12));
@@ -1241,6 +1240,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
   drawShapeByType(shapeType, shadowW, shadowH);
   pop();
 
+  // Highlight
   fill(255);
   push();
   rotate(radians(8));
@@ -1249,6 +1249,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
   drawShapeByType(shapeType, highlightW, highlightH);
   pop();
 
+  // Shadow 2
   fill('#0A0A0A');
   push();
   rotate(radians(3));
@@ -1272,7 +1273,6 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
 
   pop();
 
-  // Return hover state & glow info if needed
   return {
     offsetX: offset * 1.4,
     offsetY: offset * 0.8,
@@ -1281,6 +1281,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
     glowAlpha,
   };
 }
+
 
 function drawShapeByType(type, w, h) {
   switch (type) {
