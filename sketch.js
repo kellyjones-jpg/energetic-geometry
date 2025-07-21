@@ -424,16 +424,19 @@ function draw() {
     translate(cx, cy);
     scale(entry.currentScale);
 
-    // === Suprematist Op Shadow (with animalType and habitat influences) ===
+   // Convert activity strings to p5 color objects
+    const activityColors = (entry.activities || []).map(getActivityColor);
+
+    // Suprematist Op Shadow
     const shadowInfo = drawSuprematistOpShadowRect(
       entryShapeSize,
       entry.megawatts,
       entry.habitat,
-      0,
-      0,
+      0, 0,
       glowStrength,
       isHovered,
-     (entry.animalLineType?.[0] || '')
+      (entry.animalType?.[0] || ''),
+      activityColors // passing colors, not raw strings
     );
 
     // === Main Habitat Shape Fill ===
