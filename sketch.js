@@ -177,7 +177,7 @@ const combinedIcon = `
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250702.csv', 'csv', 'header');
-  bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
+  bgImg = loadImage('images/pexels-tomfisk-19117245-v2.webp');
 }
 
 // Animate number count from start to end over 'duration' milliseconds
