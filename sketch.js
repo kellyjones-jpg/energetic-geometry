@@ -314,23 +314,72 @@ function setup() {
   const prevBtn = select('#prev-year');
   const nextBtn = select('#next-year');
 
-  prevBtn.mousePressed(() => {
-    const index = availableYears.indexOf(selectedYear);
-    if (index > 0) {
-      selectedYear = availableYears[index - 1];
-      updateYear(selectedYear, index - 1);
+   setupArrows();
+}
+
+function setupArrows() {
+  const prevBtn = document.getElementById('prev-year');
+  const nextBtn = document.getElementById('next-year');
+
+  if (!prevBtn || !nextBtn) return;
+
+  // Make buttons keyboard-focusable
+  prevBtn.setAttribute('tabindex', '0');
+  nextBtn.setAttribute('tabindex', '0');
+
+  // Apply visual focus style if using custom buttons (CSS still required)
+  prevBtn.classList.add('arrow-button');
+  nextBtn.classList.add('arrow-button');
+
+  prevBtn.addEventListener('click', () => changeYear(-1));
+  nextBtn.addEventListener('click', () => changeYear(1));
+
+  // Keyboard support
+  prevBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      changeYear(-1);
     }
   });
 
-  nextBtn.mousePressed(() => {
-    const index = availableYears.indexOf(selectedYear);
-    if (index < availableYears.length - 1) {
-      selectedYear = availableYears[index + 1];
-      updateYear(selectedYear, index + 1);
+  nextBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      changeYear(1);
     }
+  });
+
+  // Swipe support (mobile)
+  let touchStartX = null;
+
+  window.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+
+  window.addEventListener('touchend', (e) => {
+    if (touchStartX === null) return;
+    const touchEndX = e.changedTouches[0].screenX;
+    const deltaX = touchEndX - touchStartX;
+
+    if (Math.abs(deltaX) > 50) {
+      if (deltaX > 0) changeYear(-1); // swipe right → previous
+      else changeYear(1);             // swipe left → next
+    }
+
+    touchStartX = null;
   });
 }
 
+
+function changeYear(direction) {
+  let currentIndex = yearList.indexOf(currentYear);
+  let nextIndex = constrain(currentIndex + direction, 0, yearList.length - 1);
+  
+  if (nextIndex !== currentIndex) {
+    currentYear = yearList[nextIndex];
+    updateYearDisplay(); 
+  }
+}
 
 function updateLayout() {
   const yearEntries = entriesByYear[selectedYear] || [];
