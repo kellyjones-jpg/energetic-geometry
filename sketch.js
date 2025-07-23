@@ -1181,7 +1181,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
   let heightFactor = 1;
   let rotateRectVertical = false;
 
-  if (shapeType === 'diamond' || shapeType === 'square') {
+  if (shapeType === 'diamond') {
     widthFactor = 1;
     heightFactor = 1.15;
   } else if (shapeType === 'rect') {
@@ -1290,14 +1290,11 @@ function drawShapeByType(type, w, h) {
       rect(0, 0, w, h);
       break;
     case 'diamond':
+    default:
       push();
       rotate(PI / 4); // Rotate square 45 degrees to get diamond
       rect(0, 0, w, h);
       pop();
-      break;
-    case 'square':
-    default:
-      rect(0, 0, w, h);
       break;
   }
 }
@@ -1327,16 +1324,12 @@ function pathShapeByType(type, size) {
       break;
 
     case 'diamond':
+    default:
       ctx.moveTo(0, -r);
       ctx.lineTo(r, 0);
       ctx.lineTo(0, r);
       ctx.lineTo(-r, 0);
       ctx.closePath();
-      break;
-
-    case 'square':
-    default:
-      ctx.rect(-r, -r, size, size);
       break;
   }
 }
