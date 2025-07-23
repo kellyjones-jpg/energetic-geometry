@@ -6,6 +6,14 @@
       padding: 0;
     }
 
+    canvas {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      border-radius: 8px;
+    }
+
     h4 {
         font-size: 1.25rem;
         line-height: 1.2;
@@ -75,46 +83,38 @@
       max-width: 400px;
     }
   
-  /* Wrap counters and sketch for flexible reordering */
+/* Container for sketch and totals */
 #sketch-and-totals {
   display: flex;
-  flex-direction: column; /* mobile: counters above sketch */
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
 }
 
-/* Desktop: reverse order so sketch is above counters */
-@media (min-width: 768px) {
-  #sketch-and-totals {
-    flex-direction: column-reverse;
-  }
-}
-
-/* Adjust sticky counters to only be sticky on desktop */
+/* Counter container with sticky behavior and frosted-glass effect */
 #counter-container {
   position: sticky;
-  top: 0;
-  z-index: 15;
-  background-color: #353839;
-  border-bottom: 2px solid white;
-  padding: 0.65rem 1rem;
-  font-size: 1rem;
-  text-align: center;
+  top: 10px;
+  z-index: 1000;
+  background-color: rgba(255, 255, 255, 0.8); /* semi-transparent white */
+  backdrop-filter: blur(8px); /* frosted glass */
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
+  padding: 10px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   width: 100%;
-  max-width: 1650px;
-  margin: 0 auto;
+  max-width: 800px;
+  transition: all 0.3s ease-in-out;
 }
 
-/* Disable sticky on mobile */
-@media (max-width: 767px) {
-  #counter-container {
-    position: static;
-  }
-}
-
-#counter-container span {
-  margin: 0 1rem;
-  font-weight: bold;
-  color: white;
-  display: inline-block;
+/* Counter text styling */
+#counter-container .row {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.1rem;
 }
 
   .visually-hidden {
@@ -124,6 +124,40 @@
   overflow: hidden;
   clip: rect(1px, 1px, 1px, 1px);
   white-space: nowrap;
+}
+
+
+/* Desktop: reverse order so sketch is above counters */
+@media (min-width: 768px) {
+  #sketch-and-totals {
+    flex-direction: column-reverse;
+  }
+   .accordion-button {
+    font-size: 1.1rem;
+  }
+  .accordion-body th,
+  .accordion-body td {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+}
+
+/* Responsive reordering: counters above canvas on mobile */
+@media (max-width: 767px) {
+  #sketch-and-totals {
+    flex-direction: column-reverse;
+  }
+
+  #counter-container {
+    top: 0;
+    padding: 12px 16px;
+  }
+
+  #counter-container .row {
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 1rem;
+  }
 }
 
   .nav-link {
@@ -555,18 +589,6 @@ a.hyperlink:focus {
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-}
-
-/* Responsive tweak: smaller font on narrow screens */
-@media (max-width: 768px) {
-  .accordion-button {
-    font-size: 1.1rem;
-  }
-  .accordion-body th,
-  .accordion-body td {
-    font-size: 0.85rem;
-    padding: 0.5rem;
-  }
 }
 
 .label-with-lines {
