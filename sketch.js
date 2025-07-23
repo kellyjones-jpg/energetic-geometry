@@ -6,6 +6,11 @@ let availableYears = [];
 let cnv;
 let hoveredEntry = null;  // Currently hovered entry (for hover enlargement)
 let bgImg;
+let shapeSize = 150;     // will be dynamically updated
+let numCols = 1;         // updated in updateLayout()
+let numRows = 1;
+let padding = 60;
+let startY = 80;
 
 const cropEdgeGroups = {
   // Root vegetables
@@ -177,7 +182,7 @@ const combinedIcon = `
 
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250702.csv', 'csv', 'header');
-  bgImg = loadImage('images/pexels-tomfisk-19117245-v2.webp');
+  bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
 }
 
 // Animate number count from start to end over 'duration' milliseconds
@@ -215,20 +220,15 @@ function updateCounters(entries) {
 
 
 function setup() {
+  // Parse table data
   for (let i = 0; i < table.getRowCount(); i++) {
     let name = table.getString(i, 'Name') || '';
     let activityStr = table.getString(i, 'Agrivoltaic Activities') || '';
-    let activities = activityStr
-      .split(/,\s*/)
-      .map(a => a.trim().toLowerCase())
-      .filter(a => a.length > 0);
+    let activities = activityStr.split(/,\s*/).map(a => a.trim().toLowerCase()).filter(a => a.length > 0);
     let habitatStr = String(table.getString(i, 'Habitat Type') || '').trim();
     let habitat = habitatStr ? habitatStr.split(/,\s*/) : [];
     let animalTypeStr = table.getString(i, 'Animal Type') || '';
-    let animalType = animalTypeStr
-      .split(/,\s*/)
-      .map(a => a.trim().toLowerCase())
-      .filter(a => a.length > 0);
+    let animalType = animalTypeStr.split(/,\s*/).map(a => a.trim().toLowerCase()).filter(a => a.length > 0);
     let cropTypeStr = table.getString(i, 'Crop Types') || '';
     let cropType = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
     let arrayTypeStr = table.getString(i, 'Type Of Array') || '';
@@ -248,39 +248,30 @@ function setup() {
       megawatts,
       acres,
       url: url.trim(),
-      currentScale: 1 // for smooth animation
+      currentScale: 1
     };
 
     entries.push(entry);
-
-    if (!entriesByYear[year]) {
-      entriesByYear[year] = [];
-    }
+    if (!entriesByYear[year]) entriesByYear[year] = [];
     entriesByYear[year].push(entry);
   }
 
   availableYears = Object.keys(entriesByYear).sort();
   selectedYear = availableYears[0];
 
-  // Create the canvas
-  let initialWidth = windowWidth * 0.9;
-  let shapeSize = 150;
-  let padding = 60;
-  let yearEntries = entriesByYear[selectedYear] || [];
-  let numCols = floor((initialWidth - padding) / (shapeSize + padding));
-  numCols = max(numCols, 1);
-  let numRows = ceil(yearEntries.length / numCols);
-  let fixedHeight = 865;
-  cnv = createCanvas(initialWidth, fixedHeight);
+  // Responsive canvas sizing
+  let canvasWidth = windowWidth * 0.9;
+  let canvasHeight = min(windowHeight * 0.8, 865);
+  cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent('sketch-container');
 
-  // Create caption
+  // Create image caption
   let caption = createP("Image from Pexels");
   caption.style('text-align', 'left', true);
   caption.class('image-caption');
   caption.parent('sketch-container');
 
-  // YEAR BUTTONS
+  // Create year timeline
   let timelineContainer = createDiv().id('timeline');
   timelineContainer.style('text-align', 'center', true);
   timelineContainer.parent('sketch-container');
@@ -289,9 +280,7 @@ function setup() {
     let yearDiv = createDiv().class('timeline-year');
     yearDiv.parent(timelineContainer);
 
-    let label = createP(year)
-      .class('year-label')
-      .addClass('suprematist-underline');
+    let label = createP(year).class('year-label').addClass('suprematist-underline');
     label.parent(yearDiv);
 
     if (index % 2 === 0) {
@@ -305,7 +294,7 @@ function setup() {
 
     label.mousePressed(() => {
       selectedYear = year;
-      windowResized();
+      windowResized(); // update layout
       updateCounters(entriesByYear[selectedYear]);
 
       selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
@@ -315,56 +304,49 @@ function setup() {
     if (index === 0) label.addClass('active');
   });
 
+  // General style setup
   textFont('Helvetica');
   textSize(32);
   textAlign(CENTER, CENTER);
   rectMode(CENTER);
-  loop();
+  pixelDensity(displayDensity()); // For crisp rendering on high-DPI screens
+
+  updateLayout();
   updateCounters(entriesByYear[selectedYear]);
+  loop();
 }
 
-
 function windowResized() {
-  let yearEntries = entriesByYear[selectedYear] || [];
-  let shapeSize = 150;
-  let padding = 60;
-  let numCols = floor((windowWidth * 0.9 - padding) / (shapeSize + padding));
-  numCols = max(numCols, 1);
-
-  let numRows = ceil(yearEntries.length / numCols);
-  let fixedHeight = 865;
-  resizeCanvas(windowWidth * 0.9, fixedHeight);
-  
+  let canvasWidth = windowWidth * 0.9;
+  let canvasHeight = min(windowHeight * 0.8, 865);
+  resizeCanvas(canvasWidth, canvasHeight);
+  updateLayout();
   redraw();
 }
 
-
 function draw() {
-  // Draw background image dimmed and semi-transparent
+  // === BACKGROUND ===
   image(bgImg, 0, 0, width, height);
   noStroke();
   rectMode(CORNER);
-  fill(0, 140);
+  fill(0, 130); // dark overlay
   rect(0, 0, width, height);
   rectMode(CENTER);
 
-  // === MINIMAL SUPREMATIST YEAR LABEL ===
+  // === SUPREMATIST YEAR LABEL ===
   const centerX = width / 2;
   const labelY = 40;
   const yearY = labelY + 40;
-
   textFont('Helvetica');
-  textSize(28);
   textAlign(CENTER, BOTTOM);
   fill(255);
+  textSize(28);
   text("Year Installed:", centerX, labelY);
-
   textStyle(BOLD);
   textSize(36);
   text(" " + selectedYear, centerX, yearY);
   textStyle(NORMAL);
 
-  // Underline aligned with selectedYear
   const lineY = yearY + 6;
   const lineWidth = textWidth(selectedYear) + 40;
   stroke('#0A0A0A');
@@ -372,27 +354,17 @@ function draw() {
   line(centerX - lineWidth / 2, lineY, centerX + lineWidth / 2, lineY);
   noStroke();
 
-  // Get entries for the selected year
+  // === DATA FOR SELECTED YEAR ===
   const yearEntries = entriesByYear[selectedYear] || [];
   if (yearEntries.length === 0) {
     text("No data available for this year.", centerX, height / 2);
     return;
   }
 
-  // Calculate max megawatts safely
-  let maxMW = Math.max(...yearEntries.map(e => e.megawatts || 0));
-  if (maxMW <= 0) maxMW = 1;
-
-  // Layout parameters
-  const startY = 80;
   const count = yearEntries.length;
   const minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
   const maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
-  const baseShapeSize = map(count, 10, 120, 140, 50);
-  const padding = map(count, 10, 120, 60, 15);
-  let numCols = floor((width - padding) / (baseShapeSize + padding));
-  numCols = max(numCols, 1);
-  const numRows = ceil(count / numCols);
+  const maxMW = Math.max(1, ...yearEntries.map(e => e.megawatts || 0));
   const maxCellHeight = (height - startY - 50) / numRows;
 
   for (let i = 0; i < count; i++) {
@@ -400,34 +372,31 @@ function draw() {
     const col = i % numCols;
     const row = floor(i / numCols);
 
-    // Calculate center positions
-    const cx = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
+    // Positioning
+    const cx = padding + col * (shapeSize + padding) + shapeSize / 2;
     const cy = startY + row * maxCellHeight + maxCellHeight / 2;
 
-    // Shape size and stroke weight scaled by acres
-    let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
+    // Size and stroke scaling
+    let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, shapeSize * 0.6, shapeSize);
     entryShapeSize = constrain(entryShapeSize, 30, maxCellHeight * 0.85);
     let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 2, 5.5);
     strokeW = constrain(strokeW, 2, 5.5);
 
-    // Base color from first activity
+    // Colors and interactivity
     const baseColor = getActivityColor(entry.activities?.[0] || '');
-
-    // Hover and glow animation
     const isHovered = hoveredEntry && hoveredEntry.name === entry.name;
     const baseGlow = map(entry.megawatts || 0, 0, maxMW, 5, 30);
     const glowStrength = isHovered ? baseGlow * 1.5 : baseGlow;
     const targetScale = isHovered ? 1.2 : 1;
     entry.currentScale = lerp(entry.currentScale || 1, targetScale, 0.1);
 
+    const activityColors = (entry.activities || []).map(getActivityColor);
+
+    // === DRAW ENTRY ===
     push();
     translate(cx, cy);
     scale(entry.currentScale);
 
-   // Convert activity strings to p5 color objects
-    const activityColors = (entry.activities || []).map(getActivityColor);
-
-    // Suprematist Op Shadow
     const shadowInfo = drawSuprematistOpShadowRect(
       entryShapeSize,
       entry.megawatts,
@@ -436,49 +405,49 @@ function draw() {
       glowStrength,
       isHovered,
       (entry.animalType?.[0] || ''),
-      activityColors // passing colors, not raw strings
+      activityColors
     );
 
-    // === Main Habitat Shape Fill ===
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
       drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor);
     }
 
-    // === Texture from Activities on top ===
     if (entry.activities && entry.habitat) {
       drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize);
     }
 
-    // === Draw Array Overlay with shader (inside shadowInfo transform) ===
     if (entry.arrayType) {
       push();
       translate(shadowInfo.offsetX, shadowInfo.offsetY);
       rotate(shadowInfo.angle);
-      drawArrayOverlay(
-        entry.arrayType,
-        entry.activities,
-        0, 0,
-        shadowInfo.size,
-        1.2,
-        10
-      );
+      drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10);
       pop();
     }
 
-    // === Crop Edge Style (outline) ===
-    if (entry.cropType && entry.cropType.length > 0) {
+    if (entry.cropType?.length > 0) {
       drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
     }
 
-    // === Animal Line Type ===
-    if (entry.animalType && entry.animalType.length > 0) {
+    if (entry.animalType?.length > 0) {
       drawAnimalLine(entry.animalType, entry.activities, 0, 0, entryShapeSize, strokeW);
     }
 
-    pop();
+    pop(); // end of entry group
   }
 }
 
+
+function updateLayout() {
+  const yearEntries = entriesByYear[selectedYear] || [];
+  const count = yearEntries.length;
+
+  shapeSize = constrain(windowWidth * 0.1, 80, 150);
+  padding = map(count, 10, 120, 60, 15);
+  startY = windowHeight < 500 ? 50 : 80;
+
+  numCols = max(floor((width - padding) / (shapeSize + padding)), 1);
+  numRows = ceil(count / numCols);
+}
 
 function showModalWithEntry(entry) {
   const modalTitle = document.getElementById('siteModalLabel');
