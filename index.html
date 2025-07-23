@@ -13,22 +13,28 @@
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-  <!-- Bootstrap Icons -->
+  <!-- Bootstrap Icons (for question mark icon) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
 
   <!-- Global Styles -->
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- p5.js and other scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+  <script src="https://bitcraftlab.github.io/p5.gui/libraries/p5.gui.js"></script>
+  <script src="https://bitcraftlab.github.io/p5.gui/libraries/quicksettings.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
 </head>
 <body>
   <div class="container my-4">
-    <!-- Header + Navigation -->
+    <!-- Flex container for h1 + nav -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h1 class="mb-0">
-        <a class="title" href="index.html" aria-label="Home">
-          Energetic Geometry:<br />
-          The Art and Power of Agrivoltaics
-        </a>
+      <h1 class="mb-0"><a class="title" href="index.html" aria-label="Home">
+        Energetic Geometry:<br />
+        The Art and Power of Agrivoltaics</a>
       </h1>
+
       <nav class="mb-0">
         <ul class="nav">
           <li class="nav-item">
@@ -43,84 +49,63 @@
         </ul>
       </nav>
     </div>
+<div class="landing-border">
+  
 
-    <!-- Border wrapper -->
-    <div class="landing-border">
+  
+    <div id="sketch-container">
+    <!-- p5.js will insert canvas, slider, buttons here -->
+  
+    <!-- Screen reader live region -->
+    <div id="sr-live" aria-live="polite" style="position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden;">
+      Year changed to 2020
+    </div>
+</div>
 
-      <!-- Main Sketch Container -->
-      <div id="sketch-container">
-
-        <!-- Wrap counters and sketch canvas together -->
-        <div id="sketch-and-totals">
-
-          <!-- STICKY COUNTERS -->
-          <div id="counter-container" class="row text-center">
-            <div class="col-4">
-              <div class="thick-num" id="site-count">0</div>
-              <div class="label-with-lines">
-                <p class="h5">Sites</p>
-                <div class="underline-line"></div>
-              </div>
-            </div>
-            <div class="col-4">
-              <div class="thick-num" id="megawatt-count">0</div>
-              <div class="label-with-lines">
-                <p class="h5">Megawatts</p>
-                <div class="underline-line"></div>
-              </div>
-            </div>
-            <div class="col-4">
-              <div class="thick-num" id="acre-count">0</div>
-              <div class="label-with-lines">
-                <p class="h5">Acres</p>
-                <div class="underline-line"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Screen reader live region -->
-          <div id="sr-live" aria-live="polite" class="visually-hidden">
-            Year changed to 2020
-          </div>
-
-          <!-- p5.js sketch will inject canvas here -->
-
-        </div> <!-- end #sketch-and-totals -->
-
-        <!-- TIMELINE container: place timeline here, after sketch and totals -->
-        <div id="timeline">
-          <!-- timeline content goes here -->
-        </div>
-
-      </div> <!-- end #sketch-container -->
-
-      <!-- Bootstrap Modal for Site Info -->
-      <div class="modal fade" id="siteModal" tabindex="-1" aria-labelledby="siteModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="siteModalLabel">Site Details</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="siteModalBody">
-              <!-- JS fills content dynamically -->
-            </div>
-          </div>
-        </div>
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="siteModal" tabindex="-1" aria-labelledby="siteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="siteModalLabel">Site Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
+      <div class="modal-body" id="siteModalBody">
+        <!-- Content filled by JS -->
+      </div>
+    </div>
+  </div>
+</div>
 
-    </div> <!-- .landing-border -->
-  </div> <!-- .container -->
-
-  <!-- Scripts -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
-  <script src="https://bitcraftlab.github.io/p5.gui/libraries/p5.gui.js"></script>
-  <script src="https://bitcraftlab.github.io/p5.gui/libraries/quicksettings.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- My Sketch -->
+  
   <script src="sketch.js"></script>
+
+  <div class="row text-center mt-4">
+    <div class="col-md-4">
+      <div class="thick-num" id="site-count"></div>
+      <div class="label-with-lines">
+        <p class="h5">Sites</p>
+        <div class="underline-line"></div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="thick-num" id="megawatt-count"></div>
+      <div class="label-with-lines">
+        <p class="h5">Megawatts</p>
+        <div class="underline-line"></div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="thick-num" id="acre-count"></div>
+      <div class="label-with-lines">
+        <p class="h5">Acres</p>
+        <div class="underline-line"></div>
+      </div>
+  </div>
+</div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
