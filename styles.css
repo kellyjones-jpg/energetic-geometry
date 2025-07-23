@@ -902,3 +902,18 @@ a.hyperlink:focus {
   outline: 4px dashed #2E8B57;
   outline-offset: 4px;
 }
+.arrow-button:focus {
+  outline: 3px dashed #ff0040; /* vivid contrast */
+  outline-offset: 4px;
+}
+
+.arrow-button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.arrow-button:hover {
+  transform: scale(1.1) rotate(3deg);
+}
