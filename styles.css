@@ -105,8 +105,8 @@
 
 /* Disable sticky on mobile */
 @media (max-width: 767px) {
-  #counter-container {
-    position: static;
+ #timeline {
+    display: none !important;
   }
 }
 
@@ -237,13 +237,6 @@ a.hyperlink:focus {
   pointer-events: none; /* disables click events */
   user-select: none;    /* disables text selection */
 }
-
-@media (max-width: 700px) {
-  #timeline {
-    display: none !important;
-  }
-}
-
 
 .suprematist-op-dropshadow {
   filter:
