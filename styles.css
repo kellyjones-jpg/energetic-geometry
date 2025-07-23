@@ -63,7 +63,7 @@
 
     #sketch-container canvas {
       width: 100%;
-      height: 865px;
+      height: auto;
       display: block;
       max-width: 100%; /* prevent overflow */
       position: relative;   
@@ -74,6 +74,36 @@
       width: 80%;
       max-width: 400px;
     }
+  
+  #counter-container {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  background-color: #353839;
+  border-bottom: 2px solid white;
+  padding: 0.65rem 1rem;
+  font-size: 1rem;
+  text-align: center;
+  width: 100%;
+  max-width: 1650px;
+  margin: 0 auto;
+}
+
+#counter-container span {
+  margin: 0 1rem;
+  font-weight: bold;
+  color: white;
+  display: inline-block;
+}
+
+  .visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
 
   .nav-link {
   color: white;
@@ -755,4 +785,13 @@ a.hyperlink:focus {
     padding: 0.4rem 0.8rem;
     font-size: 0.9rem;
   }
+
+  #counter-container {
+  font-size: 0.85rem;
+  padding: 0.5rem 0.75rem;
+}
+
+#counter-container span {
+  margin: 0 0.6rem;
+}
 }
