@@ -441,7 +441,6 @@ a.hyperlink:focus {
 }
 
 /* Crop Type Edge Styles */
-
 .crop-edge {
   width: 60px;
   height: 20px;
@@ -713,20 +712,44 @@ a.hyperlink:focus {
 
 /* Modal container */
 .modal-content {
+  position: relative;
   background-color: #353839;
   color: white;
   font-family: Helvetica, Arial, sans-serif;
   padding: 2rem 2rem;
   border-style: solid;
   border-color: white;
-  border-width: 12px 4px 4px 12px; /* Top/Right/Bottom/Left */
+  border-width: 6px 2px 0 10px; /* Echoes .landing-border */
   border-radius: 0;
+  box-shadow:
+    2px 2px 0 #0A0A0A,
+    -2px 2px 0 white;
+  transform: translate(-1px, 1px) rotate(-0.15deg); /* Tension */
+}
+
+/* Background pattern for subtle Op Art texture */
+.modal-content::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 100%;
+  height: 100%;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 6px,
+    rgba(255, 255, 255, 0.02) 6px,
+    rgba(255, 255, 255, 0.02) 12px
+  );
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* Modal header */
 .modal-header {
   background-color: transparent;
-  border-bottom: 2px solid white;
+  border-bottom: 2px solid #0A0A0A;
   padding-bottom: 1.5rem;
   padding-right: 0.5rem;
   font-weight: bold;
@@ -734,6 +757,7 @@ a.hyperlink:focus {
   letter-spacing: 0.1em;
   font-size: 1.6rem;
   color: #00D9F5;
+  position: relative;
 }
 
 .modal-header h5::after,
@@ -743,22 +767,23 @@ a.hyperlink:focus {
   position: absolute;
   left: 0;
   bottom: -4px;
-  width: 100%;
+  width: 40%;
   height: 2px;
-  background-color: #00D9F5; 
+  background-color: #0A0A0A;
 }
 
 /* Modal body */
 .modal-body {
+  position: relative;
   font-size: 1rem;
   line-height: 1.5;
   background-color: #353839;
   color: white;
-  padding-top: 1rem;
-  padding-bottom: 1.5rem;
+  padding: 1rem 1.5rem 1.5rem 2.25rem;
+  border-left: 2px solid white;
 }
 
-/* Links */
+/* Links inside modal */
 .modal-body a,
 .modal-body a:visited {
   color: #00D9F5;
@@ -786,20 +811,20 @@ a.hyperlink:focus {
 
 /* Buttons */
 .modal-footer .btn {
-  background: white;
-  color: #0A0A0A;
+  background: transparent;
+  color: white;
   font-weight: bold;
   text-transform: uppercase;
-  border: none;
+  border: 2px solid white;
   border-radius: 0;
-  padding: 0.5rem 1.25rem;
+  padding: 0.5rem 1rem;
   letter-spacing: 0.05em;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .modal-footer .btn:hover,
 .modal-footer .btn:focus {
-  background: #00D9F5;
+  background: white;
   color: #0A0A0A;
 }
 
@@ -817,7 +842,7 @@ a.hyperlink:focus {
 @media (max-width: 600px) {
   .modal-content {
     padding: 1rem 1.25rem;
-    border-width: 12px 4px 4px 12px;
+    border-width: 6px 2px 0 10px;
   }
 
   .modal-header {
