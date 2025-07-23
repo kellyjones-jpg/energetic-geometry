@@ -75,7 +75,21 @@
       max-width: 400px;
     }
   
-  #counter-container {
+  /* Wrap counters and sketch for flexible reordering */
+#sketch-and-totals {
+  display: flex;
+  flex-direction: column; /* mobile: counters above sketch */
+}
+
+/* Desktop: reverse order so sketch is above counters */
+@media (min-width: 768px) {
+  #sketch-and-totals {
+    flex-direction: column-reverse;
+  }
+}
+
+/* Adjust sticky counters to only be sticky on desktop */
+#counter-container {
   position: sticky;
   top: 0;
   z-index: 15;
@@ -87,6 +101,13 @@
   width: 100%;
   max-width: 1650px;
   margin: 0 auto;
+}
+
+/* Disable sticky on mobile */
+@media (max-width: 767px) {
+  #counter-container {
+    position: static;
+  }
 }
 
 #counter-container span {
