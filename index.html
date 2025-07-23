@@ -50,38 +50,49 @@
       <!-- Main Sketch Container -->
       <div id="sketch-container">
 
-        <!-- STICKY COUNTERS -->
-        <div id="counter-container" class="row text-center">
-          <div class="col-4">
-            <div class="thick-num" id="site-count">0</div>
-            <div class="label-with-lines">
-              <p class="h5">Sites</p>
-              <div class="underline-line"></div>
+        <!-- Wrap counters and sketch canvas together -->
+        <div id="sketch-and-totals">
+
+          <!-- STICKY COUNTERS -->
+          <div id="counter-container" class="row text-center">
+            <div class="col-4">
+              <div class="thick-num" id="site-count">0</div>
+              <div class="label-with-lines">
+                <p class="h5">Sites</p>
+                <div class="underline-line"></div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="thick-num" id="megawatt-count">0</div>
+              <div class="label-with-lines">
+                <p class="h5">Megawatts</p>
+                <div class="underline-line"></div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="thick-num" id="acre-count">0</div>
+              <div class="label-with-lines">
+                <p class="h5">Acres</p>
+                <div class="underline-line"></div>
+              </div>
             </div>
           </div>
-          <div class="col-4">
-            <div class="thick-num" id="megawatt-count">0</div>
-            <div class="label-with-lines">
-              <p class="h5">Megawatts</p>
-              <div class="underline-line"></div>
-            </div>
+
+          <!-- Screen reader live region -->
+          <div id="sr-live" aria-live="polite" class="visually-hidden">
+            Year changed to 2020
           </div>
-          <div class="col-4">
-            <div class="thick-num" id="acre-count">0</div>
-            <div class="label-with-lines">
-              <p class="h5">Acres</p>
-              <div class="underline-line"></div>
-            </div>
-          </div>
+
+          <!-- p5.js sketch will inject canvas here -->
+
+        </div> <!-- end #sketch-and-totals -->
+
+        <!-- TIMELINE container: place timeline here, after sketch and totals -->
+        <div id="timeline">
+          <!-- timeline content goes here -->
         </div>
 
-        <!-- Screen reader live region -->
-        <div id="sr-live" aria-live="polite" class="visually-hidden">
-          Year changed to 2020
-        </div>
-
-        <!-- p5.js sketch will inject canvas here -->
-      </div>
+      </div> <!-- end #sketch-container -->
 
       <!-- Bootstrap Modal for Site Info -->
       <div class="modal fade" id="siteModal" tabindex="-1" aria-labelledby="siteModalLabel" aria-hidden="true">
