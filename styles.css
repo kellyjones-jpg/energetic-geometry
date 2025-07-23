@@ -240,79 +240,10 @@ a.hyperlink:focus {
 
 @media (max-width: 700px) {
   #timeline {
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    width: 100%;
-    padding: 2rem 0;
-  }
-
-  /* Vertical center line */
-  #timeline::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    width: 2.25px;
-    background: #0A0A0A;
-    transform: translateX(-50%);
-    z-index: 0;
-  }
-
-  .timeline-year {
-    display: flex;
-    justify-content: flex-start; /* default left */
-    align-items: center;
-    width: 100%;
-    position: relative;
-    margin: 1rem 0;
-    gap: 8px;
-    z-index: 1;
-  }
-
-  /* Even entries float right */
-  .timeline-year:nth-child(even) {
-    justify-content: flex-end;
-  }
-
-  .year-label {
-    font-size: 16px;
-    font-weight: bold;
-    text-align: center;
-    white-space: nowrap;
-    max-width: 40%;
-    flex-shrink: 0;
-    color: white;
-  }
-
-  .year-node {
-    width: 2px;
-    height: 55px;
-    background-color: #0A0A0A;
-    transform: rotate(45deg);
-    margin: 0 12px;
-    flex-shrink: 0;
-  }
-
-  /* Left-aligned labels go left of node */
-  .timeline-year:nth-child(odd) .year-label {
-    order: 1;
-  }
-
-  .timeline-year:nth-child(odd) .year-node {
-    order: 2;
-  }
-
-  /* Right-aligned labels go right of node */
-  .timeline-year:nth-child(even) .year-node {
-    order: 1;
-  }
-
-  .timeline-year:nth-child(even) .year-label {
-    order: 2;
+    display: none !important;
   }
 }
+
 
 .suprematist-op-dropshadow {
   filter:
@@ -707,14 +638,14 @@ a.hyperlink:focus {
 
 /* Modal backdrop */
 .modal-backdrop.show {
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.92);
 }
 
 /* Modal container */
 .modal-content {
   position: relative;
-   background-color: #8c9094;
-  color: #222;
+  background-color: #353839;
+  color: white;
   font-family: Helvetica, Arial, sans-serif;
   padding: 2rem 2rem;
   border-style: solid;
@@ -840,26 +771,90 @@ a.hyperlink:focus {
 
 /* Responsive */
 @media (max-width: 600px) {
-  .modal-content {
-    padding: 1rem 1.25rem;
-    border-width: 6px 2px 0 10px;
-  }
-
-  .modal-header {
-    font-size: 1.3rem;
-  }
-
-  .modal-footer .btn {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.9rem;
-  }
-
-  #counter-container {
-  font-size: 0.85rem;
-  padding: 0.5rem 0.75rem;
+     #year-arrow-controls {
+        margin-bottom: 1rem;
+      }
+        
+      .modal-content {
+        padding: 1rem 1.25rem;
+        border-width: 6px 2px 0 10px;
+      }
+    
+      .modal-header {
+        font-size: 1.3rem;
+      }
+    
+      .modal-footer .btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+      }
+    
+      #counter-container {
+      font-size: 0.85rem;
+      padding: 0.5rem 0.75rem;
+    }
+    
+    #counter-container span {
+      margin: 0 0.6rem;
+    }
 }
 
-#counter-container span {
-  margin: 0 0.6rem;
+#year-arrow-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 1rem;
 }
+.totals-and-arrows {
+  max-width: 900px; /* Or whatever fits your layout */
+  margin-left: auto;
+  margin-right: auto;
+  gap: 1rem;
+}
+
+.nav-arrow {
+  background-color: #353839; /* Use your Suprematism palette colors */
+  color: #FFD100;
+  border: 3px solid #FFD100;
+  border-radius: 0;
+  font-size: 2.5rem;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  user-select: none;
+  outline-offset: 3px;
+}
+
+.nav-arrow:focus {
+  outline: 3px solid #E4572E; /* visible focus ring */
+  outline-offset: 4px;
+}
+
+.nav-arrow:hover {
+  background-color: #E4572E;
+  color: #0A0A0A;
+}
+
+.row.text-center {
+  flex-grow: 1;
+}
+.arrow-button:focus {
+  outline: 3px dashed #ff0040; /* vivid contrast */
+  outline-offset: 4px;
+}
+
+.arrow-button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.arrow-button:hover {
+  transform: scale(1.1) rotate(3deg);
 }
