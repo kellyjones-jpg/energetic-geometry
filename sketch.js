@@ -261,8 +261,7 @@ function setup() {
 
   // Responsive canvas sizing
   let canvasWidth = windowWidth * 0.9;
-  let canvasHeight = min(windowHeight * 0.8, 865);
-  cnv = createCanvas(canvasWidth, canvasHeight);
+  cnv = createCanvas(canvasWidth, 100); 
   cnv.parent('sketch-container');
 
   // Create image caption
@@ -436,17 +435,21 @@ function draw() {
   }
 }
 
-
 function updateLayout() {
   const yearEntries = entriesByYear[selectedYear] || [];
   const count = yearEntries.length;
 
-  shapeSize = constrain(windowWidth * 0.1, 80, 150);
-  padding = map(count, 10, 120, 60, 15);
-  startY = windowHeight < 500 ? 50 : 80;
+  shapeSize = constrain(windowWidth * 0.25, 70, 150);
+  padding = map(count, 10, 120, 50, 15);
+  startY = 120;
 
   numCols = max(floor((width - padding) / (shapeSize + padding)), 1);
   numRows = ceil(count / numCols);
+
+  let rowHeight = shapeSize + padding;
+  let totalHeight = startY + numRows * rowHeight + 100;
+
+  resizeCanvas(windowWidth * 0.9, totalHeight);
 }
 
 function showModalWithEntry(entry) {
