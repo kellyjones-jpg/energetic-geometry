@@ -309,6 +309,26 @@ function setup() {
 
   updateCounters(entriesByYear[selectedYear]);
   loop();
+
+    // Arrow year navigation (←/→)
+  const prevBtn = select('#prev-year');
+  const nextBtn = select('#next-year');
+
+  prevBtn.mousePressed(() => {
+    const index = availableYears.indexOf(selectedYear);
+    if (index > 0) {
+      selectedYear = availableYears[index - 1];
+      updateYear(selectedYear, index - 1);
+    }
+  });
+
+  nextBtn.mousePressed(() => {
+    const index = availableYears.indexOf(selectedYear);
+    if (index < availableYears.length - 1) {
+      selectedYear = availableYears[index + 1];
+      updateYear(selectedYear, index + 1);
+    }
+  });
 }
 
 
@@ -559,8 +579,6 @@ function mouseMoved() {
   }
 }
 
-
-
 function mousePressed() {
   let yearEntries = entriesByYear[selectedYear] || [];
   let padding = map(yearEntries.length, 10, 120, 60, 15);
@@ -650,17 +668,15 @@ function keyPressed() {
   }
 }
 
-
-
 function updateYear(year, index) {
   windowResized();
   updateCounters(entriesByYear[year]);
 
-  document.querySelectorAll('.year-btn').forEach(btn => {
-    btn.classList.remove('selected');
+  document.querySelectorAll('.year-label').forEach(lbl => {
+    lbl.classList.remove('active');
   });
-  let selectedBtn = document.querySelector(`.year-btn[data-year="${year}"]`);
-  if (selectedBtn) selectedBtn.classList.add('selected');
+  let newLabel = document.querySelector(`.year-label:contains("${year}")`);
+  if (newLabel) newLabel.classList.add('active');
 
   // Screen reader update
   const srLive = document.getElementById('sr-live');
