@@ -54,18 +54,17 @@
 
   
     <div id="sketch-container">
-    <!-- p5.js will insert canvas, slider, buttons here -->
+
+       <!-- Year Navigation Arrows -->
+      <div id="year-arrow-controls" class="my-3 text-center">
+        <button id="prev-year" aria-label="Previous Year" class="year-btn btn btn-outline-light mx-2">←</button>
+        <button id="next-year" aria-label="Next Year" class="year-btn btn btn-outline-light mx-2">→</button>
+      </div>
   
     <!-- Screen reader live region -->
     <div id="sr-live" aria-live="polite" style="position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden;">
       Year changed to 2020
     </div>
-</div>
-
-  <!-- Year Navigation Arrows -->
-<div id="year-arrow-controls" class="my-3 text-center">
-  <button id="prev-year" aria-label="Previous Year" class="year-btn btn btn-outline-light mx-2">←</button>
-  <button id="next-year" aria-label="Next Year" class="year-btn btn btn-outline-light mx-2">→</button>
 </div>
 
 <!-- Bootstrap Modal -->
