@@ -807,16 +807,17 @@ a.hyperlink:focus {
   margin-top: 1rem;
 }
 .totals-and-arrows {
-  max-width: 900px; /* Or whatever fits your layout */
+  max-width: 900px; 
   margin-left: auto;
   margin-right: auto;
   gap: 1rem;
 }
 
 .nav-arrow {
-  background-color: #353839; /* Use your Suprematism palette colors */
-  color: #FFD100;
-  border: 3px solid #FFD100;
+  position: relative; /* for pseudo-element positioning */
+  background-color: #2e2f31; /* very dark gray */
+  color: #e6e6e6;            /* light gray text */
+  border: 2px solid #bfbfbf; /* subtle mid-gray border */
   border-radius: 0;
   font-size: 2.5rem;
   width: 50px;
@@ -825,19 +826,42 @@ a.hyperlink:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   user-select: none;
   outline-offset: 3px;
+
+  clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
+  /* subtle hexagonal shape */
+  box-shadow:
+    1px 1px 0 #1a1a1a,
+    inset 0 0 5px #4a4a4a;
+}
+
+.nav-arrow::before {
+  content: '';
+  position: absolute;
+  width: 140%;  /* extend beyond to get diagonal across shape */
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  top: 50%;
+  left: -20%;
+  transform: rotate(45deg);
+  pointer-events: none;
+  border-radius: 1px;
 }
 
 .nav-arrow:focus {
-  outline: 3px solid #E4572E; /* visible focus ring */
+  outline: 2px solid #ffffff; /* clear white focus ring */
   outline-offset: 4px;
 }
 
 .nav-arrow:hover {
-  background-color: #E4572E;
-  color: #0A0A0A;
+  background-color: #454749;  /* lighter gray on hover */
+  color: #ffffff;             /* white text */
+  border-color: #ffffff;
+  box-shadow:
+    1px 1px 2px #000000,
+    inset 0 0 6px #666666;
 }
 
 .row.text-center {
