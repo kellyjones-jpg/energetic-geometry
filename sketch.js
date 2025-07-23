@@ -6,11 +6,7 @@ let availableYears = [];
 let cnv;
 let hoveredEntry = null;  // Currently hovered entry (for hover enlargement)
 let bgImg;
-let shapeSize = 150;     // will be dynamically updated
-let numCols = 1;         // updated in updateLayout()
-let numRows = 1;
-let padding = 60;
-let startY = 80;
+let shapeSize, padding, startY, numCols, numRows;
 
 const cropEdgeGroups = {
   // Root vegetables
@@ -261,18 +257,19 @@ function setup() {
 
   // Responsive canvas sizing
   let canvasWidth = windowWidth * 0.9;
-  cnv = createCanvas(canvasWidth, 100); 
+  let canvasHeight = updateLayout();
+  cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent('sketch-container');
 
   // Create image caption
   let caption = createP("Image from Pexels");
-  caption.style('text-align', 'left', true);
+  caption.style('text-align', 'left');
   caption.class('image-caption');
   caption.parent('sketch-container');
 
   // Create year timeline
   let timelineContainer = createDiv().id('timeline');
-  timelineContainer.style('text-align', 'center', true);
+  timelineContainer.style('text-align', 'center');
   timelineContainer.parent('sketch-container');
 
   availableYears.forEach((year, index) => {
@@ -293,7 +290,7 @@ function setup() {
 
     label.mousePressed(() => {
       selectedYear = year;
-      windowResized(); // update layout
+      windowResized(); // update layout and canvas
       updateCounters(entriesByYear[selectedYear]);
 
       selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
@@ -310,16 +307,50 @@ function setup() {
   rectMode(CENTER);
   pixelDensity(displayDensity()); // For crisp rendering on high-DPI screens
 
-  updateLayout();
   updateCounters(entriesByYear[selectedYear]);
   loop();
 }
 
+
+function updateLayout() {
+  const yearEntries = entriesByYear[selectedYear] || [];
+  const count = yearEntries.length;
+
+  startY = 120;
+
+  // Calculate padding based on count of entries (dynamic spacing)
+  padding = map(count, 10, 120, 50, 15);
+
+  // Available width is 90% of window width (match canvas width)
+  const availableWidth = windowWidth * 0.9;
+
+  // Tentative shape size constrained between 70 and 150
+  let tentativeShapeSize = constrain(availableWidth * 0.25, 70, 150);
+
+  // Calculate number of columns to fit shapes + padding
+  numCols = max(floor((availableWidth + padding) / (tentativeShapeSize + padding)), 1);
+
+  // Adjust shape size to fit exact columns with padding
+  shapeSize = (availableWidth - padding * (numCols + 1)) / numCols;
+  shapeSize = constrain(shapeSize, 70, 150);
+
+  numRows = ceil(count / numCols);
+
+  // Calculate total height needed 
+  let rowHeight = shapeSize + padding;
+  let totalHeight = startY + numRows * rowHeight + 100;
+
+  return totalHeight;
+}
+
 function windowResized() {
-  let canvasWidth = windowWidth * 0.9;
-  let canvasHeight = min(windowHeight * 0.8, 865);
+  let canvasWidth = windowWidth * 0.9; // 90% of window width
+  let canvasHeight = updateLayout();   // calculate height based on layout
+
+  // Clamp canvas height so it doesn't exceed 80% of window height or 865px max
+  canvasHeight = constrain(canvasHeight, 0, min(windowHeight * 0.8, 865));
+
   resizeCanvas(canvasWidth, canvasHeight);
-  updateLayout();
   redraw();
 }
 
@@ -435,23 +466,6 @@ function draw() {
   }
 }
 
-function updateLayout() {
-  const yearEntries = entriesByYear[selectedYear] || [];
-  const count = yearEntries.length;
-
-  shapeSize = constrain(windowWidth * 0.25, 70, 150);
-  padding = map(count, 10, 120, 50, 15);
-  startY = 120;
-
-  numCols = max(floor((width - padding) / (shapeSize + padding)), 1);
-  numRows = ceil(count / numCols);
-
-  let rowHeight = shapeSize + padding;
-  let totalHeight = startY + numRows * rowHeight + 100;
-
-  resizeCanvas(windowWidth * 0.9, totalHeight);
-}
-
 function showModalWithEntry(entry) {
   const modalTitle = document.getElementById('siteModalLabel');
   const modalBody = document.getElementById('siteModalBody');
@@ -478,7 +492,7 @@ function showModalWithEntry(entry) {
      </a>`
   : entry.name;
 
-  modalBody.innerHTML = lines.join('<br>'); // No more Visit Site link
+  modalBody.innerHTML = lines.join('<br>'); 
 
   const siteModal = new bootstrap.Modal(document.getElementById('siteModal'));
   siteModal.show();
@@ -488,7 +502,7 @@ function mouseMoved() {
   // Skip hover detection on touch devices
   if ('ontouchstart' in window) return;
 
-  // Disable hover when Bootstrap modal is open
+  // Disable hover when modal is open
   const modalElement = document.getElementById('siteModal');
   if (modalElement && modalElement.classList.contains('show')) {
     hoveredEntry = null;
@@ -497,28 +511,38 @@ function mouseMoved() {
   }
 
   let yearEntries = entriesByYear[selectedYear] || [];
-  let shapeSizeEstimate = 150;
-  let padding = map(yearEntries.length, 10, 120, 60, 15);
-  let startY = 80;
   let count = yearEntries.length;
-  let baseShapeSize = map(count, 10, 120, 140, 50);
+  if (count === 0) {
+    hoveredEntry = null;
+    cursor('default');
+    return;
+  }
+
+  // Layout calculations
+  let padding = map(count, 10, 120, 60, 15);
+  let startY = height * 0.1; // 10% from top
+  let baseShapeSize = map(count, 10, 120, width * 0.15, width * 0.05);
   let numCols = floor((width - padding) / (baseShapeSize + padding));
   numCols = max(numCols, 1);
+  let numRows = ceil(count / numCols);
+  let rowHeight = (height - startY - 50) / numRows;
+
+  let minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
+  let maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
 
   hoveredEntry = null;
   let hovering = false;
 
-  for (let i = 0; i < yearEntries.length; i++) {
+  for (let i = 0; i < count; i++) {
     let col = i % numCols;
     let row = floor(i / numCols);
     let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
-    let centerY = startY + row * ((height - startY - 50) / ceil(count / numCols)) + ((height - startY - 50) / ceil(count / numCols)) / 2;
+    let centerY = startY + row * rowHeight + rowHeight / 2;
+
     let entry = yearEntries[i];
 
-    let minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
-    let maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
     let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
-    entryShapeSize = constrain(entryShapeSize, 30, ((height - startY - 50) / ceil(count / numCols)) * 0.85);
+    entryShapeSize = constrain(entryShapeSize, 40, rowHeight * 0.85);
 
     let d = dist(mouseX, mouseY, centerX, centerY);
     if (d < entryShapeSize / 2) {
@@ -528,8 +552,14 @@ function mouseMoved() {
     }
   }
 
-  cursor(hovering ? 'pointer' : 'default');
+  if (hovering) {
+    if (cursor() !== 'pointer') cursor('pointer');
+  } else {
+    if (cursor() !== 'default') cursor('default');
+  }
 }
+
+
 
 function mousePressed() {
   let yearEntries = entriesByYear[selectedYear] || [];
