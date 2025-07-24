@@ -824,7 +824,6 @@ a.hyperlink:focus {
 
 .nav-arrow {
   position: relative;
-  background-color: #2e2f31; /* same dark gray */
   color: white;
   border: 2px solid #0A0A0A;
   border-radius: 0;          /* hard edges */
@@ -874,13 +873,7 @@ a.hyperlink:focus {
   flex-grow: 1;
 }
 .arrow-button:focus {
-  outline: 3px dashed #000000; 
-  outline-offset: 4px;
-}
-
-.arrow-button {
   border: none;
   background: transparent;
-  cursor: pointer;
-  transition: transform 0.2s ease;
 }
+
