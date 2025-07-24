@@ -927,8 +927,8 @@ a.hyperlink:active {
 
 /* Pulsating Glow */
 .glow-icon {
-  background: #FFD100;
-  box-shadow: 0 0 6px #FFD100;
+  background: white;
+  box-shadow: 0 0 6px #0A0A0A;
   animation: pulse 2s infinite;
 }
 
@@ -955,7 +955,7 @@ a.hyperlink:active {
 .shape-icon {
   width: 2rem;
   height: 2rem;
-  background-color: #005A99;
+  background-color: white;
   clip-path: polygon(
     25% 0%,
     75% 0%,
