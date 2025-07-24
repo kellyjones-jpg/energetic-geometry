@@ -898,3 +898,11 @@ a.hyperlink:active {
   border: none;
   background: transparent;
 }
+  .icon {
+    transition: filter 0.3s ease;
+    filter: url(#defaultShadow);
+  }
+
+  .icon:hover {
+    filter: url(#hoverShadow);
+  }
