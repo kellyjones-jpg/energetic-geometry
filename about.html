@@ -56,41 +56,61 @@
         <p>Helvetica, selected to align with Robert Bringhurst's principles of clarity and restraint, provides a neutral typographic foundation that supports the visual complexity without distraction.</p>
          <h3>Data Source</h3>
         <p>This project draws on publicly available data from the Innovative Solar Practices Integrated with Rural Economies and Ecosystems (InSPIRE) <a class="hyperlink d-inline-flex align-items-center"
-   href="https://openei.org/wiki/InSPIRE/Agrivoltaics_Map"
-   target="_blank"
-   rel="noopener noreferrer"
-   aria-label="InSPIRE Agrivoltaics Map (opens in new window)">
-  Agrivoltaics Map
-  <svg
-    width="16" height="16" viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
-    style="margin-left: 4px; vertical-align: middle;"
-  >
-    <rect
-      x="4" y="4" width="16" height="16"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      transform="rotate(45 12 12)"
-      rx="1"
-      ry="1"
-    />
-    <line
-      x1="9" y1="15"
-      x2="15" y2="9"
-      stroke="currentColor"
-      stroke-width="2.5"
-      stroke-linecap="round"
-    />
-    <polyline
-      points="9,9 15,9 15,15"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2.5"
-      stroke-linejoin="round"
-    />
-  </svg>
+             href="https://openei.org/wiki/InSPIRE/Agrivoltaics_Map"
+             target="_blank"
+             rel="noopener noreferrer"
+             aria-label="InSPIRE Agrivoltaics Map (opens in new window)">
+            Agrivoltaics Map
+            <svg
+            class="icon"
+            width="16" height="16" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+            style="vertical-align: middle; margin-left: 4px;"
+          >
+            <defs>
+              <!-- Default shadow -->
+              <filter id="defaultShadow" x="-50%" y="-50%" width="200%" height="200%">
+                <feDropShadow dx="-2" dy="2" stdDeviation="0" flood-color="#0A0A0A" />
+                <feDropShadow dx="-3" dy="3" stdDeviation="0" flood-color="#005A99" />
+              </filter>
+          
+              <!-- Hover shadow with stronger blue and slight blur -->
+              <filter id="hoverShadow" x="-50%" y="-50%" width="200%" height="200%">
+                <feDropShadow dx="-2.5" dy="2.5" stdDeviation="0.5" flood-color="#0A0A0A" />
+                <feDropShadow dx="3.5" dy="-3.5" stdDeviation="1.5" flood-color="#005A99" />
+              </filter>
+            </defs>
+          
+            <g>
+              <!-- Rotated square frame -->
+              <rect
+                x="4" y="4" width="16" height="16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                transform="rotate(45 12 12)"
+                rx="1"
+                ry="1"
+              />
+              <!-- Arrow shaft -->
+              <line
+                x1="9" y1="15"
+                x2="15" y2="9"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+              <!-- Arrowhead -->
+              <polyline
+                points="9,9 15,9 15,15"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linejoin="round"
+              />
+            </g>
+          </svg>
 </a>&mdash;a project led by the U.S. Department of Energy and managed by the National Renewable Energy Laboratory. InSPIRE supports the growth of agrivoltaics by providing open data, field research, and tools that promote sustainable solar-agriculture practices. Their dataset forms the foundation for the visual translations in this project.</p>
       <h3>A New Kind of Visualization</h3>
         <p>By merging abstraction, data, and creative code, <em>Energetic Geometry</em> frames agrivoltaics as a living dialogue between land, energy, and life. Moving beyond conventional charts and diagrams, the project encourages viewers to engage with data through a different lens. Generative art offers an alternative mode of understanding—highlighting patterns, relationships, and systems that might otherwise go unnoticed.</p>
