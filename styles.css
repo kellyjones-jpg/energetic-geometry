@@ -152,6 +152,12 @@ a.title:visited {
 }
 
 a.hyperlink {
+color: white;
+  font-weight: bold;
+  text-shadow:
+    1.5px 1.5px 0 #0A0A0A,
+    2.25px 2.25px 0 #3769D6;
+    
   color: white;
     font-weight: bold;
   letter-spacing: 0.05em;
@@ -164,11 +170,13 @@ a.hyperlink {
 a.hyperlink:hover,
 a.hyperlink:focus,
 a.hyperlink:active {
-  color: white;
-  font-weight: bold;
+ color: white;
+    font-weight: bold;
+  letter-spacing: 0.05em;
   text-shadow:
     1.5px 1.5px 0 #0A0A0A,
-    2.25px 2.25px 0 #3769D6;
+    -1px -1px 0 #4C8CF5;
+  transition: color 0.2s ease;
 }
 
 .thick-num {
