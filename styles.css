@@ -675,43 +675,30 @@ a.hyperlink:active {
 .modal-content::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image:
-    repeating-linear-gradient(
-      45deg,
-      #0A0A0A 0px,
-      #0A0A0A 2px,
-      #353839 2px,
-      #353839 6px,
-      #ffffff 6px,
-      #ffffff 8px
-    ),
-    repeating-linear-gradient(
-      -45deg,
-      #ffffff 0px,
-      #ffffff 1px,
-      #353839 1px,
-      #353839 4px,
-      #0A0A0A 4px,
-      #0A0A0A 5px
-    );
-  background-size: 20px 20px;
-  mix-blend-mode: normal;
-  opacity: 0.4;
-  pointer-events: none;
+  inset: 0;
   z-index: 0;
-  animation: agrivoltaicShift 20s linear infinite;
+  pointer-events: none;
+  background-image:
+    repeating-radial-gradient(
+      circle at center,
+      #0A0A0A 0px,
+      #0A0A0A 4px,
+      #353839 4px,
+      #353839 8px,
+      #ffffff 8px,
+      #ffffff 12px
+    );
+  background-size: cover;
+  opacity: 0.45;
+  animation: rotateEnergySpiral 40s linear infinite;
 }
 
-@keyframes agrivoltaicShift {
-  0% {
-    background-position: 0 0, 0 0;
+@keyframes rotateEnergySpiral {
+  from {
+    transform: rotate(0deg);
   }
-  100% {
-    background-position: 100px 100px, -100px 100px;
+  to {
+    transform: rotate(360deg);
   }
 }
 
