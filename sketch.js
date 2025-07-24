@@ -142,7 +142,6 @@ const pvWarpStyles = {
 
 const combinedIcon = `
 <svg
-  class="icon"
   width="16" height="16" viewBox="0 0 24 24"
   xmlns="http://www.w3.org/2000/svg"
   aria-hidden="true"
@@ -156,7 +155,7 @@ const combinedIcon = `
     </filter>
   </defs>
 
-  <g>
+  <g filter="url(#defaultShadow)">
     <!-- Rotated square frame -->
     <rect
       x="4" y="4" width="16" height="16"
