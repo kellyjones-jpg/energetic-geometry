@@ -493,6 +493,9 @@ function draw() {
 
     // === DRAW ENTRY ===
     push();
+    entry._screenX = cx;
+    entry._screenY = cy;
+    entry._radius = entryShapeSize * entry.currentScale * 0.5;  // Approximate radius for hitbox
     translate(cx, cy);
     scale(entry.currentScale);
 
@@ -545,24 +548,34 @@ function showModalWithEntry(entry) {
 
   let lines = [];
 
-  if (entry.activities?.length) lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
-  if (!isNaN(entry.megawatts)) lines.push(`<strong>System Size:</strong> ${entry.megawatts} MW`);
-  if (!isNaN(entry.acres)) lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
-  if (entry.year) lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
-  if (entry.arrayType) lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
-  if (entry.habitat?.length) lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
-  if (entry.cropType?.length) lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
-  if (entry.animalType?.length) lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
+  if (entry.activities?.length)
+    lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
+  if (!isNaN(entry.megawatts))
+    lines.push(`<strong>System Size:</strong> ${entry.megawatts} MW`);
+  if (!isNaN(entry.acres))
+    lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
+  if (entry.year)
+    lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
+  if (entry.arrayType)
+    lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
+  if (entry.habitat?.length)
+    lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
+  if (entry.cropType?.length)
+    lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
+  if (entry.animalType?.length)
+    lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
 
-  // If entry.url exists, wrap entry.name in an <a> tag, else just show the name
+  // Set modal title with link if URL exists
   modalTitle.innerHTML = entry.url
-  ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">
-       ${entry.name}${combinedIcon}
-     </a>`
-  : entry.name;
+    ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">
+         ${entry.name}${combinedIcon}
+       </a>`
+    : entry.name;
 
-  modalBody.innerHTML = lines.join('<br>'); 
+  // Wrap each line in a <p> tag
+  modalBody.innerHTML = lines.map(line => `<p>${line}</p>`).join('');
 
+  // Show modal
   const siteModal = new bootstrap.Modal(document.getElementById('siteModal'));
   siteModal.show();
 }
@@ -580,79 +593,34 @@ function mouseMoved() {
   }
 
   let yearEntries = entriesByYear[selectedYear] || [];
-  let count = yearEntries.length;
-  if (count === 0) {
-    hoveredEntry = null;
-    cursor('default');
-    return;
-  }
-
-  // Layout calculations
-  let padding = map(count, 10, 120, 60, 15);
-  let startY = height * 0.1; // 10% from top
-  let baseShapeSize = map(count, 10, 120, width * 0.15, width * 0.05);
-  let numCols = floor((width - padding) / (baseShapeSize + padding));
-  numCols = max(numCols, 1);
-  let numRows = ceil(count / numCols);
-  let rowHeight = (height - startY - 50) / numRows;
-
-  let minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
-  let maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
-
   hoveredEntry = null;
   let hovering = false;
 
-  for (let i = 0; i < count; i++) {
-    let col = i % numCols;
-    let row = floor(i / numCols);
-    let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
-    let centerY = startY + row * rowHeight + rowHeight / 2;
+  for (let entry of yearEntries) {
+    const dx = mouseX - (entry._screenX || 0);
+    const dy = mouseY - (entry._screenY || 0);
+    const r = entry._radius || 30;
 
-    let entry = yearEntries[i];
-
-    let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
-    entryShapeSize = constrain(entryShapeSize, 40, rowHeight * 0.85);
-
-    let d = dist(mouseX, mouseY, centerX, centerY);
-    if (d < entryShapeSize / 2) {
+    if (dx * dx + dy * dy < r * r) {
       hoveredEntry = entry;
       hovering = true;
       break;
     }
   }
 
-  if (hovering) {
-    if (cursor() !== 'pointer') cursor('pointer');
-  } else {
-    if (cursor() !== 'default') cursor('default');
-  }
+  cursor(hovering ? 'pointer' : 'default');
 }
 
 function mousePressed() {
-  let yearEntries = entriesByYear[selectedYear] || [];
-  let padding = map(yearEntries.length, 10, 120, 60, 15);
-  let shapeSizeEstimate = 150;
-  let startY = 80;
-  let baseShapeSize = map(yearEntries.length, 10, 120, 140, 50);
-  let numCols = floor((width - padding) / (baseShapeSize + padding));
-  numCols = max(numCols, 1);
+  const yearEntries = entriesByYear[selectedYear] || [];
 
-  for (let i = 0; i < yearEntries.length; i++) {
-    let col = i % numCols;
-    let row = floor(i / numCols);
-    let centerX = padding + col * (baseShapeSize + padding) + baseShapeSize / 2;
-    let centerY = startY + row * ((height - startY - 50) / ceil(yearEntries.length / numCols)) +
-                  ((height - startY - 50) / ceil(yearEntries.length / numCols)) / 2;
+  for (let entry of yearEntries) {
+    const dx = mouseX - (entry._screenX || 0);
+    const dy = mouseY - (entry._screenY || 0);
+    const r = entry._radius || 30;
 
-    let entry = yearEntries[i];
-    let minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
-    let maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
-    let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, baseShapeSize * 0.6, baseShapeSize);
-    entryShapeSize = constrain(entryShapeSize, 30, ((height - startY - 50) / ceil(yearEntries.length / numCols)) * 0.85);
-
-    let d = dist(mouseX, mouseY, centerX, centerY);
-    if (d < entryShapeSize / 2) {
-      showModalWithEntry(entry); 
+    if (dx * dx + dy * dy < r * r) {
+      showModalWithEntry(entry);
       break;
     }
   }
