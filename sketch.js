@@ -377,7 +377,7 @@ function changeYear(direction) {
 
   if (nextIndex !== currentIndex) {
     selectedYear = availableYears[nextIndex];
-    updateYear(selectedYear, nextIndex);
+    updateYear(selectedYear, nextIndex); // this handles visual updates now
   }
 }
 
@@ -724,8 +724,16 @@ function updateYear(year, index) {
   document.querySelectorAll('.year-label').forEach(lbl => {
     lbl.classList.remove('active');
   });
-  let newLabel = document.querySelector(`.year-label:contains("${year}")`);
-  if (newLabel) newLabel.classList.add('active');
+
+  // Update active label visually
+  const allLabels = document.querySelectorAll('.year-label');
+  allLabels.forEach(label => {
+  label.classList.remove('active');
+  if (label.textContent.trim() === year) {
+    label.classList.add('active');
+  }
+});
+
 
   // Screen reader update
   const srLive = document.getElementById('sr-live');
