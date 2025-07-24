@@ -204,14 +204,20 @@ a.hyperlink:focus {
   color: white;
   cursor: pointer;
   letter-spacing: 0.05em;
-  filter: drop-shadow(1px 1px 0 #353839);
-  transition: color 0.2s ease;
+   text-shadow:
+    1px 1px 0 #0A0A0A,
+    -1px -1px 0 #fff;
 }
+
 .year-label.active {
   color: #00D9F5;
-  font-size: 18px;
   font-weight: bold;
+  font-size: 18px;
+  text-shadow:
+    1.5px 1.5px 0 #0A0A0A,
+    -1px -1px 0 #ffffff;
 }
+
 .year-label:hover,
 .year-label:focus {
   color: #4C8CF5;
@@ -651,23 +657,22 @@ a.hyperlink:focus {
   transform: translate(-1px, 1px) rotate(-0.15deg); /* Tension */
 }
 
-/* Background pattern for subtle Op Art texture */
+/* Background pattern */
 .modal-content::before {
   content: '';
   position: absolute;
   top: 12px;
   left: 12px;
-  width: 100%;
-  height: 100%;
-  background-image: repeating-linear-gradient(
-    45deg,
-    transparent,
-    transparent 6px,
-    rgba(255, 255, 255, 0.02) 6px,
-    rgba(255, 255, 255, 0.02) 12px
-  );
+  width: calc(100% - 24px);
+  height: calc(100% - 24px);
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(255, 255, 255, 0.02) 6px, rgba(255, 255, 255, 0.02) 12px);
+  background-size: 20px 20px, 20px 20px, 12px 12px;
   pointer-events: none;
   z-index: 0;
+  mix-blend-mode: lighten;
 }
 
 /* Modal header */
@@ -682,6 +687,9 @@ a.hyperlink:focus {
   font-size: 1.6rem;
   color: #00D9F5;
   position: relative;
+  text-shadow:
+    2px 2px 0 #0A0A0A,
+    -1px -1px 0 white;
 }
 
 .modal-header h5::after,
@@ -705,6 +713,8 @@ a.hyperlink:focus {
   color: white;
   padding: 1rem 1.5rem 1.5rem 2.25rem;
   border-left: 2px solid white;
+  text-shadow:
+    1px 1px 0 #0A0A0A;
 }
 
 /* Links inside modal */
@@ -715,6 +725,12 @@ a.hyperlink:focus {
   text-decoration: none;
   letter-spacing: 0.03em;
   transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.modal-body p {
+  text-shadow:
+    1px 1px 0 #0A0A0A,
+    -0.5px -0.5px 0 white;
 }
 
 .modal-body a:hover,
@@ -861,7 +877,7 @@ a.hyperlink:focus {
   flex-grow: 1;
 }
 .arrow-button:focus {
-  outline: 3px dashed #ff0040; /* vivid contrast */
+  outline: 3px dashed #000000; 
   outline-offset: 4px;
 }
 
