@@ -153,6 +153,7 @@ a.title:visited {
 
 a.hyperlink {
   color: white;
+    font-weight: bold;
   letter-spacing: 0.05em;
   text-shadow:
     1.5px 1.5px 0 #0A0A0A,
@@ -166,8 +167,8 @@ a.hyperlink:active {
   color: white;
   font-weight: bold;
   text-shadow:
-    1.5px 1.5px 0 #0A0A0A,
-    -1px -1px 0 #3769D6;
+    1.75px 1.75px 0 #0A0A0A,
+    -1.25px -1.25px 0 #3769D6;
 }
 
 .thick-num {
