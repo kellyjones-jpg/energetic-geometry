@@ -680,15 +680,28 @@ a.hyperlink:active {
   width: calc(100% - 24px);
   height: calc(100% - 24px);
   background-image:
-    repeating-linear-gradient(135deg,
-      rgba(10, 10, 10, 0.025),
-      rgba(255, 255, 255, 0.025) 3px,
-      transparent 3px,
-      transparent 6px);
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.01),
+      rgba(255, 255, 255, 0.01) 2px,
+      rgba(53, 56, 57, 0.02) 2px,
+      rgba(53, 56, 57, 0.02) 6px,
+      rgba(10, 10, 10, 0.03) 6px,
+      rgba(10, 10, 10, 0.03) 12px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.005),
+      rgba(255, 255, 255, 0.005) 2px,
+      transparent 2px,
+      transparent 8px
+    );
+  background-size: 16px 16px;
+  mix-blend-mode: lighten;
+  opacity: 1;
   pointer-events: none;
   z-index: 0;
-  mix-blend-mode: lighten;
-  animation: illusionMove 10s linear infinite;
+  animation: agrivoltaicShift 18s linear infinite;
 }
 
 /* Modal header */
