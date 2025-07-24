@@ -996,3 +996,51 @@ a.hyperlink:active {
     box-shadow: 0 0 0 0 rgba(255, 209, 0, 0);
   }
 }
+
+.legend-toggle {
+  background-color: transparent;
+  color: white;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 1.4rem;
+  border: none;
+  border-radius: 0;
+  box-shadow:
+    1.5px 1px 0 #0A0A0A,
+    3px 2px 0 white;
+  padding: 1rem 1.5rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  outline-offset: 4px;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.legend-toggle:hover,
+.legend-toggle:focus {
+  background-color: #353839;
+  color: white;
+  text-shadow: 1px 1px 0 #0A0A0A;
+}
+
+.encoding-table td {
+  color: white;
+  font-family: Helvetica, Arial, sans-serif;
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+  border-color: white;
+}
+
+.encoding-table {
+  border-collapse: collapse;
+  width: 100%;
+  background-color: transparent;
+}
+
+.encoding-table tr {
+  border-bottom: 1px solid white;
+}
+
+.encoding-table tr:last-child {
+  border-bottom: none;
+}
