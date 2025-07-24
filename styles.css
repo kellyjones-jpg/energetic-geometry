@@ -140,7 +140,7 @@
     color: white;
     text-shadow:
       1.5px 1.5px 0 #0A0A0A,
-      -1px -1px 0 #4C8CF5;
+      -1px -1px 0 #3769D6;
 }
 
 a.title,
@@ -153,20 +153,21 @@ a.title:visited {
 
 a.hyperlink {
   color: white;
-  font-weight: bold;
   letter-spacing: 0.05em;
   text-shadow:
     1.5px 1.5px 0 #0A0A0A,
-    -1px -1px 0 #00D9F5;
+    -1px -1px 0 #4C8CF5;
   transition: color 0.2s ease;
 }
 
 a.hyperlink:hover,
-a.hyperlink:focus {
+a.hyperlink:focus,
+a.hyperlink:active {
   color: white;
+  font-weight: bold;
   text-shadow:
     1.5px 1.5px 0 #0A0A0A,
-    -1px -1px 0 #4C8CF5;
+    -1px -1px 0 #3769D6;
 }
 
 .thick-num {
@@ -224,7 +225,7 @@ a.hyperlink:focus {
   font-size: 18px;
   text-shadow:
     1.5px 1.5px 0 #0A0A0A,
-    -1px -1px 0 #00D9F5;
+    -1px -1px 0 #4C8CF5;
 }
 
 .year-label:hover,
@@ -232,7 +233,7 @@ a.hyperlink:focus {
   color: white;
   text-shadow:
     1.5px 1.5px 0 #0A0A0A,
-    -1px -1px 0 #4C8CF5;
+    -1px -1px 0 #3769D6;
   font-size: 18px;
   font-weight: bold;
 }
@@ -573,17 +574,17 @@ a.hyperlink:focus {
 .suprematist-underline:hover::after,
 .suprematist-underline:focus::after {
   width: 95%;
-  background-color: #4C8CF5;
+  background-color: #3769D6;
 }
 
 .suprematist-underline.active:hover::after,
 .suprematist-underline.active:focus::after {
   width: 95%;
-  background-color: #4C8CF5;
+  background-color: #3769D6;
 }
 
 .suprematist-underline.active::after {
-  background-color: #00D9F5;
+  background-color: #4C8CF5;
   width: 95%;
 }
 
@@ -701,7 +702,7 @@ a.hyperlink:focus {
   position: relative;
   text-shadow:
     2px 2px 0 #0A0A0A,
-    -1px -1px 0 #00D9F5;
+    -1px -1px 0 #4C8CF5;
 }
 
 .modal-header h5::after,
@@ -732,7 +733,7 @@ a.hyperlink:focus {
 /* Links inside modal */
 .modal-body a,
 .modal-body a:visited {
-  color: #00D9F5;
+  color: #4C8CF5;
   font-weight: bold;
   text-decoration: none;
   letter-spacing: 0.03em;
@@ -747,7 +748,7 @@ a.hyperlink:focus {
 
 .modal-body a:hover,
 .modal-body a:focus {
-  color: #4C8CF5;
+  color: #3769D6;
   text-decoration: underline;
 }
 
@@ -787,7 +788,7 @@ a.hyperlink:focus {
 }
 
 .modal-header .btn-close:hover {
-  filter: drop-shadow(2px 2px 0 #00D9F5);
+  filter: drop-shadow(2px 2px 0 #4C8CF5);
 }
 
 /* Responsive */
