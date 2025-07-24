@@ -372,12 +372,12 @@ function setupArrows() {
 
 
 function changeYear(direction) {
-  let currentIndex = yearList.indexOf(currentYear);
-  let nextIndex = constrain(currentIndex + direction, 0, yearList.length - 1);
-  
+  let currentIndex = availableYears.indexOf(selectedYear);
+  let nextIndex = constrain(currentIndex + direction, 0, availableYears.length - 1);
+
   if (nextIndex !== currentIndex) {
-    currentYear = yearList[nextIndex];
-    updateYearDisplay(); 
+    selectedYear = availableYears[nextIndex];
+    updateYear(selectedYear, nextIndex);
   }
 }
 
