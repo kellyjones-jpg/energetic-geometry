@@ -823,11 +823,11 @@ a.hyperlink:focus {
 }
 
 .nav-arrow {
-  position: relative; /* for pseudo-element positioning */
-  background-color: #2e2f31; /* very dark gray */
-  color: #e6e6e6;            /* light gray text */
-  border: 2px solid #bfbfbf; /* subtle mid-gray border */
-  border-radius: 0;
+  position: relative;
+  background-color: #2e2f31; /* same dark gray */
+  color: #e6e6e6;            /* same light gray */
+  border: 2px solid #bfbfbf; /* same mid-gray border */
+  border-radius: 0;          /* hard edges */
   font-size: 2.5rem;
   width: 50px;
   height: 50px;
@@ -835,42 +835,39 @@ a.hyperlink:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
   user-select: none;
   outline-offset: 3px;
 
   clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
-  /* subtle hexagonal shape */
-  box-shadow:
-    1px 1px 0 #1a1a1a,
-    inset 0 0 5px #4a4a4a;
+  /* subtle hexagonal shape with sharp corners */
+
+  /* Remove shadows for a hard line */
+  box-shadow: none;
 }
 
+/* Remove the ::before overlay diagonal line for a cleaner look */
 .nav-arrow::before {
-  content: '';
-  position: absolute;
-  width: 140%;  /* extend beyond to get diagonal across shape */
-  height: 2px;
-  background: rgba(255, 255, 255, 0.1);
-  top: 50%;
-  left: -20%;
-  transform: rotate(45deg);
-  pointer-events: none;
-  border-radius: 1px;
+  content: none;
 }
 
+/* Focus ring remains sharp */
 .nav-arrow:focus {
-  outline: 2px solid #ffffff; /* clear white focus ring */
+  outline: 2px solid #ffffff;
   outline-offset: 4px;
 }
 
+/* Hover: crisp color changes with no shadows */
 .nav-arrow:hover {
-  background-color: #454749;  /* lighter gray on hover */
-  color: #ffffff;             /* white text */
+  background-color: #454749;
+  color: #ffffff;
   border-color: #ffffff;
-  box-shadow:
-    1px 1px 2px #000000,
-    inset 0 0 6px #666666;
+  box-shadow: none;
+}
+
+/* Keep your existing arrow button transform on hover */
+.arrow-button:hover {
+  transform: scale(1.1) rotate(3deg);
 }
 
 .row.text-center {
@@ -886,8 +883,4 @@ a.hyperlink:focus {
   background: transparent;
   cursor: pointer;
   transition: transform 0.2s ease;
-}
-
-.arrow-button:hover {
-  transform: scale(1.1) rotate(3deg);
 }
