@@ -682,7 +682,6 @@ a.hyperlink:active {
     linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
     repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(255, 255, 255, 0.02) 6px, rgba(255, 255, 255, 0.02) 12px);
-  background-size: 20px 20px, 20px 20px, 12px 12px;
   pointer-events: none;
   z-index: 0;
   mix-blend-mode: lighten;
@@ -703,6 +702,10 @@ a.hyperlink:active {
   text-shadow:
     2px 2px 0 #0A0A0A,
     -1px -1px 0 #4C8CF5;
+}
+
+.modal-header h5 {
+    font-weight: 500 !important;
 }
 
 .modal-header h5::after,
@@ -742,8 +745,7 @@ a.hyperlink:active {
 
 .modal-body p {
   text-shadow:
-    1.5px 1.5px 0 #0A0A0A,
-    -0.5px -0.5px 0 white;
+    1.0px 1.0px 0 #0A0A0A;
 }
 
 .modal-body a:hover,
