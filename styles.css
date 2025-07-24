@@ -660,12 +660,11 @@ a.hyperlink:active {
   font-family: Helvetica, Arial, sans-serif;
   padding: 2rem 2rem;
   border-style: solid;
-  border-color: white;
+  border-color: #0A0A0A;
   border-width: 6px 2px 0 10px; /* Echoes .landing-border */
   border-radius: 0;
   box-shadow:
-    2px 2px 0 white,
-    -9px 9px 0 #0A0A0A;
+    -2px -2px 0 white,
   transform: translate(-1px, 1px) rotate(-0.15deg); /* Tension */
 }
 
