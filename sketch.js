@@ -142,28 +142,11 @@ const pvWarpStyles = {
 
 const combinedIcon = `
 <svg
-  class="icon"
-  width="16" height="16" viewBox="0 0 24 24"
-  xmlns="http://www.w3.org/2000/svg"
-  aria-hidden="true"
-  style="vertical-align: middle; margin-left: 4px;"
->
-  <defs>
-    <!-- Default shadow -->
-    <filter id="defaultShadow" x="-50%" y="-50%" width="200%" height="200%">
-      <feDropShadow dx="-2" dy="2" stdDeviation="0" flood-color="#0A0A0A" />
-      <feDropShadow dx="-3" dy="3" stdDeviation="0" flood-color="#005A99" />
-    </filter>
-
-    <!-- Hover shadow with stronger blue and slight blur -->
-    <filter id="hoverShadow" x="-50%" y="-50%" width="200%" height="200%">
-      <feDropShadow dx="-2.5" dy="2.5" stdDeviation="0.5" flood-color="#0A0A0A" />
-      <feDropShadow dx="3.5" dy="-3.5" stdDeviation="1.5" flood-color="#005A99" />
-    </filter>
-  </defs>
-
-  <g>
-    <!-- Rotated square frame -->
+    width="16" height="16" viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    style="margin-left: 4px; vertical-align: middle;"
+  >
     <rect
       x="4" y="4" width="16" height="16"
       fill="none"
@@ -173,7 +156,6 @@ const combinedIcon = `
       rx="1"
       ry="1"
     />
-    <!-- Arrow shaft -->
     <line
       x1="9" y1="15"
       x2="15" y2="9"
@@ -181,7 +163,6 @@ const combinedIcon = `
       stroke-width="2.5"
       stroke-linecap="round"
     />
-    <!-- Arrowhead -->
     <polyline
       points="9,9 15,9 15,15"
       fill="none"
@@ -189,8 +170,7 @@ const combinedIcon = `
       stroke-width="2.5"
       stroke-linejoin="round"
     />
-  </g>
-</svg>
+  </svg>
 `;
 
 function preload() {
