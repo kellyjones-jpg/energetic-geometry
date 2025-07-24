@@ -676,18 +676,22 @@ a.hyperlink:active {
   inset: 0;
   z-index: 0;
   pointer-events: none;
+
   background-image:
+    linear-gradient(rgba(10, 10, 10, 0.25), rgba(10, 10, 10, 0.25)),
     repeating-radial-gradient(
       circle at center,
       #0A0A0A 0px,
-      #0A0A0A 4px,
-      #353839 4px,
-      #353839 8px,
-      #ffffff 8px,
-      #ffffff 12px
+      #0A0A0A 5px,
+      #353839 5px,
+      #353839 10px,
+      #BFBFBF 10px,
+      #BFBFBF 14px
     );
+
   background-size: cover;
-  opacity: 0.45;
+  background-blend-mode: darken;
+  opacity: 0.6;
 }
 
 /* Modal header */
