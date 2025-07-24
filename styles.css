@@ -689,7 +689,7 @@ a.hyperlink:active {
   height: calc(100% - 24px);
   background-image:
     repeating-linear-gradient(135deg,
-      rgba(10, 10, 10, 0.025),
+      rgba(10, 10, 10),
       rgba(255, 255, 255, 0.025) 3px,
       transparent 3px,
       transparent 6px);
