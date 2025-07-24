@@ -578,17 +578,39 @@ function showModalWithEntry(entry) {
   // Set modal title with link if URL exists
   modalTitle.innerHTML = entry.url
     ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">
-         ${entry.name}${combinedIcon}
+         ${entry.name}
        </a>`
     : entry.name;
 
-  // Wrap each line in a <p> tag
-  modalBody.innerHTML = lines.map(line => `<p>${line}</p>`).join('');
+  // Inject content before the legend
+  const encodingLegend = document.getElementById('encoding-legend');
+  const toggleLegend = document.getElementById('toggle-legend');
+
+  // Clear just the dynamic content
+  // Remove any old inserted content
+  modalBody.querySelectorAll('.dynamic-content').forEach(el => el.remove());
+
+  // Create a wrapper div for dynamic content
+  const contentWrapper = document.createElement('div');
+  contentWrapper.classList.add('dynamic-content');
+  contentWrapper.innerHTML = lines.map(line => `<p>${line}</p>`).join('');
+
+  // Insert it before the toggle button
+  modalBody.insertBefore(contentWrapper, toggleLegend);
 
   // Show modal
   const siteModal = new bootstrap.Modal(document.getElementById('siteModal'));
   siteModal.show();
 }
+
+document.getElementById('toggle-legend').addEventListener('click', function () {
+  const legend = document.getElementById('encoding-legend');
+  const expanded = this.getAttribute('aria-expanded') === 'true';
+
+  legend.hidden = expanded;
+  this.setAttribute('aria-expanded', String(!expanded));
+  this.textContent = expanded ? '⊕ Show Visual Encoding Guide' : '⊖ Hide Visual Encoding Guide';
+});
 
 function mouseMoved() {
   // Skip hover detection on touch devices
