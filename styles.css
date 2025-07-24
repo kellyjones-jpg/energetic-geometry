@@ -1001,19 +1001,19 @@ a.hyperlink:active {
   background-color: transparent;
   color: white;
   font-family: Helvetica, Arial, sans-serif;
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   border: none;
   border-radius: 0;
   box-shadow:
     1.5px 1px 0 #0A0A0A,
     3px 2px 0 white;
-  padding: 1rem 1.5rem;
+  padding: 1rem 0 0.5rem 0;
   transition: background-color 0.3s ease, color 0.3s ease;
-  text-transform: uppercase;
   letter-spacing: 0.08em;
   outline-offset: 4px;
   display: inline-block;
-  margin-bottom: 1rem;
+    width: 100%;
+    text-align: left;
 }
 
 .legend-toggle:hover,
