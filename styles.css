@@ -690,16 +690,6 @@ a.hyperlink:active {
     );
   background-size: cover;
   opacity: 0.45;
-  animation: rotateEnergySpiral 40s linear infinite;
-}
-
-@keyframes rotateEnergySpiral {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 /* Modal header */
