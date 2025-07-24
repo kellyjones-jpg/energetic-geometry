@@ -741,25 +741,9 @@ a.hyperlink:active {
     -2.5px 2.5px 0 #0A0A0A;
 }
 
-/* Links inside modal */
-.modal-body a,
-.modal-body a:visited {
-  color: #4C8CF5;
-  font-weight: bold;
-  text-decoration: none;
-  letter-spacing: 0.03em;
-  transition: color 0.2s ease, text-decoration 0.2s ease;
-}
-
 .modal-body p {
   text-shadow:
     -2px 2px 0 #0A0A0A;
-}
-
-.modal-body a:hover,
-.modal-body a:focus {
-  color: #3769D6;
-  text-decoration: underline;
 }
 
 /* Footer */
