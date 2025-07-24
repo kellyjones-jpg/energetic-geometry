@@ -887,16 +887,7 @@ a.hyperlink:active {
   background: transparent;
 }
 
-  .icon {
-    transition: filter 0.3s ease;
-    filter: url(#defaultShadow);
-  }
-
-  .icon:hover {
-    filter: url(#hoverShadow);
-  }
-
-.icon {
+ .icon {
   display: inline-block;
   width: 1rem;
   height: 1rem;
