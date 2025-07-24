@@ -142,11 +142,22 @@ const pvWarpStyles = {
 
 const combinedIcon = `
 <svg
-    width="16" height="16" viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
-    style="vertical-align: middle; margin-left: 4px;"
-  >
+  width="16" height="16" viewBox="0 0 24 24"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden="true"
+  style="vertical-align: middle; margin-left: 4px;">
+  <defs>
+    <filter id="svgDropShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <!-- Black shadow (bottom layer) -->
+      <feDropShadow dx="-2" dy="2" stdDeviation="0" flood-color="#0A0A0A" />
+      <!-- White shadow (middle layer) -->
+      <feDropShadow dx="-1" dy="1" stdDeviation="0" flood-color="#FFFFFF" />
+      <!-- Blue shadow (top layer) -->
+      <feDropShadow dx="0" dy="0" stdDeviation="0" flood-color="#005A99" />
+    </filter>
+  </defs>
+
+  <g filter="url(#svgDropShadow)">
     <!-- Rotated square frame -->
     <rect
       x="4" y="4" width="16" height="16"
@@ -173,7 +184,8 @@ const combinedIcon = `
       stroke-width="2.5"
       stroke-linejoin="round"
     />
-  </svg>
+  </g>
+</svg>
 `;
 
 function preload() {
