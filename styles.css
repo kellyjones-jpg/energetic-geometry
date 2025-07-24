@@ -155,7 +155,7 @@ a.hyperlink {
 color: white;
   font-weight: bold;
   text-shadow:
-    -2px 2px 0 #0A0A0A,
+    -2px 2px 0 #0A0A0A;
 }
 
 a.hyperlink:hover,
