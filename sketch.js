@@ -152,15 +152,13 @@ const combinedIcon = `
     <!-- Default shadow -->
     <filter id="defaultShadow" x="-50%" y="-50%" width="200%" height="200%">
       <feDropShadow dx="-2" dy="2" stdDeviation="0" flood-color="#0A0A0A" />
-      <feDropShadow dx="-1" dy="1" stdDeviation="0" flood-color="#FFFFFF" />
-      <feDropShadow dx="0" dy="0" stdDeviation="0" flood-color="#005A99" />
+      <feDropShadow dx="-3" dy="3" stdDeviation="0" flood-color="#005A99" />
     </filter>
 
     <!-- Hover shadow with stronger blue and slight blur -->
     <filter id="hoverShadow" x="-50%" y="-50%" width="200%" height="200%">
-      <feDropShadow dx="-2" dy="2" stdDeviation="0.5" flood-color="#0A0A0A" />
-      <feDropShadow dx="-1" dy="1" stdDeviation="0.5" flood-color="#FFFFFF" />
-      <feDropShadow dx="0.5" dy="-0.5" stdDeviation="1.5" flood-color="#005A99" />
+      <feDropShadow dx="-2.5" dy="2.5" stdDeviation="0.5" flood-color="#0A0A0A" />
+      <feDropShadow dx="3.5" dy="-3.5" stdDeviation="1.5" flood-color="#005A99" />
     </filter>
   </defs>
 
