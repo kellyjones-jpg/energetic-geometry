@@ -609,7 +609,16 @@ document.getElementById('toggle-legend').addEventListener('click', function () {
 
   legend.hidden = expanded;
   this.setAttribute('aria-expanded', String(!expanded));
-  this.textContent = expanded ? '⊕ Show Visual Encoding Guide' : '⊖ Hide Visual Encoding Guide';
+
+  // Toggle .collapsed for icon rotation
+  this.classList.toggle('collapsed', expanded);
+
+  this.textContent = 'Show Visual Encoding Guide'; // reset text
+  this.append(document.createTextNode('')); // required so icon isn't removed
+
+  if (!expanded) {
+    this.textContent = 'Hide Visual Encoding Guide';
+  }
 });
 
 function mouseMoved() {
