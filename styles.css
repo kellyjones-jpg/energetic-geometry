@@ -825,8 +825,8 @@ a.hyperlink:focus {
 .nav-arrow {
   position: relative;
   background-color: #2e2f31; /* same dark gray */
-  color: #e6e6e6;            /* same light gray */
-  border: 2px solid #bfbfbf; /* same mid-gray border */
+  color: white;
+  border: 2px solid #0A0A0A;
   border-radius: 0;          /* hard edges */
   font-size: 2.5rem;
   width: 50px;
