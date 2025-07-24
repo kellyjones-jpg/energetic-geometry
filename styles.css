@@ -685,7 +685,6 @@ a.hyperlink:active {
       rgba(255, 255, 255, 0.025) 3px,
       transparent 3px,
       transparent 6px);
-  background-size: 12px 12px;
   pointer-events: none;
   z-index: 0;
   mix-blend-mode: lighten;
