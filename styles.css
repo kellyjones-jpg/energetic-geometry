@@ -215,8 +215,7 @@ a.hyperlink:active {
   cursor: pointer;
   letter-spacing: 0.05em;
    text-shadow:
-    -2px 2px 0 #0A0A0A,
-    -1px 1px 0 #fff;
+    -3px 3px 0 #0A0A0A,
 }
 
 .year-label.active {
@@ -232,7 +231,7 @@ a.hyperlink:active {
 .year-label:focus {
   color: white;
   text-shadow:
-    -2.5px 2.5px 0 #0A0A0A,
+    -0.5px 0.5px 0 #0A0A0A,
     -3px 3px 0 #3769D6;
   font-size: 18px;
   font-weight: bold;
@@ -750,7 +749,7 @@ a.hyperlink:active {
 
 .modal-body p {
   text-shadow:
-    -1.5px 1.5px 0 #0A0A0A;
+    -2px 2px 0 #0A0A0A;
 }
 
 .modal-body a:hover,
