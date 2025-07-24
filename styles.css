@@ -718,7 +718,9 @@ a.hyperlink:active {
 /* Modal header */
 .modal-header {
   background-color: #353839;
+  border-top: 2px solid #0A0A0A;
   border-bottom: 2px solid #0A0A0A;
+  border-left: 2px solid white;
   padding-bottom: 1.5rem;
   padding-right: 0.5rem;
   font-weight: bold;
