@@ -140,7 +140,7 @@
     color: white;
     text-shadow:
       1.5px 1.5px 0 #0A0A0A,
-      -1px -1px 0 #3769D6;
+      -5px -5px 0 #3769D6;
 }
 
 a.title,
@@ -167,7 +167,7 @@ a.hyperlink:active {
   letter-spacing: 0.05em;
   text-shadow:
     1.5px 1.5px 0 #0A0A0A,
-    -1px -1px 0 #4C8CF5;
+    -5px -5px 0 #4C8CF5;
   transition: color 0.2s ease;
 }
 
@@ -234,7 +234,7 @@ a.hyperlink:active {
   color: white;
   text-shadow:
     1.5px 1.5px 0 #0A0A0A,
-    -1px -1px 0 #3769D6;
+    -5px -5px 0 #3769D6;
   font-size: 18px;
   font-weight: bold;
 }
@@ -666,8 +666,8 @@ a.hyperlink:active {
   border-width: 6px 2px 0 10px; /* Echoes .landing-border */
   border-radius: 0;
   box-shadow:
-    2px 2px 0 #0A0A0A,
-    -2px 2px 0 white;
+    2px 2px 0 white,
+    -6px 6px 0 #0A0A0A;
   transform: translate(-1px, 1px) rotate(-0.15deg); /* Tension */
 }
 
