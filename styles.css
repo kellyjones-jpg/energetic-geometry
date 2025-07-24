@@ -137,7 +137,10 @@
 }
 .nav-link:hover,
 .nav-link:focus {
-    color: #4C8CF5;
+    color: white;
+    text-shadow:
+      1.5px 1.5px 0 #0A0A0A,
+      -1px -1px 0 #4C8CF5;
 }
 
 a.title,
@@ -149,15 +152,21 @@ a.title:visited {
 }
 
 a.hyperlink {
-  color: #00D9F5;
+  color: white;
   font-weight: bold;
   letter-spacing: 0.05em;
+  text-shadow:
+    1.5px 1.5px 0 #0A0A0A,
+    -1px -1px 0 #00D9F5;
   transition: color 0.2s ease;
 }
 
 a.hyperlink:hover,
 a.hyperlink:focus {
-          color: #4C8CF5;
+  color: white;
+  text-shadow:
+    1.5px 1.5px 0 #0A0A0A,
+    -1px -1px 0 #4C8CF5;
 }
 
 .thick-num {
@@ -210,17 +219,20 @@ a.hyperlink:focus {
 }
 
 .year-label.active {
-  color: #00D9F5;
+  color: white;
   font-weight: bold;
   font-size: 18px;
   text-shadow:
     1.5px 1.5px 0 #0A0A0A,
-    -1px -1px 0 #ffffff;
+    -1px -1px 0 #00D9F5;
 }
 
 .year-label:hover,
 .year-label:focus {
-  color: #4C8CF5;
+  color: white;
+  text-shadow:
+    1.5px 1.5px 0 #0A0A0A,
+    -1px -1px 0 #4C8CF5;
   font-size: 18px;
   font-weight: bold;
 }
@@ -685,11 +697,11 @@ a.hyperlink:focus {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-size: 1.6rem;
-  color: #00D9F5;
+  color: white;
   position: relative;
   text-shadow:
     2px 2px 0 #0A0A0A,
-    -1px -1px 0 white;
+    -1px -1px 0 #00D9F5;
 }
 
 .modal-header h5::after,
@@ -729,7 +741,7 @@ a.hyperlink:focus {
 
 .modal-body p {
   text-shadow:
-    1px 1px 0 #0A0A0A,
+    1.5px 1.5px 0 #0A0A0A,
     -0.5px -0.5px 0 white;
 }
 
@@ -864,7 +876,7 @@ a.hyperlink:focus {
   box-shadow: none;
 }
 
-/* Keep your existing arrow button transform on hover */
+/* Keep existing arrow button transform on hover */
 .arrow-button:hover {
   transform: scale(1.1) rotate(3deg);
 }
