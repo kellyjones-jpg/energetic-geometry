@@ -139,7 +139,7 @@
 .nav-link:focus {
     color: white;
     text-shadow:
-    -1.5px 1.5px 0 #0A0A0A,
+      -1.5px 1.5px 0 #0A0A0A,
       -3px 3px 0 #4C8CF5;
 }
 
@@ -167,7 +167,7 @@ a.hyperlink:active {
   letter-spacing: 0.05em;
   text-shadow:
     -1.5px 1.5px 0 #0A0A0A,
-      -3px 3px 0 #4C8CF5;
+    -3px 3px 0 #4C8CF5;
   transition: color 0.2s ease;
 }
 
@@ -216,7 +216,7 @@ a.hyperlink:active {
   cursor: pointer;
   letter-spacing: 0.05em;
    text-shadow:
-    -2px 2px 0 #0A0A0A;
+    -2px 2px 0 #0A0A0A,
     -1px 1px 0 #fff;
 }
 
@@ -706,8 +706,8 @@ a.hyperlink:active {
   color: white;
   position: relative;
   text-shadow:
-    -3px 3px 0 #4C8CF5,
-    -1.5px 1.5px 0 #0A0A0A;
+    -1.5px 1.5px 0 #0A0A0A,
+    -3px 3px 0 #4C8CF5;
 }
 
 .modal-header h5 {
@@ -894,10 +894,12 @@ a.hyperlink:active {
 .row.text-center {
   flex-grow: 1;
 }
+
 .arrow-button:focus {
   border: none;
   background: transparent;
 }
+
   .icon {
     transition: filter 0.3s ease;
     filter: url(#defaultShadow);
