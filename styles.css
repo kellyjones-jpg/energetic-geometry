@@ -706,7 +706,7 @@ a.hyperlink:active {
   color: white;
   position: relative;
   text-shadow:
-    2px 2px 0 #0A0A0A,
+    -3px 2px 0 #0A0A0A,
     -5px 1.5px 0 #4C8CF5;
 }
 
