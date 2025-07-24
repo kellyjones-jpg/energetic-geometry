@@ -679,13 +679,17 @@ a.hyperlink:active {
   left: 12px;
   width: calc(100% - 24px);
   height: calc(100% - 24px);
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(255, 255, 255, 0.02) 6px, rgba(255, 255, 255, 0.02) 12px);
+  background-image:
+    repeating-linear-gradient(135deg,
+      rgba(255, 255, 255, 0.025),
+      rgba(255, 255, 255, 0.025) 3px,
+      transparent 3px,
+      transparent 6px);
+  background-size: 12px 12px;
   pointer-events: none;
   z-index: 0;
   mix-blend-mode: lighten;
+  animation: illusionMove 10s linear infinite;
 }
 
 /* Modal header */
