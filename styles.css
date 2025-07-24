@@ -223,7 +223,7 @@ a.hyperlink:active {
   font-weight: bold;
   font-size: 18px;
   text-shadow:
-    -1.5px 1.5px 0 #0A0A0A,
+    -2.5px 0.5px 0 #0A0A0A,
     -3px 3px 0 #4C8CF5;
 }
 
