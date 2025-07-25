@@ -859,8 +859,10 @@ font-size: 18px;
 }
 
 .arrow-button:focus {
-  border: none;
-  background: transparent;
+  background-color: #454749;
+  color: #ffffff;
+  border-color: #4C8CF5;
+  box-shadow: none;
 }
 
  .icon {
