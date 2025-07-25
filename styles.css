@@ -1,7 +1,7 @@
     body {
       font-family: Helvetica, Arial, sans-serif;
       background-color: #353839;
-      color: white;
+      color: #ffffff;
       margin: 0;
       padding: 0;
     }
@@ -25,7 +25,7 @@
       /* left aligned by default */
       margin-bottom: 1rem; 
       text-decoration: none;
-      color: white;
+      color: #ffffff;
     }
 
     .landing-border {
@@ -45,7 +45,7 @@
     .image-caption {
       font-size: 10px;
       padding-left: 10px;
-      color: white;
+      color: #ffffff;
       font-style: italic;
       margin-bottom: 2.15em;
       text-align: left !important;
@@ -113,7 +113,7 @@
 #counter-container span {
   margin: 0 1rem;
   font-weight: bold;
-  color: white;
+  color: #ffffff;
   display: inline-block;
 }
 
@@ -127,7 +127,7 @@
 }
 
   .nav-link {
-  color: white;
+  color: #ffffff;
   font-weight: bold;
   line-height: 1.2;
   padding-top: 4.25rem;
@@ -137,7 +137,7 @@
 }
 .nav-link:hover,
 .nav-link:focus {
-    color: white;
+    color: #ffffff;
     text-shadow:
       -1.5px -1.5px 0 #0A0A0A,
       -3px -3px 0 #4C8CF5;
@@ -147,32 +147,30 @@ a.title,
 a.title:hover,
 a.title:focus,
 a.title:visited {
-  color: white;
+  color: #ffffff;
   text-decoration: none;
 }
 
 a.hyperlink {
-color: white;
-  font-weight: bold;
-  text-shadow:
-    2px 2px 0 #0A0A0A;
+color: #ffffff;
+   text-shadow:
+    0.5px 0.5px 0 #0A0A0A,
+    1.5px 1.5px 0 #4C8CF5;
 }
 
 a.hyperlink:hover,
-a.hyperlink:focus,
-a.hyperlink:active {
- color: white;
-    font-weight: bold;
+a.hyperlink:focus {
+ color: #ffffff;
   letter-spacing: 0.05em;
   text-shadow:
-    -1.5px -1.5px 0 #0A0A0A,
+   -2.5px -2.5px 0 #0A0A0A,
     -3px -3px 0 #4C8CF5;
   transition: color 0.2s ease;
 }
 
 .thick-num {
     font-weight: bold;
-    color: white;
+    color: #ffffff;
     font-size: 2rem;
 }
 .lead {
@@ -210,8 +208,7 @@ a.hyperlink:active {
   font-size: 16px;
   margin: 0;
   text-transform: uppercase;
-  font-weight: bold;
-  color: white;
+  color: #ffffff;
   cursor: pointer;
   letter-spacing: 0.05em;
    text-shadow:
@@ -220,7 +217,7 @@ a.hyperlink:active {
 }
 
 .year-label.active {
-  color: white;
+  color: #ffffff;
   font-weight: bold;
   font-size: 18px;
   text-shadow:
@@ -230,12 +227,11 @@ a.hyperlink:active {
 
 .year-label:hover,
 .year-label:focus {
-  color: white;
+  color: #ffffff;
   text-shadow:
    -2.5px -2.5px 0 #0A0A0A,
     -3px -3px 0 #4C8CF5;
   font-size: 18px;
-  font-weight: bold;
 }
 
 .year-label.above {
@@ -448,7 +444,7 @@ a.hyperlink:active {
 /* Accordion button */
 .accordion-button {
   background-color: transparent;
-  color: white;
+  color: #ffffff;
   font-family: Helvetica, Arial, sans-serif; 
   font-size: 1.4rem;
   border: none;
@@ -468,7 +464,7 @@ a.hyperlink:active {
 .accordion-button:hover,
 .accordion-button:focus {
   background-color: #353839; /* subtle dark highlight */
-  color: white;
+  color: #ffffff;
   text-shadow:
     1.5px 1.5px 0 #0A0A0A;
 }
@@ -476,7 +472,7 @@ a.hyperlink:active {
 /* Accordion button collapsed (default state) */
 .accordion-button.collapsed {
   background-color: #353839;
-  color: white;
+  color: #ffffff;
   box-shadow:
     1.5px 1px 0 #0A0A0A,
     3px 2px 0 white;
@@ -485,14 +481,14 @@ a.hyperlink:active {
 /* Accordion button expanded */
 .accordion-button:not(.collapsed) {
   background-color: #0A0A0A; /* darker background when open */
-  color: white;
+  color: #ffffff;
   font-weight: bold;
 }
 
 /* Remove Bootstrap's default chevron and add custom one */
 .accordion-button::after {
   content: '\25B6';  /* right-pointing triangle */
-  color: white;
+  color: #ffffff;
   transition: transform 0.3s ease;
   margin-left: auto;
   filter:
@@ -507,7 +503,7 @@ a.hyperlink:active {
 
 /* Accordion body */
 .accordion-body {
-  color: white;
+  color: #ffffff;
   font-family: Helvetica, Arial, sans-serif;
   border-top: 2px solid white;
   padding: 1.25rem 1.5rem;
@@ -518,7 +514,7 @@ a.hyperlink:active {
 
 /* Table header inside accordion body */
 .accordion-body thead tr {
-  background-color: white;  /* replace orange with white */
+  background-color: #ffffff;  /* replace orange with white */
   color: #0A0A0A;           /* dark text for contrast */
   font-weight: bold;
   text-transform: uppercase;
@@ -545,7 +541,7 @@ a.hyperlink:active {
   margin-bottom: 0.4rem;
   font-size: 1.15rem;
   font-weight: 500;
-  color: white;
+  color: #ffffff;
 }
 
 .underline-line {
@@ -657,11 +653,11 @@ a.hyperlink:active {
 .modal-content {
   position: relative;
   background-color: #353839;
-  color: white;
+  color: #ffffff;
   font-family: Helvetica, Arial, sans-serif;
   padding: 2rem 2rem;
   border-style: solid;
-  border-color: white;
+  border-color: #ffffff;
   border-width: 6px 2px 0 10px; /* Echoes .landing-border */
   border-radius: 0;
   box-shadow:
@@ -707,7 +703,7 @@ a.hyperlink:active {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-size: 1.6rem;
-  color: white;
+  color: #ffffff;
   position: relative;
 }
 
@@ -733,7 +729,7 @@ a.hyperlink:active {
   font-size: 1rem;
   line-height: 1.5;
   background-color: #353839;
-  color: white;
+  color: #ffffff;
   padding: 1rem 1.5rem 1.5rem 2.25rem;
   border-left: 5px solid white;
    text-shadow:
@@ -758,7 +754,7 @@ a.hyperlink:active {
 /* Buttons */
 .modal-footer .btn {
   background: transparent;
-  color: white;
+  color: #ffffff;
   font-weight: bold;
   text-transform: uppercase;
   border: 2px solid white;
@@ -835,7 +831,7 @@ a.hyperlink:active {
 .nav-arrow {
   position: relative;
   background-color: #353839;
-  color: white;
+  color: #ffffff;
   border: 2px solid #0A0A0A;
   border-radius: 0;          /* hard edges */
   font-size: 2.5rem;
@@ -933,7 +929,7 @@ a.hyperlink:active {
 .shape-icon {
   width: 1.25rem;
   height: 1.25rem;
-  background-color: white;
+  background-color: #ffffff;
   clip-path: polygon(
     25% 0%,
     75% 0%,
@@ -976,7 +972,7 @@ a.hyperlink:active {
 
 .legend-toggle {
   background-color: transparent;
-  color: white;
+  color: #ffffff;
   font-family: Helvetica, Arial, sans-serif;
   font-size: 1.1rem;
   border: none;
@@ -996,16 +992,16 @@ a.hyperlink:active {
 .legend-toggle:hover,
 .legend-toggle:focus {
   background-color: #353839;
-  color: white;
+  color: #ffffff;
   text-shadow: 1px 1px 0 #0A0A0A;
 }
 
 .encoding-table td {
-  color: white;
+  color: #ffffff;
   font-family: Helvetica, Arial, sans-serif;
   padding: 0.75rem 1rem;
   vertical-align: middle;
-  border-color: white;
+  border-color: #ffffff;
 }
 
 .encoding-table {
@@ -1024,7 +1020,7 @@ a.hyperlink:active {
 
 .legend-toggle::after {
   content: '\25B6';  /* Unicode for right-pointing triangle ▶ */
-  color: white;
+  color: #ffffff;
   margin-left: 0.75rem;
   transition: transform 0.3s ease;
   filter:
