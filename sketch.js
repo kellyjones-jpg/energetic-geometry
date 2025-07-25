@@ -279,7 +279,7 @@ function setup() {
 
   // Create year timeline
   let timelineContainer = createDiv().id('timeline');
-  timelineContainer.style('text-align', 'center');
+  timelineContainer.style('align-items', 'center');
   timelineContainer.parent('sketch-container');
 
   availableYears.forEach((year, index) => {
