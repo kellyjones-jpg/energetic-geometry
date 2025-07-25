@@ -1020,8 +1020,17 @@ font-size: 18px;
     drop-shadow(1px 0 0 white);
 }
 
-/* Rotates when expanded */
-.legend-toggle:not(.collapsed)::after {
+.toggle-icon {
+  display: inline-block;
+  margin-left: 0.75rem;
+  transition: transform 0.3s ease;
+  content: '\25B6';
+  filter:
+    drop-shadow(1px 1px 0 #0A0A0A)
+    drop-shadow(1px 0 0 white);
+}
+
+.legend-toggle:not(.collapsed) .toggle-icon {
   transform: rotate(90deg);
 }
 
