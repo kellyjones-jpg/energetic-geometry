@@ -53,8 +53,11 @@
   
     #sketch-container {
         width: 100%;
+        max-width: 1650px;
+      margin: 0 auto;
       min-height: auto;
       height: auto;
+    margin-bottom: 20px;
     }
 
     #sketch-container canvas {
