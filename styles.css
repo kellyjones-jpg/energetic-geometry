@@ -139,7 +139,7 @@
 .nav-link:focus {
     color: #ffffff;
     text-shadow:
-      -1.5px -1.5px 0 #0A0A0A,
+      -2.5px -2.5px 0 #0A0A0A,
       -3px -3px 0 #4C8CF5;
 }
 
@@ -153,9 +153,10 @@ a.title:visited {
 
 a.hyperlink {
 color: #ffffff;
+letter-spacing: 0.05em;
    text-shadow:
-    0.5px 0.5px 0 #0A0A0A,
-    1.5px 1.5px 0 #4C8CF5;
+    1.5px 1.5px 0 #0A0A0A,
+    3px 3px 0 #4C8CF5;
 }
 
 a.hyperlink:hover,
@@ -163,9 +164,8 @@ a.hyperlink:focus {
  color: #ffffff;
   letter-spacing: 0.05em;
   text-shadow:
-   -2.5px -2.5px 0 #0A0A0A,
+    -2.5px -2.5px 0 #0A0A0A,
     -3px -3px 0 #4C8CF5;
-  transition: color 0.2s ease;
 }
 
 .thick-num {
@@ -206,31 +206,24 @@ a.hyperlink:focus {
 
 .year-label {
   font-size: 18px;
+  font-weight: bold;
   margin: 0;
   text-transform: uppercase;
   color: #ffffff;
   cursor: pointer;
   letter-spacing: 0.05em;
    text-shadow:
-    0.5px 0.5px 0 #0A0A0A,
-    1.5px 1.5px 0 #4C8CF5;
-}
-
-.year-label.active {
-  color: #ffffff;
-  font-weight: bold;
-  text-shadow:
-     1.5px 1.5px 0 #0A0A0A,
+    1.5px 1.5px 0 #0A0A0A,
     3px 3px 0 #4C8CF5;
 }
 
 .year-label:hover,
-.year-label:focus {
+.year-label:focus,
+.year-label:active {
   color: #ffffff;
   text-shadow:
-   -2.5px -2.5px 0 #0A0A0A,
+     -2.5px -2.5px 0 #0A0A0A,
     -3px -3px 0 #4C8CF5;
-  font-weight: bold;
 }
 
 .year-label.above {
