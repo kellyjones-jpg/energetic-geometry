@@ -101,13 +101,6 @@
   margin: 0 auto;
 }
 
-/* Disable sticky on mobile */
-@media (max-width: 767px) {
- #timeline {
-    display: none !important;
-  }
-}
-
 #counter-container span {
   margin: 0 1rem;
   font-weight: bold;
@@ -183,10 +176,7 @@ letter-spacing: 0.05em;
   display: flex;
   justify-content: space-between;
   width: 90%;
-  margin-top: 0.5em;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 2em;
+  margin: 1em auto;
 }
 
 #timeline::before {
@@ -517,6 +507,9 @@ font-size: 18px;
 
 /* Responsive tweak: smaller font on narrow screens */
 @media (max-width: 768px) {
+ #timeline {
+    display: none !important;
+  }
   .accordion-button {
     font-size: 1.1rem;
   }
