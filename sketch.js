@@ -577,7 +577,7 @@ function showModalWithEntry(entry) {
 
   // Set modal title with link if URL exists
   modalTitle.innerHTML = entry.url
-    ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">
+    ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" class="hyperlink">
          ${entry.name}${combinedIcon}
        </a>`
     : entry.name;
