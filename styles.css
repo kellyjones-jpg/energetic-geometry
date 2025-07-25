@@ -52,8 +52,6 @@
     }
   
     #sketch-container {
-        width: 100%;
-        max-width: 1650px;
       margin: 0 auto;
       min-height: auto;
       height: auto;
@@ -62,6 +60,7 @@
 
     #sketch-container canvas {
      width: 100%;
+    max-width: 1650px;
       height: auto;         
       max-height: 855px;    
       display: block;   
