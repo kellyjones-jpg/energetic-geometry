@@ -183,7 +183,7 @@ letter-spacing: 0.05em;
   position: relative;
   display: flex;
   justify-content: space-between;
-  align-items: center !important;
+  justify-content: center !important;
   width: 90%;
   margin-top: 0.5em;
 }
