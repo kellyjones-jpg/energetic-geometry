@@ -267,7 +267,7 @@ function setup() {
 
   // Responsive canvas sizing
   let canvasWidth = windowWidth * 0.9;
-  let canvasHeight = updateLayout();
+  let canvasHeight = min(855, windowHeight);
   cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent('sketch-container');
 
@@ -423,11 +423,8 @@ function updateLayout() {
 }
 
 function windowResized() {
-  let canvasWidth = windowWidth * 0.9; // 90% of window width
-  let canvasHeight = updateLayout();   // calculate height based on layout
-
-  // Clamp canvas height so it doesn't exceed 80% of window height or 865px max
-  canvasHeight = constrain(canvasHeight, 0, min(windowHeight * 0.8, 865));
+  let canvasWidth = windowWidth * 0.9; // Responsive width
+  let canvasHeight = min(855, windowHeight); // Lock to 855px max, shrink on smaller screens
 
   resizeCanvas(canvasWidth, canvasHeight);
   redraw();
