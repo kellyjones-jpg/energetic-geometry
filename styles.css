@@ -996,16 +996,17 @@ font-size: 18px;
   border-bottom: none;
 }
 
-.toggle-icon {
-  display: inline-block;
+.legend-toggle::after {
+  content: '\25B6';  /* Unicode for right-pointing triangle ▶ */
+  color: white;
   margin-left: 0.75rem;
   transition: transform 0.3s ease;
-  content: '\25B6';
   filter:
     drop-shadow(1px 1px 0 #0A0A0A)
     drop-shadow(1px 0 0 white);
 }
 
-.legend-toggle:not(.collapsed) .toggle-icon {
+/* Rotates when expanded */
+.legend-toggle:not(.collapsed)::after {
   transform: rotate(90deg);
 }
