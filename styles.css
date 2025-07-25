@@ -980,7 +980,7 @@ font-size: 18px;
   border: none;
   border-radius: 0;
   box-shadow: none;
-  padding: .5rem 1rem 0 0;
+  padding: .5rem 1rem 0 0.25rem;
   transition: background-color 0.3s ease, color 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -988,6 +988,8 @@ font-size: 18px;
     1.5px 1px 0 #0A0A0A,
     3px 2px 0 white;
   outline-offset: 4px;
+    width: 100%;
+    text-align: left;
 }
 
 /* Toggle hover and focus */
