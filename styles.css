@@ -791,6 +791,10 @@ a.hyperlink:active {
      #year-arrow-controls {
         margin-bottom: 1rem;
       }
+
+    .nav-arrow {
+        margin: 1rem;
+      }
         
       .modal-content {
         padding: 1rem 1.25rem;
