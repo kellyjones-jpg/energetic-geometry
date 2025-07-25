@@ -1012,16 +1012,6 @@ font-size: 18px;
   border-bottom: none;
 }
 
-.legend-toggle::after {
-  content: '\25B6';  /* Unicode for right-pointing triangle ▶ */
-  color: #ffffff;
-  margin-left: 0.75rem;
-  transition: transform 0.3s ease;
-  filter:
-    drop-shadow(1px 1px 0 #0A0A0A)
-    drop-shadow(1px 0 0 white);
-}
-
 .toggle-icon {
   display: inline-block;
   margin-left: 0.75rem;
