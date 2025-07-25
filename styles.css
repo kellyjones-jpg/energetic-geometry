@@ -183,9 +183,11 @@ letter-spacing: 0.05em;
   position: relative;
   display: flex;
   justify-content: space-between;
-  justify-content: center !important;
   width: 90%;
   margin-top: 0.5em;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1em;
 }
 
 #timeline::before {
