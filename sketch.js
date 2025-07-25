@@ -426,8 +426,7 @@ function windowResized() {
   let canvasWidth = windowWidth * 0.9; // 90% of window width
   let canvasHeight = updateLayout();   // calculate height based on layout
 
-  // Clamp canvas height so it doesn't exceed 80% of window height or 865px max
-  canvasHeight = constrain(canvasHeight, 0, min(windowHeight * 0.8, 865));
+  canvasHeight = constrain(canvasHeight, 0, windowHeight);
 
   resizeCanvas(canvasWidth, canvasHeight);
   redraw();
