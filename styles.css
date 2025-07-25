@@ -172,6 +172,8 @@ letter-spacing: 0.05em;
     font-weight: bold;
     color: #ffffff;
     font-size: 2rem;
+    text-shadow:
+    1.5px 1.5px 0 #0A0A0A,
 }
 .lead {
     font-size: 1.15rem;
