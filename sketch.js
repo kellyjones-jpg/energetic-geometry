@@ -279,7 +279,7 @@ function setup() {
 
   // Create year timeline
   let timelineContainer = createDiv().id('timeline');
-  timelineContainer.style('align-items', 'center');
+  timelineContainer.style('text-align', 'center');
   timelineContainer.parent('sketch-container');
 
   availableYears.forEach((year, index) => {
@@ -424,9 +424,13 @@ function updateLayout() {
 
 function windowResized() {
   let canvasWidth = windowWidth * 0.9; // 90% of window width
-  let canvasHeight = updateLayout();   // calculate height based on layout
+  let layoutHeight = updateLayout();   // height based on layout
 
-  canvasHeight = constrain(canvasHeight, 0, windowHeight);
+  // Lock at 855 unless the screen is shorter
+  let canvasHeight = min(windowHeight, 855);
+
+  // But ensure canvas isn't too small for layout
+  canvasHeight = max(canvasHeight, layoutHeight);
 
   resizeCanvas(canvasWidth, canvasHeight);
   redraw();
