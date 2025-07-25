@@ -564,13 +564,13 @@ font-size: 18px;
 .suprematist-underline:hover::after,
 .suprematist-underline:focus::after {
   width: 95%;
-  background-color: #3769D6;
+  background-color: #4C8CF5;
 }
 
 .suprematist-underline.active:hover::after,
 .suprematist-underline.active:focus::after {
   width: 95%;
-  background-color: #3769D6;
+  background-color: #4C8CF5;
 }
 
 .suprematist-underline.active::after {
