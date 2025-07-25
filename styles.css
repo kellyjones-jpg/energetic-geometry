@@ -525,6 +525,36 @@ font-size: 18px;
     font-size: 0.85rem;
     padding: 0.5rem;
   }
+ #year-arrow-controls {
+        margin-bottom: 1rem;
+      }
+
+    .nav-arrow {
+        margin: 1rem;
+      }
+        
+      .modal-content {
+        padding: 1rem 1.25rem;
+        border-width: 6px 2px 0 10px;
+      }
+    
+      .modal-header {
+        font-size: 1.3rem;
+      }
+    
+      .modal-footer .btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+      }
+    
+      #counter-container {
+      font-size: 0.85rem;
+      padding: 0.5rem 0.75rem;
+    }
+    
+    #counter-container span {
+      margin: 0 0.6rem;
+    }
 }
 
 .label-with-lines {
@@ -772,40 +802,6 @@ font-size: 18px;
 
 .modal-header .btn-close:hover {
   filter: drop-shadow(2px 2px 0 #4C8CF5);
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-     #year-arrow-controls {
-        margin-bottom: 1rem;
-      }
-
-    .nav-arrow {
-        margin: 1rem;
-      }
-        
-      .modal-content {
-        padding: 1rem 1.25rem;
-        border-width: 6px 2px 0 10px;
-      }
-    
-      .modal-header {
-        font-size: 1.3rem;
-      }
-    
-      .modal-footer .btn {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.9rem;
-      }
-    
-      #counter-container {
-      font-size: 0.85rem;
-      padding: 0.5rem 0.75rem;
-    }
-    
-    #counter-container span {
-      margin: 0 0.6rem;
-    }
 }
 
 #year-arrow-controls {
