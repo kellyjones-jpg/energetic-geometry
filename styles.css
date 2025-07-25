@@ -980,7 +980,7 @@ font-size: 18px;
   border: none;
   border-radius: 0;
   box-shadow: none;
-  padding: 1rem 1.5rem;
+  padding: .5rem 1rem 0 0;
   transition: background-color 0.3s ease, color 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -1020,7 +1020,7 @@ font-size: 18px;
   content: '\25B6';  /* right-pointing triangle */
   color: #ffffff;
   transition: transform 0.3s ease;
-  margin-left: auto;
+  margin-left: 1rem;
   filter:
     drop-shadow(1px 1px 0 #0A0A0A)
     drop-shadow(1px 0 0 white);
