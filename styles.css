@@ -950,32 +950,6 @@ font-size: 18px;
   }
 }
 
-.legend-toggle {
-  background-color: transparent;
-  color: #ffffff;
-  font-family: Helvetica, Arial, sans-serif;
-  font-size: 1.1rem;
-  border: none;
-  border-radius: 0;
-  box-shadow:
-    1.5px 1px 0 #0A0A0A,
-    3px 2px 0 white;
-  padding: 1rem 0 0.5rem 0;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  letter-spacing: 0.08em;
-  outline-offset: 4px;
-  display: inline-block;
-    width: 100%;
-    text-align: left;
-}
-
-.legend-toggle:hover,
-.legend-toggle:focus {
-  background-color: #353839;
-  color: #ffffff;
-  text-shadow: 1px 1px 0 #0A0A0A;
-}
-
 .encoding-table td {
   color: #ffffff;
   font-family: Helvetica, Arial, sans-serif;
@@ -998,8 +972,52 @@ font-size: 18px;
   border-bottom: none;
 }
 
+.legend-toggle {
+  background-color: transparent;
+  color: #ffffff;
+  font-family: Helvetica, Arial, sans-serif; 
+  font-size: 1.4rem;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 1rem 1.5rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  box-shadow:
+    1.5px 1px 0 #0A0A0A,
+    3px 2px 0 white;
+  outline-offset: 4px;
+}
+
+/* Toggle hover and focus */
+.legend-toggle:hover,
+.legend-toggle:focus {
+  background-color: #353839; /* subtle dark highlight */
+  color: #ffffff;
+  text-shadow:
+    1.5px 1.5px 0 #0A0A0A;
+}
+
+/* Toggle collapsed (default state) */
+.legend-toggle.collapsed {
+  background-color: #353839;
+  color: #ffffff;
+  box-shadow:
+    1.5px 1px 0 #0A0A0A,
+    3px 2px 0 white;
+}
+
+/* Toggle expanded */
+.legend-toggle:not(.collapsed) {
+  background-color: #0A0A0A; /* darker background when open */
+  color: #ffffff;
+  font-weight: bold;
+}
+
+/* Add custom one */
 .legend-toggle::after {
-content: '\25B6';  /* right-pointing triangle */
+  content: '\25B6';  /* right-pointing triangle */
   color: #ffffff;
   transition: transform 0.3s ease;
   margin-left: auto;
@@ -1008,7 +1026,7 @@ content: '\25B6';  /* right-pointing triangle */
     drop-shadow(1px 0 0 white);
 }
 
-/* Rotates when expanded */
+/* Rotate when expanded */
 .legend-toggle:not(.collapsed)::after {
   transform: rotate(90deg);
 }
