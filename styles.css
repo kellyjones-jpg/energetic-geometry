@@ -999,10 +999,10 @@ font-size: 18px;
 }
 
 .legend-toggle::after {
-  content: '\25B6';  /* Unicode for right-pointing triangle ▶ */
-  color: white;
-  margin-left: 0.75rem;
+content: '\25B6';  /* right-pointing triangle */
+  color: #ffffff;
   transition: transform 0.3s ease;
+  margin-left: auto;
   filter:
     drop-shadow(1px 1px 0 #0A0A0A)
     drop-shadow(1px 0 0 white);
