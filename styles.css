@@ -52,22 +52,15 @@
     }
   
     #sketch-container {
-      width: 100%;
-      max-width: 1650px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 20px;
-      align-items: center;
+      min-height: auto;
+      height: auto;
     }
 
     #sketch-container canvas {
-      width: 100%;
-      height: auto;
-      display: block;
-      max-width: 100%; /* prevent overflow */
-      position: relative;   
-      z-index: 0;             
+     width: 100%;
+      height: auto;         
+      max-height: 855px;    
+      display: block;   
     }
 
     #sketch-container input[type="range"] {
@@ -1025,4 +1018,3 @@ font-size: 18px;
 .legend-toggle:not(.collapsed) .toggle-icon {
   transform: rotate(90deg);
 }
-
