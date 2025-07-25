@@ -47,7 +47,6 @@
       padding-left: 10px;
       color: #ffffff;
       font-style: italic;
-      margin-bottom: 2.15em;
       text-align: left !important;
     }
   
@@ -187,7 +186,7 @@ letter-spacing: 0.05em;
   margin-top: 0.5em;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 1em;
+    margin-bottom: 2em;
 }
 
 #timeline::before {
