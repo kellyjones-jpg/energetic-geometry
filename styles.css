@@ -840,13 +840,8 @@ font-size: 18px;
   content: none;
 }
 
-/* Focus ring remains sharp */
-.nav-arrow:focus {
-  outline: 2px solid #ffffff;
-  outline-offset: 4px;
-}
-
 /* Hover: crisp color changes with no shadows */
+.nav-arrow:focus,
 .nav-arrow:hover {
   background-color: #454749;
   color: #ffffff;
