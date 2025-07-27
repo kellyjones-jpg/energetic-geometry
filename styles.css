@@ -22,7 +22,6 @@
     h1 {
       font-size: 2.5rem;
       line-height: 1.2;
-      /* left aligned by default */
       margin-bottom: 1rem; 
       text-decoration: none;
       color: #ffffff;
@@ -73,17 +72,10 @@
       max-width: 400px;
     }
   
-  /* Wrap counters and sketch for flexible reordering */
+/* Wrap counters and sketch for flexible reordering */
 #sketch-and-totals {
   display: flex;
   flex-direction: column; /* mobile: counters above sketch */
-}
-
-/* Desktop: reverse order so sketch is above counters */
-@media (min-width: 768px) {
-  #sketch-and-totals {
-    flex-direction: column-reverse;
-  }
 }
 
 /* Adjust sticky counters to only be sticky on desktop */
@@ -321,7 +313,6 @@ font-size: 18px;
 }
 
 /* Animal Type Line Styles */
-
 .animal-line {
   width: 60px;
   height: 20px;
@@ -503,51 +494,6 @@ font-size: 18px;
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-}
-
-/* Responsive tweak: smaller font on narrow screens */
-@media (max-width: 768px) {
- #timeline {
-    display: none !important;
-  }
-  .accordion-button {
-    font-size: 1.1rem;
-  }
-  .accordion-body th,
-  .accordion-body td {
-    font-size: 0.85rem;
-    padding: 0.5rem;
-  }
- #year-arrow-controls {
-        margin-bottom: 1rem;
-      }
-
-    .nav-arrow {
-        margin: 1rem;
-      }
-        
-      .modal-content {
-        padding: 1rem 1.25rem;
-        border-width: 6px 2px 0 10px;
-      }
-    
-      .modal-header {
-        font-size: 1.3rem;
-      }
-    
-      .modal-footer .btn {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.9rem;
-      }
-    
-      #counter-container {
-      font-size: 0.85rem;
-      padding: 0.5rem 0.75rem;
-    }
-    
-    #counter-container span {
-      margin: 0 0.6rem;
-    }
 }
 
 .label-with-lines {
@@ -1031,4 +977,96 @@ font-size: 18px;
 /* Rotate when expanded */
 .legend-toggle:not(.collapsed)::after {
   transform: rotate(90deg);
+}
+
+/* Media Queries */
+@media (min-width: 768px) {
+  #sketch-and-totals {
+    flex-direction: column-reverse;
+  }
+}
+
+@media (max-width: 768px) {
+ #timeline {
+    display: none !important;
+  }
+  .accordion-button {
+    font-size: 1.1rem;
+  }
+  .accordion-body th,
+  .accordion-body td {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+ #year-arrow-controls {
+        margin-bottom: 1rem;
+      }
+
+    .nav-arrow {
+        margin: 1rem;
+      }
+        
+      .modal-content {
+        padding: 1rem 1.25rem;
+        border-width: 6px 2px 0 10px;
+      }
+    
+      .modal-header {
+        font-size: 1.3rem;
+      }
+    
+      .modal-footer .btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+      }
+    
+      #counter-container {
+      font-size: 0.85rem;
+      padding: 0.5rem 0.75rem;
+    }
+    
+    #counter-container span {
+      margin: 0 0.6rem;
+    }
+}
+
+@media (min-width: 1920px) {
+  /* Custom styles for very large screens */
+
+  body {
+    font-size: 1.05rem; /* Slightly increase base font size */
+  }
+
+  h1 {
+    font-size: 3rem;
+  }
+
+  #sketch-container {
+    max-width: 1800px;
+    padding: 0 2rem;
+  }
+
+  #counter-container {
+    font-size: 1.1rem;
+    padding: 1rem 2rem;
+  }
+
+  .accordion-button {
+    font-size: 1.5rem;
+  }
+
+  .modal-content {
+    padding: 2.5rem 2.5rem;
+  }
+
+  .timeline-year .year-label {
+    font-size: 1.25rem;
+  }
+
+  .legend-shape,
+  .pv-icon,
+  .animal-line,
+  .crop-edge {
+    transform: scale(1.1); /* Slightly enlarge legend elements */
+  }
 }
