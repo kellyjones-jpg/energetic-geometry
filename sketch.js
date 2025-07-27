@@ -580,8 +580,6 @@ function draw() {
   }
 }
 
-
-
 function showModalWithEntry(entry) {
   const modalTitle = document.getElementById('siteModalLabel');
   const modalBody = document.getElementById('siteModalBody');
@@ -785,7 +783,7 @@ function drawCropEdgeStyle(baseShape, cropType, size, baseStrokeW = 2) {
 
   // Lightly expand clip bounds to allow cascaded styles to show fully
   drawingContext.save();
-  beginPath();
+  drawingContext.beginPath();
   pathShapeByType(baseShape, size * 1.15);
   drawingContext.clip();
 
