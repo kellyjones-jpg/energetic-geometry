@@ -4,7 +4,7 @@ let entriesByYear = {};
 let selectedYear;
 let availableYears = [];
 let cnv;
-let hoveredEntry = null;  // Currently hovered entry (for hover enlargement)
+let hoveredEntry = null; 
 let bgImg;
 let shapeSize, padding, startY, numCols, numRows;
 
@@ -474,7 +474,6 @@ function draw() {
     return;
   }
 
-
   const minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
   const maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
   const maxMW = Math.max(1, ...yearEntries.map(e => e.megawatts || 0));
@@ -483,48 +482,53 @@ function draw() {
   const count = sortedEntries.length;
 
   for (let i = 0; i < count; i++) {
-  const entry = sortedEntries[i];
+    const entry = sortedEntries[i];
     const col = i % numCols;
     const row = floor(i / numCols);
 
-    // Positioning
-    const cx = padding + col * (shapeSize + padding) + shapeSize / 2;
-    const cy = startY + row * maxCellHeight + maxCellHeight / 2;
+    const basePadding = padding;
 
-    // Size and stroke scaling
+    // === Positioning: Spatial tension and Op Art effects ===
+    const horizontalWaveOffset = 10 * sin((row + col) * 0.7);
+    const rowStaggerOffset = (row % 2) * (shapeSize * 0.3);
+    const cx = basePadding + col * (shapeSize + basePadding) + shapeSize / 2 + horizontalWaveOffset;
+    const cy = startY + row * maxCellHeight + maxCellHeight / 2 + rowStaggerOffset;
+
+    // === Size, weight, scale ===
     let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, shapeSize * 0.6, shapeSize);
     entryShapeSize = constrain(entryShapeSize, 30, maxCellHeight * 0.85);
     let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 2, 5.5);
     strokeW = constrain(strokeW, 2, 5.5);
 
-    // Colors and interactivity
-    const baseColor = getActivityColor(entry.activities?.[0] || '');
     const isHovered = hoveredEntry && hoveredEntry.name === entry.name;
     const baseGlow = map(entry.megawatts || 0, 0, maxMW, 5, 30);
     const glowStrength = isHovered ? baseGlow * 1.5 : baseGlow;
-    // Hover scale amount shrinks with smaller shape sizes
-      const baseScale = 1;
-      const maxScale = 1.2;
-      const minScale = 1.05;
 
-      const scaleRange = maxScale - minScale;
-      const sizeNorm = map(shapeSize, 30, 150, 0, 1); // Normalize between min and max size
-      const hoverScale = minScale + sizeNorm * scaleRange;
-
-      const targetScale = isHovered ? hoverScale : baseScale;
-      entry.currentScale = lerp(entry.currentScale || baseScale, targetScale, 0.1);
-
+    const baseScale = 1;
+    const maxScale = 1.2;
+    const minScale = 1.05;
+    const scaleRange = maxScale - minScale;
+    const sizeNorm = map(shapeSize, 30, 150, 0, 1);
+    const hoverScale = minScale + sizeNorm * scaleRange;
+    const targetScale = isHovered ? hoverScale : baseScale;
+    const opArtWave = 0.05 * sin(frameCount * 0.05 + col * 0.5 + row);
+    entry.currentScale = lerp(entry.currentScale || baseScale, targetScale + opArtWave, 0.1);
 
     const activityColors = (entry.activities || []).map(getActivityColor);
+    const baseColor = getActivityColor(entry.activities?.[0] || '');
 
-    // === DRAW ENTRY ===
+    const angleOffset = (row % 2 === 0) ? -PI / 36 : PI / 36;
+
+    // === DRAW ENTRY GROUP ===
     push();
     entry._screenX = cx;
     entry._screenY = cy;
-    entry._radius = entryShapeSize * entry.currentScale * 0.5;  // Approximate radius for hitbox
+    entry._radius = entryShapeSize * entry.currentScale * 0.5;
     translate(cx, cy);
+    rotate(angleOffset);
     scale(entry.currentScale);
 
+    // === Suprematist-style shadow + frame ===
     const shadowInfo = drawSuprematistOpShadowRect(
       entryShapeSize,
       entry.megawatts,
@@ -536,6 +540,7 @@ function draw() {
       activityColors
     );
 
+    // === Nested Visual Components ===
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
       drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor);
     }
@@ -556,13 +561,26 @@ function draw() {
       drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
     }
 
+    // === Enhanced Animal Line: draw last ===
     if (entry.animalType?.length > 0) {
-      drawAnimalLine(entry.animalType, entry.activities, 0, 0, entryShapeSize, strokeW);
+      const yOffset = -entryShapeSize * 0.15;
+      const animalSize = entryShapeSize * 1.1;
+
+      // Inner shadow stroke
+      stroke(0, 80);
+      strokeWeight(strokeW + 1.5);
+      drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
+
+      // Main color line
+      strokeWeight(strokeW);
+      drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
     }
 
-    pop(); // end of entry group
+    pop(); // === END ENTRY GROUP ===
   }
 }
+
+
 
 function showModalWithEntry(entry) {
   const modalTitle = document.getElementById('siteModalLabel');
@@ -762,10 +780,11 @@ function updateYear(year, index) {
   }
 }
 
-function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW = 2) {
+function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, baseStrokeW = 2) {
   if (!Array.isArray(cropTypes) || cropTypes.length === 0) return;
   if (!Array.isArray(activities) || activities.length === 0) return;
 
+  // Map crops to groups and get unique groups
   const groups = cropTypes
     .map(crop => cropEdgeGroups[crop.trim().toLowerCase()])
     .filter(Boolean);
@@ -773,62 +792,88 @@ function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW =
   if (uniqueGroups.length === 0) return;
 
   const baseShape = getHabitatShapeType(habitat);
+  if (!baseShape) return;
 
   push();
   translate(x, y);
   angleMode(RADIANS);
-
-  // Create clipping mask with habitat shape
-  beginShape();
-  drawingContext.save(); // Save global canvas state
-  drawingContext.beginPath();
-
-  // Approximate the clipping region
-  pathShapeByType(baseShape, size); // defines path only (no fill/stroke)
-  drawingContext.clip(); // Activate clip
-
-  // Draw the crop edge overlays (they will now be clipped to the shape)
   noFill();
-  strokeWeight(strokeW);
 
-  for (let i = 0; i < activities.length; i++) {
-    let activity = activities[i];
-    let strokeColor = getActivityColor(activity);
-    if (!strokeColor) continue;
+  // Create clipping mask with habitat shape to keep edges inside
+  drawingContext.save();
+  drawingContext.beginPath();
+  pathShapeByType(baseShape, size);
+  drawingContext.clip();
+
+  // Parameters for scaling, translation, rotation
+  const baseScale = 1.1;
+  const scaleStep = 0.15;
+  const maxTranslateDist = size * 0.15; // max offset distance outward
+  const totalLayers = uniqueGroups.length;
+
+  for (let j = 0; j < totalLayers; j++) {
+    const group = uniqueGroups[j];
+
+    // Decide if this group cascades outward or inward
+    // Outward for root, cruciferous, vine; inward otherwise
+    const cascadeOutward = ['root', 'cruciferous', 'vine'].includes(group);
+    const scaleFactor = cascadeOutward
+      ? baseScale + j * scaleStep // bigger going outward
+      : baseScale - j * scaleStep; // smaller going inward
+
+    // Circular translation offset around center for separation
+    const angleOffset = j * (TWO_PI / totalLayers);
+    const translateDist = cascadeOutward
+      ? maxTranslateDist * (0.5 + 0.5 * (j / totalLayers)) // outward with gradual increase
+      : maxTranslateDist * (0.5 - 0.4 * (j / totalLayers)); // inward with slight decrease
+
+    // Stroke weight and opacity to create layering depth
+    const strokeW = baseStrokeW * (1.4 - (j / totalLayers));
+    const baseActivity = activities[j % activities.length];
+    let strokeColor = getActivityColor(baseActivity);
+    if (!strokeColor) strokeColor = color(255);
+
+    // Reduce alpha progressively
+    let alpha = lerp(200, 70, j / totalLayers);
+    strokeColor.setAlpha(alpha);
 
     stroke(strokeColor);
+    strokeWeight(strokeW);
 
-    for (let j = 0; j < uniqueGroups.length; j++) {
-      let group = uniqueGroups[j];
-      switch (group) {
-        case 'root':
-        case 'cruciferous':
-          drawPointedEdge(size, j + i);
-          break;
-        case 'leafy':
-        case 'herb':
-          drawWavyEdge(size, j + i);
-          break;
-        case 'fruit':
-        case 'berry':
-          drawLobedEdge(size, j + i);
-          break;
-        case 'grain':
-        case 'legume':
-          drawLinearSpikes(size, j + i);
-          break;
-        case 'vine':
-          drawSpiralOverlay(size, j + i);
-          break;
-        case 'mixed':
-        case 'various':
-          drawDotRing(size, j + i);
-          break;
-      }
+    push();
+    translate(cos(angleOffset) * translateDist, sin(angleOffset) * translateDist);
+    scale(scaleFactor);
+    rotate(angleOffset * 0.5 + j * 0.1); // subtle rotation for dynamic effect
+
+    switch (group) {
+      case 'root':
+      case 'cruciferous':
+        drawPointedEdge(size);
+        break;
+      case 'leafy':
+      case 'herb':
+        drawWavyEdge(size);
+        break;
+      case 'fruit':
+      case 'berry':
+        drawLobedEdge(size);
+        break;
+      case 'grain':
+      case 'legume':
+        drawLinearSpikes(size);
+        break;
+      case 'vine':
+        drawSpiralOverlay(size);
+        break;
+      case 'mixed':
+      case 'various':
+        drawDotRing(size);
+        break;
     }
+    pop();
   }
 
-  drawingContext.restore(); // Restore drawing context
+  drawingContext.restore(); // remove clipping mask
   pop();
 }
 
@@ -904,7 +949,6 @@ function drawDotRing(size, offsetIndex = 0) {
   }
 }
 
-
 // Draw different line styles based on Animal Type
 function drawAnimalLine(animalType, activities, x, y, size, strokeW = 2) {
   if (!animalType || activities.length === 0) return;
@@ -913,23 +957,40 @@ function drawAnimalLine(animalType, activities, x, y, size, strokeW = 2) {
 
   push();
   noFill();
-  strokeWeight(strokeW || style.weight);
+
+  const baseStrokeW = strokeW || style.weight * 1.5;  // Thicker lines
+  const lineLength = size * 1.3;                      // Slightly longer lines
+  const lineSpacing = 8;                              // Increased vertical spacing
 
   for (let i = 0; i < activities.length; i++) {
     let strokeColor = getActivityColor(activities[i]);
     if (!strokeColor) continue;
-    stroke(strokeColor);
 
-    switch (style.type) {
-      case 'wavy': drawWavyLine(x, y + i * 4, size); break;
-      case 'dashed': drawDashedLine(x, y + i * 4, size); break;
-      case 'bezier': drawBezierLine(x, y + i * 4, size); break;
-      case 'straight': line(x - size / 2, y + i * 4, x + size / 2, y + i * 4); break;
-      case 'textured': drawTexturedLine(x, y + i * 4, size); break;
-    }
+    // Shadow for depth
+    stroke(0, 60);
+    strokeWeight(baseStrokeW * 1.3);
+    push();
+    translate(2, 2); // subtle offset shadow
+    drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength);
+    pop();
+
+    // Main colored line
+    stroke(strokeColor);
+    strokeWeight(baseStrokeW);
+    drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength);
   }
 
   pop();
+}
+
+function drawAnimalLineShape(type, x, y, length) {
+  switch (type) {
+    case 'wavy': drawWavyLine(x, y, length); break;
+    case 'dashed': drawDashedLine(x, y, length); break;
+    case 'bezier': drawBezierLine(x, y, length); break;
+    case 'straight': line(x - length / 2, y, x + length / 2, y); break;
+    case 'textured': drawTexturedLine(x, y, length); break;
+  }
 }
 
 function getLineStyle(animalType) {
@@ -937,34 +998,34 @@ function getLineStyle(animalType) {
   if (!typeStr) return null;
 
   switch (typeStr) {
-    case 'sheep': return { type: 'wavy', weight: 2 };
-    case 'llamas and alpacas': return { type: 'dashed', weight: 2 };
-    case 'horse': return { type: 'bezier', weight: 3 };
-    case 'cows': return { type: 'straight', weight: 5 };
-    case 'cattle': return { type: 'textured', weight: 3 };
+    case 'sheep': return { type: 'wavy', weight: 3 };
+    case 'llamas and alpacas': return { type: 'dashed', weight: 3 };
+    case 'horse': return { type: 'bezier', weight: 4 };
+    case 'cows': return { type: 'straight', weight: 6 };
+    case 'cattle': return { type: 'textured', weight: 4 };
     default: return null;
   }
 }
 
-
-// Wavy line: sinusoidal wave along the horizontal axis
+// Enhanced Wavy line: smoother waves, higher amplitude for boldness
 function drawWavyLine(x, y, length) {
   noFill();
   beginShape();
-  let amplitude = 5;
-  let waves = 6;
-  for (let i = 0; i <= waves; i++) {
-    let px = x - length / 2 + (length / waves) * i;
-    let py = y + sin(i * TWO_PI / waves) * amplitude;
+  let amplitude = 7;
+  let waves = 5;
+  let steps = 50;
+  for (let i = 0; i <= steps; i++) {
+    let px = x - length / 2 + (length / steps) * i;
+    let py = y + sin((i / steps) * waves * TWO_PI) * amplitude;
     vertex(px, py);
   }
   endShape();
 }
 
-// Dashed line: repeated short dashes with gaps
+// Enhanced Dashed line: longer dashes, sharper gaps, crisp edges
 function drawDashedLine(x, y, length) {
-  let dashLength = 10;
-  let gapLength = 7;
+  let dashLength = 14;
+  let gapLength = 8;
   let startX = x - length / 2;
   let endX = x + length / 2;
   for (let px = startX; px < endX; px += dashLength + gapLength) {
@@ -972,38 +1033,37 @@ function drawDashedLine(x, y, length) {
   }
 }
 
-// Bezier curved line with smooth S shape
+// Enhanced Bezier line: stronger curvature, more elegant S shape
 function drawBezierLine(x, y, length) {
   noFill();
+  strokeJoin(ROUND);
   bezier(
     x - length / 2, y,
-    x - length / 4, y - length / 3,
-    x + length / 4, y + length / 3,
+    x - length / 3, y - length / 2,
+    x + length / 3, y + length / 2,
     x + length / 2, y
   );
 }
 
+// Textured line: clean segmented lines
 function drawTexturedLine(x, y, length) {
-  let segmentLength = 6;
-  let gap = 4;
+  let segmentLength = 8;
+  let gap = 5;
   let startX = x - length / 2;
   let endX = x + length / 2;
-  let jitterY = 0; // No jitter
 
   for (let px = startX; px < endX; px += segmentLength + gap) {
-    line(px, y + jitterY, px + segmentLength, y + jitterY);
+    line(px, y, px + segmentLength, y);
   }
 }
 
 function drawHabitatShape(habitatList, x, y, size, baseColor) {
   if (!Array.isArray(habitatList)) return;
 
-  // Filter out empty strings, null, undefined, or whitespace-only values
   habitatList = habitatList
     .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
     .filter(h => h !== '');
 
-  // Stop if nothing valid remains
   if (habitatList.length === 0) return;
 
   push();
@@ -1014,37 +1074,84 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
 
   for (let i = 0; i < habitatList.length; i++) {
     let habitat = habitatList[i];
-    let angleOffset = PI / 8 * i;
-    let alpha = map(i, 0, habitatList.length, 180, 100);
+    let angleOffset = PI / 6 * i; // increase rotation for more tension
+    let alpha = map(i, 0, habitatList.length, 180, 90);
     let fillColor = color(baseColor.levels[0], baseColor.levels[1], baseColor.levels[2], alpha);
 
     fill(fillColor);
+    push();
     rotate(angleOffset);
 
     switch (habitat) {
-      case 'pollinator':
-        beginShape();
-        for (let j = 0; j < 6; j++) {
-          let angle = TWO_PI / 6 * j - PI / 2;
-          let vx = cos(angle) * size * 0.5;
-          let vy = sin(angle) * size * 0.5;
-          vertex(vx, vy);
-        }
-        endShape(CLOSE);
+      case 'pollinator': {
+        // Sharper hexagon with inner grid lines to suggest solar cells
+        drawSolarHexagon(size * 0.5);
         break;
-
-      case 'native grasses':
+      }
+      case 'native grasses': {
+        // Taller rectangle with subtle vertical line pattern
         rect(0, 0, size * 0.3, size);
+        drawVerticalLines(size * 0.3, size, 5, baseColor);
         break;
-
-      case 'naturalized':
+      }
+      case 'naturalized': {
+        // Ellipse with radial gradient or subtle glow overlay
         ellipse(0, 0, size, size);
+        drawGlowEllipse(size, baseColor);
         break;
+      }
     }
+
+    pop();
   }
 
   pop();
 }
+
+// Helper: Draw hexagon with inner "cell" lines to evoke solar panel cells
+function drawSolarHexagon(r) {
+  stroke(255, 150);
+  strokeWeight(1);
+  noFill();
+  beginShape();
+  for (let j = 0; j < 6; j++) {
+    let angle = TWO_PI / 6 * j - PI / 2;
+    vertex(cos(angle) * r, sin(angle) * r);
+  }
+  endShape(CLOSE);
+
+  // Inner lines to mimic cell grid
+  for (let k = 1; k <= 2; k++) {
+    let innerR = r * (1 - k * 0.3);
+    beginShape();
+    for (let j = 0; j < 6; j++) {
+      let angle = TWO_PI / 6 * j - PI / 2;
+      vertex(cos(angle) * innerR, sin(angle) * innerR);
+    }
+    endShape(CLOSE);
+  }
+}
+
+// Helper: Draw vertical lines inside a rectangle (native grasses)
+function drawVerticalLines(w, h, count, baseColor) {
+  stroke(red(baseColor), green(baseColor), blue(baseColor), 100);
+  strokeWeight(0.5);
+  for (let i = 1; i < count; i++) {
+    let x = map(i, 1, count - 1, -w/2, w/2);
+    line(x, -h/2, x, h/2);
+  }
+}
+
+// Helper: Draw subtle glow effect on ellipse
+function drawGlowEllipse(size, baseColor) {
+  noFill();
+  stroke(red(baseColor), green(baseColor), blue(baseColor), 50);
+  strokeWeight(3);
+  ellipse(0, 0, size * 1.1, size * 1.1);
+  strokeWeight(1);
+  ellipse(0, 0, size * 1.3, size * 1.3);
+}
+
 
 function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
   if (!Array.isArray(habitatList) || !Array.isArray(activities)) return;
@@ -1108,7 +1215,6 @@ function getHabitatShapeType(habitat) {
   if (habitat.includes('naturalized')) return 'ellipse';
 }
 
-
 function pointInHexagon(px, py, r) {
   px = abs(px);
   py = abs(py);
@@ -1126,13 +1232,16 @@ function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, dens
   strokeWeight(strokeW);
   noFill();
 
-  switch (arrayType) {
-   case 'fixed':
-    drawCrosshatchGridMultiColor(activities, size, density); break;
-  case 'single-axis tracking':
-    drawIsometricGridMultiColor(activities, size, density, 1.1); break;
-  case 'dual-axis tracking':
-    drawDottedMatrixMultiColor(activities, size, density); break;
+  switch (arrayType.toLowerCase()) {
+    case 'fixed':
+      drawCrosshatchGridMultiColor(activities, size, density);
+      break;
+    case 'single-axis tracking':
+      drawIsometricGridMultiColor(activities, size, density, 1.1);
+      break;
+    case 'dual-axis tracking':
+      drawDottedMatrixMultiColor(activities, size, density);
+      break;
   }
 
   pop();
@@ -1142,13 +1251,22 @@ function drawCrosshatchGridMultiColor(activities, size, density = 10) {
   let colorCount = activities.length;
 
   push();
-  rotate(PI / 4); // Rotate 45 degrees for diamond orientation
+  rotate(PI / 4); // Diamond orientation for panels
 
   for (let i = -size / 2, idx = 0; i <= size / 2; i += density, idx++) {
     let col = getActivityColor(activities[idx % colorCount]);
     stroke(col);
-    line(i, -size / 2, i, size / 2); // vertical
-    line(-size / 2, i, size / 2, i); // horizontal
+    // Vertical and horizontal grid lines
+    line(i, -size / 2, i, size / 2);
+    line(-size / 2, i, size / 2, i);
+
+    // Glow effect at grid intersections
+    push();
+    noStroke();
+    fill(col.levels ? color(col.levels[0], col.levels[1], col.levels[2], 100) : col);
+    ellipse(i, i, density * 0.3, density * 0.3);
+    ellipse(i, -i, density * 0.3, density * 0.3);
+    pop();
   }
 
   pop();
@@ -1159,7 +1277,7 @@ function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1)
   let idx = 0;
   let halfSize = size / 2;
 
-  push(); // Start inner transformation for rotation
+  push();
   rotate(PI);
 
   for (let x = -halfSize; x <= halfSize; x += density) {
@@ -1178,21 +1296,31 @@ function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1)
     idx++;
   }
 
-  pop(); // End inner transformation
+  // Add subtle highlight lines for reflective effect
+  stroke(255, 70);
+  strokeWeight(0.8);
+  for (let i = -halfSize; i <= halfSize; i += density * 5) {
+    line(i, -halfSize * slope, i + halfSize, halfSize * slope);
+  }
+
+  pop();
 }
 
-
 function drawDottedMatrixMultiColor(activities, size, density = 10) {
-  let step = 10;
   let colorCount = activities.length;
-  let dotSize = 3;
+  let dotSize = 4;
   let idx = 0;
 
   for (let x = -size / 2; x < size / 2; x += density) {
-  for (let y = -size / 2; y < size / 2; y += density) {
+    for (let y = -size / 2; y < size / 2; y += density) {
       fill(getActivityColor(activities[idx % colorCount]));
       noStroke();
       ellipse(x, y, dotSize, dotSize);
+
+      // Small white highlight for "glint"
+      fill(255, 150);
+      ellipse(x - dotSize * 0.15, y - dotSize * 0.15, dotSize * 0.3, dotSize * 0.3);
+
       idx++;
     }
   }
@@ -1217,27 +1345,41 @@ function getActivityColor(activity) {
 function drawMinimalSite(site) {
   const { x, y, activity = 'habitat', systemSize = 0.1, siteSize = 0.1 } = site;
 
-  const baseColor = getActivityColor(activity); 
+  const baseColor = getActivityColor(activity);
   const dotBaseSize = map(siteSize, 0, 10, 16, 60);       // Boosted min/max size
-  const shadowOffset = map(systemSize, 0, 10, 1, 8);      // Optional: adjust if larger systems need more offset
+  const shadowOffset = map(systemSize, 0, 10, 1, 8);      // Larger systems have bigger shadow offset
 
   push();
   translate(x, y);
   noStroke();
 
-  // Suprematist-style drop shadow
-  fill(0, 140); 
+  // Suprematist-style drop shadow (with light angle)
+  fill(0, 140);
+  const lightAngle = radians(10);
+  push();
+  rotate(lightAngle);
   ellipse(shadowOffset, shadowOffset, dotBaseSize, dotBaseSize);
+  pop();
 
-  // White glow ring
-  stroke(255, 200);              // Brighter glow
-  strokeWeight(dotBaseSize * 0.25); // Glow thickness scales with dot size
+  // White glow ring with thickness proportional to dot size
+  stroke(255, 200);
+  strokeWeight(dotBaseSize * 0.25);
   ellipse(0, 0, dotBaseSize * 1.5, dotBaseSize * 1.5);
+
+  // Add subtle linear glow overlays to mimic panel reflections
+  stroke(255, 120);
+  strokeWeight(1);
+  const linesCount = 5;
+  for (let i = 1; i <= linesCount; i++) {
+    let posX = map(i, 1, linesCount + 1, -dotBaseSize * 0.75, dotBaseSize * 0.75);
+    line(posX, -dotBaseSize * 0.75, posX, dotBaseSize * 0.75);
+  }
 
   // Core dot
   noStroke();
   fill(baseColor);
   ellipse(0, 0, dotBaseSize, dotBaseSize);
+
   pop();
 }
 
@@ -1259,13 +1401,12 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
     shapeType = animalLineType.toLowerCase();
   }
 
-  // Positioning
   push();
   translate(posX, posY);
   rectMode(CENTER);
   noStroke();
 
-  // Size & offsets
+  // Size & offsets based on system size
   let offset = map(sz, 0, 10, 2, 10);
   let shadowSize = map(sz, 0, 10, baseSize * 0.9, baseSize * 1.4);
   let highlightSize = shadowSize * 0.95;
@@ -1291,22 +1432,21 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
   let glowW = shadowW * map(sz, 0.1, 10, 1.2, 1.6);
   let glowH = shadowH * map(sz, 0.1, 10, 1.2, 1.6);
 
-  // Glow alpha pulsating
+  // Glow alpha pulsation
   let pulse = map(sin(frameCount * 0.08), -1, 1, 0.8, 1);
   let glowAlpha = glowStrength * pulse;
   if (isHover) glowAlpha = min(glowAlpha * 3.5, 255);
 
-  // Default to white if no colors provided
   if (agrivoltaicColors.length === 0) agrivoltaicColors = [color(255)];
 
-  // Color cycling through agrivoltaicColors
+  // Color cycling through agrivoltaic colors
   let colorIndex = floor(frameCount / 60) % agrivoltaicColors.length;
   let nextIndex = (colorIndex + 1) % agrivoltaicColors.length;
   let lerpAmt = (frameCount % 60) / 60;
   let baseGlowColor = lerpColor(agrivoltaicColors[colorIndex], agrivoltaicColors[nextIndex], lerpAmt);
   baseGlowColor.setAlpha(glowAlpha);
 
-  // ✨ Blur-like glow layers
+  // --- Glow layers with alternating diamond and original shapes ---
   for (let i = 3; i > 0; i--) {
     let layerW = glowW * (1 + i * 0.05);
     let layerH = glowH * (1 + i * 0.05);
@@ -1314,13 +1454,23 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
     let layerColor = lerpColor(agrivoltaicColors[colorIndex], agrivoltaicColors[nextIndex], lerpAmt);
     layerColor.setAlpha(layerAlpha);
     fill(layerColor);
-    drawShapeByType(shapeType, layerW, layerH);
+
+    if (i % 2 === 0) {
+      push();
+      rotate(PI / 6);  // simulate panel angle
+      drawShapeByType('diamond', layerW, layerH);
+      pop();
+    } else {
+      drawShapeByType(shapeType, layerW, layerH);
+    }
   }
 
-  // Shadow layers
+  const panelLightAngle = radians(10);
+
+  // --- Shadow layers with consistent light angle ---
   fill('#0A0A0A');
   push();
-  rotate(radians(-12));
+  rotate(panelLightAngle);
   translate(offset, offset);
   if (rotateRectVertical) rotate(PI);
   drawShapeByType(shapeType, shadowW, shadowH);
@@ -1328,7 +1478,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
 
   fill(255);
   push();
-  rotate(radians(8));
+  rotate(panelLightAngle - radians(4));
   translate(offset * 1.4, offset * 0.8);
   if (rotateRectVertical) rotate(PI);
   drawShapeByType(shapeType, highlightW, highlightH);
@@ -1336,31 +1486,31 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
 
   fill('#0A0A0A');
   push();
-  rotate(radians(3));
+  rotate(panelLightAngle - radians(7));
   translate(-offset * 0.6, offset * 0.5);
   if (rotateRectVertical) rotate(PI);
   drawShapeByType(shapeType, shadowW * 0.88, shadowH * 0.88);
   pop();
 
-  // Outline
-  stroke(255);
+  // --- Sharp highlight outline for "glass panel" effect ---
+  stroke(255, glowAlpha * 0.7);
   noFill();
-  strokeWeight(1);
+  strokeWeight(2);
   if (rotateRectVertical) {
     push();
     rotate(PI);
-    drawShapeByType(shapeType, shadowW * 0.7, shadowH * 0.7);
+    drawShapeByType(shapeType, shadowW * 0.75, shadowH * 0.75);
     pop();
   } else {
-    drawShapeByType(shapeType, shadowW * 0.7, shadowH * 0.7);
+    drawShapeByType(shapeType, shadowW * 0.75, shadowH * 0.75);
   }
 
-  pop(); // pop positioning
+  pop();
 
   return {
     offsetX: offset * 1.4,
     offsetY: offset * 0.8,
-    angle: radians(8),
+    angle: panelLightAngle - radians(4),
     size: highlightSize,
     glowAlpha,
   };
@@ -1437,34 +1587,58 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
   push();
   translate(x, y);
   noFill();
-  strokeWeight(3.5);
   blendMode(ADD); // enhances glow-style overlap
 
   switch (warpStyle) {
     case 'linear':
+      strokeWeight(2);
+      // Draw dynamic diagonal zig-zag lines with subtle wave movement
       for (let i = -size; i <= size; i += 8) {
-        let offset = sin((frameCount + i) * 0.05) * 10; // wave for movement
+        let waveOffset = sin((frameCount * 0.03 + i) * 3) * 6;
         let colorIndex = Math.floor((i + size) / 8) % activities.length;
-        stroke(getActivityColor(activities[colorIndex])); // Bright contrasting color
-        line(i, -size + offset, -i * 0.2, size - offset); // Diagonal distortion
+        stroke(getActivityColor(activities[colorIndex]));
+        line(i, -size + waveOffset, -i * 0.2, size - waveOffset);
+      }
+      // Add subtle horizontal grid lines for photovoltaic cell effect
+      stroke(255, 80);
+      strokeWeight(0.5);
+      for (let yOff = -size; yOff <= size; yOff += 10) {
+        let horizOffset = sin(frameCount * 0.05 + yOff) * 2;
+        line(-size, yOff + horizOffset, size, yOff + horizOffset);
       }
       break;
 
     case 'symmetric':
+      strokeWeight(3.5);
+      // Vertical wave-distorted lines
       for (let i = 0; i < size; i += 4) {
-        let yOffset = sin((i + frameCount) * 0.12) * 12; // More pronounced wave
+        let yOffset = sin((i + frameCount) * 0.12) * 12;
         let colorIndex = Math.floor(i / 4) % activities.length;
         stroke(getActivityColor(activities[colorIndex]));
         line(-size / 2 + i, -yOffset, -size / 2 + i, yOffset);
+
+        // Add crossing horizontal lines to form subtle grid cells
+        if (i % 12 === 0) {
+          stroke(255, 80);
+          strokeWeight(1);
+          line(-size / 2 + i - 2, -yOffset / 2, -size / 2 + i + 2, yOffset / 2);
+        }
       }
       break;
 
     case 'radial':
+      // Pulsating concentric ellipses with color cycling
       for (let r = 12, idx = 0; r < size; r += 10, idx++) {
         stroke(getActivityColor(activities[idx % activities.length]));
-        strokeWeight(2 + sin((frameCount + r) * 0.1) * 1.5); // Pulse thickness
+        strokeWeight(2 + sin((frameCount + r) * 0.1) * 1.5);
         ellipse(0, 0, r * 2, r * 2);
       }
+      // Add dynamic highlight rings simulating reflective glints
+      noFill();
+      stroke(255, 120);
+      strokeWeight(1);
+      ellipse(0, 0, size * 0.6 + sin(frameCount * 0.3) * 8, size * 0.6 + cos(frameCount * 0.3) * 8);
+      ellipse(0, 0, size * 0.8 + cos(frameCount * 0.5) * 6, size * 0.8 + sin(frameCount * 0.5) * 6);
       break;
   }
 
