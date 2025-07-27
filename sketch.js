@@ -267,7 +267,7 @@ function setup() {
 
   // Responsive canvas sizing
   let canvasWidth = windowWidth * 0.9;
-  let canvasHeight = updateLayout();
+  let canvasHeight = min(855, windowHeight);
   cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent('sketch-container');
 
@@ -380,7 +380,6 @@ function setupArrows() {
   });
 }
 
-
 function changeYear(direction) {
   let currentIndex = availableYears.indexOf(selectedYear);
   let nextIndex = constrain(currentIndex + direction, 0, availableYears.length - 1);
@@ -391,50 +390,51 @@ function changeYear(direction) {
   }
 }
 
-function updateLayout() {
+function updateLayout(lockedHeight = 855) {
   const yearEntries = entriesByYear[selectedYear] || [];
   const count = yearEntries.length;
 
   startY = 120;
+  padding = 20;
 
-  // Calculate padding based on count of entries (dynamic spacing)
-  padding = map(count, 10, 120, 50, 15);
-
-  // Available width is 90% of window width (match canvas width)
   const availableWidth = windowWidth * 0.9;
-
-  // Tentative shape size constrained between 70 and 150
   let tentativeShapeSize = constrain(availableWidth * 0.25, 70, 150);
 
-  // Calculate number of columns to fit shapes + padding
   numCols = max(floor((availableWidth + padding) / (tentativeShapeSize + padding)), 1);
 
-  // Adjust shape size to fit exact columns with padding
-  shapeSize = (availableWidth - padding * (numCols + 1)) / numCols;
-  shapeSize = constrain(shapeSize, 70, 150);
+  // Dynamically adjust shape size if entries don’t fit
+  let maxShapeSize = 150;
+  let minShapeSize = 30; // Lower if you want denser displays
 
+  for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
+    const tentativeNumCols = max(floor((availableWidth + padding) / (s + padding)), 1);
+    const tentativeNumRows = ceil(count / tentativeNumCols);
+    const totalHeight = startY + tentativeNumRows * (s + padding) + 100;
+
+    if (totalHeight <= lockedHeight) {
+      shapeSize = s;
+      numCols = tentativeNumCols;
+      numRows = tentativeNumRows;
+      return lockedHeight;
+    }
+  }
+
+  // If nothing fits, use minimum size
+  shapeSize = minShapeSize;
+  numCols = max(floor((availableWidth + padding) / (shapeSize + padding)), 1);
   numRows = ceil(count / numCols);
 
-  // Calculate total height needed 
-  let rowHeight = shapeSize + padding;
-  let totalHeight = startY + numRows * rowHeight + 100;
-
-  return totalHeight;
+  return lockedHeight;
 }
 
-function windowResized() {
-  let canvasWidth = windowWidth * 0.9; // 90% of window width
-  let layoutHeight = updateLayout();   // height based on layout
+  function windowResized() {
+    let canvasWidth = windowWidth * 0.9;
+    let targetHeight = windowHeight < 865 ? windowHeight : 855;
 
-  // Lock at 855 unless the screen is shorter
-  let canvasHeight = min(windowHeight, 855);
-
-  // But ensure canvas isn't too small for layout
-  canvasHeight = max(canvasHeight, layoutHeight);
-
-  resizeCanvas(canvasWidth, canvasHeight);
-  redraw();
-}
+    updateLayout(targetHeight);
+    resizeCanvas(canvasWidth, targetHeight);
+    redraw();
+  }
 
 function draw() {
   // === BACKGROUND ===
@@ -468,19 +468,22 @@ function draw() {
 
   // === DATA FOR SELECTED YEAR ===
   const yearEntries = entriesByYear[selectedYear] || [];
+  const sortedEntries = [...yearEntries].sort((a, b) => (a.acres || 0) - (b.acres || 0));
   if (yearEntries.length === 0) {
     text("No data available for this year.", centerX, height / 2);
     return;
   }
 
-  const count = yearEntries.length;
+
   const minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
   const maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
   const maxMW = Math.max(1, ...yearEntries.map(e => e.megawatts || 0));
   const maxCellHeight = (height - startY - 50) / numRows;
 
+  const count = sortedEntries.length;
+
   for (let i = 0; i < count; i++) {
-    const entry = yearEntries[i];
+  const entry = sortedEntries[i];
     const col = i % numCols;
     const row = floor(i / numCols);
 
@@ -499,8 +502,18 @@ function draw() {
     const isHovered = hoveredEntry && hoveredEntry.name === entry.name;
     const baseGlow = map(entry.megawatts || 0, 0, maxMW, 5, 30);
     const glowStrength = isHovered ? baseGlow * 1.5 : baseGlow;
-    const targetScale = isHovered ? 1.2 : 1;
-    entry.currentScale = lerp(entry.currentScale || 1, targetScale, 0.1);
+    // Hover scale amount shrinks with smaller shape sizes
+      const baseScale = 1;
+      const maxScale = 1.2;
+      const minScale = 1.05;
+
+      const scaleRange = maxScale - minScale;
+      const sizeNorm = map(shapeSize, 30, 150, 0, 1); // Normalize between min and max size
+      const hoverScale = minScale + sizeNorm * scaleRange;
+
+      const targetScale = isHovered ? hoverScale : baseScale;
+      entry.currentScale = lerp(entry.currentScale || baseScale, targetScale, 0.1);
+
 
     const activityColors = (entry.activities || []).map(getActivityColor);
 
