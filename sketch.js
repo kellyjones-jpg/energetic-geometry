@@ -8,7 +8,7 @@ let hoveredEntry = null;
 let bgImg;
 let shapeSize, padding, startY, numCols, numRows;
 
-const cropEdgeGroups = {
+const cropEdgeStyleMap = {
   // Root vegetables
   "carrots": "root",
   "beets": "root",
