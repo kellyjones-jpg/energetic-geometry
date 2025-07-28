@@ -592,7 +592,7 @@ function draw() {
     }
 
     if (entry.animalType?.length > 0) {
-      const yOffset = entryShapeSize * 0.15;
+      const yOffset = entryShapeSize * 0.55;
       const animalSize = entryShapeSize * 0.9;
       stroke(0, 80);
       strokeWeight(strokeW + 1.5);
