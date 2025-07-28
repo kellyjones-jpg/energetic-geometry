@@ -589,11 +589,11 @@ function draw() {
     }
 
     if (entry.cropType?.length > 0) {
-      drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize, strokeW);
+      drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.35, strokeW);
     }
 
     if (entry.animalType?.length > 0) {
-      const yOffset = entryShapeSize * 0.25; // move upward now
+      const yOffset = entryShapeSize * 0.15; // move upward now
       const animalSize = entryShapeSize * 0.9;
 
       stroke(0, 80);
@@ -825,119 +825,150 @@ function drawCropEdgeStyle(cropTypes, activities, x, y, size, strokeW = 2) {
   push();
   translate(x, y);
   noFill();
-  strokeWeight(strokeW);
 
   for (let i = 0; i < activities.length; i++) {
-    let activity = activities[i];
-    let strokeColor = getActivityColor(activity);
+    const activity = activities[i];
+    const strokeColor = getActivityColor(activity);
     if (!strokeColor) continue;
 
+    strokeWeight(strokeW);
     stroke(strokeColor);
 
     for (let j = 0; j < uniqueGroups.length; j++) {
-      let group = uniqueGroups[j];
+      const group = uniqueGroups[j];
+      const offsetIndex = j + i;
+
       switch (group) {
-  case 'root':
-  case 'cruciferous':
-    drawPointedEdge(size, j + i);
-    break;
-  case 'leafy':
-  case 'herb':
-    drawWavyEdge(size, j + i);
-    break;
-  case 'fruit':
-  case 'berry':
-    drawLobedEdge(size, j + i);
-    break;
-  case 'grain':
-  case 'legume':
-    drawLinearSpikes(size, j + i);
-    break;
-  case 'vine':
-    drawSpiralOverlay(size, j + i);
-    break;
-  case 'mixed':
-  case 'various':
-    drawDotRing(size, j + i);
-    break;
-}
+        case 'root':
+        case 'cruciferous':
+          drawPointedEdge(size, offsetIndex);
+          break;
+        case 'leafy':
+        case 'herb':
+          drawWavyEdge(size, offsetIndex);
+          break;
+        case 'fruit':
+        case 'berry':
+          drawLobedEdge(size, offsetIndex);
+          break;
+        case 'grain':
+        case 'legume':
+          drawLinearSpikes(size, offsetIndex);
+          break;
+        case 'vine':
+          drawSpiralOverlay(size, offsetIndex);
+          break;
+        case 'mixed':
+        case 'various':
+          drawDotRing(size, offsetIndex);
+          break;
+      }
     }
   }
 
   pop();
 }
 
-
 function drawPointedEdge(size, offsetIndex = 0) {
-  let steps = 72;
+   let steps = 72;
+  let extraSpacing = offsetIndex * 6;
+  push();
+  rotate(radians((offsetIndex * 17) % 360));
   beginShape();
   for (let i = 0; i <= steps; i++) {
     let angle = TWO_PI * i / steps;
-    let radius = size * 0.45 + (i % 2 === 0 ? 10 : -10);
+    let radius = size * 0.6 + extraSpacing + (i % 2 === 0 ? 12 : -10);
     let x = cos(angle) * radius;
     let y = sin(angle) * radius;
     vertex(x, y);
   }
   endShape(CLOSE);
+  pop();
 }
 
 function drawWavyEdge(size, offsetIndex = 0) {
-  let waves = 8 + offsetIndex * 2;
+  let waves = 6 + offsetIndex * 2;
+  let amp = 10 + offsetIndex * 1.5;
+  let extraSpacing = offsetIndex * 6;
+  push();
+  rotate(radians((offsetIndex * 23) % 360));
   beginShape();
-  for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
-    let r = size * 0.4 + 10 * sin(waves * angle);
+  for (let angle = 0; angle <= TWO_PI + 0.05; angle += 0.05) {
+    let r = size * 0.55 + extraSpacing + amp * sin(waves * angle);
     let x = cos(angle) * r;
     let y = sin(angle) * r;
     curveVertex(x, y);
   }
   endShape(CLOSE);
+  pop();
 }
 
 function drawLobedEdge(size, offsetIndex = 0) {
-  let lobes = 5 + offsetIndex;
+  let lobes = 4 + offsetIndex * 1.5;
+  let amp = 8 + offsetIndex;
+  let extraSpacing = offsetIndex * 6;
+  push();
+  rotate(radians((offsetIndex * 31) % 360));
   beginShape();
-  for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
-    let r = size * 0.4 + 8 * sin(lobes * angle);
+  for (let angle = 0; angle <= TWO_PI + 0.05; angle += 0.05) {
+    let r = size * 0.55 + extraSpacing + amp * sin(lobes * angle);
     let x = cos(angle) * r;
     let y = sin(angle) * r;
     curveVertex(x, y);
   }
   endShape(CLOSE);
+  pop();
 }
 
 function drawLinearSpikes(size, offsetIndex = 0) {
-  let lines = 12;
+  let lines = 12 + offsetIndex * 2;         // more lines per layer
+  let baseRadius = size * 0.4 + offsetIndex * 5;  // inner radius spacing
+  let spikeLength = size * 0.3 + offsetIndex * 3; // grows with index
+
+  push();
+  rotate(radians((offsetIndex * 15) % 360));  // rotational tension
   for (let i = 0; i < lines; i++) {
-    let angle = TWO_PI * i / lines + offsetIndex * 0.05;
-    let x1 = cos(angle) * size * 0.3;
-    let y1 = sin(angle) * size * 0.3;
-    let x2 = cos(angle) * size * 0.5;
-    let y2 = sin(angle) * size * 0.5;
+    let angle = TWO_PI * i / lines;
+    let x1 = cos(angle) * baseRadius;
+    let y1 = sin(angle) * baseRadius;
+    let x2 = cos(angle) * (baseRadius + spikeLength);
+    let y2 = sin(angle) * (baseRadius + spikeLength);
     line(x1, y1, x2, y2);
   }
+  pop();
 }
 
 function drawSpiralOverlay(size, offsetIndex = 0) {
   noFill();
+  let turns = 100;
+  let spacing = size * 0.02;
+  push();
+  rotate(radians((offsetIndex * 37) % 360));
   beginShape();
-  for (let a = 0; a < TWO_PI * 3; a += 0.1) {
-    let r = size * 0.05 * a + offsetIndex * 2;
-    let x = cos(a) * r;
-    let y = sin(a) * r;
-    vertex(x, y);
+  for (let i = 0; i < turns; i++) {
+    let angle = i * 0.2;
+    let r = spacing * i + offsetIndex * 2;
+    let x = cos(angle) * r;
+    let y = sin(angle) * r;
+    curveVertex(x, y);
   }
   endShape();
+  pop();
 }
 
 function drawDotRing(size, offsetIndex = 0) {
-  let dots = 12 + offsetIndex;
+  let dots = 24 + offsetIndex * 2;
+  let r = size * 0.65 + offsetIndex * 6;
+  let dotSize = 4 + offsetIndex * 0.5;
+  push();
+  rotate(radians((offsetIndex * 19) % 360));
   for (let i = 0; i < dots; i++) {
     let angle = TWO_PI * i / dots;
-    let r = size * 0.4;
     let x = cos(angle) * r;
     let y = sin(angle) * r;
-    ellipse(x, y, 4);
+    ellipse(x, y, dotSize, dotSize);
   }
+  pop();
 }
 
 // Draw different line styles based on Animal Type
