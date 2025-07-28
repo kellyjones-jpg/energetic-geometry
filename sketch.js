@@ -303,6 +303,10 @@ function setup() {
       windowResized(); // update layout and canvas
       updateCounters(entriesByYear[selectedYear]);
 
+      if (typeof drawSites === 'function') {
+       drawSites(entriesByYear[selectedYear]);
+      }
+
       selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
       label.addClass('active');
     });
