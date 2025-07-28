@@ -568,14 +568,15 @@ function draw() {
     }
 
     if (entry.cropType?.length > 0) {
-    const cropEdgeSize = entryShapeSize * 1.4;  // slightly larger than main shape
+    const yOffset = -entryShapeSize * -0.25;
+    const cropEdgeSize = entryShapeSize * 0.4;  // slightly larger than main shape
     drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, cropEdgeSize, strokeW);
   }
 
     // === Enhanced Animal Line: draw last ===
     if (entry.animalType?.length > 0) {
-      const yOffset = -entryShapeSize * 1.1;
-      const animalSize = entryShapeSize * 0.25;
+      const yOffset = -entryShapeSize * 0.25;
+      const animalSize = entryShapeSize * 1.2;
 
       // Inner shadow stroke
       stroke(0, 80);
@@ -887,7 +888,7 @@ function drawPointedEdge(size, offsetIndex = 0) {
 
 function drawWavyEdge(size, offsetIndex = 0) {
   let waves = 8 
-  let offset = offsetIndex * 0.7; 
+  let offset = offsetIndex * 1.2; 
   push();
   translate(offset, -offset);
   beginShape();
