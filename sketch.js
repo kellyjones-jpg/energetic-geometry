@@ -816,33 +816,35 @@ function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW =
 
     for (let j = 0; j < uniqueGroups.length; j++) {
       let group = uniqueGroups[j];
-      switch (group) {
-        case 'root':
-        case 'cruciferous':
-          drawPointedEdge(size, j + i);
-          break;
-        case 'leafy':
-        case 'herb':
-          drawWavyEdge(size, j + i);
-          break;
-        case 'fruit':
-        case 'berry':
-          drawLobedEdge(size, j + i);
-          break;
-        case 'grain':
-        case 'legume':
-          drawLinearSpikes(size, j + i);
-          break;
-        case 'vine':
-          drawSpiralOverlay(size, j + i);
-          break;
-        case 'mixed':
-        case 'various':
-          drawDotRing(size, j + i);
-          break;
+      
+      let nestedSize = size * (1 - j * 0.15); // Adjust 0.15 to control spacing
+        switch (group) {
+          case 'root':
+          case 'cruciferous':
+            drawPointedEdge(nestedSize, j + i);
+            break;
+          case 'leafy':
+          case 'herb':
+            drawWavyEdge(nestedSize, j + i);
+            break;
+          case 'fruit':
+          case 'berry':
+            drawLobedEdge(nestedSize, j + i);
+            break;
+          case 'grain':
+          case 'legume':
+            drawLinearSpikes(nestedSize, j + i);
+            break;
+          case 'vine':
+            drawSpiralOverlay(nestedSize, j + i);
+            break;
+          case 'mixed':
+          case 'various':
+            drawDotRing(nestedSize, j + i);
+            break;
+        }
       }
     }
-  }
 
   drawingContext.restore(); // Restore drawing context
   pop();
