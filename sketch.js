@@ -537,11 +537,6 @@ function draw() {
     rotate(angleOffset);
     scale(entry.currentScale);
 
-    if (entry.cropType?.length > 0) {
-      const cropEdgeSize = entryShapeSize * 1.5;
-      drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
-    }
-
     const shadowInfo = drawSuprematistOpShadowRect(
       entryShapeSize,
       entry.megawatts,
@@ -577,7 +572,7 @@ function draw() {
 
     if (entry.animalType?.length > 0) {
       const yOffset = -entryShapeSize * 0.25;
-      const animalSize = entryShapeSize * 1.1;
+      const animalSize = entryShapeSize * 0.9;
 
       stroke(0, 80);
       strokeWeight(strokeW + 1.5);
@@ -585,6 +580,11 @@ function draw() {
 
       strokeWeight(strokeW);
       drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
+    }
+
+     if (entry.cropType?.length > 0) {
+      const cropEdgeSize = entryShapeSize * 1.5;
+      drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
     }
 
     pop(); // === END ENTRY GROUP ===
