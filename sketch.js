@@ -590,7 +590,7 @@ function draw() {
 
      if (entry.cropType?.length > 0) {
       const cropEdgeSize = entryShapeSize * 1.7;
-      drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
+      drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize, strokeW);
     }
 
     if (entry.animalType?.length > 0) {
@@ -812,7 +812,7 @@ function updateYear(year, index) {
   }
 }
 
-function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW = 2) {
+function drawCropEdgeStyle(cropTypes, activities, x, y, size, strokeW = 2) {
   if (!Array.isArray(cropTypes) || cropTypes.length === 0) return;
   if (!Array.isArray(activities) || activities.length === 0) return;
 
@@ -822,22 +822,8 @@ function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW =
   const uniqueGroups = [...new Set(groups)];
   if (uniqueGroups.length === 0) return;
 
-  const baseShape = getHabitatShapeType(habitat);
-
   push();
   translate(x, y);
-  angleMode(RADIANS);
-
-  // Create clipping mask with habitat shape
-  beginShape();
-  drawingContext.save(); // Save global canvas state
-  drawingContext.beginPath();
-
-  // Approximate the clipping region
-  pathShapeByType(baseShape, size); // defines path only (no fill/stroke)
-  drawingContext.clip(); // Activate clip
-
-  // Draw the crop edge overlays (they will now be clipped to the shape)
   noFill();
   strokeWeight(strokeW);
 
@@ -851,36 +837,36 @@ function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW =
     for (let j = 0; j < uniqueGroups.length; j++) {
       let group = uniqueGroups[j];
       switch (group) {
-        case 'root':
-        case 'cruciferous':
-          drawPointedEdge(size, j + i);
-          break;
-        case 'leafy':
-        case 'herb':
-          drawWavyEdge(size, j + i);
-          break;
-        case 'fruit':
-        case 'berry':
-          drawLobedEdge(size, j + i);
-          break;
-        case 'grain':
-        case 'legume':
-          drawLinearSpikes(size, j + i);
-          break;
-        case 'vine':
-          drawSpiralOverlay(size, j + i);
-          break;
-        case 'mixed':
-        case 'various':
-          drawDotRing(size, j + i);
-          break;
-      }
+  case 'root':
+  case 'cruciferous':
+    drawPointedEdge(size, j + i);
+    break;
+  case 'leafy':
+  case 'herb':
+    drawWavyEdge(size, j + i);
+    break;
+  case 'fruit':
+  case 'berry':
+    drawLobedEdge(size, j + i);
+    break;
+  case 'grain':
+  case 'legume':
+    drawLinearSpikes(size, j + i);
+    break;
+  case 'vine':
+    drawSpiralOverlay(size, j + i);
+    break;
+  case 'mixed':
+  case 'various':
+    drawDotRing(size, j + i);
+    break;
+}
     }
   }
 
-  drawingContext.restore(); // Restore drawing context
   pop();
 }
+
 
 function drawPointedEdge(size, offsetIndex = 0) {
   let steps = 72;
