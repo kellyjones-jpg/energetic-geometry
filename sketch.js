@@ -569,6 +569,7 @@ function draw() {
 
          // Crop Edge Style
     if (entry.cropType?.length > 0) {
+      const cropEdgeSize = entryShapeSize * 1.1;  // slightly larger than main shape
       drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
     }
 
