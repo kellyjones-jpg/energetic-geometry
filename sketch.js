@@ -449,7 +449,7 @@ function draw() {
   rect(0, 0, width, height);
   rectMode(CENTER);
 
-  // === SUPREMATIST YEAR LABEL ===
+  // === YEAR LABEL ===
   const centerX = width / 2;
   const labelY = 40;
   const yearY = labelY + 40;
@@ -472,88 +472,87 @@ function draw() {
 
   // === DATA FOR SELECTED YEAR ===
   const yearEntries = entriesByYear[selectedYear] || [];
-  const sortedEntries = [...yearEntries].sort((a, b) => (b.acres || 0) - (a.acres || 0)); // large sites first
+  const sortedEntries = [...yearEntries].sort((a, b) => (b.acres || 0) - (a.acres || 0));
 
   if (sortedEntries.length === 0) {
     text("No data available for this year.", centerX, height / 2);
     return;
   }
 
+  // === VALUE RANGES ===
   const minSiteSize = Math.min(...sortedEntries.map(e => e.acres || 0.1));
   const maxSiteSize = Math.max(...sortedEntries.map(e => e.acres || 1));
   const maxMW = Math.max(1, ...sortedEntries.map(e => e.megawatts || 0));
-  const maxCellHeight = (height - startY - 50) / numRows;
-
   const count = sortedEntries.length;
 
-  const totalCols = max(ceil(count / numRows), 2); // prevent single col from getting awkward
-  const totalRows = min(count, numRows);
-
+  // === SPACING CONFIG ===
+  const totalCols = max(Math.ceil(count / numRows), 2);
+  const totalRows = Math.min(count, numRows);
   const availableW = width * 0.85;
   const availableH = height - startY - 50;
+  const colSpacing = constrain(availableW / totalCols, shapeSize * 1.1, shapeSize * 2.0);
+  const rowSpacing = availableH / totalRows;
 
-  // Make spacing depend on actual number of cols/rows:
-  const colSpacing = constrain(availableW / max(totalCols, 1), shapeSize * 1.1, shapeSize * 2.0);
-  const rowSpacing = availableH / max(totalRows, 1);
-
+  // === DRAW EACH ENTRY ===
   for (let i = 0; i < count; i++) {
     const entry = sortedEntries[i];
     const row = i % numRows;
-    const col = floor(i / numRows);
-    const basePadding = padding;
+    const col = Math.floor(i / numRows);
 
-    // === Size, weight, scale ===
+    // === SHAPE SIZE ===
     let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, shapeSize * 0.6, shapeSize);
-    entryShapeSize = constrain(entryShapeSize, 30, maxCellHeight * 0.85);
+    entryShapeSize = constrain(entryShapeSize, 30, (availableH / numRows) * 0.85);
     let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 2, 5.5);
     strokeW = constrain(strokeW, 2, 5.5);
 
-    const isHovered = hoveredEntry && hoveredEntry.name === entry.name;
-    const baseGlow = map(entry.megawatts || 0, 0, maxMW, 5, 30);
-    const glowStrength = isHovered ? baseGlow * 1.5 : baseGlow;
-
+    // === SCALE ANIMATION ===
     const baseScale = 1;
     const maxScale = 1.2;
     const minScale = 1.05;
-    const scaleRange = maxScale - minScale;
     const sizeNorm = map(shapeSize, 30, 150, 0, 1);
-    const hoverScale = minScale + sizeNorm * scaleRange;
+    const hoverScale = minScale + sizeNorm * (maxScale - minScale);
+    const isHovered = hoveredEntry && hoveredEntry.name === entry.name;
     const targetScale = isHovered ? hoverScale : baseScale;
     const opArtWave = 0.05 * sin(frameCount * 0.05 + col * 0.5 + row);
     entry.currentScale = lerp(entry.currentScale || baseScale, targetScale + opArtWave, 0.1);
 
-    const activityColors = (entry.activities || []).map(getActivityColor);
-    const baseColor = getActivityColor(entry.activities?.[0] || '');
+    // === SLIGHT RANDOM SCALE VARIATION ===
+    const scaleJitter = map(noise(row * 0.2 + 1000, col * 0.2 + 500), 0, 1, 0.98, 1.04);
+    entry.currentScale *= scaleJitter;
 
-    // === BOTTOM-UP & OUTWARD GROWTH ===
-    const outwardOffset = pow(abs(col - totalCols / 2), 1.2) * 3;
+    // === POSITION CALCULATION ===
+    const outwardOffset = pow(Math.abs(col - totalCols / 2), 1.2) * 3;
     const horizontalWaveOffset = 10 * sin((row + col) * 0.7);
     const colStaggerOffset = (col % 2) * (shapeSize * 0.3);
-
     const cx = centerX + (col - (totalCols - 1) / 2) * colSpacing + horizontalWaveOffset;
     const bottomPadding = 60;
     const cy = height - bottomPadding - row * rowSpacing - entryShapeSize / 2 - colStaggerOffset - outwardOffset;
 
+    // === EASING POSITION ===
     const jitterX = map(noise(i * 0.2, frameCount * 0.002), 0, 1, -10, 10);
     const jitterY = map(noise(i * 0.2 + 500, frameCount * 0.002), 0, 1, -6, 6);
-    const finalX = cx + jitterX;
-    const finalY = cy + jitterY;
+    const targetX = cx + jitterX;
+    const targetY = cy + jitterY;
+    entry._screenX = lerp(entry._screenX || targetX, targetX, 0.1);
+    entry._screenY = lerp(entry._screenY || targetY, targetY, 0.1);
 
-    entry._screenX = lerp(entry._screenX || finalX, finalX, 0.1);
-    entry._screenY = lerp(entry._screenY || finalY, finalY, 0.1);
+    // === ANGLE OFFSET ===
+    const baseAngle = (col % 2 === 0) ? PI / 36 : -PI / 36;
+    const randomAngle = map(noise(row * 0.3, col * 0.2), 0, 1, -PI / 90, PI / 90);
 
-    // Flip angle so larger base is at bottom, lighter top
-    const angleOffset = (col % 2 === 0) ? PI / 36 : -PI / 36;
-
-    // === DRAW ENTRY GROUP ===
+    // === DRAW ENTRY ===
     push();
     translate(entry._screenX, entry._screenY);
-    rotate(angleOffset);
+    rotate(baseAngle + randomAngle);
     scale(entry.currentScale);
-
     entry._radius = entryShapeSize * entry.currentScale * 0.5;
 
-    // === Flipped shadow orientation ===
+    const activityColors = (entry.activities || []).map(getActivityColor);
+    const baseColor = getActivityColor(entry.activities?.[0] || '');
+    const glowStrength = isHovered
+      ? map(entry.megawatts || 0, 0, maxMW, 5, 30) * 1.5
+      : map(entry.megawatts || 0, 0, maxMW, 5, 30);
+
     const shadowInfo = drawSuprematistOpShadowRect(
       entryShapeSize,
       entry.megawatts,
@@ -561,12 +560,12 @@ function draw() {
       0, 0,
       glowStrength,
       isHovered,
-      (entry.animalType?.[0] || ''),
+      entry.animalType?.[0] || '',
       activityColors,
-      true // flag: flipped/light-from-below logic
+      true // flipped orientation
     );
 
-    if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
+    if (entry.habitat?.length) {
       stroke(0, 80);
       strokeWeight(strokeW + 1.5);
       drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor, strokeW);
@@ -580,8 +579,8 @@ function draw() {
 
     if (entry.arrayType) {
       push();
-      translate(-shadowInfo.offsetX, -shadowInfo.offsetY); // Flip shadow direction
-      rotate(-shadowInfo.angle); // Invert angle
+      translate(-shadowInfo.offsetX, -shadowInfo.offsetY);
+      rotate(-shadowInfo.angle);
       stroke(0, 80);
       strokeWeight(strokeW + 1.5);
       drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10, strokeW);
@@ -593,18 +592,16 @@ function draw() {
     }
 
     if (entry.animalType?.length > 0) {
-      const yOffset = entryShapeSize * 0.15; // move upward now
+      const yOffset = entryShapeSize * 0.15;
       const animalSize = entryShapeSize * 0.9;
-
       stroke(0, 80);
       strokeWeight(strokeW + 1.5);
       drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
-
       strokeWeight(strokeW);
       drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
     }
 
-    pop(); // === END ENTRY GROUP ===
+    pop(); // end entry group
   }
 }
 
