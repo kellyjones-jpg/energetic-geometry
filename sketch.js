@@ -592,7 +592,7 @@ function draw() {
     }
 
     if (entry.animalType?.length > 0) {
-      const yOffset = entryShapeSize * -0.25;
+      const yOffset = entryShapeSize * 0.15;
       const animalSize = entryShapeSize * 0.9;
       stroke(0, 80);
       strokeWeight(strokeW + 1.5);
@@ -937,7 +937,7 @@ function drawLinearSpikes(size, offsetIndex = 0) {
 function drawSpiralOverlay(size, offsetIndex = 0) {
  noFill();
   let turns = 100;
-  let spacing = size * 0.015;  // smaller spacing
+  let spacing = size * 0.005;  // smaller spacing
   push();
   rotate(radians((offsetIndex * 37) % 360));
   beginShape();
@@ -1033,8 +1033,8 @@ function drawWavyLine(x, y, length) {
   let waves = 5;
   let steps = 50;
   for (let i = 0; i <= steps; i++) {
-    let px = x + sin((i / steps) * waves * TWO_PI) * amplitude;  // horizontal oscillation
-    let py = y - length / 2 + (length / steps) * i;             // vertical progression
+    let px = x - length / 2 + (length / steps) * i;
+    let py = y + sin((i / steps) * waves * TWO_PI) * amplitude;
     vertex(px, py);
   }
   endShape();
@@ -1042,12 +1042,12 @@ function drawWavyLine(x, y, length) {
 
 // Enhanced Dashed line: longer dashes, sharper gaps, crisp edges
 function drawDashedLine(x, y, length) {
-   let dashLength = 14;
+  let dashLength = 14;
   let gapLength = 8;
-  let startY = y - length / 2;
-  let endY = y + length / 2;
-  for (let py = startY; py < endY; py += dashLength + gapLength) {
-    line(x, py, x, py + dashLength);
+  let startX = x - length / 2;
+  let endX = x + length / 2;
+  for (let px = startX; px < endX; px += dashLength + gapLength) {
+    line(px, y, px + dashLength, y);
   }
 }
 
@@ -1056,22 +1056,22 @@ function drawBezierLine(x, y, length) {
   noFill();
   strokeJoin(ROUND);
   bezier(
-    x, y - length / 2,
-    x - length / 2, y - length / 3,
-    x + length / 2, y + length / 3,
-    x, y + length / 2
+    x - length / 2, y,
+    x - length / 3, y - length / 2,
+    x + length / 3, y + length / 2,
+    x + length / 2, y
   );
 }
 
 // Textured line: clean segmented lines
 function drawTexturedLine(x, y, length) {
- let segmentLength = 8;
+  let segmentLength = 8;
   let gap = 5;
-  let startY = y - length / 2;
-  let endY = y + length / 2;
+  let startX = x - length / 2;
+  let endX = x + length / 2;
 
-  for (let py = startY; py < endY; py += segmentLength + gap) {
-    line(x, py, x, py + segmentLength);
+  for (let px = startX; px < endX; px += segmentLength + gap) {
+    line(px, y, px + segmentLength, y);
   }
 }
 
