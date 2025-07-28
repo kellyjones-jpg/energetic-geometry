@@ -778,89 +778,79 @@ function updateYear(year, index) {
   }
 }
 
-function drawCropEdgeStyle(habitatList, cropType, activities, x, y, size, baseStrokeW = 2) {
+function drawCropEdgeStyle(habitatList, cropTypeInput, activities, x, y, size, baseStrokeW = 2) {
   push();
-
   drawingContext.save();
   drawingContext.beginPath();
 
-  if (Array.isArray(habitatList) && habitatList.length > 0) {
-    const shapeType = getHabitatShapeType(habitatList[0]);
-    pathShapeByType(shapeType, size * 1.15);
-  } else {
-    // fallback shape: diamond
-    pathShapeByType('diamond', size * 1.15);
-  }
+  const shapeType = (Array.isArray(habitatList) && habitatList.length > 0)
+    ? getHabitatShapeType(habitatList[0])
+    : 'diamond';
 
-  drawingContext.clip();  
+  pathShapeByType(shapeType, size * 1.15);
+  drawingContext.clip();
 
-  // Define styles based on crop type
-  const style = cropEdgeStyleMap[cropType];
+  // Normalize cropTypeInput to array
+  const cropTypes = Array.isArray(cropTypeInput) ? cropTypeInput : [cropTypeInput];
+
+  // Get unique edge styles from crop types
+  const edgeStyles = [...new Set(
+    cropTypes
+      .map(c => cropEdgeStyleMap[c])
+      .filter(Boolean)
+  )];
+
+  if (edgeStyles.length === 0) edgeStyles.push("wavy"); // fallback
+
   const totalLayers = 5;
   const maxScaleStep = 0.04;
   const maxTranslateDist = 4;
 
-  for (let j = 0; j < totalLayers; j++) {
-    push();
+  // For each edge style
+  edgeStyles.forEach((style, sIndex) => {
+    for (let j = 0; j < totalLayers; j++) {
+      push();
 
-    // Layered styling
-    const scaleFactor = 1 - j * maxScaleStep;
-    const translateDist = map(j, 0, totalLayers - 1, 0, maxTranslateDist);
-    const angleOffset = map(j, 0, totalLayers - 1, 0, TWO_PI);
+      const scaleFactor = 1 - j * maxScaleStep;
+      const translateDist = map(j, 0, totalLayers - 1, 0, maxTranslateDist);
+      const angleOffset = map(j, 0, totalLayers - 1, 0, TWO_PI);
 
-    // Subtle radial translation and scaling
-    translate(
-      cos(angleOffset) * translateDist,
-      sin(angleOffset) * translateDist
-    );
-    scale(scaleFactor);
-    rotate(PI / 60 * j); // slight rotational layering
+      // Apply offset per style to prevent overlap
+      const offsetAngle = TWO_PI * (sIndex / edgeStyles.length);
+      const offsetX = cos(offsetAngle) * 2.5;
+      const offsetY = sin(offsetAngle) * 2.5;
 
-    // Color and stroke setup
-   let strokeColor = getActivityColor(activities[j % activities.length]);
+      translate(
+        cos(angleOffset) * translateDist + offsetX,
+        sin(angleOffset) * translateDist + offsetY
+      );
+      scale(scaleFactor);
+      rotate(PI / 60 * j);
 
-    if (!strokeColor) {
-      strokeColor = color(200); // fallback gray
-    } else {
-      strokeColor = color(strokeColor); // clone to safely modify
+      let strokeColor = getActivityColor(activities[j % activities.length]);
+      if (!strokeColor) strokeColor = color(200);
+      else strokeColor = color(strokeColor);
+
+      const alpha = max(lerp(200, 70, j / totalLayers), 90);
+      strokeColor.setAlpha(alpha);
+      stroke(strokeColor);
+
+      const strokeW = max(baseStrokeW * (1.4 - (j / totalLayers)), 0.8);
+      strokeWeight(strokeW);
+      noFill();
+
+      switch (style) {
+        case 'wavy': drawWavyEdge(size, j); break;
+        case 'pointed': drawPointedEdge(size, j); break;
+        case 'lobed': drawLobedEdge(size, j); break;
+        case 'spiral': drawSpiralEdge(size, j); break;
+        case 'dotrings': drawDotRingEdge(size, j); break;
+        case 'composite': drawCompositeEdge(size, j); break;
+      }
+
+      pop();
     }
-
-    let alpha = max(lerp(200, 70, j / totalLayers), 90); // Avoid full fadeout
-    strokeColor.setAlpha(alpha);
-    stroke(strokeColor);
-
-
-    const strokeW = max(baseStrokeW * (1.4 - (j / totalLayers)), 0.8);
-    strokeWeight(strokeW);
-    noFill();
-
-    // Draw the layered edge style, passing layer index for variation
-    switch (style) {
-      case 'wavy':
-        drawWavyEdge(size, j);
-        break;
-      case 'pointed':
-        drawPointedEdge(size, j);
-        break;
-      case 'lobed':
-        drawLobedEdge(size, j);
-        break;
-      case 'spiral':
-        drawSpiralEdge(size, j);
-        break;
-      case 'dotrings':
-        drawDotRingEdge(size, j);
-        break;
-      case 'composite':
-        drawCompositeEdge(size, j);
-        break;
-      default:
-        drawWavyEdge(size, j);
-        break;
-    }
-
-    pop();
-  }
+  });
 
   drawingContext.restore();
   pop();
