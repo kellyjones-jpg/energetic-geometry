@@ -797,8 +797,6 @@ drawCropEdgeStyle(
 
   // Define styles based on crop type
   const style = cropEdgeStyleMap[cropType];
-  if (!style) return; // Exit early if no valid style mapping
-
   const totalLayers = 5;
   const maxScaleStep = 0.04;
   const maxTranslateDist = 4;
