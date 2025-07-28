@@ -558,7 +558,7 @@ function draw() {
     }
 
     if (entry.cropType?.length > 0) {
-      drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
+      drawCropEdgeStyle(entry.habitat, entry.cropType, entry.activities, 0, 0, entryShapeSize, strokeW);
     }
 
     // === Enhanced Animal Line: draw last ===
@@ -778,14 +778,21 @@ function updateYear(year, index) {
   }
 }
 
-function drawCropEdgeStyle(cropType, activities, habitat, x, y, size, baseStrokeW = 2) {
+function drawCropEdgeStyle(habitatList, cropType, activities, x, y, size, baseStrokeW = 2) {
   push();
 
-  // Lightly expand clip bounds to allow cascaded styles to show fully
   drawingContext.save();
   drawingContext.beginPath();
-  pathShapeByType(baseShape, size * 1.15);
-  drawingContext.clip();
+
+  if (Array.isArray(habitatList) && habitatList.length > 0) {
+    const shapeType = getHabitatShapeType(habitatList[0]);
+    pathShapeByType(shapeType, size * 1.15);
+  } else {
+    // fallback shape: diamond
+    pathShapeByType('diamond', size * 1.15);
+  }
+
+  drawingContext.clip();  
 
   // Define styles based on crop type
   const style = cropEdgeStyleMap[cropType];
