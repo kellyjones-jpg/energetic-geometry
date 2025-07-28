@@ -485,18 +485,23 @@ function draw() {
 
   const count = sortedEntries.length;
 
+  const colSpacing = shapeSize * 1.6; // adjust as needed
+  const rowSpacing = maxCellHeight;
+
   for (let i = 0; i < count; i++) {
     const entry = sortedEntries[i];
-    const col = i % numCols;
-    const row = floor(i / numCols);
+
+    // === VERTICAL COLUMNS ===
+    const row = i % numRows;
+    const col = floor(i / numRows);
 
     const basePadding = padding;
 
-    // === Positioning: Spatial tension and Op Art effects ===
+    // === Positioning: Field-like layout with vertical rows ===
     const horizontalWaveOffset = 10 * sin((row + col) * 0.7);
-    const rowStaggerOffset = (row % 2) * (shapeSize * 0.3);
-    const cx = basePadding + col * (shapeSize + basePadding) + shapeSize / 2 + horizontalWaveOffset;
-    const cy = startY + row * maxCellHeight + maxCellHeight / 2 + rowStaggerOffset;
+    const colStaggerOffset = (col % 2) * (shapeSize * 0.3); // vertical row staggering
+    const cx = basePadding + col * colSpacing + shapeSize / 2 + horizontalWaveOffset;
+    const cy = startY + row * rowSpacing + shapeSize / 2 + colStaggerOffset;
 
     // === Size, weight, scale ===
     let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, shapeSize * 0.6, shapeSize);
@@ -521,7 +526,7 @@ function draw() {
     const activityColors = (entry.activities || []).map(getActivityColor);
     const baseColor = getActivityColor(entry.activities?.[0] || '');
 
-    const angleOffset = (row % 2 === 0) ? -PI / 36 : PI / 36;
+    const angleOffset = (col % 2 === 0) ? -PI / 36 : PI / 36; // rotated by column now
 
     // === DRAW ENTRY GROUP ===
     push();
@@ -532,13 +537,11 @@ function draw() {
     rotate(angleOffset);
     scale(entry.currentScale);
 
-     // Crop Edge Style
     if (entry.cropType?.length > 0) {
-      const cropEdgeSize = entryShapeSize * 1.5;  // slightly larger than main shape
+      const cropEdgeSize = entryShapeSize * 1.5;
       drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
     }
 
-      // === Suprematist-style shadow + frame ===
     const shadowInfo = drawSuprematistOpShadowRect(
       entryShapeSize,
       entry.megawatts,
@@ -549,16 +552,15 @@ function draw() {
       (entry.animalType?.[0] || ''),
       activityColors
     );
-    
-    // === Nested Visual Components ===
+
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-       stroke(0, 80);
+      stroke(0, 80);
       strokeWeight(strokeW + 1.5);
       drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor, strokeW);
     }
 
     if (entry.activities && entry.habitat) {
-       stroke(0, 80);
+      stroke(0, 80);
       strokeWeight(strokeW + 1.5);
       drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize, strokeW = 2);
     }
@@ -572,17 +574,15 @@ function draw() {
       drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10, strokeW);
       pop();
     }
-    // === Enhanced Animal Line: draw last ===
+
     if (entry.animalType?.length > 0) {
       const yOffset = -entryShapeSize * 0.25;
       const animalSize = entryShapeSize * 1.1;
 
-      // Inner shadow stroke
       stroke(0, 80);
       strokeWeight(strokeW + 1.5);
       drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
 
-      // Main color line
       strokeWeight(strokeW);
       drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
     }
