@@ -963,9 +963,9 @@ font-size: 18px;
   font-weight: bold;
 }
 
-/* Add custom one */
 .legend-toggle::after {
-  content: '\25B6';  /* right-pointing triangle */
+  content: '\25B6'; /* right-pointing triangle */
+  display: inline-block; /* needed for transform */
   color: #ffffff;
   transition: transform 0.3s ease;
   margin-left: 1rem;
@@ -974,7 +974,6 @@ font-size: 18px;
     drop-shadow(1px 0 0 white);
 }
 
-/* Rotate when expanded */
 .legend-toggle:not(.collapsed)::after {
   transform: rotate(90deg);
 }
