@@ -549,17 +549,17 @@ function draw() {
       drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize);
     }
 
-    if (entry.cropType?.length > 0) {
-    const cropEdgeSize = entryShapeSize * 1.1;  // slightly larger than main shape
-    drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, entry.animalType, 0, 0, cropEdgeSize, strokeW);
-    }
-
     if (entry.arrayType) {
       push();
       translate(shadowInfo.offsetX, shadowInfo.offsetY);
       rotate(shadowInfo.angle);
       drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10);
       pop();
+    }
+
+    if (entry.cropType?.length > 0) {
+    const cropEdgeSize = entryShapeSize * 1.1;  // slightly larger than main shape
+    drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, entry.animalType, 0, 0, cropEdgeSize, strokeW);
     }
 
     // === Enhanced Animal Line: draw last ===
