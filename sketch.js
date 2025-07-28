@@ -783,23 +783,16 @@ function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW =
   drawingContext.save();
   drawingContext.beginPath();
 
-  const shapeType = (Array.isArray(habitat) && habitat.length > 0)
-    ? getHabitatShapeType(habitat[0])
-    : 'diamond';
-
-  pathShapeByType(shapeType, size * 1.15);
-  drawingContext.clip();
-
-  const cropTypes = Array.isArray(cropTypeInput) ? cropTypeInput : [cropTypeInput];
+  // Build edge styles only if crop types exist
   const edgeStyles = [...new Set(
-  cropTypes.map(c => cropEdgeStyleMap[c]).filter(Boolean)
-    )];
+    cropTypes.map(c => cropEdgeStyleMap[c]).filter(Boolean)
+  )];
 
-    if (edgeStyles.length === 0) {
-      drawingContext.restore();
-      pop();
-      return; // No crop styles to draw
-    }
+  if (edgeStyles.length === 0) {
+    drawingContext.restore();
+    pop();
+    return;
+  }
 
   const totalLayers = 5;
   const maxScaleStep = 0.04;
@@ -826,15 +819,20 @@ function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW =
       rotate(PI / 60 * j + sIndex * PI / 18); // unique rotation per ring
 
       let strokeColor = getActivityColor(activities[j % activities.length]);
-      if (!strokeColor) strokeColor = color(200);
-      else strokeColor = color(strokeColor);
+      if (!strokeColor) {
+        pop(); // clean up push
+        continue; // skip drawing this layer entirely, but continue other layers/styles
+      }
+      strokeColor = color(strokeColor); // clone color safely
 
       const alpha = max(lerp(200, 70, j / totalLayers), 90);
       strokeColor.setAlpha(alpha * (1 - sIndex * 0.1)); // fade outer rings slightly
 
       stroke(strokeColor);
-      strokeWeight(max(baseStrokeW * (1.4 - (j / totalLayers)), 0.8));
+      strokeWeight(max(strokeW * (1.4 - (j / totalLayers)), 0.8));
       noFill();
+
+      drawingContext.beginPath(); // start fresh path for this layer
 
       switch (style) {
         case 'wavy': drawWavyEdge(size, j); break;
@@ -843,7 +841,6 @@ function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW =
         case 'spiral': drawSpiralEdge(size, j); break;
         case 'dotrings': drawDotRingEdge(size, j); break;
         case 'composite': drawCompositeEdge(size, j); break;
-        default: drawWavyEdge(size, j); break;
       }
 
       pop();
@@ -852,21 +849,6 @@ function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW =
 
   drawingContext.restore();
   pop();
-}
-
-
-function drawPointedEdge(size, offsetIndex = 0, j = 0) {
-  let steps = 72;
-  let pointiness = 10 + (offsetIndex + j) * 0.8; // Adjust sharpness per habitat-row combo
-  beginShape();
-  for (let i = 0; i <= steps; i++) {
-    let angle = TWO_PI * i / steps;
-    let radius = size * 0.45 + (i % 2 === 0 ? pointiness : -pointiness);
-    let x = cos(angle) * radius;
-    let y = sin(angle) * radius;
-    vertex(x, y);
-  }
-  endShape(CLOSE);
 }
 
 function drawWavyEdge(size, offsetIndex = 0, j = 0) {
@@ -878,6 +860,20 @@ function drawWavyEdge(size, offsetIndex = 0, j = 0) {
     let x = cos(angle) * r;
     let y = sin(angle) * r;
     curveVertex(x, y);
+  }
+  endShape(CLOSE);
+}
+
+function drawPointedEdge(size, offsetIndex = 0, j = 0) {
+  let steps = 72;
+  let pointiness = 10 + (offsetIndex + j) * 0.8; // Adjust sharpness per habitat-row combo
+  beginShape();
+  for (let i = 0; i <= steps; i++) {
+    let angle = TWO_PI * i / steps;
+    let radius = size * 0.45 + (i % 2 === 0 ? pointiness : -pointiness);
+    let x = cos(angle) * radius;
+    let y = sin(angle) * radius;
+    vertex(x, y);
   }
   endShape(CLOSE);
 }
@@ -895,20 +891,7 @@ function drawLobedEdge(size, offsetIndex = 0, j = 0) {
   endShape(CLOSE);
 }
 
-function drawLinearSpikes(size, offsetIndex = 0, j = 0) {
-  let lines = 10 + offsetIndex;
-  let lengthMod = 0.05 * j; // Slightly vary length with row
-  for (let i = 0; i < lines; i++) {
-    let angle = TWO_PI * i / lines + offsetIndex * 0.04;
-    let x1 = cos(angle) * size * (0.3 + lengthMod);
-    let y1 = sin(angle) * size * (0.3 + lengthMod);
-    let x2 = cos(angle) * size * (0.5 + lengthMod);
-    let y2 = sin(angle) * size * (0.5 + lengthMod);
-    line(x1, y1, x2, y2);
-  }
-}
-
-function drawSpiralOverlay(size, offsetIndex = 0, j = 0) {
+function drawSpiralEdge(size, offsetIndex = 0, j = 0) {
   noFill();
   strokeWeight(1);
   let tightness = 0.05 + 0.003 * j;
@@ -923,7 +906,7 @@ function drawSpiralOverlay(size, offsetIndex = 0, j = 0) {
   endShape();
 }
 
-function drawDotRing(size, offsetIndex = 0, j = 0) {
+function drawDotRingEdge(size, offsetIndex = 0, j = 0) {
   let dots = 10 + offsetIndex + j;
   let dotSize = 3 + 0.2 * j;
   for (let i = 0; i < dots; i++) {
@@ -932,6 +915,19 @@ function drawDotRing(size, offsetIndex = 0, j = 0) {
     let x = cos(angle) * r;
     let y = sin(angle) * r;
     ellipse(x, y, dotSize);
+  }
+}
+
+function drawCompositeEdge(size, offsetIndex = 0, j = 0) {
+  let lines = 10 + offsetIndex;
+  let lengthMod = 0.05 * j; // Slightly vary length with row
+  for (let i = 0; i < lines; i++) {
+    let angle = TWO_PI * i / lines + offsetIndex * 0.04;
+    let x1 = cos(angle) * size * (0.3 + lengthMod);
+    let y1 = sin(angle) * size * (0.3 + lengthMod);
+    let x2 = cos(angle) * size * (0.5 + lengthMod);
+    let y2 = sin(angle) * size * (0.5 + lengthMod);
+    line(x1, y1, x2, y2);
   }
 }
 
