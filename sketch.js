@@ -1042,9 +1042,7 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
   translate(x, y);
   rectMode(CENTER);
   angleMode(RADIANS);
-
-  let outlineColor = bgColor.levels[0] > 128 ? color(0) : color(255); // choose black or white
-  stroke(outlineColor);
+  stroke(255);
 
   for (let i = 0; i < habitatList.length; i++) {
     let habitat = habitatList[i];
