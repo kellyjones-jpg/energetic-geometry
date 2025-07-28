@@ -267,8 +267,8 @@ function setup() {
   }
 
   availableYears = Object.keys(entriesByYear).sort();
-  selectedYear = null;
-  updateCounters([]);   // empty counts
+  selectedYear = availableYears[0];
+  updateCounters(entriesByYear[selectedYear]);
 
   // Responsive canvas sizing
   let canvasWidth = windowWidth * 0.9;
@@ -444,7 +444,7 @@ function updateLayout(lockedHeight = 845) {
     resizeCanvas(canvasWidth, targetHeight);
     redraw();
   }
-  
+
 function draw() {
   // === BACKGROUND ===
   image(bgImg, 0, 0, width, height);
