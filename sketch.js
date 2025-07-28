@@ -847,7 +847,7 @@ function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW =
   pop();
 }
 
-function drawPointedEdge(size, offsetIndex = 0) {
+function drawPointedEdge(size, offsetIndex = 3) {
   let steps = 72;
   beginShape();
   for (let i = 0; i <= steps; i++) {
@@ -860,7 +860,7 @@ function drawPointedEdge(size, offsetIndex = 0) {
   endShape(CLOSE);
 }
 
-function drawWavyEdge(size, offsetIndex = 0) {
+function drawWavyEdge(size, offsetIndex = 5) {
   let waves = 8 + offsetIndex * 2;
   beginShape();
   for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
@@ -872,7 +872,7 @@ function drawWavyEdge(size, offsetIndex = 0) {
   endShape(CLOSE);
 }
 
-function drawLobedEdge(size, offsetIndex = 0) {
+function drawLobedEdge(size, offsetIndex = 1) {
   let lobes = 5 + offsetIndex;
   beginShape();
   for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
@@ -884,7 +884,7 @@ function drawLobedEdge(size, offsetIndex = 0) {
   endShape(CLOSE);
 }
 
-function drawLinearSpikes(size, offsetIndex = 0) {
+function drawLinearSpikes(size, offsetIndex = 4) {
   let lines = 12;
   for (let i = 0; i < lines; i++) {
     let angle = TWO_PI * i / lines + offsetIndex * 0.05;
@@ -896,7 +896,7 @@ function drawLinearSpikes(size, offsetIndex = 0) {
   }
 }
 
-function drawSpiralOverlay(size, offsetIndex = 0) {
+function drawSpiralOverlay(size, offsetIndex = 2) {
   noFill();
   beginShape();
   for (let a = 0; a < TWO_PI * 3; a += 0.1) {
@@ -908,7 +908,7 @@ function drawSpiralOverlay(size, offsetIndex = 0) {
   endShape();
 }
 
-function drawDotRing(size, offsetIndex = 0) {
+function drawDotRing(size, offsetIndex = 6) {
   let dots = 12 + offsetIndex;
   for (let i = 0; i < dots; i++) {
     let angle = TWO_PI * i / dots;
