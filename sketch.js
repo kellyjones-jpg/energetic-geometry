@@ -568,7 +568,7 @@ function draw() {
     }
 
     if (entry.cropType?.length > 0) {
-    const cropEdgeSize = entryShapeSize * 0.9;  // slightly larger than main shape
+    const cropEdgeSize = entryShapeSize * 1.2;  // slightly larger than main shape
     drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, cropEdgeSize, strokeW);
   }
 
