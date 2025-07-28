@@ -444,6 +444,15 @@ function updateLayout(lockedHeight = 845) {
     resizeCanvas(canvasWidth, targetHeight);
     redraw();
   }
+  
+function draw() {
+  // === BACKGROUND ===
+  image(bgImg, 0, 0, width, height);
+  noStroke();
+  rectMode(CORNER);
+  fill(0, 130); // dark overlay
+  rect(0, 0, width, height);
+  rectMode(CENTER);
 
 // === YEAR LABEL ===
 const centerX = width / 2;
@@ -633,6 +642,7 @@ if (sortedEntries.length === 0) {
     }
     pop(); // end entry group
   }
+}
 
 
 function showModalWithEntry(entry) {
