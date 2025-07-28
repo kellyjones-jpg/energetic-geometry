@@ -567,10 +567,10 @@ function draw() {
       pop();
     }
 
+         // Crop Edge Style
     if (entry.cropType?.length > 0) {
-    const cropEdgeSize = entryShapeSize * 1.2;  // slightly larger than main shape
-    drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, cropEdgeSize, strokeW);
-  }
+      drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
+    }
 
     // === Enhanced Animal Line: draw last ===
     if (entry.animalType?.length > 0) {
@@ -789,9 +789,10 @@ function updateYear(year, index) {
   }
 }
 
-function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW = 1.2) {
+function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW = 2) {
   if (!Array.isArray(cropTypes) || cropTypes.length === 0) return;
   if (!Array.isArray(activities) || activities.length === 0) return;
+
   const groups = cropTypes
     .map(crop => cropEdgeGroups[crop.trim().toLowerCase()])
     .filter(Boolean);
@@ -821,58 +822,45 @@ function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW =
     let activity = activities[i];
     let strokeColor = getActivityColor(activity);
     if (!strokeColor) continue;
+
     stroke(strokeColor);
 
- for (let j = 0; j < uniqueGroups.length; j++) {
-  let group = uniqueGroups[j];
-  let nestedSize = size * (1 - j * 0.15);
-
-  // Offset each group slightly based on index to introduce spatial tension
-  let offsetAngle = (TWO_PI / uniqueGroups.length) * j;
-  let offsetDist = 2 + j * 1.5; // Tweak this for clarity vs. cohesion
-  let dx = cos(offsetAngle) * offsetDist;
-  let dy = sin(offsetAngle) * offsetDist;
-
-  push();
-  translate(dx, dy); // Local offset within clipped shape
-
+    for (let j = 0; j < uniqueGroups.length; j++) {
+      let group = uniqueGroups[j];
       switch (group) {
         case 'root':
         case 'cruciferous':
-          drawPointedEdge(nestedSize, j + i);
+          drawPointedEdge(size, j + i);
           break;
         case 'leafy':
         case 'herb':
-          drawWavyEdge(nestedSize, j + i);
+          drawWavyEdge(size, j + i);
           break;
         case 'fruit':
         case 'berry':
-          drawLobedEdge(nestedSize, j + i);
+          drawLobedEdge(size, j + i);
           break;
         case 'grain':
         case 'legume':
-          drawLinearSpikes(nestedSize, j + i);
+          drawLinearSpikes(size, j + i);
           break;
         case 'vine':
-          drawSpiralOverlay(nestedSize, j + i);
+          drawSpiralOverlay(size, j + i);
           break;
         case 'mixed':
         case 'various':
-          drawDotRing(nestedSize, j + i);
+          drawDotRing(size, j + i);
           break;
       }
-      pop();
     }
   }
+
   drawingContext.restore(); // Restore drawing context
   pop();
 }
 
 function drawPointedEdge(size, offsetIndex = 0) {
   let steps = 72;
-  let offset = offsetIndex * 0.9; 
-  push();
-  translate(offset, -offset);
   beginShape();
   for (let i = 0; i <= steps; i++) {
     let angle = TWO_PI * i / steps;
@@ -882,14 +870,10 @@ function drawPointedEdge(size, offsetIndex = 0) {
     vertex(x, y);
   }
   endShape(CLOSE);
-  pop();
 }
 
 function drawWavyEdge(size, offsetIndex = 0) {
-  let waves = 8 
-  let offset = offsetIndex * 1.2; 
-  push();
-  translate(offset, -offset);
+  let waves = 8 + offsetIndex * 2;
   beginShape();
   for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
     let r = size * 0.4 + 10 * sin(waves * angle);
@@ -898,14 +882,10 @@ function drawWavyEdge(size, offsetIndex = 0) {
     curveVertex(x, y);
   }
   endShape(CLOSE);
-  pop();
 }
 
 function drawLobedEdge(size, offsetIndex = 0) {
-  let lobes = 5
- let offset = offsetIndex * 0.5; 
-  push();
-  translate(offset, -offset);
+  let lobes = 5 + offsetIndex;
   beginShape();
   for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
     let r = size * 0.4 + 8 * sin(lobes * angle);
@@ -914,14 +894,10 @@ function drawLobedEdge(size, offsetIndex = 0) {
     curveVertex(x, y);
   }
   endShape(CLOSE);
-  pop();
 }
 
 function drawLinearSpikes(size, offsetIndex = 0) {
   let lines = 12;
-  let offset = offsetIndex * 0.2; 
-  push();
-  translate(offset, -offset);
   for (let i = 0; i < lines; i++) {
     let angle = TWO_PI * i / lines + offsetIndex * 0.05;
     let x1 = cos(angle) * size * 0.3;
@@ -930,30 +906,22 @@ function drawLinearSpikes(size, offsetIndex = 0) {
     let y2 = sin(angle) * size * 0.5;
     line(x1, y1, x2, y2);
   }
-  pop();
 }
 
 function drawSpiralOverlay(size, offsetIndex = 0) {
   noFill();
-  let offset = offsetIndex * 1.1; 
-  push();
-  translate(offset, -offset);
   beginShape();
   for (let a = 0; a < TWO_PI * 3; a += 0.1) {
-    let r = size * 0.05 * a + offsetIndex * 0.5;
+    let r = size * 0.05 * a + offsetIndex * 2;
     let x = cos(a) * r;
     let y = sin(a) * r;
     vertex(x, y);
   }
   endShape();
-  pop();
 }
 
 function drawDotRing(size, offsetIndex = 0) {
-  let dots = 12 
-  let offset = offsetIndex * 1.5; 
-  push();
-  translate(offset, -offset);
+  let dots = 12 + offsetIndex;
   for (let i = 0; i < dots; i++) {
     let angle = TWO_PI * i / dots;
     let r = size * 0.4;
@@ -961,7 +929,6 @@ function drawDotRing(size, offsetIndex = 0) {
     let y = sin(angle) * r;
     ellipse(x, y, 4);
   }
-  pop();
 }
 
 // Draw different line styles based on Animal Type
