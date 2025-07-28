@@ -9,8 +9,8 @@ let bgImg;
 let shapeSize, padding, startY, numCols, numRows;
 let showInstructionOverlay = true;
 let overlayOpacity = 255;  // full opacity initially
-let fadeAlpha = 255;
 let hasInteracted = false;
+let fadeAlpha = 255;
 
 const cropEdgeGroups = {
   // Root vegetables
@@ -477,7 +477,7 @@ strokeWeight(3);
 line(centerX - lineWidth / 2, lineY, centerX + lineWidth / 2, lineY);
 noStroke();
 
-  // === DATA FOR SELECTED YEAR ===
+// === DATA FOR SELECTED YEAR ===
 const yearEntries = entriesByYear[selectedYear] || [];
 const sortedEntries = [...yearEntries].sort((a, b) => (b.acres || 0) - (a.acres || 0));
 
@@ -498,14 +498,6 @@ if (!hasInteracted) {   // Only show overlay until interaction
   fill(255, overlayOpacity);      // Text with same fade alpha
   textSize(28);
   text("Select a Year or Arrow to Get Started...", width / 2, height / 2 - 20);
-
-  fill(255, overlayOpacity * 0.7);
-  textSize(20);
-  text("Year Installed: —", width / 2, height / 2 + 20);
-
-  fill(255, overlayOpacity * 0.7);
-  text("Total Sites: —", width / 2, height / 2 + 50);
-  pop();
 
   return;  // Skip drawing rest of data until overlay gone
 }
