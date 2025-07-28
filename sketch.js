@@ -532,6 +532,12 @@ function draw() {
     rotate(angleOffset);
     scale(entry.currentScale);
 
+     // Crop Edge Style
+    if (entry.cropType?.length > 0) {
+      const cropEdgeSize = entryShapeSize * 1.5;  // slightly larger than main shape
+      drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
+    }
+
       // === Suprematist-style shadow + frame ===
     const shadowInfo = drawSuprematistOpShadowRect(
       entryShapeSize,
@@ -555,12 +561,6 @@ function draw() {
        stroke(0, 80);
       strokeWeight(strokeW + 1.5);
       drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize, strokeW = 2);
-    }
-
-     // Crop Edge Style
-    if (entry.cropType?.length > 0) {
-      const cropEdgeSize = entryShapeSize * 1.1;  // slightly larger than main shape
-      drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
     }
 
     if (entry.arrayType) {
