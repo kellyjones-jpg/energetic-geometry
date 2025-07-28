@@ -600,7 +600,6 @@ function draw() {
       strokeWeight(strokeW);
       drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
     }
-
     pop(); // end entry group
   }
 }
@@ -1302,21 +1301,32 @@ function drawCrosshatchGridMultiColor(activities, size, density = 10) {
   let colorCount = activities.length;
 
   push();
-  rotate(PI / 4); // Diamond orientation for panels
+  rotate(PI / 4); // Diamond orientation
 
   for (let i = -size / 2, idx = 0; i <= size / 2; i += density, idx++) {
     let col = getActivityColor(activities[idx % colorCount]);
-    stroke(col);
-    // Vertical and horizontal grid lines
+
+    // === Black base lines for depth ===
+    stroke(0, 120); // semi-opaque black
+    strokeWeight(2);
     line(i, -size / 2, i, size / 2);
     line(-size / 2, i, size / 2, i);
 
-    // Glow effect at grid intersections
+    // === Colored lines on top ===
+    stroke(col);
+    strokeWeight(1.2);
+    line(i, -size / 2, i, size / 2);
+    line(-size / 2, i, size / 2, i);
+
+    // === Glow at grid intersections ===
     push();
     noStroke();
+    fill(0, 80); // black shadow
+    ellipse(i + 0.5, i + 0.5, density * 0.4);
+    ellipse(i - 0.5, -i + 0.5, density * 0.4);
     fill(col.levels ? color(col.levels[0], col.levels[1], col.levels[2], 100) : col);
-    ellipse(i, i, density * 0.3, density * 0.3);
-    ellipse(i, -i, density * 0.3, density * 0.3);
+    ellipse(i, i, density * 0.3);
+    ellipse(i, -i, density * 0.3);
     pop();
   }
 
@@ -1332,22 +1342,36 @@ function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1)
   rotate(PI);
 
   for (let x = -halfSize; x <= halfSize; x += density) {
-    // Forward-slanting lines
-    stroke(getActivityColor(activities[idx % colorCount]));
+    let colA = getActivityColor(activities[idx % colorCount]);
     let y1a = -halfSize * slope;
     let y2a = halfSize * slope;
+
+    // === Black base stroke ===
+    stroke(0, 120);
+    strokeWeight(2);
+    line(x, y1a, x + halfSize, y2a);
+
+    // === Colored line ===
+    stroke(colA);
+    strokeWeight(1.2);
     line(x, y1a, x + halfSize, y2a);
     idx++;
 
-    // Backward-slanting lines
-    stroke(getActivityColor(activities[idx % colorCount]));
+    let colB = getActivityColor(activities[idx % colorCount]);
     let y1b = -halfSize * slope;
     let y2b = halfSize * slope;
+
+    stroke(0, 120);
+    strokeWeight(2);
+    line(x + halfSize, y1b, x, y2b);
+
+    stroke(colB);
+    strokeWeight(1.2);
     line(x + halfSize, y1b, x, y2b);
     idx++;
   }
 
-  // Add subtle highlight lines for reflective effect
+  // Highlight lines
   stroke(255, 70);
   strokeWeight(0.8);
   for (let i = -halfSize; i <= halfSize; i += density * 5) {
@@ -1364,13 +1388,20 @@ function drawDottedMatrixMultiColor(activities, size, density = 10) {
 
   for (let x = -size / 2; x < size / 2; x += density) {
     for (let y = -size / 2; y < size / 2; y += density) {
-      fill(getActivityColor(activities[idx % colorCount]));
-      noStroke();
-      ellipse(x, y, dotSize, dotSize);
+      let col = getActivityColor(activities[idx % colorCount]);
 
-      // Small white highlight for "glint"
+      // === Black shadow circle ===
+      noStroke();
+      fill(0, 120);
+      ellipse(x + 0.5, y + 0.5, dotSize + 1.5);
+
+      // === Colored dot ===
+      fill(col);
+      ellipse(x, y, dotSize);
+
+      // === White highlight glint ===
       fill(255, 150);
-      ellipse(x - dotSize * 0.15, y - dotSize * 0.15, dotSize * 0.3, dotSize * 0.3);
+      ellipse(x - dotSize * 0.15, y - dotSize * 0.15, dotSize * 0.3);
 
       idx++;
     }
@@ -1412,13 +1443,13 @@ function drawMinimalSite(site) {
   ellipse(shadowOffset, shadowOffset, dotBaseSize, dotBaseSize);
   pop();
 
-  // White glow ring with thickness proportional to dot size
-  stroke(255, 200);
-  strokeWeight(dotBaseSize * 0.25);
-  ellipse(0, 0, dotBaseSize * 1.5, dotBaseSize * 1.5);
+  // Glow ring
+  stroke(baseColor);              // Reduced opacity
+  strokeWeight(dotBaseSize * 0.15); // Thinner glow
+  ellipse(0, 0, dotBaseSize * 1.4);
 
   // Add subtle linear glow overlays to mimic panel reflections
-  stroke(255, 120);
+  stroke(baseColor);
   strokeWeight(1);
   const linesCount = 5;
   for (let i = 1; i <= linesCount; i++) {
@@ -1427,9 +1458,9 @@ function drawMinimalSite(site) {
   }
 
   // Core dot
-  noStroke();
-  fill(baseColor);
-  ellipse(0, 0, dotBaseSize, dotBaseSize);
+    noStroke();
+    fill(baseColor);
+    ellipse(0, 0, dotBaseSize);
 
   pop();
 }
