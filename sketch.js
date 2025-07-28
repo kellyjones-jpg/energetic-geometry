@@ -7,6 +7,10 @@ let cnv;
 let hoveredEntry = null; 
 let bgImg;
 let shapeSize, padding, startY, numCols, numRows;
+let showInstructionOverlay = true;
+let overlayOpacity = 255;  // full opacity initially
+let fadeAlpha = 255;
+let hasInteracted = false;
 
 const cropEdgeGroups = {
   // Root vegetables
@@ -263,7 +267,8 @@ function setup() {
   }
 
   availableYears = Object.keys(entriesByYear).sort();
-  selectedYear = availableYears[0];
+  selectedYear = null;
+  updateCounters([]);   // empty counts
 
   // Responsive canvas sizing
   let canvasWidth = windowWidth * 0.9;
@@ -440,44 +445,70 @@ function updateLayout(lockedHeight = 845) {
     redraw();
   }
 
-function draw() {
-  // === BACKGROUND ===
-  image(bgImg, 0, 0, width, height);
-  noStroke();
-  rectMode(CORNER);
-  fill(0, 130); // dark overlay
-  rect(0, 0, width, height);
-  rectMode(CENTER);
+// === YEAR LABEL ===
+const centerX = width / 2;
+const labelY = 40;
+const yearY = labelY + 40;
+textFont('Helvetica');
+textAlign(CENTER, BOTTOM);
+fill(255, fadeAlpha);
+textSize(28);
+text("Year Installed:", centerX, labelY);
+textStyle(BOLD);
+textSize(36);
+text(" " + selectedYear, centerX, yearY);
+textStyle(NORMAL);
 
-  // === YEAR LABEL ===
-  const centerX = width / 2;
-  const labelY = 40;
-  const yearY = labelY + 40;
-  textFont('Helvetica');
-  textAlign(CENTER, BOTTOM);
-  fill(255);
-  textSize(28);
-  text("Year Installed:", centerX, labelY);
-  textStyle(BOLD);
-  textSize(36);
-  text(" " + selectedYear, centerX, yearY);
-  textStyle(NORMAL);
-
-  const lineY = yearY + 6;
-  const lineWidth = textWidth(selectedYear) + 40;
-  stroke('#0A0A0A');
-  strokeWeight(3);
-  line(centerX - lineWidth / 2, lineY, centerX + lineWidth / 2, lineY);
-  noStroke();
+const lineY = yearY + 6;
+const lineWidth = textWidth(selectedYear) + 40;
+stroke(10, 10, 10, fadeAlpha);
+strokeWeight(3);
+line(centerX - lineWidth / 2, lineY, centerX + lineWidth / 2, lineY);
+noStroke();
 
   // === DATA FOR SELECTED YEAR ===
   const yearEntries = entriesByYear[selectedYear] || [];
   const sortedEntries = [...yearEntries].sort((a, b) => (b.acres || 0) - (a.acres || 0));
 
-  if (sortedEntries.length === 0) {
-    text("No data available for this year.", centerX, height / 2);
+  // === DRAW INSTRUCTIONAL OVERLAY IF NEEDED ===
+  if (showInstructionOverlay) {
+    // Fade out overlay gradually
+    if (overlayOpacity > 0) {
+      overlayOpacity -= 5; // Adjust speed of fade here
+    } else {
+      overlayOpacity = 0;
+      showInstructionOverlay = false; // stop drawing overlay once invisible
+    }
+
+    push();
+    fill(0, overlayOpacity * 0.8);
+    rect(0, 0, width, height);
+
+    textAlign(CENTER, CENTER);
+    fill(255, overlayOpacity);
+    noStroke();
+    textSize(28);
+    text("Select a Year or Arrow to Get Started...", width / 2, height / 2 - 20);
+
+    textSize(20);
+    fill(255, overlayOpacity * 0.7);
+    text("Year Installed: —", width / 2, height / 2 + 20);
+
+    fill(255, overlayOpacity * 0.7);
+    text("Total Sites: —", width / 2, height / 2 + 50);
+    pop();
+
+    // Don't draw sites data underneath while overlay is visible
     return;
   }
+
+if (sortedEntries.length === 0) {
+  fill(255, fadeAlpha);
+  textAlign(CENTER, CENTER);
+  textSize(20);
+  text("No data available for this year.", centerX, height / 2);
+  return;
+}
 
   // === VALUE RANGES ===
   const minSiteSize = Math.min(...sortedEntries.map(e => e.acres || 0.1));
@@ -602,7 +633,6 @@ function draw() {
     }
     pop(); // end entry group
   }
-}
 
 
 function showModalWithEntry(entry) {
@@ -674,16 +704,16 @@ document.getElementById('toggle-legend').addEventListener('click', function () {
 });
 
 function mouseMoved() {
-  // Skip hover detection on touch devices
   if ('ontouchstart' in window) return;
 
-  // Disable hover when modal is open
   const modalElement = document.getElementById('siteModal');
   if (modalElement && modalElement.classList.contains('show')) {
     hoveredEntry = null;
     cursor('default');
     return;
   }
+
+  if (!hasInteracted) hasInteracted = true;
 
   let yearEntries = entriesByYear[selectedYear] || [];
   hoveredEntry = null;
@@ -704,7 +734,10 @@ function mouseMoved() {
   cursor(hovering ? 'pointer' : 'default');
 }
 
+
 function mousePressed() {
+  hasInteracted = true; // User clicked
+
   const modalElement = document.getElementById('siteModal');
   if (modalElement && modalElement.classList.contains('show')) {
     return; // Prevent clicking sites while modal is open
@@ -725,6 +758,8 @@ function mousePressed() {
 }
 
 function keyPressed() {
+  hasInteracted = true; // User pressed a key
+
   const yearEntries = entriesByYear[selectedYear];
   if (!yearEntries || yearEntries.length === 0) return;
 
@@ -756,7 +791,7 @@ function keyPressed() {
     return;
   }
 
-  // Global year navigation (when modal is not open)
+  // Global year navigation
   const currentYearIndex = availableYears.indexOf(selectedYear);
   if (!modalVisible && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
     const delta = keyCode === RIGHT_ARROW ? 1 : -1;
@@ -768,14 +803,12 @@ function keyPressed() {
     return;
   }
 
-  // HOME to go to first year
   if (!modalVisible && keyCode === HOME) {
     selectedYear = availableYears[0];
     updateYear(selectedYear, 0);
     return;
   }
 
-  // END to go to last year
   if (!modalVisible && keyCode === END) {
     selectedYear = availableYears[availableYears.length - 1];
     updateYear(selectedYear, availableYears.length - 1);
@@ -784,6 +817,12 @@ function keyPressed() {
 }
 
 function updateYear(year, index) {
+  // Hide the overlay when a year is selected for the first time
+  if (showInstructionOverlay) {
+    showInstructionOverlay = false;
+  }
+  
+  // existing code
   windowResized();
   updateCounters(entriesByYear[year]);
 
@@ -791,17 +830,14 @@ function updateYear(year, index) {
     lbl.classList.remove('active');
   });
 
-  // Update active label visually
   const allLabels = document.querySelectorAll('.year-label');
   allLabels.forEach(label => {
-  label.classList.remove('active');
-  if (label.textContent.trim() === year) {
-    label.classList.add('active');
-  }
-});
+    label.classList.remove('active');
+    if (label.textContent.trim() === year) {
+      label.classList.add('active');
+    }
+  });
 
-
-  // Screen reader update
   const srLive = document.getElementById('sr-live');
   if (srLive) {
     srLive.textContent = `Year changed to ${year}`;
