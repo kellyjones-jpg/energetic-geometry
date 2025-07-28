@@ -507,8 +507,16 @@ function draw() {
     const horizontalWaveOffset = 10 * sin((row + col) * 0.7);
     const colStaggerOffset = (col % 2) * (shapeSize * 0.3);
 
-    const cx = centerX + (col - totalCols / 2) * colSpacing + horizontalWaveOffset;
-    const cy = height - row * rowSpacing - shapeSize / 2 - colStaggerOffset - outwardOffset;
+    const cx = centerX + (col - (totalCols - 1) / 2) * colSpacing + horizontalWaveOffset;
+    const bottomPadding = 60;
+    const cy = height - bottomPadding - row * rowSpacing - entryShapeSize / 2 - colStaggerOffset - outwardOffset;
+    const jitterX = map(noise(i * 0.2, frameCount * 0.002), 0, 1, -10, 10);
+    const jitterY = map(noise(i * 0.2 + 500, frameCount * 0.002), 0, 1, -6, 6);
+    const finalX = cx + jitterX;
+    const finalY = cy + jitterY;
+    entry._screenX = lerp(entry._screenX || finalX, finalX, 0.1);
+    entry._screenY = lerp(entry._screenY || finalY, finalY, 0.1);
+    translate(entry._screenX, entry._screenY);
 
     // === Size, weight, scale ===
     let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, shapeSize * 0.6, shapeSize);
