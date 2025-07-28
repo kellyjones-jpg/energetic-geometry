@@ -1042,9 +1042,6 @@ function drawHabitatShape(habitat, x, y, size, baseColor) {
   rectMode(CENTER);
   angleMode(RADIANS);
 
-  let outlineColor = bgColor.levels[0] > 128 ? color(0) : color(255); // choose black or white
-  stroke(outlineColor);
-
   for (let i = 0; i < habitat.length; i++) {
     let habitat = habitat[i];
     let angleOffset = PI / 6 * i;
