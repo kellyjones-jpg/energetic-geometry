@@ -546,18 +546,24 @@ function draw() {
 
     // === Nested Visual Components ===
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
-      drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor);
+       stroke(0, 80);
+      strokeWeight(strokeW + 1.5);
+      drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor, strokeW);
     }
 
     if (entry.activities && entry.habitat) {
-      drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize);
+       stroke(0, 80);
+      strokeWeight(strokeW + 1.5);
+      drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize, strokeW = 2);
     }
 
     if (entry.arrayType) {
       push();
       translate(shadowInfo.offsetX, shadowInfo.offsetY);
       rotate(shadowInfo.angle);
-      drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10);
+      stroke(0, 80);
+      strokeWeight(strokeW + 1.5);
+      drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10, strokeW);
       pop();
     }
 
@@ -1068,7 +1074,7 @@ function drawTexturedLine(x, y, length) {
   }
 }
 
-function drawHabitatShape(habitatList, x, y, size, baseColor) {
+function drawHabitatShape(habitatList, x, y, size, baseColor, strokeW = 2) {
   if (!Array.isArray(habitatList)) return;
 
   habitatList = habitatList
@@ -1183,7 +1189,7 @@ function drawGlowEllipse(size, baseColor) {
 }
 
 
-function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
+function drawCombinedHabitatOverlay(habitatList, activities, x, y, size, strokeW = 1.2) {
   if (!Array.isArray(habitatList) || !Array.isArray(activities)) return;
 
   const cleanedHabitats = habitatList
@@ -1202,8 +1208,8 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
   translate(x, y);
   angleMode(RADIANS);
   rectMode(CENTER);
-  noStroke();
-
+  stroke(255);
+  
   const layerStep = 0.85 / nestingCount;
 
   for (let i = 0; i < nestingCount; i++) {
