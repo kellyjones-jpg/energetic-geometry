@@ -8,7 +8,7 @@ let hoveredEntry = null;
 let bgImg;
 let shapeSize, padding, startY, numCols, numRows;
 
-const cropEdgeStyleMap = {
+const cropEdgeGroups = {
   // Root vegetables
   "carrots": "root",
   "beets": "root",
@@ -779,98 +779,80 @@ function updateYear(year, index) {
 }
 
 function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW = 2) {
+  if (!Array.isArray(cropTypes) || cropTypes.length === 0) return;
+  if (!Array.isArray(activities) || activities.length === 0) return;
+  const groups = cropTypes
+    .map(crop => cropEdgeGroups[crop.trim().toLowerCase()])
+    .filter(Boolean);
+  const uniqueGroups = [...new Set(groups)];
+  if (uniqueGroups.length === 0) return;
+
+  const baseShape = getHabitatShapeType(habitat);
+
   push();
-  drawingContext.save();
+  translate(x, y);
+  angleMode(RADIANS);
+
+  // Create clipping mask with habitat shape
+  beginShape();
+  drawingContext.save(); // Save global canvas state
   drawingContext.beginPath();
 
-  // Build edge styles only if crop types exist
-  const edgeStyles = [...new Set(
-    cropTypes.map(c => cropEdgeStyleMap[c]).filter(Boolean)
-  )];
+  // Approximate the clipping region
+  pathShapeByType(baseShape, size); // defines path only (no fill/stroke)
+  drawingContext.clip(); // Activate clip
 
-  if (edgeStyles.length === 0) {
-    drawingContext.restore();
-    pop();
-    return;
+  // Draw the crop edge overlays (they will now be clipped to the shape)
+  noFill();
+  strokeWeight(strokeW);
+
+  for (let i = 0; i < activities.length; i++) {
+    let activity = activities[i];
+    let strokeColor = getActivityColor(activity);
+    if (!strokeColor) continue;
+
+    stroke(strokeColor);
+
+    for (let j = 0; j < uniqueGroups.length; j++) {
+      let group = uniqueGroups[j];
+      switch (group) {
+        case 'root':
+        case 'cruciferous':
+          drawPointedEdge(size, j + i);
+          break;
+        case 'leafy':
+        case 'herb':
+          drawWavyEdge(size, j + i);
+          break;
+        case 'fruit':
+        case 'berry':
+          drawLobedEdge(size, j + i);
+          break;
+        case 'grain':
+        case 'legume':
+          drawLinearSpikes(size, j + i);
+          break;
+        case 'vine':
+          drawSpiralOverlay(size, j + i);
+          break;
+        case 'mixed':
+        case 'various':
+          drawDotRing(size, j + i);
+          break;
+      }
+    }
   }
 
-  const totalLayers = 5;
-  const maxScaleStep = 0.04;
-  const baseTranslate = 4;
-
-  edgeStyles.forEach((style, sIndex) => {
-    // Calculate outward cascade radius per style
-    const ringOffset = (sIndex + 1) * 7; // Increase to spread styles further outward
-
-    for (let j = 0; j < totalLayers; j++) {
-      push();
-
-      const scaleFactor = 1 + (sIndex * 0.12) - j * maxScaleStep; // Cascading scale per style outward
-      const translateDist = map(j, 0, totalLayers - 1, 0, baseTranslate + sIndex * 2);
-      const angleOffset = map(j, 0, totalLayers - 1, 0, TWO_PI);
-
-      // Radiating outward offset from center
-      translate(
-        cos(angleOffset) * translateDist,
-        sin(angleOffset) * translateDist - ringOffset // Push further outside habitat center
-      );
-
-      scale(scaleFactor);
-      rotate(PI / 60 * j + sIndex * PI / 18); // unique rotation per ring
-
-      let strokeColor = getActivityColor(activities[j % activities.length]);
-      if (!strokeColor) {
-        pop(); // clean up push
-        continue; // skip drawing this layer entirely, but continue other layers/styles
-      }
-      strokeColor = color(strokeColor); // clone color safely
-
-      const alpha = max(lerp(200, 70, j / totalLayers), 90);
-      strokeColor.setAlpha(alpha * (1 - sIndex * 0.1)); // fade outer rings slightly
-
-      stroke(strokeColor);
-      strokeWeight(max(strokeW * (1.4 - (j / totalLayers)), 0.8));
-      noFill();
-
-      drawingContext.beginPath(); // start fresh path for this layer
-
-      switch (style) {
-        case 'wavy': drawWavyEdge(size, j); break;
-        case 'pointed': drawPointedEdge(size, j); break;
-        case 'lobed': drawLobedEdge(size, j); break;
-        case 'spiral': drawSpiralEdge(size, j); break;
-        case 'dotrings': drawDotRingEdge(size, j); break;
-        case 'composite': drawCompositeEdge(size, j); break;
-      }
-
-      pop();
-    }
-  });
-
-  drawingContext.restore();
+  drawingContext.restore(); // Restore drawing context
   pop();
 }
 
-function drawWavyEdge(size, offsetIndex = 0, j = 0) {
-  let waves = 6 + offsetIndex + j;
-  let amp = 10 + 0.5 * j; // wave amplitude grows with j
-  beginShape();
-  for (let angle = 0; angle <= TWO_PI + 0.05; angle += 0.05) {
-    let r = size * 0.4 + amp * sin(waves * angle);
-    let x = cos(angle) * r;
-    let y = sin(angle) * r;
-    curveVertex(x, y);
-  }
-  endShape(CLOSE);
-}
-
-function drawPointedEdge(size, offsetIndex = 0, j = 0) {
+function drawPointedEdge(size, offsetIndex = 0) {
   let steps = 72;
-  let pointiness = 10 + (offsetIndex + j) * 0.8; // Adjust sharpness per habitat-row combo
   beginShape();
   for (let i = 0; i <= steps; i++) {
     let angle = TWO_PI * i / steps;
-    let radius = size * 0.45 + (i % 2 === 0 ? pointiness : -pointiness);
+    let radius = size * 0.45 + (i % 2 === 0 ? 10 : -10);
     let x = cos(angle) * radius;
     let y = sin(angle) * radius;
     vertex(x, y);
@@ -878,12 +860,11 @@ function drawPointedEdge(size, offsetIndex = 0, j = 0) {
   endShape(CLOSE);
 }
 
-function drawLobedEdge(size, offsetIndex = 0, j = 0) {
-  let lobes = 4 + offsetIndex + floor(j / 2);
-  let amp = 8 + j; // stronger lobes on lower rows
+function drawWavyEdge(size, offsetIndex = 0) {
+  let waves = 8 + offsetIndex * 2;
   beginShape();
-  for (let angle = 0; angle <= TWO_PI + 0.05; angle += 0.05) {
-    let r = size * 0.4 + amp * sin(lobes * angle);
+  for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
+    let r = size * 0.4 + 10 * sin(waves * angle);
     let x = cos(angle) * r;
     let y = sin(angle) * r;
     curveVertex(x, y);
@@ -891,14 +872,35 @@ function drawLobedEdge(size, offsetIndex = 0, j = 0) {
   endShape(CLOSE);
 }
 
-function drawSpiralEdge(size, offsetIndex = 0, j = 0) {
-  noFill();
-  strokeWeight(1);
-  let tightness = 0.05 + 0.003 * j;
-  let scale = 2 + offsetIndex * 0.5;
+function drawLobedEdge(size, offsetIndex = 0) {
+  let lobes = 5 + offsetIndex;
   beginShape();
-  for (let a = 0; a < TWO_PI * (2.5 + offsetIndex * 0.3); a += 0.1) {
-    let r = size * tightness * a + j * 0.3;
+  for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
+    let r = size * 0.4 + 8 * sin(lobes * angle);
+    let x = cos(angle) * r;
+    let y = sin(angle) * r;
+    curveVertex(x, y);
+  }
+  endShape(CLOSE);
+}
+
+function drawLinearSpikes(size, offsetIndex = 0) {
+  let lines = 12;
+  for (let i = 0; i < lines; i++) {
+    let angle = TWO_PI * i / lines + offsetIndex * 0.05;
+    let x1 = cos(angle) * size * 0.3;
+    let y1 = sin(angle) * size * 0.3;
+    let x2 = cos(angle) * size * 0.5;
+    let y2 = sin(angle) * size * 0.5;
+    line(x1, y1, x2, y2);
+  }
+}
+
+function drawSpiralOverlay(size, offsetIndex = 0) {
+  noFill();
+  beginShape();
+  for (let a = 0; a < TWO_PI * 3; a += 0.1) {
+    let r = size * 0.05 * a + offsetIndex * 2;
     let x = cos(a) * r;
     let y = sin(a) * r;
     vertex(x, y);
@@ -906,30 +908,17 @@ function drawSpiralEdge(size, offsetIndex = 0, j = 0) {
   endShape();
 }
 
-function drawDotRingEdge(size, offsetIndex = 0, j = 0) {
-  let dots = 10 + offsetIndex + j;
-  let dotSize = 3 + 0.2 * j;
+function drawDotRing(size, offsetIndex = 0) {
+  let dots = 12 + offsetIndex;
   for (let i = 0; i < dots; i++) {
     let angle = TWO_PI * i / dots;
     let r = size * 0.4;
     let x = cos(angle) * r;
     let y = sin(angle) * r;
-    ellipse(x, y, dotSize);
+    ellipse(x, y, 4);
   }
 }
 
-function drawCompositeEdge(size, offsetIndex = 0, j = 0) {
-  let lines = 10 + offsetIndex;
-  let lengthMod = 0.05 * j; // Slightly vary length with row
-  for (let i = 0; i < lines; i++) {
-    let angle = TWO_PI * i / lines + offsetIndex * 0.04;
-    let x1 = cos(angle) * size * (0.3 + lengthMod);
-    let y1 = sin(angle) * size * (0.3 + lengthMod);
-    let x2 = cos(angle) * size * (0.5 + lengthMod);
-    let y2 = sin(angle) * size * (0.5 + lengthMod);
-    line(x1, y1, x2, y2);
-  }
-}
 
 // Draw different line styles based on Animal Type
 function drawAnimalLine(animalType, activities, x, y, size, strokeW = 2) {
@@ -1052,6 +1041,9 @@ function drawHabitatShape(habitat, x, y, size, baseColor) {
   translate(x, y);
   rectMode(CENTER);
   angleMode(RADIANS);
+
+  let outlineColor = bgColor.levels[0] > 128 ? color(0) : color(255); // choose black or white
+  stroke(outlineColor);
 
   for (let i = 0; i < habitat.length; i++) {
     let habitat = habitat[i];
