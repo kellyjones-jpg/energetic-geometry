@@ -543,7 +543,7 @@ function draw() {
       (entry.animalType?.[0] || ''),
       activityColors
     );
-
+    
     // === Nested Visual Components ===
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
        stroke(0, 80);
@@ -557,6 +557,12 @@ function draw() {
       drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize, strokeW = 2);
     }
 
+     // Crop Edge Style
+    if (entry.cropType?.length > 0) {
+      const cropEdgeSize = entryShapeSize * 1.1;  // slightly larger than main shape
+      drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
+    }
+
     if (entry.arrayType) {
       push();
       translate(shadowInfo.offsetX, shadowInfo.offsetY);
@@ -566,13 +572,6 @@ function draw() {
       drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10, strokeW);
       pop();
     }
-
-         // Crop Edge Style
-    if (entry.cropType?.length > 0) {
-      const cropEdgeSize = entryShapeSize * 1.1;  // slightly larger than main shape
-      drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
-    }
-
     // === Enhanced Animal Line: draw last ===
     if (entry.animalType?.length > 0) {
       const yOffset = -entryShapeSize * 0.25;
