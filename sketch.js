@@ -588,6 +588,11 @@ function draw() {
       pop();
     }
 
+     if (entry.cropType?.length > 0) {
+      const cropEdgeSize = entryShapeSize * 1.7;
+      drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
+    }
+
     if (entry.animalType?.length > 0) {
       const yOffset = entryShapeSize * 0.25; // move upward now
       const animalSize = entryShapeSize * 0.9;
@@ -598,11 +603,6 @@ function draw() {
 
       strokeWeight(strokeW);
       drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
-    }
-
-    if (entry.cropType?.length > 0) {
-      const cropEdgeSize = entryShapeSize * 1.5;
-      drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
     }
 
     pop(); // === END ENTRY GROUP ===
