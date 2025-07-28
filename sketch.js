@@ -851,37 +851,41 @@ function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW =
 }
 
 function drawPointedEdge(size, offsetIndex = 3) {
-  let steps = 72;
+ let steps = 72;
   beginShape();
   for (let i = 0; i <= steps; i++) {
     let angle = TWO_PI * i / steps;
-    let radius = size * 0.45 + (i % 2 === 0 ? 10 : -10);
-    let x = cos(angle) * radius;
-    let y = sin(angle) * radius;
+    // Create an ellipse shape: x-radius and y-radius differ, plus subtle variation
+    let radiusX = size * 0.45 + (i % 2 === 0 ? 10 : -10);
+    let radiusY = size * 0.3 + (i % 2 === 0 ? 5 : -5);
+    let x = cos(angle) * radiusX;
+    let y = sin(angle) * radiusY;
     vertex(x, y);
   }
   endShape(CLOSE);
 }
 
 function drawWavyEdge(size, offsetIndex = 5) {
-  let waves = 8 + offsetIndex * 2;
+    let waves = 8 + offsetIndex * 2;
   beginShape();
   for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
-    let r = size * 0.4 + 10 * sin(waves * angle);
-    let x = cos(angle) * r;
-    let y = sin(angle) * r;
+    let rX = size * 0.4 + 10 * sin(waves * angle);
+    let rY = size * 0.25 + 6 * sin(waves * angle);
+    let x = cos(angle) * rX;
+    let y = sin(angle) * rY;
     curveVertex(x, y);
   }
   endShape(CLOSE);
 }
 
 function drawLobedEdge(size, offsetIndex = 1) {
-  let lobes = 5 + offsetIndex;
+ let lobes = 5 + offsetIndex;
   beginShape();
   for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
-    let r = size * 0.4 + 8 * sin(lobes * angle);
-    let x = cos(angle) * r;
-    let y = sin(angle) * r;
+    let rX = size * 0.4 + 8 * sin(lobes * angle);
+    let rY = size * 0.25 + 5 * sin(lobes * angle);
+    let x = cos(angle) * rX;
+    let y = sin(angle) * rY;
     curveVertex(x, y);
   }
   endShape(CLOSE);
@@ -892,9 +896,9 @@ function drawLinearSpikes(size, offsetIndex = 4) {
   for (let i = 0; i < lines; i++) {
     let angle = TWO_PI * i / lines + offsetIndex * 0.05;
     let x1 = cos(angle) * size * 0.3;
-    let y1 = sin(angle) * size * 0.3;
+    let y1 = sin(angle) * size * 0.2; // reduce y radius for ellipse effect
     let x2 = cos(angle) * size * 0.5;
-    let y2 = sin(angle) * size * 0.5;
+    let y2 = sin(angle) * size * 0.35; // reduce y radius
     line(x1, y1, x2, y2);
   }
 }
@@ -905,7 +909,7 @@ function drawSpiralOverlay(size, offsetIndex = 2) {
   for (let a = 0; a < TWO_PI * 3; a += 0.1) {
     let r = size * 0.05 * a + offsetIndex * 2;
     let x = cos(a) * r;
-    let y = sin(a) * r;
+    let y = sin(a) * r * 0.6;  // scale Y for ellipse effect
     vertex(x, y);
   }
   endShape();
@@ -915,13 +919,13 @@ function drawDotRing(size, offsetIndex = 6) {
   let dots = 12 + offsetIndex;
   for (let i = 0; i < dots; i++) {
     let angle = TWO_PI * i / dots;
-    let r = size * 0.4;
-    let x = cos(angle) * r;
-    let y = sin(angle) * r;
+    let rX = size * 0.4;
+    let rY = size * 0.25;       // smaller radius on Y for ellipse
+    let x = cos(angle) * rX;
+    let y = sin(angle) * rY;
     ellipse(x, y, 4);
   }
 }
-
 
 // Draw different line styles based on Animal Type
 function drawAnimalLine(animalType, activities, x, y, size, strokeW = 2) {
