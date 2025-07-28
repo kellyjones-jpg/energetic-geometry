@@ -305,6 +305,7 @@ function setup() {
 
     label.mousePressed(() => {
       selectedYear = year;
+      hasInteracted = true; 
       windowResized(); // update layout and canvas
       updateCounters(entriesByYear[selectedYear]);
 
@@ -395,7 +396,8 @@ function changeYear(direction) {
 
   if (nextIndex !== currentIndex) {
     selectedYear = availableYears[nextIndex];
-    updateYear(selectedYear, nextIndex); // this handles visual updates now
+    hasInteracted = true; 
+    updateYear(selectedYear, nextIndex); // handles visual updates
   }
 }
 
@@ -476,40 +478,37 @@ line(centerX - lineWidth / 2, lineY, centerX + lineWidth / 2, lineY);
 noStroke();
 
   // === DATA FOR SELECTED YEAR ===
-  const yearEntries = entriesByYear[selectedYear] || [];
-  const sortedEntries = [...yearEntries].sort((a, b) => (b.acres || 0) - (a.acres || 0));
+const yearEntries = entriesByYear[selectedYear] || [];
+const sortedEntries = [...yearEntries].sort((a, b) => (b.acres || 0) - (a.acres || 0));
 
-  // === DRAW INSTRUCTIONAL OVERLAY IF NEEDED ===
-  if (showInstructionOverlay) {
-    // Fade out overlay gradually
-    if (overlayOpacity > 0) {
-      overlayOpacity -= 5; // Adjust speed of fade here
-    } else {
-      overlayOpacity = 0;
-      showInstructionOverlay = false; // stop drawing overlay once invisible
-    }
-
-    push();
-    fill(0, overlayOpacity * 0.8);
-    rect(0, 0, width, height);
-
-    textAlign(CENTER, CENTER);
-    fill(255, overlayOpacity);
-    noStroke();
-    textSize(28);
-    text("Select a Year or Arrow to Get Started...", width / 2, height / 2 - 20);
-
-    textSize(20);
-    fill(255, overlayOpacity * 0.7);
-    text("Year Installed: —", width / 2, height / 2 + 20);
-
-    fill(255, overlayOpacity * 0.7);
-    text("Total Sites: —", width / 2, height / 2 + 50);
-    pop();
-
-    // Don't draw sites data underneath while overlay is visible
-    return;
+// === DRAW INSTRUCTIONAL OVERLAY IF NEEDED ===
+if (!hasInteracted) {   // Only show overlay until interaction
+  if (overlayOpacity > 0) {
+    overlayOpacity -= 5;  // Fade speed; adjust as needed
+    overlayOpacity = max(overlayOpacity, 0);
   }
+
+  push();
+  fill(0, overlayOpacity);        // Black overlay with fade
+  rect(0, 0, width, height);     // Full canvas
+
+  textAlign(CENTER, CENTER);
+  noStroke();
+
+  fill(255, overlayOpacity);      // Text with same fade alpha
+  textSize(28);
+  text("Select a Year or Arrow to Get Started...", width / 2, height / 2 - 20);
+
+  fill(255, overlayOpacity * 0.7);
+  textSize(20);
+  text("Year Installed: —", width / 2, height / 2 + 20);
+
+  fill(255, overlayOpacity * 0.7);
+  text("Total Sites: —", width / 2, height / 2 + 50);
+  pop();
+
+  return;  // Skip drawing rest of data until overlay gone
+}
 
 if (sortedEntries.length === 0) {
   fill(255, fadeAlpha);
@@ -722,8 +721,6 @@ function mouseMoved() {
     cursor('default');
     return;
   }
-
-  if (!hasInteracted) hasInteracted = true;
 
   let yearEntries = entriesByYear[selectedYear] || [];
   hoveredEntry = null;
