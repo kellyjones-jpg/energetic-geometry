@@ -563,13 +563,15 @@ function draw() {
 
     if (entry.cropType?.length > 0) {
     const cropEdgeSize = entryShapeSize * 1.7;  // slightly larger than main shape
+    stroke(0, 80);
+      strokeWeight(strokeW + 1.5);
     drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, cropEdgeSize, strokeW);
   }
 
     // === Enhanced Animal Line: draw last ===
     if (entry.animalType?.length > 0) {
       const yOffset = -entryShapeSize * 0.15;
-      const animalSize = entryShapeSize * 1.1;
+      const animalSize = entryShapeSize * 0.55;
 
       // Inner shadow stroke
       stroke(0, 80);
@@ -864,7 +866,7 @@ function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW =
 
 function drawPointedEdge(size, offsetIndex = 0) {
   let steps = 72;
-  let offset = offsetIndex * 1.5;
+  let offset = offsetIndex * 1.1; 
   push();
   translate(offset, -offset);
   beginShape();
@@ -880,8 +882,8 @@ function drawPointedEdge(size, offsetIndex = 0) {
 }
 
 function drawWavyEdge(size, offsetIndex = 0) {
-  let waves = 8;
-  let offset = offsetIndex * 1.5;
+  let waves = 8 
+  let offset = offsetIndex * 1.2; 
   push();
   translate(offset, -offset);
   beginShape();
@@ -896,8 +898,8 @@ function drawWavyEdge(size, offsetIndex = 0) {
 }
 
 function drawLobedEdge(size, offsetIndex = 0) {
-  let lobes = 5;
-  let offset = offsetIndex * 1.5;
+  let lobes = 5
+ let offset = offsetIndex * 1.3; 
   push();
   translate(offset, -offset);
   beginShape();
@@ -913,7 +915,7 @@ function drawLobedEdge(size, offsetIndex = 0) {
 
 function drawLinearSpikes(size, offsetIndex = 0) {
   let lines = 12;
-  let offset = offsetIndex * 1.5;
+  let offset = offsetIndex * 1.4; 
   push();
   translate(offset, -offset);
   for (let i = 0; i < lines; i++) {
@@ -928,8 +930,8 @@ function drawLinearSpikes(size, offsetIndex = 0) {
 }
 
 function drawSpiralOverlay(size, offsetIndex = 0) {
-  let offset = offsetIndex * 1.5;
   noFill();
+  let offset = offsetIndex * 1; 
   push();
   translate(offset, -offset);
   beginShape();
@@ -944,8 +946,8 @@ function drawSpiralOverlay(size, offsetIndex = 0) {
 }
 
 function drawDotRing(size, offsetIndex = 0) {
-  let dots = 12;
-  let offset = offsetIndex * 1.5;
+  let dots = 12 
+  let offset = offsetIndex * 1.5; 
   push();
   translate(offset, -offset);
   for (let i = 0; i < dots; i++) {
@@ -953,7 +955,7 @@ function drawDotRing(size, offsetIndex = 0) {
     let r = size * 0.4;
     let x = cos(angle) * r;
     let y = sin(angle) * r;
-    ellipse(x, y, 4 + offsetIndex * 0.3);
+    ellipse(x, y, 4);
   }
   pop();
 }
