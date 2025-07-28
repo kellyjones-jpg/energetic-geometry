@@ -558,7 +558,7 @@ function draw() {
     }
 
     if (entry.cropType?.length > 0) {
-      drawCropEdgeStyle(entry.habitat, entry.cropType, entry.activities, 0, 0, entryShapeSize, strokeW);
+      drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
     }
 
     // === Enhanced Animal Line: draw last ===
@@ -778,65 +778,62 @@ function updateYear(year, index) {
   }
 }
 
-function drawCropEdgeStyle(habitatList, cropTypeInput, activities, x, y, size, baseStrokeW = 2) {
+function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW = 2) {
   push();
   drawingContext.save();
   drawingContext.beginPath();
 
-  const shapeType = (Array.isArray(habitatList) && habitatList.length > 0)
-    ? getHabitatShapeType(habitatList[0])
+  const shapeType = (Array.isArray(habitat) && habitat.length > 0)
+    ? getHabitatShapeType(habitat[0])
     : 'diamond';
 
   pathShapeByType(shapeType, size * 1.15);
   drawingContext.clip();
 
-  // Normalize cropTypeInput to array
   const cropTypes = Array.isArray(cropTypeInput) ? cropTypeInput : [cropTypeInput];
-
-  // Get unique edge styles from crop types
   const edgeStyles = [...new Set(
-    cropTypes
-      .map(c => cropEdgeStyleMap[c])
-      .filter(Boolean)
-  )];
+  cropTypes.map(c => cropEdgeStyleMap[c]).filter(Boolean)
+    )];
 
-  if (edgeStyles.length === 0) edgeStyles.push("wavy"); // fallback
+    if (edgeStyles.length === 0) {
+      drawingContext.restore();
+      pop();
+      return; // No crop styles to draw
+    }
 
   const totalLayers = 5;
   const maxScaleStep = 0.04;
-  const maxTranslateDist = 4;
+  const baseTranslate = 4;
 
-  // For each edge style
   edgeStyles.forEach((style, sIndex) => {
+    // Calculate outward cascade radius per style
+    const ringOffset = (sIndex + 1) * 7; // Increase to spread styles further outward
+
     for (let j = 0; j < totalLayers; j++) {
       push();
 
-      const scaleFactor = 1 - j * maxScaleStep;
-      const translateDist = map(j, 0, totalLayers - 1, 0, maxTranslateDist);
+      const scaleFactor = 1 + (sIndex * 0.12) - j * maxScaleStep; // Cascading scale per style outward
+      const translateDist = map(j, 0, totalLayers - 1, 0, baseTranslate + sIndex * 2);
       const angleOffset = map(j, 0, totalLayers - 1, 0, TWO_PI);
 
-      // Apply offset per style to prevent overlap
-      const offsetAngle = TWO_PI * (sIndex / edgeStyles.length);
-      const offsetX = cos(offsetAngle) * 2.5;
-      const offsetY = sin(offsetAngle) * 2.5;
-
+      // Radiating outward offset from center
       translate(
-        cos(angleOffset) * translateDist + offsetX,
-        sin(angleOffset) * translateDist + offsetY
+        cos(angleOffset) * translateDist,
+        sin(angleOffset) * translateDist - ringOffset // Push further outside habitat center
       );
+
       scale(scaleFactor);
-      rotate(PI / 60 * j);
+      rotate(PI / 60 * j + sIndex * PI / 18); // unique rotation per ring
 
       let strokeColor = getActivityColor(activities[j % activities.length]);
       if (!strokeColor) strokeColor = color(200);
       else strokeColor = color(strokeColor);
 
       const alpha = max(lerp(200, 70, j / totalLayers), 90);
-      strokeColor.setAlpha(alpha);
-      stroke(strokeColor);
+      strokeColor.setAlpha(alpha * (1 - sIndex * 0.1)); // fade outer rings slightly
 
-      const strokeW = max(baseStrokeW * (1.4 - (j / totalLayers)), 0.8);
-      strokeWeight(strokeW);
+      stroke(strokeColor);
+      strokeWeight(max(baseStrokeW * (1.4 - (j / totalLayers)), 0.8));
       noFill();
 
       switch (style) {
@@ -846,6 +843,7 @@ function drawCropEdgeStyle(habitatList, cropTypeInput, activities, x, y, size, b
         case 'spiral': drawSpiralEdge(size, j); break;
         case 'dotrings': drawDotRingEdge(size, j); break;
         case 'composite': drawCompositeEdge(size, j); break;
+        default: drawWavyEdge(size, j); break;
       }
 
       pop();
@@ -855,6 +853,7 @@ function drawCropEdgeStyle(habitatList, cropTypeInput, activities, x, y, size, b
   drawingContext.restore();
   pop();
 }
+
 
 function drawPointedEdge(size, offsetIndex = 0, j = 0) {
   let steps = 72;
@@ -1044,25 +1043,27 @@ function drawTexturedLine(x, y, length) {
   }
 }
 
-function drawHabitatShape(habitatList, x, y, size, baseColor) {
-  if (!Array.isArray(habitatList)) return;
+function drawHabitatShape(habitat, x, y, size, baseColor) {
+  if (!Array.isArray(habitat)) return;
 
-  habitatList = habitatList
+  habitat = habitat
     .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
     .filter(h => h !== '');
 
-  if (habitatList.length === 0) return;
+  if (habitat.length === 0) return;
 
   push();
   translate(x, y);
   rectMode(CENTER);
   angleMode(RADIANS);
-  noStroke();
 
-  for (let i = 0; i < habitatList.length; i++) {
-    let habitat = habitatList[i];
+  let outlineColor = bgColor.levels[0] > 128 ? color(0) : color(255); // choose black or white
+  stroke(outlineColor);
+
+  for (let i = 0; i < habitat.length; i++) {
+    let habitat = habitat[i];
     let angleOffset = PI / 6 * i;
-    let alpha = map(i, 0, habitatList.length, 200, 60);
+    let alpha = map(i, 0, habitat.length, 200, 60);
     let fillColor = color(
       red(baseColor),
       green(baseColor),
@@ -1159,10 +1160,10 @@ function drawGlowEllipse(size, baseColor) {
 }
 
 
-function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
-  if (!Array.isArray(habitatList) || !Array.isArray(activities)) return;
+function drawCombinedHabitatOverlay(habitat, activities, x, y, size) {
+  if (!Array.isArray(habitat) || !Array.isArray(activities)) return;
 
-  const cleanedHabitats = habitatList
+  const cleanedHabitats = habitat
     .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
     .filter(h => h !== '');
 
@@ -1649,13 +1650,6 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
         strokeWeight(2 + sin((frameCount + r) * 0.1) * 1.5);
         ellipse(0, 0, r * 2, r * 2);
       }
-      // Add dynamic highlight rings simulating reflective glints
-      noFill();
-      stroke(255, 120);
-      strokeWeight(1);
-      ellipse(0, 0, size * 0.6 + sin(frameCount * 0.3) * 8, size * 0.6 + cos(frameCount * 0.3) * 8);
-      ellipse(0, 0, size * 0.8 + cos(frameCount * 0.5) * 6, size * 0.8 + sin(frameCount * 0.5) * 6);
-      break;
   }
 
   pop();
