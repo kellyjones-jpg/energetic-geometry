@@ -8,7 +8,7 @@ let hoveredEntry = null;
 let bgImg;
 let shapeSize, padding, startY, numCols, numRows;
 
-const cropEdgeStyleMap = {
+const cropEdgeGroups = {
   // Root vegetables
   "carrots": "root",
   "beets": "root",
@@ -580,6 +580,8 @@ function draw() {
   }
 }
 
+
+
 function showModalWithEntry(entry) {
   const modalTitle = document.getElementById('siteModalLabel');
   const modalBody = document.getElementById('siteModalBody');
@@ -778,87 +780,109 @@ function updateYear(year, index) {
   }
 }
 
-function drawCropEdgeStyle(baseShape, cropType, activities, habitat, x, y, size, baseStrokeW = 2) {
-  push();
+function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, baseStrokeW = 2) {
+  if (!Array.isArray(cropTypes) || cropTypes.length === 0) return;
+  if (!Array.isArray(activities) || activities.length === 0) return;
 
-  // Lightly expand clip bounds to allow cascaded styles to show fully
+  // Map crops to groups and get unique groups
+  const groups = cropTypes
+    .map(crop => cropEdgeGroups[crop.trim().toLowerCase()])
+    .filter(Boolean);
+  const uniqueGroups = [...new Set(groups)];
+  if (uniqueGroups.length === 0) return;
+
+  const baseShape = getHabitatShapeType(habitat);
+  if (!baseShape) return;
+
+  push();
+  translate(x, y);
+  angleMode(RADIANS);
+  noFill();
+
+  // Create clipping mask with habitat shape to keep edges inside
   drawingContext.save();
   drawingContext.beginPath();
-  pathShapeByType(baseShape, size * 1.15);
+  pathShapeByType(baseShape, size);
   drawingContext.clip();
 
-  // Define styles based on crop type
-  const style = cropEdgeStyleMap[cropType] || 'wavy';
-
-  const totalLayers = 5;
-  const maxScaleStep = 0.04;
-  const maxTranslateDist = 4;
+  // Parameters for scaling, translation, rotation
+  const baseScale = 1.1;
+  const scaleStep = 0.15;
+  const maxTranslateDist = size * 0.15; // max offset distance outward
+  const totalLayers = uniqueGroups.length;
 
   for (let j = 0; j < totalLayers; j++) {
-    push();
+    const group = uniqueGroups[j];
 
-    // Layered styling
-    const scaleFactor = 1 - j * maxScaleStep;
-    const translateDist = map(j, 0, totalLayers - 1, 0, maxTranslateDist);
-    const angleOffset = map(j, 0, totalLayers - 1, 0, TWO_PI);
+    // Decide if this group cascades outward or inward
+    // Outward for root, cruciferous, vine; inward otherwise
+    const cascadeOutward = ['root', 'cruciferous', 'vine'].includes(group);
+    const scaleFactor = cascadeOutward
+      ? baseScale + j * scaleStep // bigger going outward
+      : baseScale - j * scaleStep; // smaller going inward
 
-    // Subtle radial translation and scaling
-    translate(
-      cos(angleOffset) * translateDist,
-      sin(angleOffset) * translateDist
-    );
-    scale(scaleFactor);
-    rotate(PI / 60 * j); // slight rotational layering
+    // Circular translation offset around center for separation
+    const angleOffset = j * (TWO_PI / totalLayers);
+    const translateDist = cascadeOutward
+      ? maxTranslateDist * (0.5 + 0.5 * (j / totalLayers)) // outward with gradual increase
+      : maxTranslateDist * (0.5 - 0.4 * (j / totalLayers)); // inward with slight decrease
 
-    // Color and stroke setup
-    const strokeColor = getActivityColor(activities[j % activities.length]);
-    let alpha = max(lerp(200, 70, j / totalLayers), 90); // Avoid full fadeout
+    // Stroke weight and opacity to create layering depth
+    const strokeW = baseStrokeW * (1.4 - (j / totalLayers));
+    const baseActivity = activities[j % activities.length];
+    let strokeColor = getActivityColor(baseActivity);
+    if (!strokeColor) strokeColor = color(255);
+
+    // Reduce alpha progressively
+    let alpha = lerp(200, 70, j / totalLayers);
     strokeColor.setAlpha(alpha);
+
     stroke(strokeColor);
-
-    const strokeW = max(baseStrokeW * (1.4 - (j / totalLayers)), 0.8);
     strokeWeight(strokeW);
-    noFill();
 
-    // Draw the layered edge style, passing layer index for variation
-    switch (style) {
-      case 'wavy':
-        drawWavyEdge(size, j);
+    push();
+    translate(cos(angleOffset) * translateDist, sin(angleOffset) * translateDist);
+    scale(scaleFactor);
+    rotate(angleOffset * 0.5 + j * 0.1); // subtle rotation for dynamic effect
+
+    switch (group) {
+      case 'root':
+      case 'cruciferous':
+        drawPointedEdge(size);
         break;
-      case 'pointed':
-        drawPointedEdge(size, j);
+      case 'leafy':
+      case 'herb':
+        drawWavyEdge(size);
         break;
-      case 'lobed':
-        drawLobedEdge(size, j);
+      case 'fruit':
+      case 'berry':
+        drawLobedEdge(size);
         break;
-      case 'spiral':
-        drawSpiralEdge(size, j);
+      case 'grain':
+      case 'legume':
+        drawLinearSpikes(size);
         break;
-      case 'dotrings':
-        drawDotRingEdge(size, j);
+      case 'vine':
+        drawSpiralOverlay(size);
         break;
-      case 'composite':
-        drawCompositeEdge(size, j);
-        break;
-      default:
-        drawWavyEdge(size, j);
+      case 'mixed':
+      case 'various':
+        drawDotRing(size);
         break;
     }
-
     pop();
   }
 
-  drawingContext.restore();
+  drawingContext.restore(); // remove clipping mask
   pop();
 }
 
-function drawPointedEdge(size, offsetIndex = 0, j = 0) {
+function drawPointedEdge(size, offsetIndex = 0) {
   let steps = 72;
-  let pointiness = 10 + (offsetIndex + j) * 0.8; // Adjust sharpness per habitat-row combo
   beginShape();
   for (let i = 0; i <= steps; i++) {
     let angle = TWO_PI * i / steps;
-    let radius = size * 0.45 + (i % 2 === 0 ? pointiness : -pointiness);
+    let radius = size * 0.45 + (i % 2 === 0 ? 10 : -10);
     let x = cos(angle) * radius;
     let y = sin(angle) * radius;
     vertex(x, y);
@@ -866,12 +890,11 @@ function drawPointedEdge(size, offsetIndex = 0, j = 0) {
   endShape(CLOSE);
 }
 
-function drawWavyEdge(size, offsetIndex = 0, j = 0) {
-  let waves = 6 + offsetIndex + j;
-  let amp = 10 + 0.5 * j; // wave amplitude grows with j
+function drawWavyEdge(size, offsetIndex = 0) {
+  let waves = 8 + offsetIndex * 2;
   beginShape();
-  for (let angle = 0; angle <= TWO_PI + 0.05; angle += 0.05) {
-    let r = size * 0.4 + amp * sin(waves * angle);
+  for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
+    let r = size * 0.4 + 10 * sin(waves * angle);
     let x = cos(angle) * r;
     let y = sin(angle) * r;
     curveVertex(x, y);
@@ -879,12 +902,11 @@ function drawWavyEdge(size, offsetIndex = 0, j = 0) {
   endShape(CLOSE);
 }
 
-function drawLobedEdge(size, offsetIndex = 0, j = 0) {
-  let lobes = 4 + offsetIndex + floor(j / 2);
-  let amp = 8 + j; // stronger lobes on lower rows
+function drawLobedEdge(size, offsetIndex = 0) {
+  let lobes = 5 + offsetIndex;
   beginShape();
-  for (let angle = 0; angle <= TWO_PI + 0.05; angle += 0.05) {
-    let r = size * 0.4 + amp * sin(lobes * angle);
+  for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
+    let r = size * 0.4 + 8 * sin(lobes * angle);
     let x = cos(angle) * r;
     let y = sin(angle) * r;
     curveVertex(x, y);
@@ -892,27 +914,23 @@ function drawLobedEdge(size, offsetIndex = 0, j = 0) {
   endShape(CLOSE);
 }
 
-function drawLinearSpikes(size, offsetIndex = 0, j = 0) {
-  let lines = 10 + offsetIndex;
-  let lengthMod = 0.05 * j; // Slightly vary length with row
+function drawLinearSpikes(size, offsetIndex = 0) {
+  let lines = 12;
   for (let i = 0; i < lines; i++) {
-    let angle = TWO_PI * i / lines + offsetIndex * 0.04;
-    let x1 = cos(angle) * size * (0.3 + lengthMod);
-    let y1 = sin(angle) * size * (0.3 + lengthMod);
-    let x2 = cos(angle) * size * (0.5 + lengthMod);
-    let y2 = sin(angle) * size * (0.5 + lengthMod);
+    let angle = TWO_PI * i / lines + offsetIndex * 0.05;
+    let x1 = cos(angle) * size * 0.3;
+    let y1 = sin(angle) * size * 0.3;
+    let x2 = cos(angle) * size * 0.5;
+    let y2 = sin(angle) * size * 0.5;
     line(x1, y1, x2, y2);
   }
 }
 
-function drawSpiralOverlay(size, offsetIndex = 0, j = 0) {
+function drawSpiralOverlay(size, offsetIndex = 0) {
   noFill();
-  strokeWeight(1);
-  let tightness = 0.05 + 0.003 * j;
-  let scale = 2 + offsetIndex * 0.5;
   beginShape();
-  for (let a = 0; a < TWO_PI * (2.5 + offsetIndex * 0.3); a += 0.1) {
-    let r = size * tightness * a + j * 0.3;
+  for (let a = 0; a < TWO_PI * 3; a += 0.1) {
+    let r = size * 0.05 * a + offsetIndex * 2;
     let x = cos(a) * r;
     let y = sin(a) * r;
     vertex(x, y);
@@ -920,15 +938,14 @@ function drawSpiralOverlay(size, offsetIndex = 0, j = 0) {
   endShape();
 }
 
-function drawDotRing(size, offsetIndex = 0, j = 0) {
-  let dots = 10 + offsetIndex + j;
-  let dotSize = 3 + 0.2 * j;
+function drawDotRing(size, offsetIndex = 0) {
+  let dots = 12 + offsetIndex;
   for (let i = 0; i < dots; i++) {
     let angle = TWO_PI * i / dots;
     let r = size * 0.4;
     let x = cos(angle) * r;
     let y = sin(angle) * r;
-    ellipse(x, y, dotSize);
+    ellipse(x, y, 4);
   }
 }
 
@@ -1057,51 +1074,32 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
 
   for (let i = 0; i < habitatList.length; i++) {
     let habitat = habitatList[i];
-    let angleOffset = PI / 6 * i;
-    let alpha = map(i, 0, habitatList.length, 200, 60);
-    let fillColor = color(
-      red(baseColor),
-      green(baseColor),
-      blue(baseColor),
-      alpha
-    );
+    let angleOffset = PI / 6 * i; // increase rotation for more tension
+    let alpha = map(i, 0, habitatList.length, 180, 90);
+    let fillColor = color(baseColor.levels[0], baseColor.levels[1], baseColor.levels[2], alpha);
 
-    // Slight scaling and rotation per layer
-    let scaleFactor = 1 - i * 0.08;
+    fill(fillColor);
     push();
     rotate(angleOffset);
-    scale(scaleFactor);
 
-    // Shadow layer (deeper)
-    fill(0, 30);
-    translate(3, 3);
     switch (habitat) {
-      case 'pollinator':
+      case 'pollinator': {
+        // Sharper hexagon with inner grid lines to suggest solar cells
         drawSolarHexagon(size * 0.5);
         break;
-      case 'native grasses':
-        rect(0, 0, size * 0.3, size);
-        break;
-      case 'naturalized':
-        ellipse(0, 0, size, size);
-        break;
-    }
-    translate(-3, -3);
-
-    // Main filled layer
-    fill(fillColor);
-    switch (habitat) {
-      case 'pollinator':
-        drawSolarHexagon(size * 0.5);
-        break;
-      case 'native grasses':
+      }
+      case 'native grasses': {
+        // Taller rectangle with subtle vertical line pattern
         rect(0, 0, size * 0.3, size);
         drawVerticalLines(size * 0.3, size, 5, baseColor);
         break;
-      case 'naturalized':
+      }
+      case 'naturalized': {
+        // Ellipse with radial gradient or subtle glow overlay
         ellipse(0, 0, size, size);
         drawGlowEllipse(size, baseColor);
         break;
+      }
     }
 
     pop();
@@ -1168,6 +1166,7 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
 
   if (cleanedHabitats.length === 0 || cleanedActivities.length === 0) return;
 
+  // Determine number of layers to draw — always one per activity
   const nestingCount = cleanedActivities.length;
 
   push();
@@ -1179,36 +1178,25 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
   const layerStep = 0.85 / nestingCount;
 
   for (let i = 0; i < nestingCount; i++) {
+    // Repeat habitat shapes if fewer than activities
     const habitat = cleanedHabitats[i % cleanedHabitats.length];
     const shapeType = getHabitatShapeType(habitat);
+
+    // Cycle activity color
     const activity = cleanedActivities[i];
     const fillCol = getActivityColor(activity);
     if (!fillCol) continue;
 
-    const angleOffset = radians(i * 12); // more offset per layer
+    const angleOffset = radians(i * 10); // rotation for contrast
     const scaleFactor = 1 - i * layerStep;
     const shapeSize = size * scaleFactor;
+
+    fill(fillCol);
 
     push();
     rotate(angleOffset);
 
-    // Glow ring
-    noFill();
-    stroke(red(fillCol), green(fillCol), blue(fillCol), 40);
-    strokeWeight(6);
-    ellipse(0, 0, shapeSize * 1.1, shapeSize * 1.1);
-    strokeWeight(1);
-    noStroke();
-
-    // Slight blur fill base
-    fill(0, 20);
-    push();
-    translate(2, 2);
-    drawShapeByType(shapeType, shapeSize * 0.95, shapeSize * 0.95);
-    pop();
-
-    // Main layer
-    fill(fillCol);
+    // Tall/narrow for "native grasses"
     if (shapeType === 'rect') {
       drawShapeByType(shapeType, shapeSize * 0.35, shapeSize * 1.1);
     } else {
