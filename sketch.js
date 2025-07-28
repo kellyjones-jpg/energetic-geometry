@@ -492,29 +492,6 @@ function draw() {
   const availableW = width * 0.85;
   const availableH = height - startY - 50;
 
-  // === Size, weight, scale ===
-  let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, shapeSize * 0.6, shapeSize);
-  entryShapeSize = constrain(entryShapeSize, 30, maxCellHeight * 0.85);
-  let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 2, 5.5);
-  strokeW = constrain(strokeW, 2, 5.5);
-
-  const isHovered = hoveredEntry && hoveredEntry.name === entry.name;
-  const baseGlow = map(entry.megawatts || 0, 0, maxMW, 5, 30);
-  const glowStrength = isHovered ? baseGlow * 1.5 : baseGlow;
-
-  const baseScale = 1;
-  const maxScale = 1.2;
-  const minScale = 1.05;
-  const scaleRange = maxScale - minScale;
-  const sizeNorm = map(shapeSize, 30, 150, 0, 1);
-  const hoverScale = minScale + sizeNorm * scaleRange;
-  const targetScale = isHovered ? hoverScale : baseScale;
-  const opArtWave = 0.05 * sin(frameCount * 0.05 + col * 0.5 + row);
-  entry.currentScale = lerp(entry.currentScale || baseScale, targetScale + opArtWave, 0.1);
-
-  const activityColors = (entry.activities || []).map(getActivityColor);
-  const baseColor = getActivityColor(entry.activities?.[0] || '');
-
   // Make spacing depend on actual number of cols/rows:
   const colSpacing = constrain(availableW / max(totalCols, 1), shapeSize * 1.1, shapeSize * 2.0);
   const rowSpacing = availableH / max(totalRows, 1);
@@ -525,6 +502,29 @@ function draw() {
     const col = floor(i / numRows);
     const basePadding = padding;
 
+    // === Size, weight, scale ===
+    let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, shapeSize * 0.6, shapeSize);
+    entryShapeSize = constrain(entryShapeSize, 30, maxCellHeight * 0.85);
+    let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 2, 5.5);
+    strokeW = constrain(strokeW, 2, 5.5);
+
+    const isHovered = hoveredEntry && hoveredEntry.name === entry.name;
+    const baseGlow = map(entry.megawatts || 0, 0, maxMW, 5, 30);
+    const glowStrength = isHovered ? baseGlow * 1.5 : baseGlow;
+
+    const baseScale = 1;
+    const maxScale = 1.2;
+    const minScale = 1.05;
+    const scaleRange = maxScale - minScale;
+    const sizeNorm = map(shapeSize, 30, 150, 0, 1);
+    const hoverScale = minScale + sizeNorm * scaleRange;
+    const targetScale = isHovered ? hoverScale : baseScale;
+    const opArtWave = 0.05 * sin(frameCount * 0.05 + col * 0.5 + row);
+    entry.currentScale = lerp(entry.currentScale || baseScale, targetScale + opArtWave, 0.1);
+
+    const activityColors = (entry.activities || []).map(getActivityColor);
+    const baseColor = getActivityColor(entry.activities?.[0] || '');
+
     // === BOTTOM-UP & OUTWARD GROWTH ===
     const outwardOffset = pow(abs(col - totalCols / 2), 1.2) * 3;
     const horizontalWaveOffset = 10 * sin((row + col) * 0.7);
@@ -533,25 +533,25 @@ function draw() {
     const cx = centerX + (col - (totalCols - 1) / 2) * colSpacing + horizontalWaveOffset;
     const bottomPadding = 60;
     const cy = height - bottomPadding - row * rowSpacing - entryShapeSize / 2 - colStaggerOffset - outwardOffset;
+
     const jitterX = map(noise(i * 0.2, frameCount * 0.002), 0, 1, -10, 10);
     const jitterY = map(noise(i * 0.2 + 500, frameCount * 0.002), 0, 1, -6, 6);
     const finalX = cx + jitterX;
     const finalY = cy + jitterY;
+
     entry._screenX = lerp(entry._screenX || finalX, finalX, 0.1);
     entry._screenY = lerp(entry._screenY || finalY, finalY, 0.1);
-    translate(entry._screenX, entry._screenY);
 
     // Flip angle so larger base is at bottom, lighter top
     const angleOffset = (col % 2 === 0) ? PI / 36 : -PI / 36;
 
     // === DRAW ENTRY GROUP ===
     push();
-    entry._screenX = lerp(entry._screenX || cx, cx, 0.1);
-    entry._screenY = lerp(entry._screenY || cy, cy, 0.1);
-    entry._radius = entryShapeSize * entry.currentScale * 0.5;
     translate(entry._screenX, entry._screenY);
     rotate(angleOffset);
     scale(entry.currentScale);
+
+    entry._radius = entryShapeSize * entry.currentScale * 0.5;
 
     // === Flipped shadow orientation ===
     const shadowInfo = drawSuprematistOpShadowRect(
@@ -563,7 +563,7 @@ function draw() {
       isHovered,
       (entry.animalType?.[0] || ''),
       activityColors,
-      true // <- optional: flag to indicate flipped/light-from-below logic
+      true // flag: flipped/light-from-below logic
     );
 
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
@@ -575,7 +575,7 @@ function draw() {
     if (entry.activities && entry.habitat) {
       stroke(0, 80);
       strokeWeight(strokeW + 1.5);
-      drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize, strokeW = 2);
+      drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize, 2);
     }
 
     if (entry.arrayType) {
@@ -588,8 +588,7 @@ function draw() {
       pop();
     }
 
-     if (entry.cropType?.length > 0) {
-      const cropEdgeSize = entryShapeSize * 1.7;
+    if (entry.cropType?.length > 0) {
       drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize, strokeW);
     }
 
@@ -608,6 +607,7 @@ function draw() {
     pop(); // === END ENTRY GROUP ===
   }
 }
+
 
 function showModalWithEntry(entry) {
   const modalTitle = document.getElementById('siteModalLabel');
