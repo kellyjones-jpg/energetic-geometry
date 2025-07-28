@@ -568,16 +568,14 @@ function draw() {
     }
 
     if (entry.cropType?.length > 0) {
-    const cropEdgeSize = entryShapeSize * 1.3;  // slightly larger than main shape
-    stroke(0, 80);
-      strokeWeight(strokeW + 1.5);
+    const cropEdgeSize = entryShapeSize * 1.5;  // slightly larger than main shape
     drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, cropEdgeSize, strokeW);
   }
 
     // === Enhanced Animal Line: draw last ===
     if (entry.animalType?.length > 0) {
-      const yOffset = -entryShapeSize * 0.15;
-      const animalSize = entryShapeSize * 1.1;
+      const yOffset = -entryShapeSize * 1.1;
+      const animalSize = entryShapeSize * 0.7;
 
       // Inner shadow stroke
       stroke(0, 80);
@@ -1087,7 +1085,8 @@ function drawHabitatShape(habitatList, x, y, size, baseColor, strokeW = 2) {
   translate(x, y);
   rectMode(CENTER);
   angleMode(RADIANS);
-  stroke(255);
+  strokeWeight(strokeW);
+  stroke(0, 60);
 
   for (let i = 0; i < habitatList.length; i++) {
     let habitat = habitatList[i];
@@ -1208,7 +1207,8 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size, strokeW
   translate(x, y);
   angleMode(RADIANS);
   rectMode(CENTER);
-  stroke(255);
+  strokeWeight(strokeW);
+  stroke(0, 60);
   
   const layerStep = 0.85 / nestingCount;
 
@@ -1276,6 +1276,7 @@ function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, dens
   translate(x, y);
   rectMode(CENTER);
   strokeWeight(strokeW);
+  stroke(0, 60);
   noFill();
 
   switch (arrayType.toLowerCase()) {
