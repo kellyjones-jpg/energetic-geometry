@@ -492,6 +492,29 @@ function draw() {
   const availableW = width * 0.85;
   const availableH = height - startY - 50;
 
+  // === Size, weight, scale ===
+  let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, shapeSize * 0.6, shapeSize);
+  entryShapeSize = constrain(entryShapeSize, 30, maxCellHeight * 0.85);
+  let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 2, 5.5);
+  strokeW = constrain(strokeW, 2, 5.5);
+
+  const isHovered = hoveredEntry && hoveredEntry.name === entry.name;
+  const baseGlow = map(entry.megawatts || 0, 0, maxMW, 5, 30);
+  const glowStrength = isHovered ? baseGlow * 1.5 : baseGlow;
+
+  const baseScale = 1;
+  const maxScale = 1.2;
+  const minScale = 1.05;
+  const scaleRange = maxScale - minScale;
+  const sizeNorm = map(shapeSize, 30, 150, 0, 1);
+  const hoverScale = minScale + sizeNorm * scaleRange;
+  const targetScale = isHovered ? hoverScale : baseScale;
+  const opArtWave = 0.05 * sin(frameCount * 0.05 + col * 0.5 + row);
+  entry.currentScale = lerp(entry.currentScale || baseScale, targetScale + opArtWave, 0.1);
+
+  const activityColors = (entry.activities || []).map(getActivityColor);
+  const baseColor = getActivityColor(entry.activities?.[0] || '');
+
   // Make spacing depend on actual number of cols/rows:
   const colSpacing = constrain(availableW / max(totalCols, 1), shapeSize * 1.1, shapeSize * 2.0);
   const rowSpacing = availableH / max(totalRows, 1);
@@ -517,29 +540,6 @@ function draw() {
     entry._screenX = lerp(entry._screenX || finalX, finalX, 0.1);
     entry._screenY = lerp(entry._screenY || finalY, finalY, 0.1);
     translate(entry._screenX, entry._screenY);
-
-    // === Size, weight, scale ===
-    let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, shapeSize * 0.6, shapeSize);
-    entryShapeSize = constrain(entryShapeSize, 30, maxCellHeight * 0.85);
-    let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 2, 5.5);
-    strokeW = constrain(strokeW, 2, 5.5);
-
-    const isHovered = hoveredEntry && hoveredEntry.name === entry.name;
-    const baseGlow = map(entry.megawatts || 0, 0, maxMW, 5, 30);
-    const glowStrength = isHovered ? baseGlow * 1.5 : baseGlow;
-
-    const baseScale = 1;
-    const maxScale = 1.2;
-    const minScale = 1.05;
-    const scaleRange = maxScale - minScale;
-    const sizeNorm = map(shapeSize, 30, 150, 0, 1);
-    const hoverScale = minScale + sizeNorm * scaleRange;
-    const targetScale = isHovered ? hoverScale : baseScale;
-    const opArtWave = 0.05 * sin(frameCount * 0.05 + col * 0.5 + row);
-    entry.currentScale = lerp(entry.currentScale || baseScale, targetScale + opArtWave, 0.1);
-
-    const activityColors = (entry.activities || []).map(getActivityColor);
-    const baseColor = getActivityColor(entry.activities?.[0] || '');
 
     // Flip angle so larger base is at bottom, lighter top
     const angleOffset = (col % 2 === 0) ? PI / 36 : -PI / 36;
