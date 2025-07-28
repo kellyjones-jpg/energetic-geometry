@@ -811,7 +811,7 @@ function drawCropEdgeStyle(baseShape, cropType, activities, habitat, x, y, size,
     rotate(PI / 60 * j); // slight rotational layering
 
     // Color and stroke setup
-    const strokeColor = color(getActivityColor(activities[j % activities.length]));
+    const strokeColor = getActivityColor(activities[j % activities.length]);
     let alpha = max(lerp(200, 70, j / totalLayers), 90); // Avoid full fadeout
     strokeColor.setAlpha(alpha);
     stroke(strokeColor);
