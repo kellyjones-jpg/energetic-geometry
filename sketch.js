@@ -233,8 +233,8 @@ function setup() {
     let activities = activityStr.split(/,\s*/).map(a => a.trim().toLowerCase()).filter(a => a.length > 0);
     let habitatStr = String(table.getString(i, 'Habitat Type') || '').trim();
     let habitat = habitatStr ? habitatStr.split(/,\s*/) : [];
-    let animalTypetr = table.getString(i, 'Animal Type') || '';
-    let animalType = animalTypetr.split(/,\s*/).map(a => a.trim().toLowerCase()).filter(a => a.length > 0);
+    let animalTypeStr = table.getString(i, 'Animal Type') || '';
+    let animalType = animalTypeStr.split(/,\s*/).map(a => a.trim().toLowerCase()).filter(a => a.length > 0);
     let cropTypeStr = table.getString(i, 'Crop Types') || '';
     let cropType = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
     let arrayTypeStr = table.getString(i, 'Type Of Array') || '';
@@ -559,8 +559,8 @@ function draw() {
 
     if (entry.cropType?.length > 0) {
     const cropEdgeSize = entryShapeSize * 1.1;  // slightly larger than main shape
-    drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, entry.animalType, 0, 0, cropEdgeSize, strokeW);
-    }
+    drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, cropEdgeSize, strokeW);
+  }
 
     // === Enhanced Animal Line: draw last ===
     if (entry.animalType?.length > 0) {
@@ -779,601 +779,147 @@ function updateYear(year, index) {
   }
 }
 
-function drawCropEdgeStyle(cropTypes, activities, habitat, animalType, x, y, size, strokeW = 2) {
+function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW = 2) {
   if (!Array.isArray(cropTypes) || cropTypes.length === 0) return;
   if (!Array.isArray(activities) || activities.length === 0) return;
-  
   const groups = cropTypes
     .map(crop => cropEdgeGroups[crop.trim().toLowerCase()])
     .filter(Boolean);
-  
   const uniqueGroups = [...new Set(groups)];
   if (uniqueGroups.length === 0) return;
-  
+
   const baseShape = getHabitatShapeType(habitat);
-  
+
   push();
   translate(x, y);
   angleMode(RADIANS);
-  
-  // Clipping mask based on habitat shape
+
+  // Create clipping mask with habitat shape
   beginShape();
-  drawingContext.save();
+  drawingContext.save(); // Save global canvas state
   drawingContext.beginPath();
-  
-  pathShapeByType(baseShape, size);  // define clipping path
-  
-  drawingContext.clip();
-  
+
+  // Approximate the clipping region
+  pathShapeByType(baseShape, size); // defines path only (no fill/stroke)
+  drawingContext.clip(); // Activate clip
+
+  // Draw the crop edge overlays (they will now be clipped to the shape)
   noFill();
   strokeWeight(strokeW);
-  
+
   for (let i = 0; i < activities.length; i++) {
-    const activity = activities[i];
-    const strokeColor = getActivityColor(activity);
+    let activity = activities[i];
+    let strokeColor = getActivityColor(activity);
     if (!strokeColor) continue;
+
     stroke(strokeColor);
-    
+
     for (let j = 0; j < uniqueGroups.length; j++) {
-      const group = uniqueGroups[j];
-      
-      // Pass habitat and animalType here for edge style logic/fallbacks
+      let group = uniqueGroups[j];
       switch (group) {
         case 'root':
         case 'cruciferous':
-          drawPointedEdge(size, j + i, habitat, animalType);
+          drawPointedEdge(size, j + i);
           break;
         case 'leafy':
         case 'herb':
-          drawWavyEdge(size, j + i, habitat, animalType);
+          drawWavyEdge(size, j + i);
           break;
         case 'fruit':
         case 'berry':
-          drawLobedEdge(size, j + i, habitat, animalType);
+          drawLobedEdge(size, j + i);
           break;
         case 'grain':
         case 'legume':
-          drawLinearSpikes(size, j + i, habitat, animalType);
+          drawLinearSpikes(size, j + i);
           break;
         case 'vine':
-          drawSpiralOverlay(size, j + i, habitat, animalType);
+          drawSpiralOverlay(size, j + i);
           break;
         case 'mixed':
         case 'various':
-          drawDotRing(size, j + i, habitat, animalType);
-          break;
-        default:
-          // Fallback diamond shape when unknown group
-          drawDiamond(size);
+          drawDotRing(size, j + i);
           break;
       }
     }
   }
-  
-  drawingContext.restore();
+
+  drawingContext.restore(); // Restore drawing context
   pop();
 }
 
-function drawPointedEdge(size, offsetIndex = 3, habitatList = [], animalTypeList = []) {
-  // Determine habitat shape type
-  let habitatShape = null;
-  if (Array.isArray(habitatList)) {
-    for (const h of habitatList) {
-      habitatShape = getHabitatShapeType(h);
-      if (habitatShape) break;
-    }
-  }
-
-  // Check if animalType exists
-  let hasAnimal = Array.isArray(animalTypeList) && animalTypeList.length > 0;
-
-  // Draw habitat shape if available
-  if (habitatShape === 'hexagon') {
-    drawSolarHexagon(size * 0.5);
-    return;
-  } else if (habitatShape === 'rect') {
-    rectMode(CENTER);
-    rect(0, 0, size * 0.7, size);
-    return;
-  } else if (habitatShape === 'ellipse') {
-    ellipse(0, 0, size, size);
-    return;
-  } 
-
-  // Else draw pointed edge if animalType exists
-  if (hasAnimal) {
-    // Your original pointed edge style with wave pattern
-    let steps = 72;
-    beginShape();
-    for (let i = 0; i <= steps; i++) {
-      let angle = TWO_PI * i / steps;
-      let radius = size * 0.45 + (i % 2 === 0 ? 10 : -10);
-      let x = cos(angle) * radius;
-      let y = sin(angle) * radius;
-      vertex(x, y);
-    }
-    endShape(CLOSE);
-    return;
-  }
-
-  // Fallback diamond if no habitat or animal type
-  drawDiamond(size);
-}
-
-// Similarly update other edge functions:
-
-function drawWavyEdge(size, offsetIndex = 5, habitatList = [], animalTypeList = []) {
-  let habitatShape = null;
-  if (Array.isArray(habitatList)) {
-    for (const h of habitatList) {
-      habitatShape = getHabitatShapeType(h);
-      if (habitatShape) break;
-    }
-  }
-
-  let hasAnimal = Array.isArray(animalTypeList) && animalTypeList.length > 0;
-
-  if (habitatShape === 'hexagon') {
-    drawSolarHexagon(size * 0.5);
-    return;
-  } else if (habitatShape === 'rect') {
-    rectMode(CENTER);
-    rect(0, 0, size * 0.7, size);
-    return;
-  } else if (habitatShape === 'ellipse') {
-    ellipse(0, 0, size, size);
-    return;
-  }
-
-  if (hasAnimal) {
-    let waves = 8 + offsetIndex * 2;
-    beginShape();
-    for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
-      let r = size * 0.4 + 10 * sin(waves * angle);
-      let x = cos(angle) * r;
-      let y = sin(angle) * r;
-      curveVertex(x, y);
-    }
-    endShape(CLOSE);
-    return;
-  }
-
-  drawDiamond(size);
-}
-
-function drawDiamond(size) {
+function drawPointedEdge(size, offsetIndex = 3) {
+  let steps = 72;
   beginShape();
-  vertex(0, -size * 0.5);
-  vertex(size * 0.5, 0);
-  vertex(0, size * 0.5);
-  vertex(-size * 0.5, 0);
+  for (let i = 0; i <= steps; i++) {
+    let angle = TWO_PI * i / steps;
+    let radius = size * 0.45 + (i % 2 === 0 ? 10 : -10);
+    let x = cos(angle) * radius;
+    let y = sin(angle) * radius;
+    vertex(x, y);
+  }
   endShape(CLOSE);
 }
 
-function drawWavyEdge(size, offsetIndex = 3, habitatList = [], animalTypeList = []) {
-  // Determine habitat shape type
-  let habitatShape = null;
-  if (Array.isArray(habitatList)) {
-    for (const h of habitatList) {
-      habitatShape = getHabitatShapeType(h);
-      if (habitatShape) break;
-    }
+function drawWavyEdge(size, offsetIndex = 5) {
+  let waves = 8 + offsetIndex * 2;
+  beginShape();
+  for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
+    let r = size * 0.4 + 10 * sin(waves * angle);
+    let x = cos(angle) * r;
+    let y = sin(angle) * r;
+    curveVertex(x, y);
   }
-
-  // Check if animalType exists
-  let hasAnimal = Array.isArray(animalTypeList) && animalTypeList.length > 0;
-
-  // Draw habitat shape if available
-  if (habitatShape === 'hexagon') {
-    drawSolarHexagon(size * 0.5);
-    return;
-  } else if (habitatShape === 'rect') {
-    rectMode(CENTER);
-    rect(0, 0, size * 0.7, size);
-    return;
-  } else if (habitatShape === 'ellipse') {
-    ellipse(0, 0, size, size);
-    return;
-  } 
-
-  // Else draw pointed edge if animalType exists
-  if (hasAnimal) {
-    // Your original pointed edge style with wave pattern
-    let steps = 72;
-    beginShape();
-    for (let i = 0; i <= steps; i++) {
-      let angle = TWO_PI * i / steps;
-      let radius = size * 0.45 + (i % 2 === 0 ? 10 : -10);
-      let x = cos(angle) * radius;
-      let y = sin(angle) * radius;
-      vertex(x, y);
-    }
-    endShape(CLOSE);
-    return;
-  }
-
-  // Fallback diamond if no habitat or animal type
-  drawDiamond(size);
+  endShape(CLOSE);
 }
 
-function drawWavyEdge(size, offsetIndex = 5, habitatList = [], animalTypeList = []) {
-  let habitatShape = null;
-  if (Array.isArray(habitatList)) {
-    for (const h of habitatList) {
-      habitatShape = getHabitatShapeType(h);
-      if (habitatShape) break;
-    }
+function drawLobedEdge(size, offsetIndex = 1) {
+  let lobes = 5 + offsetIndex;
+  beginShape();
+  for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
+    let r = size * 0.4 + 8 * sin(lobes * angle);
+    let x = cos(angle) * r;
+    let y = sin(angle) * r;
+    curveVertex(x, y);
   }
-
-  let hasAnimal = Array.isArray(animalTypeList) && animalTypeList.length > 0;
-
-  if (habitatShape === 'hexagon') {
-    drawSolarHexagon(size * 0.5);
-    return;
-  } else if (habitatShape === 'rect') {
-    rectMode(CENTER);
-    rect(0, 0, size * 0.7, size);
-    return;
-  } else if (habitatShape === 'ellipse') {
-    ellipse(0, 0, size, size);
-    return;
-  }
-
-  if (hasAnimal) {
-    let waves = 8 + offsetIndex * 2;
-    beginShape();
-    for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
-      let r = size * 0.4 + 10 * sin(waves * angle);
-      let x = cos(angle) * r;
-      let y = sin(angle) * r;
-      curveVertex(x, y);
-    }
-    endShape(CLOSE);
-    return;
-  }
-
-  drawDiamond(size);
+  endShape(CLOSE);
 }
 
-function drawLobedEdge(size, offsetIndex = 3, habitatList = [], animalTypeList = []) {
-  // Determine habitat shape type
-  let habitatShape = null;
-  if (Array.isArray(habitatList)) {
-    for (const h of habitatList) {
-      habitatShape = getHabitatShapeType(h);
-      if (habitatShape) break;
-    }
+function drawLinearSpikes(size, offsetIndex = 4) {
+  let lines = 12;
+  for (let i = 0; i < lines; i++) {
+    let angle = TWO_PI * i / lines + offsetIndex * 0.05;
+    let x1 = cos(angle) * size * 0.3;
+    let y1 = sin(angle) * size * 0.3;
+    let x2 = cos(angle) * size * 0.5;
+    let y2 = sin(angle) * size * 0.5;
+    line(x1, y1, x2, y2);
   }
-
-  // Check if animalType exists
-  let hasAnimal = Array.isArray(animalTypeList) && animalTypeList.length > 0;
-
-  // Draw habitat shape if available
-  if (habitatShape === 'hexagon') {
-    drawSolarHexagon(size * 0.5);
-    return;
-  } else if (habitatShape === 'rect') {
-    rectMode(CENTER);
-    rect(0, 0, size * 0.7, size);
-    return;
-  } else if (habitatShape === 'ellipse') {
-    ellipse(0, 0, size, size);
-    return;
-  } 
-
-  // Else draw pointed edge if animalType exists
-  if (hasAnimal) {
-    // Your original pointed edge style with wave pattern
-    let steps = 72;
-    beginShape();
-    for (let i = 0; i <= steps; i++) {
-      let angle = TWO_PI * i / steps;
-      let radius = size * 0.45 + (i % 2 === 0 ? 10 : -10);
-      let x = cos(angle) * radius;
-      let y = sin(angle) * radius;
-      vertex(x, y);
-    }
-    endShape(CLOSE);
-    return;
-  }
-
-  // Fallback diamond if no habitat or animal type
-  drawDiamond(size);
 }
 
-function drawWavyEdge(size, offsetIndex = 5, habitatList = [], animalTypeList = []) {
-  let habitatShape = null;
-  if (Array.isArray(habitatList)) {
-    for (const h of habitatList) {
-      habitatShape = getHabitatShapeType(h);
-      if (habitatShape) break;
-    }
+function drawSpiralOverlay(size, offsetIndex = 2) {
+  noFill();
+  beginShape();
+  for (let a = 0; a < TWO_PI * 3; a += 0.1) {
+    let r = size * 0.05 * a + offsetIndex * 2;
+    let x = cos(a) * r;
+    let y = sin(a) * r;
+    vertex(x, y);
   }
-
-  let hasAnimal = Array.isArray(animalTypeList) && animalTypeList.length > 0;
-
-  if (habitatShape === 'hexagon') {
-    drawSolarHexagon(size * 0.5);
-    return;
-  } else if (habitatShape === 'rect') {
-    rectMode(CENTER);
-    rect(0, 0, size * 0.7, size);
-    return;
-  } else if (habitatShape === 'ellipse') {
-    ellipse(0, 0, size, size);
-    return;
-  }
-
-  if (hasAnimal) {
-    let waves = 8 + offsetIndex * 2;
-    beginShape();
-    for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
-      let r = size * 0.4 + 10 * sin(waves * angle);
-      let x = cos(angle) * r;
-      let y = sin(angle) * r;
-      curveVertex(x, y);
-    }
-    endShape(CLOSE);
-    return;
-  }
-
-  drawDiamond(size);
+  endShape();
 }
 
-function drawLinearSpikes(size, offsetIndex = 0, habitatList = [], animalTypeList = []) {
-  // Determine habitat shape type
-  let habitatShape = null;
-  if (Array.isArray(habitatList)) {
-    for (const h of habitatList) {
-      habitatShape = getHabitatShapeType(h);
-      if (habitatShape) break;
-    }
+function drawDotRing(size, offsetIndex = 6) {
+  let dots = 12 + offsetIndex;
+  for (let i = 0; i < dots; i++) {
+    let angle = TWO_PI * i / dots;
+    let r = size * 0.4;
+    let x = cos(angle) * r;
+    let y = sin(angle) * r;
+    ellipse(x, y, 4);
   }
-
-  // Check if animalType exists
-  let hasAnimal = Array.isArray(animalTypeList) && animalTypeList.length > 0;
-
-  // Draw habitat shape if available
-  if (habitatShape === 'hexagon') {
-    drawSolarHexagon(size * 0.5);
-    return;
-  } else if (habitatShape === 'rect') {
-    rectMode(CENTER);
-    rect(0, 0, size * 0.7, size);
-    return;
-  } else if (habitatShape === 'ellipse') {
-    ellipse(0, 0, size, size);
-    return;
-  } 
-
-  // Else draw pointed edge if animalType exists
-  if (hasAnimal) {
-    // Your original pointed edge style with wave pattern
-    let steps = 72;
-    beginShape();
-    for (let i = 0; i <= steps; i++) {
-      let angle = TWO_PI * i / steps;
-      let radius = size * 0.45 + (i % 2 === 0 ? 10 : -10);
-      let x = cos(angle) * radius;
-      let y = sin(angle) * radius;
-      vertex(x, y);
-    }
-    endShape(CLOSE);
-    return;
-  }
-
-  // Fallback diamond if no habitat or animal type
-  drawDiamond(size);
 }
 
-function drawWavyEdge(size, offsetIndex = 1, habitatList = [], animalTypeList = []) {
-  let habitatShape = null;
-  if (Array.isArray(habitatList)) {
-    for (const h of habitatList) {
-      habitatShape = getHabitatShapeType(h);
-      if (habitatShape) break;
-    }
-  }
-
-  let hasAnimal = Array.isArray(animalTypeList) && animalTypeList.length > 0;
-
-  if (habitatShape === 'hexagon') {
-    drawSolarHexagon(size * 0.5);
-    return;
-  } else if (habitatShape === 'rect') {
-    rectMode(CENTER);
-    rect(0, 0, size * 0.7, size);
-    return;
-  } else if (habitatShape === 'ellipse') {
-    ellipse(0, 0, size, size);
-    return;
-  }
-
-  if (hasAnimal) {
-    let waves = 8 + offsetIndex * 2;
-    beginShape();
-    for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
-      let r = size * 0.4 + 10 * sin(waves * angle);
-      let x = cos(angle) * r;
-      let y = sin(angle) * r;
-      curveVertex(x, y);
-    }
-    endShape(CLOSE);
-    return;
-  }
-
-  drawDiamond(size);
-}
-
-function drawSpiralOverlay(size, offsetIndex = 2, habitatList = [], animalTypeList = []) {
-  // Determine habitat shape type
-  let habitatShape = null;
-  if (Array.isArray(habitatList)) {
-    for (const h of habitatList) {
-      habitatShape = getHabitatShapeType(h);
-      if (habitatShape) break;
-    }
-  }
-
-  // Check if animalType exists
-  let hasAnimal = Array.isArray(animalTypeList) && animalTypeList.length > 0;
-
-  // Draw habitat shape if available
-  if (habitatShape === 'hexagon') {
-    drawSolarHexagon(size * 0.5);
-    return;
-  } else if (habitatShape === 'rect') {
-    rectMode(CENTER);
-    rect(0, 0, size * 0.7, size);
-    return;
-  } else if (habitatShape === 'ellipse') {
-    ellipse(0, 0, size, size);
-    return;
-  } 
-
-  // Else draw pointed edge if animalType exists
-  if (hasAnimal) {
-    // Your original pointed edge style with wave pattern
-    let steps = 72;
-    beginShape();
-    for (let i = 0; i <= steps; i++) {
-      let angle = TWO_PI * i / steps;
-      let radius = size * 0.45 + (i % 2 === 0 ? 10 : -10);
-      let x = cos(angle) * radius;
-      let y = sin(angle) * radius;
-      vertex(x, y);
-    }
-    endShape(CLOSE);
-    return;
-  }
-
-  // Fallback diamond if no habitat or animal type
-  drawDiamond(size);
-}
-
-function drawWavyEdge(size, offsetIndex = 4, habitatList = [], animalTypeList = []) {
-  let habitatShape = null;
-  if (Array.isArray(habitatList)) {
-    for (const h of habitatList) {
-      habitatShape = getHabitatShapeType(h);
-      if (habitatShape) break;
-    }
-  }
-
-  let hasAnimal = Array.isArray(animalTypeList) && animalTypeList.length > 0;
-
-  if (habitatShape === 'hexagon') {
-    drawSolarHexagon(size * 0.5);
-    return;
-  } else if (habitatShape === 'rect') {
-    rectMode(CENTER);
-    rect(0, 0, size * 0.7, size);
-    return;
-  } else if (habitatShape === 'ellipse') {
-    ellipse(0, 0, size, size);
-    return;
-  }
-
-  if (hasAnimal) {
-    let waves = 8 + offsetIndex * 2;
-    beginShape();
-    for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
-      let r = size * 0.4 + 10 * sin(waves * angle);
-      let x = cos(angle) * r;
-      let y = sin(angle) * r;
-      curveVertex(x, y);
-    }
-    endShape(CLOSE);
-    return;
-  }
-
-  drawDiamond(size);
-}
-
-function drawDotRing(size, offsetIndex = 4, habitatList = [], animalTypeList = []) {
-  // Determine habitat shape type
-  let habitatShape = null;
-  if (Array.isArray(habitatList)) {
-    for (const h of habitatList) {
-      habitatShape = getHabitatShapeType(h);
-      if (habitatShape) break;
-    }
-  }
-
-  // Check if animalType exists
-  let hasAnimal = Array.isArray(animalTypeList) && animalTypeList.length > 0;
-
-  // Draw habitat shape if available
-  if (habitatShape === 'hexagon') {
-    drawSolarHexagon(size * 0.5);
-    return;
-  } else if (habitatShape === 'rect') {
-    rectMode(CENTER);
-    rect(0, 0, size * 0.7, size);
-    return;
-  } else if (habitatShape === 'ellipse') {
-    ellipse(0, 0, size, size);
-    return;
-  } 
-
-  // Else draw pointed edge if animalType exists
-  if (hasAnimal) {
-    // Your original pointed edge style with wave pattern
-    let steps = 72;
-    beginShape();
-    for (let i = 0; i <= steps; i++) {
-      let angle = TWO_PI * i / steps;
-      let radius = size * 0.45 + (i % 2 === 0 ? 10 : -10);
-      let x = cos(angle) * radius;
-      let y = sin(angle) * radius;
-      vertex(x, y);
-    }
-    endShape(CLOSE);
-    return;
-  }
-
-  // Fallback diamond if no habitat or animal type
-  drawDiamond(size);
-}
-
-function drawWavyEdge(size, offsetIndex = 4, habitatList = [], animalTypeList = []) {
-  let habitatShape = null;
-  if (Array.isArray(habitatList)) {
-    for (const h of habitatList) {
-      habitatShape = getHabitatShapeType(h);
-      if (habitatShape) break;
-    }
-  }
-
-  let hasAnimal = Array.isArray(animalTypeList) && animalTypeList.length > 0;
-
-  if (habitatShape === 'hexagon') {
-    drawSolarHexagon(size * 0.5);
-    return;
-  } else if (habitatShape === 'rect') {
-    rectMode(CENTER);
-    rect(0, 0, size * 0.7, size);
-    return;
-  } else if (habitatShape === 'ellipse') {
-    ellipse(0, 0, size, size);
-    return;
-  }
-
-  if (hasAnimal) {
-    let waves = 8 + offsetIndex * 2;
-    beginShape();
-    for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
-      let r = size * 0.4 + 10 * sin(waves * angle);
-      let x = cos(angle) * r;
-      let y = sin(angle) * r;
-      curveVertex(x, y);
-    }
-    endShape(CLOSE);
-    return;
-  }
-
-  drawDiamond(size);
-}
 
 // Draw different line styles based on Animal Type
 function drawAnimalLine(animalType, activities, x, y, size, strokeW = 2) {
@@ -1535,7 +1081,7 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
     fill(fillColor);
     switch (habitat) {
       case 'pollinator':
-        drawSolarHexagon(size * 0.3);
+        drawSolarHexagon(size * 0.5);
         break;
       case 'native grasses':
         rect(0, 0, size * 0.3, size);
@@ -1617,7 +1163,7 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
   translate(x, y);
   angleMode(RADIANS);
   rectMode(CENTER);
-  stroke(255);
+  noStroke();
 
   const layerStep = 0.85 / nestingCount;
 
