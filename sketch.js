@@ -533,7 +533,26 @@ function draw() {
     scale(entry.currentScale);
 
     // === Suprematist-style shadow + frame ===
-    const shadowInfo = drawSuprematistOpShadowRect(
+    const shadowInfo = getSuprematistShadowBounds(
+      entryShapeSize,
+      entry.megawatts,
+      entry.habitat
+    );
+
+    if (entry.cropType?.length > 0) {
+      const fullWrapSize = shadowInfo.size * 1.2;
+      drawCropEdgeStyle(
+        entry.cropType,
+        entry.activities,
+        entry.habitat,
+        shadowInfo.offsetX,
+        shadowInfo.offsetY,
+        fullWrapSize,
+        strokeW
+      );
+    }
+
+    drawSuprematistOpShadowRect(
       entryShapeSize,
       entry.megawatts,
       entry.habitat,
@@ -560,11 +579,6 @@ function draw() {
       drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10);
       pop();
     }
-
-    if (entry.cropType?.length > 0) {
-    const cropEdgeSize = entryShapeSize * 1.1;  // slightly larger than main shape
-    drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, cropEdgeSize, strokeW);
-  }
 
     // === Enhanced Animal Line: draw last ===
     if (entry.animalType?.length > 0) {
@@ -864,8 +878,13 @@ function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW =
 
 function drawPointedEdge(size, offsetIndex = 0) {
   let steps = 72;
+  let offset = offsetIndex * 1.5;
+  let zAlpha = map(offsetIndex, 0, 5, 255, 80); // Fade for z-depth
   push();
-  translate(offsetIndex * 2, -offsetIndex * 2);  // slight spatial shift
+  translate(offset, -offset);
+  strokeWeight(1.5 + offsetIndex * 0.25);
+  stroke(255, zAlpha);
+  noFill();
   beginShape();
   for (let i = 0; i <= steps; i++) {
     let angle = TWO_PI * i / steps;
@@ -879,9 +898,14 @@ function drawPointedEdge(size, offsetIndex = 0) {
 }
 
 function drawWavyEdge(size, offsetIndex = 0) {
-  let waves = 8 + offsetIndex * 2;
+  let waves = 8;
+  let offset = offsetIndex * 1.5;
+  let zAlpha = map(offsetIndex, 0, 5, 255, 80);
   push();
-  translate(-offsetIndex * 2, offsetIndex * 2);  // opposite direction
+  translate(offset, -offset);
+  strokeWeight(1.5 + offsetIndex * 0.25);
+  stroke(255, zAlpha);
+  noFill();
   beginShape();
   for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
     let r = size * 0.4 + 10 * sin(waves * angle);
@@ -894,9 +918,14 @@ function drawWavyEdge(size, offsetIndex = 0) {
 }
 
 function drawLobedEdge(size, offsetIndex = 0) {
-  let lobes = 5 + offsetIndex;
+  let lobes = 5;
+  let offset = offsetIndex * 1.5;
+  let zAlpha = map(offsetIndex, 0, 5, 255, 80);
   push();
-  translate(offsetIndex * 1.5, offsetIndex * 1.5);
+  translate(offset, -offset);
+  strokeWeight(1.5 + offsetIndex * 0.25);
+  stroke(255, zAlpha);
+  noFill();
   beginShape();
   for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
     let r = size * 0.4 + 8 * sin(lobes * angle);
@@ -910,8 +939,12 @@ function drawLobedEdge(size, offsetIndex = 0) {
 
 function drawLinearSpikes(size, offsetIndex = 0) {
   let lines = 12;
+  let offset = offsetIndex * 1.5;
+  let zAlpha = map(offsetIndex, 0, 5, 255, 80);
   push();
-  translate(offsetIndex * 3, -offsetIndex);  // adjusted vector
+  translate(offset, -offset);
+  strokeWeight(1 + offsetIndex * 0.2);
+  stroke(255, zAlpha);
   for (let i = 0; i < lines; i++) {
     let angle = TWO_PI * i / lines + offsetIndex * 0.05;
     let x1 = cos(angle) * size * 0.3;
@@ -923,14 +956,17 @@ function drawLinearSpikes(size, offsetIndex = 0) {
   pop();
 }
 
-
 function drawSpiralOverlay(size, offsetIndex = 0) {
+  let offset = offsetIndex * 1.5;
+  let zAlpha = map(offsetIndex, 0, 5, 255, 80);
   noFill();
   push();
-  translate(-offsetIndex, -offsetIndex * 1.5);
+  translate(offset, -offset);
+  strokeWeight(1.5 + offsetIndex * 0.2);
+  stroke(255, zAlpha);
   beginShape();
   for (let a = 0; a < TWO_PI * 3; a += 0.1) {
-    let r = size * 0.05 * a + offsetIndex * 2;
+    let r = size * 0.05 * a + offsetIndex * 0.5;
     let x = cos(a) * r;
     let y = sin(a) * r;
     vertex(x, y);
@@ -940,15 +976,20 @@ function drawSpiralOverlay(size, offsetIndex = 0) {
 }
 
 function drawDotRing(size, offsetIndex = 0) {
-  let dots = 12 + offsetIndex;
+  let dots = 12;
+  let offset = offsetIndex * 1.5;
+  let zAlpha = map(offsetIndex, 0, 5, 255, 80);
   push();
-  translate(offsetIndex, -offsetIndex);
+  translate(offset, -offset);
+  stroke(255, zAlpha);
+  fill(255, zAlpha);
+  noStroke();
   for (let i = 0; i < dots; i++) {
     let angle = TWO_PI * i / dots;
     let r = size * 0.4;
     let x = cos(angle) * r;
     let y = sin(angle) * r;
-    ellipse(x, y, 4);
+    ellipse(x, y, 4 + offsetIndex * 0.3);
   }
   pop();
 }
