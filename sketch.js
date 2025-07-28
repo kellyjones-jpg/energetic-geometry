@@ -941,6 +941,15 @@ function drawWavyEdge(size, offsetIndex = 5, habitatList = [], animalTypeList = 
   drawDiamond(size);
 }
 
+function drawDiamond(size) {
+  beginShape();
+  vertex(0, -size * 0.5);
+  vertex(size * 0.5, 0);
+  vertex(0, size * 0.5);
+  vertex(-size * 0.5, 0);
+  endShape(CLOSE);
+}
+
 function drawWavyEdge(size, offsetIndex = 3, habitatList = [], animalTypeList = []) {
   // Determine habitat shape type
   let habitatShape = null;
