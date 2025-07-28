@@ -472,36 +472,43 @@ function draw() {
 
   // === DATA FOR SELECTED YEAR ===
   const yearEntries = entriesByYear[selectedYear] || [];
-  const sortedEntries = [...yearEntries].sort((a, b) => (a.acres || 0) - (b.acres || 0));
-  if (yearEntries.length === 0) {
+  const sortedEntries = [...yearEntries].sort((a, b) => (b.acres || 0) - (a.acres || 0)); // large sites first
+
+  if (sortedEntries.length === 0) {
     text("No data available for this year.", centerX, height / 2);
     return;
   }
 
-  const minSiteSize = Math.min(...yearEntries.map(e => e.acres || 0.1));
-  const maxSiteSize = Math.max(...yearEntries.map(e => e.acres || 1));
-  const maxMW = Math.max(1, ...yearEntries.map(e => e.megawatts || 0));
+  const minSiteSize = Math.min(...sortedEntries.map(e => e.acres || 0.1));
+  const maxSiteSize = Math.max(...sortedEntries.map(e => e.acres || 1));
+  const maxMW = Math.max(1, ...sortedEntries.map(e => e.megawatts || 0));
   const maxCellHeight = (height - startY - 50) / numRows;
 
   const count = sortedEntries.length;
 
-  const colSpacing = shapeSize * 1.6; // adjust as needed
-  const rowSpacing = maxCellHeight;
+  const totalCols = max(ceil(count / numRows), 2); // prevent single col from getting awkward
+  const totalRows = min(count, numRows);
+
+  const availableW = width * 0.85;
+  const availableH = height - startY - 50;
+
+  // Make spacing depend on actual number of cols/rows:
+  const colSpacing = constrain(availableW / max(totalCols, 1), shapeSize * 1.1, shapeSize * 2.0);
+  const rowSpacing = availableH / max(totalRows, 1);
 
   for (let i = 0; i < count; i++) {
     const entry = sortedEntries[i];
-
-    // === VERTICAL COLUMNS ===
     const row = i % numRows;
     const col = floor(i / numRows);
-
     const basePadding = padding;
 
-    // === Positioning: Field-like layout with vertical rows ===
+    // === BOTTOM-UP & OUTWARD GROWTH ===
+    const outwardOffset = pow(abs(col - totalCols / 2), 1.2) * 3;
     const horizontalWaveOffset = 10 * sin((row + col) * 0.7);
-    const colStaggerOffset = (col % 2) * (shapeSize * 0.3); // vertical row staggering
-    const cx = basePadding + col * colSpacing + shapeSize / 2 + horizontalWaveOffset;
-    const cy = startY + row * rowSpacing + shapeSize / 2 + colStaggerOffset;
+    const colStaggerOffset = (col % 2) * (shapeSize * 0.3);
+
+    const cx = centerX + (col - totalCols / 2) * colSpacing + horizontalWaveOffset;
+    const cy = height - row * rowSpacing - shapeSize / 2 - colStaggerOffset - outwardOffset;
 
     // === Size, weight, scale ===
     let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, shapeSize * 0.6, shapeSize);
@@ -526,17 +533,19 @@ function draw() {
     const activityColors = (entry.activities || []).map(getActivityColor);
     const baseColor = getActivityColor(entry.activities?.[0] || '');
 
-    const angleOffset = (col % 2 === 0) ? -PI / 36 : PI / 36; // rotated by column now
+    // Flip angle so larger base is at bottom, lighter top
+    const angleOffset = (col % 2 === 0) ? PI / 36 : -PI / 36;
 
     // === DRAW ENTRY GROUP ===
     push();
-    entry._screenX = cx;
-    entry._screenY = cy;
+    entry._screenX = lerp(entry._screenX || cx, cx, 0.1);
+    entry._screenY = lerp(entry._screenY || cy, cy, 0.1);
     entry._radius = entryShapeSize * entry.currentScale * 0.5;
-    translate(cx, cy);
+    translate(entry._screenX, entry._screenY);
     rotate(angleOffset);
     scale(entry.currentScale);
 
+    // === Flipped shadow orientation ===
     const shadowInfo = drawSuprematistOpShadowRect(
       entryShapeSize,
       entry.megawatts,
@@ -545,7 +554,8 @@ function draw() {
       glowStrength,
       isHovered,
       (entry.animalType?.[0] || ''),
-      activityColors
+      activityColors,
+      true // <- optional: flag to indicate flipped/light-from-below logic
     );
 
     if (Array.isArray(entry.habitat) && entry.habitat.length > 0) {
@@ -562,8 +572,8 @@ function draw() {
 
     if (entry.arrayType) {
       push();
-      translate(shadowInfo.offsetX, shadowInfo.offsetY);
-      rotate(shadowInfo.angle);
+      translate(-shadowInfo.offsetX, -shadowInfo.offsetY); // Flip shadow direction
+      rotate(-shadowInfo.angle); // Invert angle
       stroke(0, 80);
       strokeWeight(strokeW + 1.5);
       drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10, strokeW);
@@ -571,7 +581,7 @@ function draw() {
     }
 
     if (entry.animalType?.length > 0) {
-      const yOffset = -entryShapeSize * 0.25;
+      const yOffset = entryShapeSize * 0.25; // move upward now
       const animalSize = entryShapeSize * 0.9;
 
       stroke(0, 80);
@@ -582,7 +592,7 @@ function draw() {
       drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
     }
 
-     if (entry.cropType?.length > 0) {
+    if (entry.cropType?.length > 0) {
       const cropEdgeSize = entryShapeSize * 1.5;
       drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
     }
@@ -691,6 +701,11 @@ function mouseMoved() {
 }
 
 function mousePressed() {
+  const modalElement = document.getElementById('siteModal');
+  if (modalElement && modalElement.classList.contains('show')) {
+    return; // Prevent clicking sites while modal is open
+  }
+
   const yearEntries = entriesByYear[selectedYear] || [];
 
   for (let entry of yearEntries) {
