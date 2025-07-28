@@ -1028,24 +1028,27 @@ function drawTexturedLine(x, y, length) {
   }
 }
 
-function drawHabitatShape(habitat, x, y, size, baseColor) {
-  if (!Array.isArray(habitat)) return;
+function drawHabitatShape(habitatList, x, y, size, baseColor) {
+  if (!Array.isArray(habitatList)) return;
 
-  habitat = habitat
+  habitatList = habitatList
     .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
     .filter(h => h !== '');
 
-  if (habitat.length === 0) return;
+  if (habitatList.length === 0) return;
 
   push();
   translate(x, y);
   rectMode(CENTER);
   angleMode(RADIANS);
 
-  for (let i = 0; i < habitat.length; i++) {
-    let habitat = habitat[i];
+  let outlineColor = bgColor.levels[0] > 128 ? color(0) : color(255); // choose black or white
+  stroke(outlineColor);
+
+  for (let i = 0; i < habitatList.length; i++) {
+    let habitat = habitatList[i];
     let angleOffset = PI / 6 * i;
-    let alpha = map(i, 0, habitat.length, 200, 60);
+    let alpha = map(i, 0, habitatList.length, 200, 60);
     let fillColor = color(
       red(baseColor),
       green(baseColor),
@@ -1142,10 +1145,10 @@ function drawGlowEllipse(size, baseColor) {
 }
 
 
-function drawCombinedHabitatOverlay(habitat, activities, x, y, size) {
-  if (!Array.isArray(habitat) || !Array.isArray(activities)) return;
+function drawCombinedHabitatOverlay(habitatList, activities, x, y, size) {
+  if (!Array.isArray(habitatList) || !Array.isArray(activities)) return;
 
-  const cleanedHabitats = habitat
+  const cleanedHabitats = habitatList
     .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
     .filter(h => h !== '');
 
@@ -1633,6 +1636,5 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
         ellipse(0, 0, r * 2, r * 2);
       }
   }
-
   pop();
 }
