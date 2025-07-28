@@ -532,27 +532,8 @@ function draw() {
     rotate(angleOffset);
     scale(entry.currentScale);
 
-    // === Suprematist-style shadow + frame ===
+      // === Suprematist-style shadow + frame ===
     const shadowInfo = drawSuprematistOpShadowRect(
-      entryShapeSize,
-      entry.megawatts,
-      entry.habitat
-    );
-
-    if (entry.cropType?.length > 0) {
-      const fullWrapSize = shadowInfo.size * 1.2;
-      drawCropEdgeStyle(
-        entry.cropType,
-        entry.activities,
-        entry.habitat,
-        shadowInfo.offsetX,
-        shadowInfo.offsetY,
-        fullWrapSize,
-        strokeW
-      );
-    }
-
-    drawSuprematistOpShadowRect(
       entryShapeSize,
       entry.megawatts,
       entry.habitat,
@@ -579,6 +560,11 @@ function draw() {
       drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10);
       pop();
     }
+
+    if (entry.cropType?.length > 0) {
+    const cropEdgeSize = entryShapeSize * 2.1;  // slightly larger than main shape
+    drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, cropEdgeSize, strokeW);
+  }
 
     // === Enhanced Animal Line: draw last ===
     if (entry.animalType?.length > 0) {
