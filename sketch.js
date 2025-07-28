@@ -568,14 +568,14 @@ function draw() {
     }
 
     if (entry.cropType?.length > 0) {
-    const cropEdgeSize = entryShapeSize * 1.5;  // slightly larger than main shape
+    const cropEdgeSize = entryShapeSize * 1.4;  // slightly larger than main shape
     drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, cropEdgeSize, strokeW);
   }
 
     // === Enhanced Animal Line: draw last ===
     if (entry.animalType?.length > 0) {
       const yOffset = -entryShapeSize * 1.1;
-      const animalSize = entryShapeSize * 0.7;
+      const animalSize = entryShapeSize * 0.25;
 
       // Inner shadow stroke
       stroke(0, 80);
@@ -789,7 +789,7 @@ function updateYear(year, index) {
   }
 }
 
-function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW = 2) {
+function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW = 1.2) {
   if (!Array.isArray(cropTypes) || cropTypes.length === 0) return;
   if (!Array.isArray(activities) || activities.length === 0) return;
   const groups = cropTypes
@@ -870,7 +870,7 @@ function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW =
 
 function drawPointedEdge(size, offsetIndex = 0) {
   let steps = 72;
-  let offset = offsetIndex * 1.1; 
+  let offset = offsetIndex * 0.9; 
   push();
   translate(offset, -offset);
   beginShape();
@@ -887,7 +887,7 @@ function drawPointedEdge(size, offsetIndex = 0) {
 
 function drawWavyEdge(size, offsetIndex = 0) {
   let waves = 8 
-  let offset = offsetIndex * 1.2; 
+  let offset = offsetIndex * 0.7; 
   push();
   translate(offset, -offset);
   beginShape();
@@ -903,7 +903,7 @@ function drawWavyEdge(size, offsetIndex = 0) {
 
 function drawLobedEdge(size, offsetIndex = 0) {
   let lobes = 5
- let offset = offsetIndex * 1.3; 
+ let offset = offsetIndex * 0.5; 
   push();
   translate(offset, -offset);
   beginShape();
@@ -919,7 +919,7 @@ function drawLobedEdge(size, offsetIndex = 0) {
 
 function drawLinearSpikes(size, offsetIndex = 0) {
   let lines = 12;
-  let offset = offsetIndex * 1.4; 
+  let offset = offsetIndex * 0.2; 
   push();
   translate(offset, -offset);
   for (let i = 0; i < lines; i++) {
@@ -935,7 +935,7 @@ function drawLinearSpikes(size, offsetIndex = 0) {
 
 function drawSpiralOverlay(size, offsetIndex = 0) {
   noFill();
-  let offset = offsetIndex * 1; 
+  let offset = offsetIndex * 1.1; 
   push();
   translate(offset, -offset);
   beginShape();
