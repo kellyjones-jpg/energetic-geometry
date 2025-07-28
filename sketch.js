@@ -533,7 +533,7 @@ function draw() {
     scale(entry.currentScale);
 
     // === Suprematist-style shadow + frame ===
-    const shadowInfo = getSuprematistShadowBounds(
+    const shadowInfo = getSuprematistOpShadowRect(
       entryShapeSize,
       entry.megawatts,
       entry.habitat
