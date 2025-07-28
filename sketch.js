@@ -558,8 +558,9 @@ function draw() {
     }
 
     if (entry.cropType?.length > 0) {
-      drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, entryShapeSize, strokeW);
-    }
+    const cropEdgeSize = entryShapeSize * 1.1;  // slightly larger than main shape
+    drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, cropEdgeSize, strokeW);
+  }
 
     // === Enhanced Animal Line: draw last ===
     if (entry.animalType?.length > 0) {
@@ -1041,7 +1042,9 @@ function drawHabitatShape(habitatList, x, y, size, baseColor) {
   translate(x, y);
   rectMode(CENTER);
   angleMode(RADIANS);
-  stroke(255);
+
+  let outlineColor = bgColor.levels[0] > 128 ? color(0) : color(255); // choose black or white
+  stroke(outlineColor);
 
   for (let i = 0; i < habitatList.length; i++) {
     let habitat = habitatList[i];
