@@ -778,15 +778,7 @@ function updateYear(year, index) {
   }
 }
 
-drawCropEdgeStyle(
-  entry.shapeType || 'default',     // baseShape
-  entry.cropType,                  // cropType
-  entry.activities,                // activities
-  entry.habitat,                   // habitat
-  0, 0,
-  entryShapeSize,
-  strokeW
-    ); {
+function drawCropEdgeStyle(cropType, activities, habitat, x, y, size, baseStrokeW = 2) {
   push();
 
   // Lightly expand clip bounds to allow cascaded styles to show fully
