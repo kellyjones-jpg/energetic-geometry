@@ -562,7 +562,7 @@ function draw() {
     }
 
     if (entry.cropType?.length > 0) {
-    const cropEdgeSize = entryShapeSize * 2.1;  // slightly larger than main shape
+    const cropEdgeSize = entryShapeSize * 1.7;  // slightly larger than main shape
     drawCropEdgeStyle(entry.cropType, entry.activities, entry.habitat, 0, 0, cropEdgeSize, strokeW);
   }
 
@@ -865,12 +865,8 @@ function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW =
 function drawPointedEdge(size, offsetIndex = 0) {
   let steps = 72;
   let offset = offsetIndex * 1.5;
-  let zAlpha = map(offsetIndex, 0, 5, 255, 80); // Fade for z-depth
   push();
   translate(offset, -offset);
-  strokeWeight(1.5 + offsetIndex * 0.25);
-  stroke(255, zAlpha);
-  noFill();
   beginShape();
   for (let i = 0; i <= steps; i++) {
     let angle = TWO_PI * i / steps;
@@ -886,12 +882,8 @@ function drawPointedEdge(size, offsetIndex = 0) {
 function drawWavyEdge(size, offsetIndex = 0) {
   let waves = 8;
   let offset = offsetIndex * 1.5;
-  let zAlpha = map(offsetIndex, 0, 5, 255, 80);
   push();
   translate(offset, -offset);
-  strokeWeight(1.5 + offsetIndex * 0.25);
-  stroke(255, zAlpha);
-  noFill();
   beginShape();
   for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
     let r = size * 0.4 + 10 * sin(waves * angle);
@@ -906,12 +898,8 @@ function drawWavyEdge(size, offsetIndex = 0) {
 function drawLobedEdge(size, offsetIndex = 0) {
   let lobes = 5;
   let offset = offsetIndex * 1.5;
-  let zAlpha = map(offsetIndex, 0, 5, 255, 80);
   push();
   translate(offset, -offset);
-  strokeWeight(1.5 + offsetIndex * 0.25);
-  stroke(255, zAlpha);
-  noFill();
   beginShape();
   for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
     let r = size * 0.4 + 8 * sin(lobes * angle);
@@ -926,11 +914,8 @@ function drawLobedEdge(size, offsetIndex = 0) {
 function drawLinearSpikes(size, offsetIndex = 0) {
   let lines = 12;
   let offset = offsetIndex * 1.5;
-  let zAlpha = map(offsetIndex, 0, 5, 255, 80);
   push();
   translate(offset, -offset);
-  strokeWeight(1 + offsetIndex * 0.2);
-  stroke(255, zAlpha);
   for (let i = 0; i < lines; i++) {
     let angle = TWO_PI * i / lines + offsetIndex * 0.05;
     let x1 = cos(angle) * size * 0.3;
@@ -944,12 +929,9 @@ function drawLinearSpikes(size, offsetIndex = 0) {
 
 function drawSpiralOverlay(size, offsetIndex = 0) {
   let offset = offsetIndex * 1.5;
-  let zAlpha = map(offsetIndex, 0, 5, 255, 80);
   noFill();
   push();
   translate(offset, -offset);
-  strokeWeight(1.5 + offsetIndex * 0.2);
-  stroke(255, zAlpha);
   beginShape();
   for (let a = 0; a < TWO_PI * 3; a += 0.1) {
     let r = size * 0.05 * a + offsetIndex * 0.5;
@@ -964,12 +946,8 @@ function drawSpiralOverlay(size, offsetIndex = 0) {
 function drawDotRing(size, offsetIndex = 0) {
   let dots = 12;
   let offset = offsetIndex * 1.5;
-  let zAlpha = map(offsetIndex, 0, 5, 255, 80);
   push();
   translate(offset, -offset);
-  stroke(255, zAlpha);
-  fill(255, zAlpha);
-  noStroke();
   for (let i = 0; i < dots; i++) {
     let angle = TWO_PI * i / dots;
     let r = size * 0.4;
@@ -989,7 +967,7 @@ function drawAnimalLine(animalType, activities, x, y, size, strokeW = 2) {
   push();
   noFill();
 
-  const baseStrokeW = strokeW || style.weight * 1.5;  // Thicker lines
+  const baseStrokeW = strokeW || style.weight * 1.1;  // Thicker lines
   const lineLength = size * 1.3;                      // Slightly longer lines
   const lineSpacing = 8;                              // Increased vertical spacing
 
