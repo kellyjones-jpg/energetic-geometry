@@ -811,120 +811,142 @@ function drawCropEdgeStyle(cropTypes, activities, habitat, x, y, size, strokeW =
     let activity = activities[i];
     let strokeColor = getActivityColor(activity);
     if (!strokeColor) continue;
-
     stroke(strokeColor);
 
-    for (let j = 0; j < uniqueGroups.length; j++) {
-      let group = uniqueGroups[j];
-      
-      let nestedSize = size * (1 - j * 0.15); // Adjust 0.15 to control spacing
-        switch (group) {
-          case 'root':
-          case 'cruciferous':
-            drawPointedEdge(nestedSize, j + i);
-            break;
-          case 'leafy':
-          case 'herb':
-            drawWavyEdge(nestedSize, j + i);
-            break;
-          case 'fruit':
-          case 'berry':
-            drawLobedEdge(nestedSize, j + i);
-            break;
-          case 'grain':
-          case 'legume':
-            drawLinearSpikes(nestedSize, j + i);
-            break;
-          case 'vine':
-            drawSpiralOverlay(nestedSize, j + i);
-            break;
-          case 'mixed':
-          case 'various':
-            drawDotRing(nestedSize, j + i);
-            break;
-        }
-      }
-    }
+ for (let j = 0; j < uniqueGroups.length; j++) {
+  let group = uniqueGroups[j];
+  let nestedSize = size * (1 - j * 0.15);
 
+  // Offset each group slightly based on index to introduce spatial tension
+  let offsetAngle = (TWO_PI / uniqueGroups.length) * j;
+  let offsetDist = 2 + j * 1.5; // Tweak this for clarity vs. cohesion
+  let dx = cos(offsetAngle) * offsetDist;
+  let dy = sin(offsetAngle) * offsetDist;
+
+  push();
+  translate(dx, dy); // Local offset within clipped shape
+
+      switch (group) {
+        case 'root':
+        case 'cruciferous':
+          drawPointedEdge(nestedSize, j + i);
+          break;
+        case 'leafy':
+        case 'herb':
+          drawWavyEdge(nestedSize, j + i);
+          break;
+        case 'fruit':
+        case 'berry':
+          drawLobedEdge(nestedSize, j + i);
+          break;
+        case 'grain':
+        case 'legume':
+          drawLinearSpikes(nestedSize, j + i);
+          break;
+        case 'vine':
+          drawSpiralOverlay(nestedSize, j + i);
+          break;
+        case 'mixed':
+        case 'various':
+          drawDotRing(nestedSize, j + i);
+          break;
+      }
+      pop();
+    }
+  }
   drawingContext.restore(); // Restore drawing context
   pop();
 }
 
-function drawPointedEdge(size, offsetIndex = 3) {
- let steps = 72;
+function drawPointedEdge(size, offsetIndex = 0) {
+  let steps = 72;
+  push();
+  translate(offsetIndex * 2, -offsetIndex * 2);  // slight spatial shift
   beginShape();
   for (let i = 0; i <= steps; i++) {
     let angle = TWO_PI * i / steps;
-    // Create an ellipse shape: x-radius and y-radius differ, plus subtle variation
-    let radiusX = size * 0.45 + (i % 2 === 0 ? 10 : -10);
-    let radiusY = size * 0.3 + (i % 2 === 0 ? 5 : -5);
-    let x = cos(angle) * radiusX;
-    let y = sin(angle) * radiusY;
+    let radius = size * 0.45 + (i % 2 === 0 ? 10 : -10);
+    let x = cos(angle) * radius;
+    let y = sin(angle) * radius;
     vertex(x, y);
   }
   endShape(CLOSE);
+  pop();
 }
 
-function drawWavyEdge(size, offsetIndex = 5) {
-    let waves = 8 + offsetIndex * 2;
+function drawWavyEdge(size, offsetIndex = 0) {
+  let waves = 8 + offsetIndex * 2;
+  push();
+  translate(-offsetIndex * 2, offsetIndex * 2);  // opposite direction
   beginShape();
   for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
-    let rX = size * 0.4 + 10 * sin(waves * angle);
-    let rY = size * 0.25 + 6 * sin(waves * angle);
-    let x = cos(angle) * rX;
-    let y = sin(angle) * rY;
+    let r = size * 0.4 + 10 * sin(waves * angle);
+    let x = cos(angle) * r;
+    let y = sin(angle) * r;
     curveVertex(x, y);
   }
   endShape(CLOSE);
+  pop();
 }
 
-function drawLobedEdge(size, offsetIndex = 1) {
- let lobes = 5 + offsetIndex;
+function drawLobedEdge(size, offsetIndex = 0) {
+  let lobes = 5 + offsetIndex;
+  push();
+  translate(offsetIndex * 1.5, offsetIndex * 1.5);
   beginShape();
   for (let angle = 0; angle <= TWO_PI + 0.1; angle += 0.05) {
-    let rX = size * 0.4 + 8 * sin(lobes * angle);
-    let rY = size * 0.25 + 5 * sin(lobes * angle);
-    let x = cos(angle) * rX;
-    let y = sin(angle) * rY;
+    let r = size * 0.4 + 8 * sin(lobes * angle);
+    let x = cos(angle) * r;
+    let y = sin(angle) * r;
     curveVertex(x, y);
   }
   endShape(CLOSE);
+  pop();
 }
 
-function drawLinearSpikes(size, offsetIndex = 4) {
+function drawLinearSpikes(size, offsetIndex = 0) {
   let lines = 12;
+  push();
+  translate(offsetIndex * 3, -offsetIndex);  // adjusted vector
   for (let i = 0; i < lines; i++) {
     let angle = TWO_PI * i / lines + offsetIndex * 0.05;
     let x1 = cos(angle) * size * 0.3;
-    let y1 = sin(angle) * size * 0.2; // reduce y radius for ellipse effect
+    let y1 = sin(angle) * size * 0.3;
     let x2 = cos(angle) * size * 0.5;
-    let y2 = sin(angle) * size * 0.35; // reduce y radius
+    let y2 = sin(angle) * size * 0.5;
     line(x1, y1, x2, y2);
   }
+  pop();
 }
 
-function drawSpiralOverlay(size, offsetIndex = 2) {
+
+function drawSpiralOverlay(size, offsetIndex = 0) {
   noFill();
+  push();
+  translate(-offsetIndex, -offsetIndex * 1.5);
   beginShape();
   for (let a = 0; a < TWO_PI * 3; a += 0.1) {
     let r = size * 0.05 * a + offsetIndex * 2;
     let x = cos(a) * r;
-    let y = sin(a) * r * 0.6;  // scale Y for ellipse effect
+    let y = sin(a) * r;
     vertex(x, y);
   }
   endShape();
+  pop();
 }
 
-function drawDotRing(size, offsetIndex = 6) {
+function drawDotRing(size, offsetIndex = 0) {
   let dots = 12 + offsetIndex;
+  push();
+  translate(offsetIndex, -offsetIndex);
   for (let i = 0; i < dots; i++) {
     let angle = TWO_PI * i / dots;
-    let rX = size * 0.4;
-    let rY = size * 0.25;       // smaller radius on Y for ellipse
-    let x = cos(angle) * rX;
-    let y = sin(angle) * rY;
+    let r = size * 0.4;
+    let x = cos(angle) * r;
+    let y = sin(angle) * r;
     ellipse(x, y, 4);
   }
+  pop();
 }
 
 // Draw different line styles based on Animal Type
