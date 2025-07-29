@@ -216,9 +216,9 @@ function animateCount(id, start, end, duration) {
 
 function updateCounters(entries) {
   if (!hasSelectedYear) {
-    select('#siteCount').html('');
-    select('#megawattCount').html('');
-    select('#acreCount').html('');
+    select('#site-count').html('');
+    select('#megawatt-count').html('');
+    select('#acre-count').html('');
     return;
   }
 
@@ -226,9 +226,9 @@ function updateCounters(entries) {
   let megawattCount = entries.reduce((sum, e) => sum + (e.megawatts || 0), 0);
   let acreCount = entries.reduce((sum, e) => sum + (e.acres || 0), 0);
 
-  select('#siteCount').html(siteCount);
-  select('#megawattCount').html(nf(megawattCount, 0, 1));
-  select('#acreCount').html(nf(acreCount, 0, 0));
+  select('#site-count').html(siteCount);
+  select('#megawatt-count').html(nf(megawattCount, 0, 1));
+  select('#acre-count').html(nf(acreCount, 0, 0));
 }
 
 function setup() {
