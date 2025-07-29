@@ -460,7 +460,7 @@ function draw() {
 // === YEAR LABEL ===
 const centerX = width / 2;
 const labelY = 40;
-const yearY = labelY + 40;
+const yearY = labelY + 30;
 
 textFont('Helvetica');
 textAlign(CENTER, BOTTOM);
