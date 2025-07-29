@@ -7,9 +7,8 @@ let cnv;
 let hoveredEntry = null; 
 let bgImg;
 let shapeSize, padding, startY, numCols, numRows;
-let showInstructionOverlay = true;
 let overlayOpacity = 255;  // full opacity initially
-let hasInteracted = false;
+let hasSelectedYear = false;
 let fadeAlpha = 255;
 
 const cropEdgeGroups = {
@@ -302,20 +301,19 @@ function setup() {
 
     let node = createDiv().class('year-node');
     node.parent(yearDiv);
+      label.mousePressed(() => {
+        selectedYear = year;
+        hasSelectedYear = true;  
+        windowResized();
+        updateCounters(entriesByYear[selectedYear]);
 
-    label.mousePressed(() => {
-      selectedYear = year;
-      hasInteracted = true; 
-      windowResized(); // update layout and canvas
-      updateCounters(entriesByYear[selectedYear]);
+        if (typeof drawSites === 'function') {
+          drawSites(entriesByYear[selectedYear]);
+        }
 
-      if (typeof drawSites === 'function') {
-       drawSites(entriesByYear[selectedYear]);
-      }
-
-      selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
-      label.addClass('active');
-    });
+        selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
+        label.addClass('active');
+      });
 
     if (index === 0) label.addClass('active');
   });
@@ -396,8 +394,8 @@ function changeYear(direction) {
 
   if (nextIndex !== currentIndex) {
     selectedYear = availableYears[nextIndex];
-    hasInteracted = true; 
-    updateYear(selectedYear, nextIndex); // handles visual updates
+    hasSelectedYear = true;  
+    updateYear(selectedYear, nextIndex);
   }
 }
 
@@ -482,7 +480,7 @@ const yearEntries = entriesByYear[selectedYear] || [];
 const sortedEntries = [...yearEntries].sort((a, b) => (b.acres || 0) - (a.acres || 0));
 
 // === DRAW INSTRUCTIONAL OVERLAY IF NEEDED ===
-if (!hasInteracted) {   // Only show overlay until interaction
+if (!hasSelectedYear) {   // Only show overlay until interaction
   if (overlayOpacity > 0) {
     overlayOpacity -= 5;  // Fade speed; adjust as needed
     overlayOpacity = max(overlayOpacity, 0);
@@ -735,8 +733,6 @@ function mouseMoved() {
 
 
 function mousePressed() {
-  hasInteracted = true; // User clicked
-
   const modalElement = document.getElementById('siteModal');
   if (modalElement && modalElement.classList.contains('show')) {
     return; // Prevent clicking sites while modal is open
@@ -757,22 +753,19 @@ function mousePressed() {
 }
 
 function keyPressed() {
-  hasInteracted = true; // User pressed a key
-
   const yearEntries = entriesByYear[selectedYear];
   if (!yearEntries || yearEntries.length === 0) return;
 
   const modalElement = document.getElementById('siteModal');
   const modalVisible = modalElement.classList.contains('show');
 
-  // ESC closes modal if open
   if (keyCode === ESCAPE && modalVisible) {
     const modalInstance = bootstrap.Modal.getInstance(modalElement);
     if (modalInstance) modalInstance.hide();
     return;
   }
 
-  // Modal navigation: LEFT/RIGHT arrows move to previous/next entry
+  // Modal navigation
   if (modalVisible && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
     const modalTitle = document.getElementById('siteModalLabel');
     if (!modalTitle) return;
@@ -797,6 +790,7 @@ function keyPressed() {
     const newIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
     if (newIndex !== currentYearIndex) {
       selectedYear = availableYears[newIndex];
+      hasSelectedYear = true; 
       updateYear(selectedYear, newIndex);
     }
     return;
@@ -804,24 +798,24 @@ function keyPressed() {
 
   if (!modalVisible && keyCode === HOME) {
     selectedYear = availableYears[0];
+    hasSelectedYear = true; 
     updateYear(selectedYear, 0);
     return;
   }
 
   if (!modalVisible && keyCode === END) {
     selectedYear = availableYears[availableYears.length - 1];
+    hasSelectedYear = true; 
     updateYear(selectedYear, availableYears.length - 1);
     return;
   }
 }
 
+
 function updateYear(year, index) {
-  // Hide the overlay when a year is selected for the first time
-  if (showInstructionOverlay) {
-    showInstructionOverlay = false;
-  }
-  
-  // existing code
+  // Unlock the overlay once a year is explicitly selected
+  hasSelectedYear = true;
+
   windowResized();
   updateCounters(entriesByYear[year]);
 
