@@ -475,27 +475,45 @@ const displayYear = hasSelectedYear ? " " + selectedYear : "Select a Year or Arr
 text(displayYear, centerX, yearY);
 textStyle(NORMAL);
 
-// === UNDERLINE ===
-let baseLineY = yearY + 6; // More padding from text
+// === UNDERLINE + PLACEHOLDER TEXT ===
+
+// Amount of padding above the placeholder text and underline
+const paddingAbove = 12;
+const adjustedYearY = yearY + paddingAbove;
+
 const lineWidth = textWidth(displayYear) + 40;
 const startX = centerX - lineWidth / 2;
 const endX = centerX + lineWidth / 2;
 
+textAlign(CENTER, BASELINE);
+fill(255);
+noStroke();
+
+// Draw text: use adjustedYearY for vertical position to add padding above
+if (hasSelectedYear) {
+  text(displayYear, centerX, adjustedYearY);
+} else {
+  text(placeholderText, centerX, adjustedYearY);
+}
+
 if (hasSelectedYear) {
   // === SIMPLE STATIC UNDERLINE FOR SELECTED YEAR ===
+  let baseLineY = adjustedYearY + 6; // underline relative to adjusted text
+
   stroke(10, 10, 10, fadeAlpha);
   strokeWeight(3);
   line(startX, baseLineY, endX, baseLineY);
   noStroke();
+
 } else {
-  let baseLineY = yearY + 18; // More padding from text
+  // === SQUIGGLY LINE WITH GRADIENT, SHADOW, AND GLOW ===
+  let baseLineY = adjustedYearY + 18; // underline relative to adjusted text
 
   // Palette colors for gradient
   const palette = ['#E4572E', '#2E8B57', '#005A99', '#FFD100'];
 
-  // Gradient helper: interpolate between colors across the line
+  // Gradient helper function
   function getGradientColor(posRatio) {
-    // posRatio = 0.0 to 1.0 along the line length
     const totalStops = palette.length - 1;
     const scaledPos = posRatio * totalStops;
     const index1 = floor(scaledPos);
@@ -506,7 +524,6 @@ if (hasSelectedYear) {
     return lerpColor(c1, c2, interRatio);
   }
 
-  // Parameters for the squiggle shape (fixed shape)
   const amplitude = 4;
   const frequency = 0.04;
   const step = 5;
@@ -517,8 +534,7 @@ if (hasSelectedYear) {
   noFill();
   beginShape();
   for (let x = startX; x <= endX; x += step) {
-    // Fixed shape: no frameCount animation, fixed sine wave phase
-    const yOffset = amplitude * sin(x * frequency) + 1; // static offset for shadow
+    const yOffset = amplitude * sin(x * frequency) + 1;
     vertex(x, baseLineY + yOffset);
   }
   endShape();
@@ -526,8 +542,6 @@ if (hasSelectedYear) {
   // --- Draw gradient colored squiggle line ---
   noFill();
   strokeWeight(3);
-
-  // Draw line in small segments for gradient
   for (let x = startX; x < endX; x += 1) {
     const posRatio = (x - startX) / (endX - startX);
     stroke(getGradientColor(posRatio));
@@ -536,12 +550,11 @@ if (hasSelectedYear) {
     line(x, y1, x + 1, y2);
   }
 
-  // --- Draw thinner white glow layers on top (with static shape) ---
-  const pulse = map(sin(frameCount * 0.05), -1, 1, 150, 255); // keep pulsing opacity
-
-  for (let glow = 3; glow >= 1; glow--) {
-    stroke(255, pulse * (glow / 3));
-    strokeWeight(glow * 1.5);
+  // --- Draw thinner white glow layers on top ---
+  const pulse = map(sin(frameCount * 0.05), -1, 1, 150, 255);
+  for (let glow = 1; glow >= 1; glow--) {
+    stroke(255, pulse * (glow / 1));
+    strokeWeight(glow * 0.5);
     noFill();
     beginShape();
     for (let x = startX; x <= endX; x += step) {
