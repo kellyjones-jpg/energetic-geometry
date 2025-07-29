@@ -482,7 +482,7 @@ textAlign(CENTER, CENTER);
 textLeading(45);  // Adjust line height for spacing
 
 // Padding only for placeholder
-const paddingAbove = 1;
+const paddingAbove = 0;
 const baseYearY = yearY;
 const adjustedYearY = hasSelectedYear ? baseYearY : baseYearY + paddingAbove;
 
@@ -514,7 +514,7 @@ if (hasSelectedYear) {
 
 } else {
   // === SQUIGGLY LINE WITH GRADIENT, SHADOW, AND GLOW ===
-  let baseLineY = adjustedYearY + 70; // underline relative to adjusted text
+  let baseLineY = adjustedYearY + 90; // underline relative to adjusted text
 
   // Palette colors for gradient
   const palette = ['#E4572E', '#2E8B57', '#005A99', '#FFD100'];
