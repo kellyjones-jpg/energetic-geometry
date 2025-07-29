@@ -472,7 +472,7 @@ text("Year Installed:", centerX, labelY);
 // Show actual year or placeholder
 textStyle(BOLD);
 textSize(36);
-const displayYear = hasSelectedYear ? " " + selectedYear : " –––";
+const displayYear = hasSelectedYear ? " " + selectedYear : "Select a Year or Arrow to Get Started...";
 text(displayYear, centerX, yearY);
 textStyle(NORMAL);
 
