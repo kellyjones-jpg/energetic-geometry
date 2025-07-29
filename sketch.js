@@ -196,9 +196,6 @@ const arrowIcon = `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"
     </filter>
   </defs>
 
-  <!-- Background -->
-  <rect width="400" height="400" fill="#ffffff"/>
-
   <!-- Group with drop shadow -->
   <g filter="url(#dropshadow)">
     <!-- Looped horizontal-to-downward path: Base line -->
@@ -586,7 +583,7 @@ if (hasSelectedYear) {
 
 } else {
   textLeading(45);  // Adjust line height for spacing
-  
+
     // === SHOW SVG UNDERLINE FOR PLACEHOLDER ===
   if (svgUnderline) {
     svgUnderline.style('display', 'block');
@@ -599,8 +596,7 @@ if (hasSelectedYear) {
 
     // Adjust these offsets to align vertically below your placeholder text
     const svgX = canvasPos.x + centerX - svgWidth / 2;
-    const svgY = canvasPos.y + adjustedYearY + 50;  // tweak 50px down or as needed
-
+    const svgY = canvasPos.y + adjustedYearY + 90;  // tweak this offset as needed
     svgUnderline.position(svgX, svgY);
   }
 }
