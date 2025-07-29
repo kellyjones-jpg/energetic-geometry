@@ -493,7 +493,7 @@ noStroke();
 if (hasSelectedYear) {
   text(displayYear, centerX, adjustedYearY);
 } else {
-  text(placeholderText, centerX, adjustedYearY);
+  text(displayYear, centerX, adjustedYearY);
 }
 
 if (hasSelectedYear) {
