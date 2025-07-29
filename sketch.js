@@ -575,7 +575,7 @@ text(displayYear, centerX, adjustedYearY);
 if (hasSelectedYear) {
   // === SIMPLE STATIC UNDERLINE FOR SELECTED YEAR ===
   let baseLineY = adjustedYearY + 17; // underline relative to adjusted text
-
+  if (svgUnderline) svgUnderline.style('display', 'none');  // Hide SVG when year selected
   stroke(10, 10, 10, fadeAlpha);
   strokeWeight(3);
   line(startX, baseLineY, endX, baseLineY);
@@ -583,20 +583,21 @@ if (hasSelectedYear) {
 
 } else {
   textLeading(45);  // Adjust line height for spacing
-
-    // === SHOW SVG UNDERLINE FOR PLACEHOLDER ===
+// Show SVG underline for placeholder
   if (svgUnderline) {
     svgUnderline.style('display', 'block');
 
-    // Calculate position relative to the canvas and placeholder text position
-    // Position horizontally centered at centerX
+    // Position it below placeholder text with padding
     const canvasPos = cnv.position();
-    const svgWidth = 400; // match SVG width in px
-    const svgHeight = 400; // match SVG height in px
+    const svgWidth = 400;
+    const svgHeight = 400;
 
-    // Adjust these offsets to align vertically below your placeholder text
+    // Add top padding (e.g., 20-50px) above the SVG visually
+    const topPadding = 40;
+
     const svgX = canvasPos.x + centerX - svgWidth / 2;
-    const svgY = canvasPos.y + adjustedYearY + 190;  // tweak this offset as needed
+    const svgY = canvasPos.y + adjustedYearY + 190 + topPadding;
+
     svgUnderline.position(svgX, svgY);
   }
 }
