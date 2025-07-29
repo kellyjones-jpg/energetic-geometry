@@ -490,19 +490,23 @@ if (hasSelectedYear) {
 } else {
   let baseLineY = yearY + 18; // More padding from text
 
-  // Color interpolation for palette oscillation
+  // Palette colors for gradient
   const palette = ['#E4572E', '#2E8B57', '#005A99', '#FFD100'];
-  const t = (frameCount * 0.01) % palette.length;
-  const i1 = floor(t) % palette.length;
-  const i2 = (i1 + 1) % palette.length;
-  const c1 = color(palette[i1]);
-  const c2 = color(palette[i2]);
-  const smoothColor = lerpColor(c1, c2, t - floor(t));
 
-  // Pulse glow opacity with sin wave (range ~150 to 255)
-  const pulse = map(sin(frameCount * 0.05), -1, 1, 150, 255);
+  // Gradient helper: interpolate between colors across the line
+  function getGradientColor(posRatio) {
+    // posRatio = 0.0 to 1.0 along the line length
+    const totalStops = palette.length - 1;
+    const scaledPos = posRatio * totalStops;
+    const index1 = floor(scaledPos);
+    const index2 = min(index1 + 1, totalStops);
+    const interRatio = scaledPos - index1;
+    const c1 = color(palette[index1]);
+    const c2 = color(palette[index2]);
+    return lerpColor(c1, c2, interRatio);
+  }
 
-  // Parameters for the squiggle shape
+  // Parameters for the squiggle shape (fixed shape)
   const amplitude = 4;
   const frequency = 0.04;
   const step = 5;
@@ -513,30 +517,35 @@ if (hasSelectedYear) {
   noFill();
   beginShape();
   for (let x = startX; x <= endX; x += step) {
-    const yOffset = amplitude * sin((x + frameCount * 2) * frequency) + 1; // offset for shadow
+    // Fixed shape: no frameCount animation, fixed sine wave phase
+    const yOffset = amplitude * sin(x * frequency) + 1; // static offset for shadow
     vertex(x, baseLineY + yOffset);
   }
   endShape();
 
-  // --- Draw main colored squiggle line ---
-  stroke(smoothColor);
-  strokeWeight(3);
+  // --- Draw gradient colored squiggle line ---
   noFill();
-  beginShape();
-  for (let x = startX; x <= endX; x += step) {
-    const yOffset = amplitude * sin((x + frameCount * 2) * frequency);
-    vertex(x, baseLineY + yOffset);
-  }
-  endShape();
+  strokeWeight(3);
 
-  // --- Draw thinner white glow layers on top ---
+  // Draw line in small segments for gradient
+  for (let x = startX; x < endX; x += 1) {
+    const posRatio = (x - startX) / (endX - startX);
+    stroke(getGradientColor(posRatio));
+    const y1 = baseLineY + amplitude * sin(x * frequency);
+    const y2 = baseLineY + amplitude * sin((x + 1) * frequency);
+    line(x, y1, x + 1, y2);
+  }
+
+  // --- Draw thinner white glow layers on top (with static shape) ---
+  const pulse = map(sin(frameCount * 0.05), -1, 1, 150, 255); // keep pulsing opacity
+
   for (let glow = 3; glow >= 1; glow--) {
     stroke(255, pulse * (glow / 3));
     strokeWeight(glow * 1.5);
     noFill();
     beginShape();
     for (let x = startX; x <= endX; x += step) {
-      const yOffset = amplitude * sin((x + frameCount * 2) * frequency);
+      const yOffset = amplitude * sin(x * frequency);
       vertex(x, baseLineY + yOffset);
     }
     endShape();
