@@ -596,7 +596,7 @@ if (hasSelectedYear) {
 
     // Adjust these offsets to align vertically below your placeholder text
     const svgX = canvasPos.x + centerX - svgWidth / 2;
-    const svgY = canvasPos.y + adjustedYearY + 90;  // tweak this offset as needed
+    const svgY = canvasPos.y + adjustedYearY + 190;  // tweak this offset as needed
     svgUnderline.position(svgX, svgY);
   }
 }
