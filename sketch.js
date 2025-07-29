@@ -469,7 +469,7 @@ textSize(28);
 text("Year Installed:", centerX, labelY);
 
 // Multiline placeholder text with line break
-const placeholderText = "\n\n\nUse the controls to navigate through time and\nreveal agrivoltaic patterns across the land.";
+const placeholderText = "\n\nUse the controls to navigate through time and\nreveal agrivoltaic patterns across the land.";
 
 // Show actual year or placeholder
 textStyle(BOLD);
@@ -511,7 +511,7 @@ if (hasSelectedYear) {
 
 } else {
   // === SQUIGGLY LINE WITH GRADIENT, SHADOW, AND GLOW ===
-  let baseLineY = adjustedYearY + 50; // underline relative to adjusted text
+  let baseLineY = adjustedYearY + 75; // underline relative to adjusted text
 
   // Palette colors for gradient
   const palette = ['#E4572E', '#2E8B57', '#005A99', '#FFD100'];
