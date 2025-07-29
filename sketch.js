@@ -513,7 +513,7 @@ if (hasSelectedYear) {
 
 } else {
   // === SQUIGGLY LINE WITH GRADIENT, SHADOW, AND GLOW ===
-  let baseLineY = adjustedYearY + 95; // underline relative to adjusted text
+  let baseLineY = adjustedYearY + 93; // underline relative to adjusted text
 
   textLeading(45);  // Adjust line height for spacing
 
