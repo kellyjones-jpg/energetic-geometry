@@ -482,46 +482,46 @@ const startX = centerX - lineWidth / 2;
 const endX = centerX + lineWidth / 2;
 
 if (hasSelectedYear) {
-  // === SIMPLE UNDERLINE FOR SELECTED YEAR ===
+  // === SIMPLE STATIC UNDERLINE FOR SELECTED YEAR ===
   stroke(10, 10, 10, fadeAlpha);
   strokeWeight(3);
   line(startX, lineY, endX, lineY);
   noStroke();
 } else {
-  // === WIGGLING STYLED UNDERLINE FOR PLACEHOLDER ===
-  push();
-  stroke(255, 180); // White-ish dashed line
+  // === OSCILLATING COLOR LINE FOR PLACEHOLDER ===
+
+  // Define palette and cycle based on frameCount
+  const colorPalette = ['#E4572E', '#2E8B57', '#005A99', '#FFD100'];
+  const colorIndex = floor((frameCount / 30) % colorPalette.length);
+  const currentColor = colorPalette[colorIndex];
+
+  // Draw a stepped-line pattern (zigzag mimic)
+  stroke(currentColor);
   strokeWeight(2);
-  drawingContext.setLineDash([6, 6]);
+  noFill();
+  
+  const segmentCount = 14;
+  const segmentLength = (endX - startX) / segmentCount;
+  const stepHeight = 4;
 
-  // Wiggle motion
-  let wiggle = 4 * sin(frameCount * 0.07);
-  line(startX, lineY + wiggle, endX, lineY + wiggle);
-  drawingContext.setLineDash([]);
-  pop();
-
-  // === DRAW STYLED ARROWHEADS WITH WIGGLE ===
-  const arrowSize = 10;
-  const arrowSpacing = 20;
-
-  function drawWigglingArrow(x, y, skewAngle = PI / 12, animOffset = 0) {
-    let arrowWiggle = 2 * sin(frameCount * 0.09 + animOffset);
-    push();
-    translate(x, y + wiggle + arrowWiggle);
-    rotate(skewAngle);
-    fill('#FFD100');
-    noStroke();
-    beginShape();
-    vertex(0, 0);                     // tip
-    vertex(-arrowSize, arrowSize);   // left base
-    vertex(arrowSize, arrowSize);    // right base
-    endShape(CLOSE);
-    pop();
+  beginShape();
+  for (let i = 0; i <= segmentCount; i++) {
+    const x = startX + i * segmentLength;
+    const y = lineY + ((i % 2 === 0) ? -stepHeight : stepHeight);
+    vertex(x, y);
   }
+  endShape();
 
-  // Draw two wiggling skewed arrows
-  drawWigglingArrow(endX, lineY, PI / 12, 0);
-  drawWigglingArrow(endX - arrowSpacing, lineY, -PI / 14, PI / 3);
+  // === DECORATIVE END MARKER ===
+  // Optional: Add a simple rotated square (Suprematist style)
+  const markerSize = 10;
+  push();
+  translate(endX + 10, lineY);
+  rotate(PI / 4); // 45-degree rotation for a diamond shape
+  fill(random([color(255), color('#0A0A0A')])); // Alternate between white and black
+  noStroke();
+  rect(0, 0, markerSize, markerSize);
+  pop();
 }
 
 // === DATA FOR SELECTED YEAR ===
