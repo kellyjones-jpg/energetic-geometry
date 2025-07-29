@@ -225,9 +225,15 @@ function updateCounters(entries) {
   let megawattCount = entries.reduce((sum, e) => sum + (e.megawatts || 0), 0);
   let acreCount = entries.reduce((sum, e) => sum + (e.acres || 0), 0);
 
-  select('#site-count').html(siteCount.toLocaleString());
-  select('#megawatt-count').html(Math.round(megawattCount).toLocaleString());
-  select('#acre-count').html(Math.round(acreCount).toLocaleString());
+  // Get current displayed values (or use 0 if not available)
+  const currentSite = parseInt(document.getElementById('site-count')?.textContent.replace(/,/g, '')) || 0;
+  const currentMW = parseInt(document.getElementById('megawatt-count')?.textContent.replace(/,/g, '')) || 0;
+  const currentAcres = parseInt(document.getElementById('acre-count')?.textContent.replace(/,/g, '')) || 0;
+
+  // Animate each number
+  animateCount('site-count', currentSite, siteCount, 1000);
+  animateCount('megawatt-count', currentMW, Math.round(megawattCount), 1000);
+  animateCount('acre-count', currentAcres, Math.round(acreCount), 1000);
 }
 
 function setup() {
