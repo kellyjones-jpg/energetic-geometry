@@ -476,7 +476,7 @@ text(displayYear, centerX, yearY);
 textStyle(NORMAL);
 
 // === UNDERLINE ===
-let baseLineY = yearY + 18; // More padding from text
+let baseLineY = yearY + 6; // More padding from text
 const lineWidth = textWidth(displayYear) + 40;
 const startX = centerX - lineWidth / 2;
 const endX = centerX + lineWidth / 2;
@@ -488,8 +488,7 @@ if (hasSelectedYear) {
   line(startX, baseLineY, endX, baseLineY);
   noStroke();
 } else {
-  // === ANIMATED SQUIGGLE UNDERLINE WITH PULSING WHITE GLOW ===
-
+  let baseLineY = yearY + 18; // More padding from text
   // Color interpolation
   const palette = ['#E4572E', '#2E8B57', '#005A99', '#FFD100'];
   const t = (frameCount * 0.01) % palette.length;
@@ -499,35 +498,37 @@ if (hasSelectedYear) {
   const c2 = color(palette[i2]);
   const smoothColor = lerpColor(c1, c2, t - floor(t));
 
-  // Pulse glow opacity with sin wave (range ~60 to 180)
-  const pulse = map(sin(frameCount * 0.05), -1, 1, 60, 180);
+  // Pulse glow opacity with sin wave (range ~150 to 255)
+  const pulse = map(sin(frameCount * 0.05), -1, 1, 150, 255);
 
-  // Draw glowing background squiggle
-  for (let glow = 6; glow >= 1; glow--) {
-    stroke(255, pulse * (glow / 6)); // pulsing white glow
-    strokeWeight(glow * 2);
+  // Parameters for the squiggle shape
+  const amplitude = 4;
+  const frequency = 0.04;
+  const step = 5;
+
+  // --- Draw subtle shadow first ---
+  stroke('#0A0A0A');       // Dark subtle shadow color
+  strokeWeight(2);         // Thin stroke for shadow
+  noFill();
+  beginShape();
+  for (let x = startX; x <= endX; x += step) {
+    const yOffset = amplitude * sin((x + frameCount * 2) * frequency) + 1; // Slight vertical offset for shadow
+    vertex(x, baseLineY + yOffset);
+  }
+  endShape();
+
+  // --- Draw thinner white glow layers on top ---
+  for (let glow = 3; glow >= 1; glow--) {
+    stroke(255, pulse * (glow / 3)); // pulsing white glow with opacity scaling
+    strokeWeight(glow * 1.5);         // Thinner glow strokes
     noFill();
     beginShape();
-    const amplitude = 4;
-    const frequency = 0.04;
-    const step = 5;
     for (let x = startX; x <= endX; x += step) {
       const yOffset = amplitude * sin((x + frameCount * 2) * frequency);
       vertex(x, baseLineY + yOffset);
     }
     endShape();
   }
-
-  // Foreground animated line
-  stroke(smoothColor);
-  strokeWeight(2.5);
-  noFill();
-  beginShape();
-  for (let x = startX; x <= endX; x += 5) {
-    const yOffset = 4 * sin((x + frameCount * 2) * 0.04);
-    vertex(x, baseLineY + yOffset);
-  }
-  endShape();
 }
 
 // === DATA FOR SELECTED YEAR ===
