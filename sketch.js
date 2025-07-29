@@ -593,10 +593,10 @@ if (hasSelectedYear) {
     const svgHeight = 400;
 
     // Add top padding above the SVG visually
-    const topPadding = 240;
+    const topPadding = 90;
 
     const svgX = canvasPos.x + centerX - svgWidth / 2;
-    const svgY = canvasPos.y + adjustedYearY + 190 + topPadding;
+    const svgY = canvasPos.y + adjustedYearY + 90 + topPadding;
 
     svgUnderline.position(svgX, svgY);
   }
