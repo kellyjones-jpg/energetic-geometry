@@ -592,8 +592,8 @@ if (hasSelectedYear) {
     const svgWidth = 400;
     const svgHeight = 400;
 
-    // Add top padding (e.g., 20-50px) above the SVG visually
-    const topPadding = 40;
+    // Add top padding above the SVG visually
+    const topPadding = 240;
 
     const svgX = canvasPos.x + centerX - svgWidth / 2;
     const svgY = canvasPos.y + adjustedYearY + 190 + topPadding;
