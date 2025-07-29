@@ -8,7 +8,6 @@ let hoveredEntry = null;
 let bgImg;
 let shapeSize, padding, startY, numCols, numRows;
 let hasSelectedYear = false;
-let overlayOpacity = 255;
 let fadeAlpha = 255;
 
 const cropEdgeGroups = {
@@ -407,8 +406,8 @@ function updateLayout(lockedHeight = 850) {
   const yearEntries = entriesByYear[selectedYear] || [];
   const count = yearEntries.length;
 
-  startY = 125;
-  padding = 30;
+  startY = 130;
+  padding = 40;
 
   const availableWidth = windowWidth * 0.9;
   let tentativeShapeSize = constrain(availableWidth * 0.25, 70, 150);
@@ -416,7 +415,7 @@ function updateLayout(lockedHeight = 850) {
   numCols = max(floor((availableWidth + padding) / (tentativeShapeSize + padding)), 1);
 
   // Dynamically adjust shape size if entries don’t fit
-  let maxShapeSize = 135;
+  let maxShapeSize = 130;
   let minShapeSize = 20; // Lower if you want denser displays
 
   for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
@@ -476,40 +475,58 @@ const displayYear = hasSelectedYear ? " " + selectedYear : "Select a Year or Arr
 text(displayYear, centerX, yearY);
 textStyle(NORMAL);
 
-// Only draw underline when year is selected
+// === UNDERLINE ===
+const lineY = yearY + 6;
+const lineWidth = textWidth(displayYear) + 40;
+const startX = centerX - lineWidth / 2;
+const endX = centerX + lineWidth / 2;
+
 if (hasSelectedYear) {
-  const lineY = yearY + 6;
-  const lineWidth = textWidth(displayYear) + 40;
+  // === SIMPLE UNDERLINE FOR SELECTED YEAR ===
   stroke(10, 10, 10, fadeAlpha);
   strokeWeight(3);
-  line(centerX - lineWidth / 2, lineY, centerX + lineWidth / 2, lineY);
+  line(startX, lineY, endX, lineY);
   noStroke();
+} else {
+  // === WIGGLING STYLED UNDERLINE FOR PLACEHOLDER ===
+  push();
+  stroke(255, 180); // White-ish dashed line
+  strokeWeight(2);
+  drawingContext.setLineDash([6, 6]);
+
+  // Wiggle motion
+  let wiggle = 4 * sin(frameCount * 0.07);
+  line(startX, lineY + wiggle, endX, lineY + wiggle);
+  drawingContext.setLineDash([]);
+  pop();
+
+  // === DRAW STYLED ARROWHEADS WITH WIGGLE ===
+  const arrowSize = 10;
+  const arrowSpacing = 20;
+
+  function drawWigglingArrow(x, y, skewAngle = PI / 12, animOffset = 0) {
+    let arrowWiggle = 2 * sin(frameCount * 0.09 + animOffset);
+    push();
+    translate(x, y + wiggle + arrowWiggle);
+    rotate(skewAngle);
+    fill('#FFD100');
+    noStroke();
+    beginShape();
+    vertex(0, 0);                     // tip
+    vertex(-arrowSize, arrowSize);   // left base
+    vertex(arrowSize, arrowSize);    // right base
+    endShape(CLOSE);
+    pop();
+  }
+
+  // Draw two wiggling skewed arrows
+  drawWigglingArrow(endX, lineY, PI / 12, 0);
+  drawWigglingArrow(endX - arrowSpacing, lineY, -PI / 14, PI / 3);
 }
 
 // === DATA FOR SELECTED YEAR ===
 const yearEntries = entriesByYear[selectedYear] || [];
 const sortedEntries = [...yearEntries].sort((a, b) => (b.acres || 0) - (a.acres || 0));
-
-// === DRAW INSTRUCTIONAL OVERLAY IF NEEDED ===
-if (!hasSelectedYear) {   // Only show overlay until interaction
-  if (overlayOpacity > 0) {
-    overlayOpacity -= 5;  // Fade speed; adjust as needed
-    overlayOpacity = max(overlayOpacity, 0);
-  }
-
-  push();
-  fill(0, overlayOpacity);        // Black overlay with fade
-  rect(0, 0, width, height);     // Full canvas
-
-  textAlign(CENTER, CENTER);
-  noStroke();
-
-  fill(255, overlayOpacity);      // Text with same fade alpha
-  textSize(28);
-  text("Select a Year or Arrow to Get Started...", width / 2, height / 2 - 20);
-
-  return;  // Skip drawing rest of data until overlay gone
-}
 
 if (sortedEntries.length === 0) {
   fill(255, fadeAlpha);
@@ -565,7 +582,7 @@ if (sortedEntries.length === 0) {
     const horizontalWaveOffset = 10 * sin((row + col) * 0.7);
     const colStaggerOffset = (col % 2) * (shapeSize * 0.3);
     const cx = centerX + (col - (totalCols - 1) / 2) * colSpacing + horizontalWaveOffset;
-    const bottomPadding = 60;
+    const bottomPadding = 65;
     const cy = height - bottomPadding - row * rowSpacing - entryShapeSize / 2 - colStaggerOffset - outwardOffset;
 
     // === EASING POSITION ===
@@ -643,7 +660,6 @@ if (sortedEntries.length === 0) {
     pop(); // end entry group
   }
 }
-
 
 function showModalWithEntry(entry) {
   const modalTitle = document.getElementById('siteModalLabel');
