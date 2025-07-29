@@ -1374,7 +1374,7 @@ function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1)
   let halfSize = size / 2;
 
   push();
-  rotate(PI);
+  rotate(HALF_PI);
 
   for (let x = -halfSize; x <= halfSize; x += density) {
     let colA = getActivityColor(activities[idx % colorCount]);
