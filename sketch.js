@@ -469,7 +469,7 @@ textSize(28);
 text("Year Installed:", centerX, labelY);
 
 // Multiline placeholder text with line break
-const placeholderText = "\n\nUse the controls to navigate through time and\nreveal agrivoltaic patterns across the land.";
+const placeholderText = "\n\n\n\nUse the controls to navigate through time and\nreveal agrivoltaic patterns across the land.";
 
 // Show actual year or placeholder
 textStyle(BOLD);
