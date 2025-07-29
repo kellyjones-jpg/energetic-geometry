@@ -1029,7 +1029,7 @@ function drawDotRing(size, offsetIndex = 0) {
 }
 
 // Draw different line styles based on Animal Type
-function drawAnimalLine(animalType, activities, x, y, size, strokeW = 1.7) {
+function drawAnimalLine(animalType, activities, x, y, size, strokeW = 1.3) {
   if (!animalType || activities.length === 0) return;
   let style = getLineStyle(animalType);
   if (!style) return;
@@ -1037,9 +1037,9 @@ function drawAnimalLine(animalType, activities, x, y, size, strokeW = 1.7) {
   push();
   noFill();
 
-  const baseStrokeW = strokeW || style.weight * 1.1;  // Thicker lines
-  const lineLength = size * 1.3;                      // Slightly longer lines
-  const lineSpacing = 11;                              // Increased vertical spacing
+  const baseStrokeW = strokeW || style.weight * 1;  // Thicker lines
+  const lineLength = size * 1.5;                      // Slightly longer lines
+  const lineSpacing = 7;                              // Increased vertical spacing
 
   for (let i = 0; i < activities.length; i++) {
     let strokeColor = getActivityColor(activities[i]);
@@ -1047,7 +1047,7 @@ function drawAnimalLine(animalType, activities, x, y, size, strokeW = 1.7) {
 
     // Shadow for depth
     stroke(0, 60);
-    strokeWeight(baseStrokeW * 1.3);
+    strokeWeight(baseStrokeW * 1.1);
     push();
     translate(2, 2); // subtle offset shadow
     drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength);
