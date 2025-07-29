@@ -414,8 +414,8 @@ function updateLayout(lockedHeight = 850) {
   numCols = max(floor((availableWidth + padding) / (tentativeShapeSize + padding)), 1);
 
   // Dynamically adjust shape size if entries don’t fit
-  let maxShapeSize = 140;
-  let minShapeSize = 25; // Lower if you want denser displays
+  let maxShapeSize = 135;
+  let minShapeSize = 20; // Lower if you want denser displays
 
   for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
     const tentativeNumCols = max(floor((availableWidth + padding) / (s + padding)), 1);
