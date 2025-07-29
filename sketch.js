@@ -460,7 +460,7 @@ function draw() {
 // === YEAR LABEL ===
 const centerX = width / 2;
 const labelY = 40;
-const yearY = labelY + 30;
+const yearY = labelY + 25;
 
 textFont('Helvetica');
 textAlign(CENTER, BOTTOM);
@@ -504,7 +504,7 @@ text(displayYear, centerX, adjustedYearY);
 
 if (hasSelectedYear) {
   // === SIMPLE STATIC UNDERLINE FOR SELECTED YEAR ===
-  let baseLineY = adjustedYearY + 9; // underline relative to adjusted text
+  let baseLineY = adjustedYearY + 11; // underline relative to adjusted text
 
   stroke(10, 10, 10, fadeAlpha);
   strokeWeight(3);
