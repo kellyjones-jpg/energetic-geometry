@@ -513,7 +513,7 @@ if (hasSelectedYear) {
 
 } else {
   // === SQUIGGLY LINE WITH GRADIENT, SHADOW, AND GLOW ===
-  let baseLineY = adjustedYearY + 590; // underline relative to adjusted text
+  let baseLineY = adjustedYearY + 490; // underline relative to adjusted text
 
   textLeading(45);  // Adjust line height for spacing
 
@@ -549,7 +549,7 @@ if (hasSelectedYear) {
 
   // --- Draw gradient colored squiggle line ---
   noFill();
-  strokeWeight(6);
+  strokeWeight(7);
   for (let x = startX; x < endX; x += 1) {
     const posRatio = (x - startX) / (endX - startX);
     stroke(getGradientColor(posRatio));
