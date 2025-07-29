@@ -477,13 +477,14 @@ textSize(36);
 
 const displayYear = hasSelectedYear ? " " + selectedYear : placeholderText;
 
-// Set text alignment for multiline display
+// Set text alignment and line spacing for multiline display
 textAlign(CENTER, CENTER);
 textLeading(40);  // Adjust line height for spacing
 
-// Amount of padding above the placeholder text and underline
+// Padding only for placeholder
 const paddingAbove = 25;
-const adjustedYearY = yearY + paddingAbove;
+const baseYearY = yearY;
+const adjustedYearY = hasSelectedYear ? baseYearY : baseYearY + paddingAbove;
 
 // Calculate line width based on widest line in displayYear (approximate)
 let maxLineWidth = 0;
