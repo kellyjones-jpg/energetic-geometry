@@ -469,7 +469,7 @@ textSize(28);
 text("Year Installed:", centerX, labelY);
 
 // Multiline placeholder text with line break
-const placeholderText = "\n\n\n\n\n\nUse the controls to navigate through time and\nreveal agrivoltaic patterns across the land.";
+const placeholderText = "\n\n\n\n\n\n\n\nUse the controls to navigate through time and\nreveal agrivoltaic patterns across the land.";
 
 // Show actual year or placeholder
 textStyle(BOLD);
@@ -504,7 +504,7 @@ text(displayYear, centerX, adjustedYearY);
 
 if (hasSelectedYear) {
   // === SIMPLE STATIC UNDERLINE FOR SELECTED YEAR ===
-  let baseLineY = adjustedYearY + 15; // underline relative to adjusted text
+  let baseLineY = adjustedYearY + 17; // underline relative to adjusted text
 
   stroke(10, 10, 10, fadeAlpha);
   strokeWeight(3);
