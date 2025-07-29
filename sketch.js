@@ -488,40 +488,43 @@ if (hasSelectedYear) {
   line(startX, lineY, endX, lineY);
   noStroke();
 } else {
-  // === OSCILLATING COLOR LINE FOR PLACEHOLDER ===
+  // === SQUIGGLING COLOR-CYCLING LINE FOR PLACEHOLDER ===
 
-  // Define palette and cycle based on frameCount
-  const colorPalette = ['#E4572E', '#2E8B57', '#005A99', '#FFD100'];
-  const colorIndex = floor((frameCount / 30) % colorPalette.length);
-  const currentColor = colorPalette[colorIndex];
+  // Define palette and smooth color blend
+  const palette = ['#E4572E', '#2E8B57', '#005A99', '#FFD100'];
+  const t = (frameCount * 0.01) % palette.length;
+  const i1 = floor(t) % palette.length;
+  const i2 = (i1 + 1) % palette.length;
+  const c1 = color(palette[i1]);
+  const c2 = color(palette[i2]);
+  const smoothColor = lerpColor(c1, c2, t - floor(t));
 
-  // Draw a stepped-line pattern (zigzag mimic)
-  stroke(currentColor);
-  strokeWeight(2);
+  // Glow effect: multiple blurred strokes behind
+  for (let glow = 6; glow >= 1; glow--) {
+    stroke(0, 0, 0, 20 * glow); // fading shadow
+    strokeWeight(glow * 2);
+    noFill();
+    beginShape();
+    const squiggleAmplitude = 4;
+    const squiggleFrequency = 0.04;
+    const step = 5;
+    for (let x = startX; x <= endX; x += step) {
+      const yOffset = squiggleAmplitude * sin((x + frameCount * 2) * squiggleFrequency);
+      vertex(x, lineY + yOffset);
+    }
+    endShape();
+  }
+
+  // Main animated squiggle line
+  stroke(smoothColor);
+  strokeWeight(2.5);
   noFill();
-  
-  const segmentCount = 14;
-  const segmentLength = (endX - startX) / segmentCount;
-  const stepHeight = 4;
-
   beginShape();
-  for (let i = 0; i <= segmentCount; i++) {
-    const x = startX + i * segmentLength;
-    const y = lineY + ((i % 2 === 0) ? -stepHeight : stepHeight);
-    vertex(x, y);
+  for (let x = startX; x <= endX; x += 5) {
+    const yOffset = 4 * sin((x + frameCount * 2) * 0.04);
+    vertex(x, lineY + yOffset);
   }
   endShape();
-
-  // === DECORATIVE END MARKER ===
-  // Optional: Add a simple rotated square (Suprematist style)
-  const markerSize = 10;
-  push();
-  translate(endX + 10, lineY);
-  rotate(PI / 4); // 45-degree rotation for a diamond shape
-  fill(random([color(255), color('#0A0A0A')])); // Alternate between white and black
-  noStroke();
-  rect(0, 0, markerSize, markerSize);
-  pop();
 }
 
 // === DATA FOR SELECTED YEAR ===
