@@ -575,7 +575,7 @@ text(displayYear, centerX, adjustedYearY);
 if (hasSelectedYear) {
   // === SIMPLE STATIC UNDERLINE FOR SELECTED YEAR ===
   let baseLineY = adjustedYearY + 17; // underline relative to adjusted text
-  if (svgUnderline) svgUnderline.style('display', 'none');  // Hide SVG when year selected
+  if (svgUnderline) svgUnderline.style.display = 'none';  // Hide SVG when year selected
   stroke(10, 10, 10, fadeAlpha);
   strokeWeight(3);
   line(startX, baseLineY, endX, baseLineY);
@@ -585,7 +585,7 @@ if (hasSelectedYear) {
   textLeading(45);  // Adjust line height for spacing
 // Show SVG underline for placeholder
   if (svgUnderline) {
-    svgUnderline.style('display', 'block');
+    svgUnderline.style.display = 'block';
 
     // Position it below placeholder text with padding
     const canvasPos = cnv.position();
