@@ -471,7 +471,7 @@ text("Year Installed:", centerX, labelY);
 // Show actual year or placeholder
 textStyle(BOLD);
 textSize(36);
-const displayYear = hasSelectedYear ? " " + selectedYear : "Navigate through time to reveal agrivoltaic patterns across the land.";
+const displayYear = hasSelectedYear ? " " + selectedYear : "Use the controls to navigate through time and reveal agrivoltaic patterns across the land.";
 text(displayYear, centerX, yearY);
 textStyle(NORMAL);
 
