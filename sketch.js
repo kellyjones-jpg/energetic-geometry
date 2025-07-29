@@ -188,57 +188,6 @@ const combinedIcon = `
 </svg>
 `;
 
-const svgUnderline = `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" fill="none">
-  <!-- Define drop shadow filter -->
-  <defs>
-    <filter id="dropshadow" height="130%">
-      <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#0A0A0A" flood-opacity="0.6"/>
-    </filter>
-  </defs>
-
-  <!-- Group with drop shadow -->
-  <g filter="url(#dropshadow)">
-    <!-- Looped horizontal-to-downward path: Base line -->
-    <path d="
-      M60,40
-      C140,40 220,60 200,100
-      C180,140 260,160 240,200
-      C220,240 300,250 290,260
-    " stroke="#E4572E" stroke-width="4" fill="none"/>
-
-    <!-- Green offset -->
-    <path d="
-      M65,45
-      C145,45 225,65 205,105
-      C185,145 265,165 245,205
-      C225,245 305,255 295,265
-    " stroke="#2E8B57" stroke-width="3.5" fill="none"/>
-
-    <!-- Blue dashed offset -->
-    <path d="
-      M70,50
-      C150,50 230,70 210,110
-      C190,150 270,170 250,210
-      C230,250 310,260 300,270
-    " stroke="#005A99" stroke-width="2" fill="none" stroke-dasharray="5 5"/>
-
-    <!-- Yellow fine offset -->
-    <path d="
-      M75,55
-      C155,55 235,75 215,115
-      C195,155 275,175 255,215
-      C235,255 315,265 305,275
-    " stroke="#FFD100" stroke-width="1.5" fill="none"/>
-
-    <!-- Arrow moved slightly more left and up -->
-    <g transform="translate(300,260)">
-      <polygon points="-16,0 16,0 0,32" fill="#FFD100" stroke="#005A99" stroke-width="1.5"/>
-      <polygon points="-12,3 12,3 0,26" fill="#E4572E"/>
-    </g>
-  </g>
-</svg>`;
-
-
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250702.csv', 'csv', 'header');
   bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
@@ -384,25 +333,6 @@ function setup() {
   const nextBtn = select('#next-year');
 
    setupArrows();
-
- // Create a container div inside existing container or body
-  let svgContainer = createDiv();
-  svgContainer.id('svg-underline-container');
-
-  // Add the SVG markup inside this div
-  svgContainer.html(svgUnderline);
-
-  // Parent it to the main container or body
-  svgContainer.parent('sketch-container');
-
-  // Style and position the SVG container as needed
-  svgContainer.style('position', 'absolute');
-  svgContainer.style('pointer-events', 'none'); // So it doesn't interfere with mouse events
-  svgContainer.style('left', '50%');  // horizontally centered
-  svgContainer.style('transform', 'translateX(-50%)'); // center align via transform
-  svgContainer.style('top', '150px'); // adjust vertical position relative to layout
-  svgContainer.style('width', '400px'); // match SVG width or scale as desired
-  svgContainer.style('height', '400px'); // match SVG height or scale as desired
 }
 
 function setupArrows() {
@@ -539,7 +469,7 @@ textSize(28);
 text("Year Installed:", centerX, labelY);
 
 // Multiline placeholder text with line break
-const placeholderText = "\n\n\n\n\n\n\n\n\n\nUse the controls to navigate through time and\nreveal agrivoltaic patterns across the land.";
+const placeholderText = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nUse the controls to navigate through time and\nreveal agrivoltaic patterns across the land.";
 
 // Show actual year or placeholder
 textStyle(BOLD);
@@ -575,30 +505,71 @@ text(displayYear, centerX, adjustedYearY);
 if (hasSelectedYear) {
   // === SIMPLE STATIC UNDERLINE FOR SELECTED YEAR ===
   let baseLineY = adjustedYearY + 17; // underline relative to adjusted text
-  if (svgUnderline) svgUnderline.style.display = 'none';  // Hide SVG when year selected
+
   stroke(10, 10, 10, fadeAlpha);
   strokeWeight(3);
   line(startX, baseLineY, endX, baseLineY);
   noStroke();
 
 } else {
+  // === SQUIGGLY LINE WITH GRADIENT, SHADOW, AND GLOW ===
+  let baseLineY = adjustedYearY + 490; // underline relative to adjusted text
+
   textLeading(45);  // Adjust line height for spacing
-// Show SVG underline for placeholder
-  if (svgUnderline) {
-    svgUnderline.style.display = 'block';
 
-    // Position it below placeholder text with padding
-    const canvasPos = cnv.position();
-    const svgWidth = 400;
-    const svgHeight = 400;
+  // Palette colors for gradient
+  const palette = ['#E4572E', '#2E8B57', '#005A99', '#FFD100'];
 
-    // Add top padding above the SVG visually
-    const topPadding = 90;
+  // Gradient helper function
+  function getGradientColor(posRatio) {
+    const totalStops = palette.length - 1;
+    const scaledPos = posRatio * totalStops;
+    const index1 = floor(scaledPos);
+    const index2 = min(index1 + 1, totalStops);
+    const interRatio = scaledPos - index1;
+    const c1 = color(palette[index1]);
+    const c2 = color(palette[index2]);
+    return lerpColor(c1, c2, interRatio);
+  }
 
-    const svgX = canvasPos.x + centerX - svgWidth / 2;
-    const svgY = canvasPos.y + adjustedYearY + 90 + topPadding;
+  const amplitude = 4;
+  const frequency = 0.04;
+  const step = 5;
 
-    svgUnderline.position(svgX, svgY);
+  // --- Draw subtle shadow first ---
+  stroke('#0A0A0A');
+  strokeWeight(2);
+  noFill();
+  beginShape();
+  for (let x = startX; x <= endX; x += step) {
+    const yOffset = amplitude * sin(x * frequency) + 1;
+    vertex(x, baseLineY + yOffset);
+  }
+  endShape();
+
+  // --- Draw gradient colored squiggle line ---
+  noFill();
+  strokeWeight(7);
+  for (let x = startX; x < endX; x += 1) {
+    const posRatio = (x - startX) / (endX - startX);
+    stroke(getGradientColor(posRatio));
+    const y1 = baseLineY + amplitude * sin(x * frequency);
+    const y2 = baseLineY + amplitude * sin((x + 1) * frequency);
+    line(x, y1, x + 1, y2);
+  }
+
+  // --- Draw thinner white glow layers on top ---
+  const pulse = map(sin(frameCount * 0.05), -1, 1, 150, 255);
+  for (let glow = 1.5; glow >= 1; glow--) {
+    stroke(255, pulse * (glow / 1.5));
+    strokeWeight(glow * 0.75);
+    noFill();
+    beginShape();
+    for (let x = startX; x <= endX; x += step) {
+      const yOffset = amplitude * sin(x * frequency);
+      vertex(x, baseLineY + yOffset);
+    }
+    endShape();
   }
 }
 
