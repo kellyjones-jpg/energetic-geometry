@@ -468,35 +468,43 @@ fill(255, fadeAlpha);
 textSize(28);
 text("Year Installed:", centerX, labelY);
 
-// Define placeholder text separately
-const placeholderText = "Use the controls to navigate through time and reveal agrivoltaic patterns across the land.";
+// Multiline placeholder text with line break
+const placeholderText = "Use the controls to navigate through time and\nreveal agrivoltaic patterns across the land.";
 
-// Determine display text based on selection
+// Show actual year or placeholder
+textStyle(BOLD);
+textSize(36);
+
 const displayYear = hasSelectedYear ? " " + selectedYear : placeholderText;
 
-// === UNDERLINE + PLACEHOLDER TEXT ===
+// Set text alignment for multiline display
+textAlign(CENTER, CENTER);
+textLeading(40);  // Adjust line height for spacing
 
-// Padding above text and underline
-const paddingAbove = 12;
+// Amount of padding above the placeholder text and underline
+const paddingAbove = 25;
 const adjustedYearY = yearY + paddingAbove;
 
-const lineWidth = textWidth(displayYear) + 40;
+// Calculate line width based on widest line in displayYear (approximate)
+let maxLineWidth = 0;
+displayYear.split('\n').forEach(line => {
+  const w = textWidth(line);
+  if (w > maxLineWidth) maxLineWidth = w;
+});
+const lineWidth = maxLineWidth + 40;
+
 const startX = centerX - lineWidth / 2;
 const endX = centerX + lineWidth / 2;
 
-textAlign(CENTER, BASELINE);
 fill(255);
 noStroke();
 
-// Draw display text once, at padded position
-textStyle(BOLD);
-textSize(36);
+// Draw the text at adjustedYearY
 text(displayYear, centerX, adjustedYearY);
-textStyle(NORMAL);
 
 if (hasSelectedYear) {
   // === SIMPLE STATIC UNDERLINE FOR SELECTED YEAR ===
-  let baseLineY = adjustedYearY + 6; // underline relative to text
+  let baseLineY = adjustedYearY + 6; // underline relative to adjusted text
 
   stroke(10, 10, 10, fadeAlpha);
   strokeWeight(3);
@@ -505,7 +513,7 @@ if (hasSelectedYear) {
 
 } else {
   // === SQUIGGLY LINE WITH GRADIENT, SHADOW, AND GLOW ===
-  let baseLineY = adjustedYearY + 18; // underline relative to text
+  let baseLineY = adjustedYearY + 18; // underline relative to adjusted text
 
   // Palette colors for gradient
   const palette = ['#E4572E', '#2E8B57', '#005A99', '#FFD100'];
