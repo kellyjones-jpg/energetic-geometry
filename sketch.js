@@ -479,7 +479,6 @@ const displayYear = hasSelectedYear ? " " + selectedYear : placeholderText;
 
 // Set text alignment and line spacing for multiline display
 textAlign(CENTER, CENTER);
-textLeading(45);  // Adjust line height for spacing
 
 // Padding only for placeholder
 const paddingAbove = 0;
@@ -515,6 +514,8 @@ if (hasSelectedYear) {
 } else {
   // === SQUIGGLY LINE WITH GRADIENT, SHADOW, AND GLOW ===
   let baseLineY = adjustedYearY + 90; // underline relative to adjusted text
+
+  textLeading(45);  // Adjust line height for spacing
 
   // Palette colors for gradient
   const palette = ['#E4572E', '#2E8B57', '#005A99', '#FFD100'];
