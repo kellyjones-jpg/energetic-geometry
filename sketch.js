@@ -468,16 +468,15 @@ fill(255, fadeAlpha);
 textSize(28);
 text("Year Installed:", centerX, labelY);
 
-// Show actual year or placeholder
-textStyle(BOLD);
-textSize(36);
-const displayYear = hasSelectedYear ? " " + selectedYear : "Use the controls to navigate through time and reveal agrivoltaic patterns across the land.";
-text(displayYear, centerX, yearY);
-textStyle(NORMAL);
+// Define placeholder text separately
+const placeholderText = "Use the controls to navigate through time and reveal agrivoltaic patterns across the land.";
+
+// Determine display text based on selection
+const displayYear = hasSelectedYear ? " " + selectedYear : placeholderText;
 
 // === UNDERLINE + PLACEHOLDER TEXT ===
 
-// Amount of padding above the placeholder text and underline
+// Padding above text and underline
 const paddingAbove = 12;
 const adjustedYearY = yearY + paddingAbove;
 
@@ -489,16 +488,15 @@ textAlign(CENTER, BASELINE);
 fill(255);
 noStroke();
 
-// Draw text: use adjustedYearY for vertical position to add padding above
-if (hasSelectedYear) {
-  text(displayYear, centerX, adjustedYearY);
-} else {
-  text(displayYear, centerX, adjustedYearY);
-}
+// Draw display text once, at padded position
+textStyle(BOLD);
+textSize(36);
+text(displayYear, centerX, adjustedYearY);
+textStyle(NORMAL);
 
 if (hasSelectedYear) {
   // === SIMPLE STATIC UNDERLINE FOR SELECTED YEAR ===
-  let baseLineY = adjustedYearY + 6; // underline relative to adjusted text
+  let baseLineY = adjustedYearY + 6; // underline relative to text
 
   stroke(10, 10, 10, fadeAlpha);
   strokeWeight(3);
@@ -507,7 +505,7 @@ if (hasSelectedYear) {
 
 } else {
   // === SQUIGGLY LINE WITH GRADIENT, SHADOW, AND GLOW ===
-  let baseLineY = adjustedYearY + 18; // underline relative to adjusted text
+  let baseLineY = adjustedYearY + 18; // underline relative to text
 
   // Palette colors for gradient
   const palette = ['#E4572E', '#2E8B57', '#005A99', '#FFD100'];
