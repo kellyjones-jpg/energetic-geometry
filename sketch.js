@@ -406,7 +406,7 @@ function updateLayout(lockedHeight = 850) {
   const count = yearEntries.length;
 
   startY = 125;
-  padding = 25;
+  padding = 27;
 
   const availableWidth = windowWidth * 0.9;
   let tentativeShapeSize = constrain(availableWidth * 0.25, 70, 150);
