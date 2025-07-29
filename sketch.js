@@ -480,6 +480,9 @@ const displayYear = hasSelectedYear ? " " + selectedYear : placeholderText;
 // Set text alignment and line spacing for multiline display
 textAlign(CENTER, CENTER);
 textLeading(45);  // Adjust line height for spacing
+
+// Padding only for placeholder
+const paddingAbove = 1;
 const baseYearY = yearY;
 const adjustedYearY = hasSelectedYear ? baseYearY : baseYearY + paddingAbove;
 
@@ -502,7 +505,7 @@ text(displayYear, centerX, adjustedYearY);
 
 if (hasSelectedYear) {
   // === SIMPLE STATIC UNDERLINE FOR SELECTED YEAR ===
-  let baseLineY = adjustedYearY + 6; // underline relative to adjusted text
+  let baseLineY = adjustedYearY + 9; // underline relative to adjusted text
 
   stroke(10, 10, 10, fadeAlpha);
   strokeWeight(3);
@@ -511,7 +514,7 @@ if (hasSelectedYear) {
 
 } else {
   // === SQUIGGLY LINE WITH GRADIENT, SHADOW, AND GLOW ===
-  let baseLineY = adjustedYearY + 75; // underline relative to adjusted text
+  let baseLineY = adjustedYearY + 70; // underline relative to adjusted text
 
   // Palette colors for gradient
   const palette = ['#E4572E', '#2E8B57', '#005A99', '#FFD100'];
