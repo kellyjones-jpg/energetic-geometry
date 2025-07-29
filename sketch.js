@@ -204,7 +204,7 @@ function animateCount(id, start, end, duration) {
     if (!startTime) startTime = timestamp;
     const progress = Math.min((timestamp - startTime) / duration, 1);
     const currentValue = Math.floor(progress * (end - start) + start);
-    element.textContent = currentValue;
+    element.textContent = currentValue.toLocaleString();
     if (progress < 1) {
       requestAnimationFrame(step);
     }
@@ -225,9 +225,9 @@ function updateCounters(entries) {
   let megawattCount = entries.reduce((sum, e) => sum + (e.megawatts || 0), 0);
   let acreCount = entries.reduce((sum, e) => sum + (e.acres || 0), 0);
 
-  select('#site-count').html(siteCount);
-  select('#megawatt-count').html(nf(megawattCount, 0, 1));
-  select('#acre-count').html(nf(acreCount, 0, 0));
+  select('#site-count').html(siteCount.toLocaleString());
+  select('#megawatt-count').html(Math.round(megawattCount).toLocaleString());
+  select('#acre-count').html(Math.round(acreCount).toLocaleString());
 }
 
 function setup() {
