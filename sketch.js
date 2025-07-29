@@ -188,7 +188,7 @@ const combinedIcon = `
 </svg>
 `;
 
-const arrowIcon = `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" fill="none">
+const svgUnderline = `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" fill="none">
   <!-- Define drop shadow filter -->
   <defs>
     <filter id="dropshadow" height="130%">
@@ -390,7 +390,7 @@ function setup() {
   svgContainer.id('svg-underline-container');
 
   // Add the SVG markup inside this div
-  svgContainer.html(arrowIcon);
+  svgContainer.html(svgUnderline);
 
   // Parent it to the main container or body
   svgContainer.parent('sketch-container');
