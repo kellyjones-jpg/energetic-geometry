@@ -547,7 +547,7 @@ if (hasSelectedYear) {
 
   // --- Draw gradient colored squiggle line ---
   noFill();
-  strokeWeight(3);
+  strokeWeight(5);
   for (let x = startX; x < endX; x += 1) {
     const posRatio = (x - startX) / (endX - startX);
     stroke(getGradientColor(posRatio));
@@ -558,9 +558,9 @@ if (hasSelectedYear) {
 
   // --- Draw thinner white glow layers on top ---
   const pulse = map(sin(frameCount * 0.05), -1, 1, 150, 255);
-  for (let glow = 1; glow >= 1; glow--) {
-    stroke(255, pulse * (glow / 1));
-    strokeWeight(glow * 0.5);
+  for (let glow = 1.5; glow >= 1; glow--) {
+    stroke(255, pulse * (glow / 1.5));
+    strokeWeight(glow * 0.75);
     noFill();
     beginShape();
     for (let x = startX; x <= endX; x += step) {
