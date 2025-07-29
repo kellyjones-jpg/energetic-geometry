@@ -272,7 +272,7 @@ function setup() {
 
   // Responsive canvas sizing
   let canvasWidth = windowWidth * 0.9;
-  let canvasHeight = min(845, windowHeight);
+  let canvasHeight = min(850, windowHeight);
   cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent('sketch-container');
 
@@ -401,11 +401,11 @@ function changeYear(direction) {
   }
 }
 
-function updateLayout(lockedHeight = 845) {
+function updateLayout(lockedHeight = 850) {
   const yearEntries = entriesByYear[selectedYear] || [];
   const count = yearEntries.length;
 
-  startY = 120;
+  startY = 125;
   padding = 25;
 
   const availableWidth = windowWidth * 0.9;
@@ -440,7 +440,7 @@ function updateLayout(lockedHeight = 845) {
 
   function windowResized() {
     let canvasWidth = windowWidth * 0.9;
-    let targetHeight = windowHeight < 855 ? windowHeight : 845;
+    let targetHeight = windowHeight < 855 ? windowHeight : 850;
 
     updateLayout(targetHeight);
     resizeCanvas(canvasWidth, targetHeight);
