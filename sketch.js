@@ -7,8 +7,8 @@ let cnv;
 let hoveredEntry = null; 
 let bgImg;
 let shapeSize, padding, startY, numCols, numRows;
-let overlayOpacity = 255;  // full opacity initially
 let hasSelectedYear = false;
+let overlayOpacity = 255;
 let fadeAlpha = 255;
 
 const cropEdgeGroups = {
@@ -214,19 +214,22 @@ function animateCount(id, start, end, duration) {
   requestAnimationFrame(step);
 }
 
-// Update counters given entries of the selected year
 function updateCounters(entries) {
-  // Sum up the counts from the entries
+  if (!hasSelectedYear) {
+    select('#siteCount').html('');
+    select('#megawattCount').html('');
+    select('#acreCount').html('');
+    return;
+  }
+
   let siteCount = entries.length;
   let megawattCount = entries.reduce((sum, e) => sum + (e.megawatts || 0), 0);
   let acreCount = entries.reduce((sum, e) => sum + (e.acres || 0), 0);
 
-  // Animate each counter
-  animateCount('site-count', 0, siteCount, 1000);
-  animateCount('megawatt-count', 0, Math.round(megawattCount), 1000);
-  animateCount('acre-count', 0, Math.round(acreCount), 1000);
+  select('#siteCount').html(siteCount);
+  select('#megawattCount').html(nf(megawattCount, 0, 1));
+  select('#acreCount').html(nf(acreCount, 0, 0));
 }
-
 
 function setup() {
   // Parse table data
@@ -314,8 +317,6 @@ function setup() {
         selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
         label.addClass('active');
       });
-
-    if (index === 0) label.addClass('active');
   });
 
   // General style setup
@@ -390,13 +391,16 @@ function setupArrows() {
 
 function changeYear(direction) {
   let currentIndex = availableYears.indexOf(selectedYear);
-  let nextIndex = constrain(currentIndex + direction, 0, availableYears.length - 1);
+  let nextIndex = currentIndex + direction;
 
-  if (nextIndex !== currentIndex) {
-    selectedYear = availableYears[nextIndex];
-    hasSelectedYear = true;  
-    updateYear(selectedYear, nextIndex);
+  if (nextIndex < 0) {
+    nextIndex = availableYears.length - 1; // wrap to last
+  } else if (nextIndex >= availableYears.length) {
+    nextIndex = 0; // wrap to first
   }
+
+  selectedYear = availableYears[nextIndex];
+  updateYear(selectedYear, nextIndex);
 }
 
 function updateLayout(lockedHeight = 850) {
@@ -458,22 +462,29 @@ function draw() {
 const centerX = width / 2;
 const labelY = 40;
 const yearY = labelY + 40;
+
 textFont('Helvetica');
 textAlign(CENTER, BOTTOM);
 fill(255, fadeAlpha);
 textSize(28);
 text("Year Installed:", centerX, labelY);
+
+// Show actual year or placeholder
 textStyle(BOLD);
 textSize(36);
-text(" " + selectedYear, centerX, yearY);
+const displayYear = hasSelectedYear ? " " + selectedYear : " –––";
+text(displayYear, centerX, yearY);
 textStyle(NORMAL);
 
-const lineY = yearY + 6;
-const lineWidth = textWidth(selectedYear) + 40;
-stroke(10, 10, 10, fadeAlpha);
-strokeWeight(3);
-line(centerX - lineWidth / 2, lineY, centerX + lineWidth / 2, lineY);
-noStroke();
+// Only draw underline when year is selected
+if (hasSelectedYear) {
+  const lineY = yearY + 6;
+  const lineWidth = textWidth(displayYear) + 40;
+  stroke(10, 10, 10, fadeAlpha);
+  strokeWeight(3);
+  line(centerX - lineWidth / 2, lineY, centerX + lineWidth / 2, lineY);
+  noStroke();
+}
 
 // === DATA FOR SELECTED YEAR ===
 const yearEntries = entriesByYear[selectedYear] || [];
@@ -730,7 +741,6 @@ function mouseMoved() {
 
   cursor(hovering ? 'pointer' : 'default');
 }
-
 
 function mousePressed() {
   const modalElement = document.getElementById('siteModal');
