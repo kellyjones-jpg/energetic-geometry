@@ -489,7 +489,8 @@ if (hasSelectedYear) {
   noStroke();
 } else {
   let baseLineY = yearY + 18; // More padding from text
-  // Color interpolation
+
+  // Color interpolation for palette oscillation
   const palette = ['#E4572E', '#2E8B57', '#005A99', '#FFD100'];
   const t = (frameCount * 0.01) % palette.length;
   const i1 = floor(t) % palette.length;
@@ -507,20 +508,31 @@ if (hasSelectedYear) {
   const step = 5;
 
   // --- Draw subtle shadow first ---
-  stroke('#0A0A0A');       // Dark subtle shadow color
-  strokeWeight(2);         // Thin stroke for shadow
+  stroke('#0A0A0A');
+  strokeWeight(2);
   noFill();
   beginShape();
   for (let x = startX; x <= endX; x += step) {
-    const yOffset = amplitude * sin((x + frameCount * 2) * frequency) + 1; // Slight vertical offset for shadow
+    const yOffset = amplitude * sin((x + frameCount * 2) * frequency) + 1; // offset for shadow
+    vertex(x, baseLineY + yOffset);
+  }
+  endShape();
+
+  // --- Draw main colored squiggle line ---
+  stroke(smoothColor);
+  strokeWeight(3);
+  noFill();
+  beginShape();
+  for (let x = startX; x <= endX; x += step) {
+    const yOffset = amplitude * sin((x + frameCount * 2) * frequency);
     vertex(x, baseLineY + yOffset);
   }
   endShape();
 
   // --- Draw thinner white glow layers on top ---
   for (let glow = 3; glow >= 1; glow--) {
-    stroke(255, pulse * (glow / 3)); // pulsing white glow with opacity scaling
-    strokeWeight(glow * 1.5);         // Thinner glow strokes
+    stroke(255, pulse * (glow / 3));
+    strokeWeight(glow * 1.5);
     noFill();
     beginShape();
     for (let x = startX; x <= endX; x += step) {
