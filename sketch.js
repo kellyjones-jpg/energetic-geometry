@@ -480,9 +480,6 @@ const displayYear = hasSelectedYear ? " " + selectedYear : placeholderText;
 // Set text alignment and line spacing for multiline display
 textAlign(CENTER, CENTER);
 textLeading(45);  // Adjust line height for spacing
-
-// Padding only for placeholder
-const paddingAbove = 5;
 const baseYearY = yearY;
 const adjustedYearY = hasSelectedYear ? baseYearY : baseYearY + paddingAbove;
 
