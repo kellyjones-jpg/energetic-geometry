@@ -1,3 +1,4 @@
+
 let table;
 let entries = [];
 let entriesByYear = {};
@@ -9,6 +10,7 @@ let bgImg;
 let shapeSize, padding, startY, numCols, numRows;
 let hasSelectedYear = false;
 let fadeAlpha = 255;
+let placeholderContainer;
 
 const cropEdgeGroups = {
   // Root vegetables
@@ -286,6 +288,16 @@ function updateCounters(entries) {
   animateCount('acre-count', currentAcres, Math.round(acreCount), 1000);
 }
 
+function updatePlaceholderVisibility() {
+  if (placeholderContainer) {
+    if (hasSelectedYear) {
+      placeholderContainer.hide();
+    } else {
+      placeholderContainer.show();
+    }
+  }
+}
+
 function setup() {
   // Parse table data
   for (let i = 0; i < table.getRowCount(); i++) {
@@ -327,19 +339,16 @@ function setup() {
   selectedYear = availableYears[0];
   updateCounters(entriesByYear[selectedYear]);
 
-  // Responsive canvas sizing
   let canvasWidth = windowWidth * 0.9;
   let canvasHeight = min(850, windowHeight);
   cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent('sketch-container');
 
-  // Create image caption
   let caption = createP("Image from Pexels");
   caption.style('text-align', 'center');
   caption.class('image-caption');
   caption.parent('sketch-container');
 
-  // Create year timeline
   let timelineContainer = createDiv().id('timeline');
   timelineContainer.style('text-align', 'center');
   timelineContainer.parent('sketch-container');
@@ -350,45 +359,48 @@ function setup() {
 
     let label = createP(year).class('year-label').addClass('suprematist-underline');
     label.parent(yearDiv);
-
-    if (index % 2 === 0) {
-      label.addClass('above');
-    } else {
-      label.addClass('below');
-    }
+    if (index % 2 === 0) label.addClass('above');
+    else label.addClass('below');
 
     let node = createDiv().class('year-node');
     node.parent(yearDiv);
-      label.mousePressed(() => {
-        selectedYear = year;
-        hasSelectedYear = true;  
-        windowResized();
-        updateCounters(entriesByYear[selectedYear]);
 
-        if (typeof drawSites === 'function') {
-          drawSites(entriesByYear[selectedYear]);
-        }
-
-        selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
-        label.addClass('active');
-      });
+    label.mousePressed(() => {
+      selectedYear = year;
+      hasSelectedYear = true;
+      updatePlaceholderVisibility(); // NEW
+      windowResized();
+      updateCounters(entriesByYear[selectedYear]);
+      if (typeof drawSites === 'function') {
+        drawSites(entriesByYear[selectedYear]);
+      }
+      selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
+      label.addClass('active');
+    });
   });
 
-  // General style setup
   textFont('Helvetica');
   textSize(32);
   textAlign(CENTER, CENTER);
   rectMode(CENTER);
-  pixelDensity(displayDensity()); // For crisp rendering on high-DPI screens
+  pixelDensity(displayDensity());
 
-  updateCounters(entriesByYear[selectedYear]);
-  loop();
+  setupArrows();
 
-    // Arrow year navigation (←/→)
-  const prevBtn = select('#prev-year');
-  const nextBtn = select('#next-year');
+  // === PLACEHOLDER CONTAINER ===
+  placeholderContainer = createDiv().id('placeholder-container');
+  placeholderContainer.parent('sketch-container');
+  placeholderContainer.style('text-align', 'center');
+  placeholderContainer.style('margin-top', '220px');
+  placeholderContainer.html(`
+    <div class="placeholder-text">
+      Use the controls to navigate through time and<br>
+      reveal agrivoltaic patterns across the land.
+    </div>
+    <div class="placeholder-underline">${svgUnderline}</div>
+  `);
 
-   setupArrows();
+  updatePlaceholderVisibility(); 
 }
 
 function setupArrows() {
@@ -448,11 +460,8 @@ function changeYear(direction) {
   let currentIndex = availableYears.indexOf(selectedYear);
   let nextIndex = currentIndex + direction;
 
-  if (nextIndex < 0) {
-    nextIndex = availableYears.length - 1; // wrap to last
-  } else if (nextIndex >= availableYears.length) {
-    nextIndex = 0; // wrap to first
-  }
+  if (nextIndex < 0) nextIndex = availableYears.length - 1;
+  else if (nextIndex >= availableYears.length) nextIndex = 0;
 
   selectedYear = availableYears[nextIndex];
   updateYear(selectedYear, nextIndex);
@@ -506,128 +515,53 @@ function updateLayout(lockedHeight = 850) {
 
 function draw() {
   // === BACKGROUND ===
-  image(bgImg, 0, 0, width, height);
+ image(bgImg, 0, 0, width, height);
   noStroke();
   rectMode(CORNER);
-  fill(0, 130); // dark overlay
+  fill(0, 130);
   rect(0, 0, width, height);
   rectMode(CENTER);
 
-// === YEAR LABEL ===
-const centerX = width / 2;
-const labelY = 40;
-const yearY = labelY + 25;
+  const centerX = width / 2;
+  const labelY = 40;
+  const yearY = labelY + 25;
 
-textFont('Helvetica');
-textAlign(CENTER, BOTTOM);
-fill(255, fadeAlpha);
-textSize(28);
-text("Year Installed:", centerX, labelY);
+  textFont('Helvetica');
+  textAlign(CENTER, BOTTOM);
+  fill(255, fadeAlpha);
+  textSize(28);
+  text("Year Installed:", centerX, labelY);
 
-// Multiline placeholder text with line break
-const placeholderText = "\n\n\n\n\n\n\n\n\n\nUse the controls to navigate through time and\nreveal agrivoltaic patterns across the land.";
+  const placeholderText = "\n\n\n\n\n\n\n\nUse the controls to navigate through time and\nreveal agrivoltaic patterns across the land.";
+  textStyle(BOLD);
+  textSize(36);
+  const displayYear = hasSelectedYear ? " " + selectedYear : placeholderText;
+  textAlign(CENTER, CENTER);
 
-// Show actual year or placeholder
-textStyle(BOLD);
-textSize(36);
+  const baseYearY = yearY;
+  const adjustedYearY = hasSelectedYear ? baseYearY : baseYearY;
 
-const displayYear = hasSelectedYear ? " " + selectedYear : placeholderText;
+  let maxLineWidth = 0;
+  displayYear.split('\n').forEach(line => {
+    const w = textWidth(line);
+    if (w > maxLineWidth) maxLineWidth = w;
+  });
+  const lineWidth = maxLineWidth + 40;
 
-// Set text alignment and line spacing for multiline display
-textAlign(CENTER, CENTER);
+  const startX = centerX - lineWidth / 2;
+  const endX = centerX + lineWidth / 2;
 
-// Padding only for placeholder
-const paddingAbove = 0;
-const baseYearY = yearY;
-const adjustedYearY = hasSelectedYear ? baseYearY : baseYearY + paddingAbove;
-
-// Calculate line width based on widest line in displayYear (approximate)
-let maxLineWidth = 0;
-displayYear.split('\n').forEach(line => {
-  const w = textWidth(line);
-  if (w > maxLineWidth) maxLineWidth = w;
-});
-const lineWidth = maxLineWidth + 40;
-
-const startX = centerX - lineWidth / 2;
-const endX = centerX + lineWidth / 2;
-
-fill(255);
-noStroke();
-
-// Draw the text at adjustedYearY
-text(displayYear, centerX, adjustedYearY);
-
-if (hasSelectedYear) {
-  // === SIMPLE STATIC UNDERLINE FOR SELECTED YEAR ===
-  let baseLineY = adjustedYearY + 17; // underline relative to adjusted text
-
-  stroke(10, 10, 10, fadeAlpha);
-  strokeWeight(3);
-  line(startX, baseLineY, endX, baseLineY);
+  fill(255);
   noStroke();
+  text(displayYear, centerX, adjustedYearY);
 
-} else {
-  // === SQUIGGLY LINE WITH GRADIENT, SHADOW, AND GLOW ===
-  let baseLineY = adjustedYearY + 290; // underline relative to adjusted text
-
-  textLeading(45);  // Adjust line height for spacing
-
-  // Palette colors for gradient
-  const palette = ['#E4572E', '#2E8B57', '#005A99', '#FFD100'];
-
-  // Gradient helper function
-  function getGradientColor(posRatio) {
-    const totalStops = palette.length - 1;
-    const scaledPos = posRatio * totalStops;
-    const index1 = floor(scaledPos);
-    const index2 = min(index1 + 1, totalStops);
-    const interRatio = scaledPos - index1;
-    const c1 = color(palette[index1]);
-    const c2 = color(palette[index2]);
-    return lerpColor(c1, c2, interRatio);
+  if (hasSelectedYear) {
+    let baseLineY = adjustedYearY + 17;
+    stroke(10, 10, 10, fadeAlpha);
+    strokeWeight(3);
+    line(startX, baseLineY, endX, baseLineY);
+    noStroke();
   }
-
-  const amplitude = 4;
-  const frequency = 0.04;
-  const step = 5;
-
-  // --- Draw subtle shadow first ---
-  stroke('#0A0A0A');
-  strokeWeight(2);
-  noFill();
-  beginShape();
-  for (let x = startX; x <= endX; x += step) {
-    const yOffset = amplitude * sin(x * frequency) + 1;
-    vertex(x, baseLineY + yOffset);
-  }
-  endShape();
-
-  // --- Draw gradient colored squiggle line ---
-  noFill();
-  strokeWeight(7);
-  for (let x = startX; x < endX; x += 1) {
-    const posRatio = (x - startX) / (endX - startX);
-    stroke(getGradientColor(posRatio));
-    const y1 = baseLineY + amplitude * sin(x * frequency);
-    const y2 = baseLineY + amplitude * sin((x + 1) * frequency);
-    line(x, y1, x + 1, y2);
-  }
-
-  // --- Draw thinner white glow layers on top ---
-  const pulse = map(sin(frameCount * 0.05), -1, 1, 150, 255);
-  for (let glow = 1.5; glow >= 1; glow--) {
-    stroke(255, pulse * (glow / 1.5));
-    strokeWeight(glow * 0.75);
-    noFill();
-    beginShape();
-    for (let x = startX; x <= endX; x += step) {
-      const yOffset = amplitude * sin(x * frequency);
-      vertex(x, baseLineY + yOffset);
-    }
-    endShape();
-  }
-}
 
 // === DATA FOR SELECTED YEAR ===
 const yearEntries = entriesByYear[selectedYear] || [];
@@ -944,8 +878,8 @@ function keyPressed() {
 
 
 function updateYear(year, index) {
-  // Unlock the overlay once a year is explicitly selected
   hasSelectedYear = true;
+  updatePlaceholderVisibility(); 
 
   windowResized();
   updateCounters(entriesByYear[year]);
@@ -963,10 +897,9 @@ function updateYear(year, index) {
   });
 
   const srLive = document.getElementById('sr-live');
-  if (srLive) {
-    srLive.textContent = `Year changed to ${year}`;
-  }
+  if (srLive) srLive.textContent = `Year changed to ${year}`;
 }
+
 
 function drawCropEdgeStyle(cropTypes, activities, x, y, size, strokeW = 2) {
   if (!Array.isArray(cropTypes) || cropTypes.length === 0) return;
