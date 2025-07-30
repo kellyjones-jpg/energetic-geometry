@@ -339,7 +339,7 @@ function setup() {
   updateCounters(entriesByYear[selectedYear]);
 
   let canvasWidth = windowWidth * 0.9;
-  let canvasHeight = min(835, windowHeight);
+  let canvasHeight = min(840, windowHeight);
   cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent('sketch-container');
 
@@ -466,12 +466,12 @@ function changeYear(direction) {
   updateYear(selectedYear, nextIndex);
 }
 
-function updateLayout(lockedHeight = 835) {
+function updateLayout(lockedHeight = 840) {
   const yearEntries = entriesByYear[selectedYear] || [];
   const count = yearEntries.length;
 
-  startY = 170;
-  padding = 70;
+  startY = 180;
+  padding = 75;
 
   const availableWidth = windowWidth * 0.9;
   let tentativeShapeSize = constrain(availableWidth * 0.25, 70, 150);
@@ -505,7 +505,7 @@ function updateLayout(lockedHeight = 835) {
 
   function windowResized() {
     let canvasWidth = windowWidth * 0.9;
-    let targetHeight = windowHeight < 840 ? windowHeight : 835;
+    let targetHeight = windowHeight < 845 ? windowHeight : 840;
 
     updateLayout(targetHeight);
     resizeCanvas(canvasWidth, targetHeight);
