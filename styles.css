@@ -978,6 +978,19 @@ font-size: 18px;
   transform: rotate(90deg);
 }
 
+#placeholder-container svg {
+  max-width: 80%;
+  height: auto;
+  margin-top: 16px;
+}
+
+.placeholder-text {
+  font-family: Helvetica, sans-serif;
+  font-size: 1.2rem;
+  color: white;
+  font-weight: bold;
+}
+
 /* Media Queries */
 @media (min-width: 768px) {
   #sketch-and-totals {
