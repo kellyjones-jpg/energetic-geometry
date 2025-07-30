@@ -470,8 +470,8 @@ function updateLayout(lockedHeight = 835) {
   const yearEntries = entriesByYear[selectedYear] || [];
   const count = yearEntries.length;
 
-  startY = 175;
-  padding = 75;
+  startY = 170;
+  padding = 70;
 
   const availableWidth = windowWidth * 0.9;
   let tentativeShapeSize = constrain(availableWidth * 0.25, 70, 150);
@@ -479,7 +479,7 @@ function updateLayout(lockedHeight = 835) {
   numCols = max(floor((availableWidth + padding) / (tentativeShapeSize + padding)), 1);
 
   // Dynamically adjust shape size if entries don’t fit
-  let maxShapeSize = 110;
+  let maxShapeSize = 115;
   let minShapeSize = 15; // Lower if you want denser displays
 
   for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
@@ -684,14 +684,14 @@ if (sortedEntries.length === 0) {
     }
 
     if (entry.cropType?.length > 0) {
-      drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.35, strokeW);
+      drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.1, strokeW);
     }
 
     if (entry.animalType?.length > 0) {
       const yOffset = entryShapeSize * 0.15;
       const animalSize = entryShapeSize * 0.9;
       stroke(0, 80);
-      strokeWeight(strokeW + 1.5);
+      strokeWeight(strokeW + 1.3);
       drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
       strokeWeight(strokeW);
       drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
