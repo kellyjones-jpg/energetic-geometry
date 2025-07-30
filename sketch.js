@@ -339,7 +339,7 @@ function setup() {
   updateCounters(entriesByYear[selectedYear]);
 
   let canvasWidth = windowWidth * 0.9;
-  let canvasHeight = min(850, windowHeight);
+  let canvasHeight = min(835, windowHeight);
   cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent('sketch-container');
   cnv.style('z-index', '-1');
@@ -467,12 +467,12 @@ function changeYear(direction) {
   updateYear(selectedYear, nextIndex);
 }
 
-function updateLayout(lockedHeight = 850) {
+function updateLayout(lockedHeight = 835) {
   const yearEntries = entriesByYear[selectedYear] || [];
   const count = yearEntries.length;
 
-  startY = 130;
-  padding = 40;
+  startY = 155;
+  padding = 65;
 
   const availableWidth = windowWidth * 0.9;
   let tentativeShapeSize = constrain(availableWidth * 0.25, 70, 150);
@@ -480,8 +480,8 @@ function updateLayout(lockedHeight = 850) {
   numCols = max(floor((availableWidth + padding) / (tentativeShapeSize + padding)), 1);
 
   // Dynamically adjust shape size if entries don’t fit
-  let maxShapeSize = 130;
-  let minShapeSize = 20; // Lower if you want denser displays
+  let maxShapeSize = 115;
+  let minShapeSize = 15; // Lower if you want denser displays
 
   for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
     const tentativeNumCols = max(floor((availableWidth + padding) / (s + padding)), 1);
@@ -506,7 +506,7 @@ function updateLayout(lockedHeight = 850) {
 
   function windowResized() {
     let canvasWidth = windowWidth * 0.9;
-    let targetHeight = windowHeight < 855 ? windowHeight : 850;
+    let targetHeight = windowHeight < 840 ? windowHeight : 835;
 
     updateLayout(targetHeight);
     resizeCanvas(canvasWidth, targetHeight);
