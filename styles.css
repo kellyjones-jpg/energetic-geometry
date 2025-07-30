@@ -978,20 +978,29 @@ font-size: 18px;
   transform: rotate(90deg);
 }
 
-#placeholder-container svg {
-  width: 80%;
-  height: auto;
-  display: block;
-  margin: 0 auto;
+#placeholder-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  text-align: center;
+  pointer-events: none; /* so clicks pass through */
 }
 
-.placeholder-text {
-  font-family: Helvetica, sans-serif;
-  font-size: 1.2rem;
+#placeholder-container .placeholder-text {
+  font-size: 1.25rem;
+  font-weight: 600;
   color: white;
-  font-weight: bold;
-     text-shadow:
-    1.5px 1.5px 0 #0A0A0A;
+  margin-top: 180px;
+  line-height: 1.6;
+}
+
+#placeholder-container svg {
+  display: block;
+  margin: 20px auto 0 auto;
+  max-width: 90%;
+  height: auto;
 }
 
 /* Media Queries */
