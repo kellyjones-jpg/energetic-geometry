@@ -698,6 +698,14 @@ if (sortedEntries.length === 0) {
     }
     pop(); // end entry group
   }
+    if (!('ontouchstart' in window)) {
+    if (!hoveredEntry) {
+      cursor('default');
+    } else {
+      cursor('pointer');
+    }
+  }
+
 }
 
 function showModalWithEntry(entry) {
@@ -1315,7 +1323,7 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size, strokeW
     const fillCol = getActivityColor(activity);
     if (!fillCol) continue;
 
-    const angleOffset = radians(i * 12); // more offset per layer
+    const angleOffset = radians(i * 2); // more offset per layer
     const scaleFactor = 1 - i * layerStep;
     const shapeSize = size * scaleFactor;
 
