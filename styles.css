@@ -1000,9 +1000,10 @@ font-size: 18px;
 }
 
  #placeholder-container svg {
-  width: 90%;
-  max-width: 100%;
+   width: 100%;
+  max-width: 400px; 
   height: auto;
+  display: block;
 }
 
 /* Media Queries */
