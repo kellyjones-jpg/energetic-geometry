@@ -532,30 +532,31 @@ function draw() {
   textSize(28);
   text("Year Installed:", centerX, labelY);
 
-  const placeholderText = "\n\n\n\n\n\n\n\nUse the controls to navigate through time and\nreveal agrivoltaic patterns across the land.";
-  textStyle(BOLD);
-  textSize(36);
-  const displayYear = hasSelectedYear ? " " + selectedYear : placeholderText;
-  textAlign(CENTER, CENTER);
-
-  const baseYearY = yearY;
-  const adjustedYearY = hasSelectedYear ? baseYearY : baseYearY;
-
-  let maxLineWidth = 0;
-  displayYear.split('\n').forEach(line => {
-    const w = textWidth(line);
-    if (w > maxLineWidth) maxLineWidth = w;
-  });
-  const lineWidth = maxLineWidth + 40;
-
-  const startX = centerX - lineWidth / 2;
-  const endX = centerX + lineWidth / 2;
-
-  fill(255);
-  noStroke();
-  text(displayYear, centerX, adjustedYearY);
-
   if (hasSelectedYear) {
+    const displayYear = " " + selectedYear;
+    textStyle(BOLD);
+    textSize(36);
+    textAlign(CENTER, CENTER);
+
+    const baseYearY = yearY;
+    const adjustedYearY = baseYearY;
+
+    // Calculate width for underline
+    let maxLineWidth = 0;
+    displayYear.split('\n').forEach(line => {
+      const w = textWidth(line);
+      if (w > maxLineWidth) maxLineWidth = w;
+    });
+    const lineWidth = maxLineWidth + 40;
+
+    const startX = centerX - lineWidth / 2;
+    const endX = centerX + lineWidth / 2;
+
+    fill(255);
+    noStroke();
+    text(displayYear, centerX, adjustedYearY);
+
+    // Underline
     let baseLineY = adjustedYearY + 17;
     stroke(10, 10, 10, fadeAlpha);
     strokeWeight(3);
