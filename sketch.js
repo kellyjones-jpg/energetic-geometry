@@ -1,4 +1,3 @@
-
 let table;
 let entries = [];
 let entriesByYear = {};
@@ -291,9 +290,9 @@ function updateCounters(entries) {
 function updatePlaceholderVisibility() {
   if (placeholderContainer) {
     if (hasSelectedYear) {
-      placeholderContainer.hide();
+      placeholderContainer.hide(); // hide when a year is selected
     } else {
-      placeholderContainer.show();
+      placeholderContainer.show(); // show the placeholder (and svg) otherwise
     }
   }
 }
@@ -343,6 +342,7 @@ function setup() {
   let canvasHeight = min(850, windowHeight);
   cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent('sketch-container');
+  cnv.style('z-index', '-1');
 
   let caption = createP("Image from Pexels");
   caption.style('text-align', 'center');
