@@ -990,11 +990,11 @@ font-size: 18px;
 }
 
 #placeholder-container .placeholder-text {
-  font-size: 1.25rem;
+  font-size: 1.75rem;
   font-weight: 600;
   color: white;
-  margin-top: 180px;
-  line-height: 1.6;
+  margin-top: 40px;
+  line-height: 1.7;
 }
 
  #placeholder-container svg {
