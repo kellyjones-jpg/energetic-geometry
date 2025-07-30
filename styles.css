@@ -1000,10 +1000,15 @@ font-size: 18px;
 }
 
  #placeholder-container svg {
-   width: 100%;
-  max-width: 400px; 
+  width: 100%;
+  max-width: 500px; 
   height: auto;
   display: block;
+  margin: 0 auto; 
+}
+
+.placeholder-underline {
+  text-align: center;
 }
 
 /* Media Queries */
