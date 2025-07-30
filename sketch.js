@@ -188,6 +188,56 @@ const combinedIcon = `
 </svg>
 `;
 
+const svgUnderline = `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <!-- Define drop shadow filter -->
+  <defs>
+    <filter id="dropshadow" height="130%">
+      <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#0A0A0A" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Group with drop shadow -->
+  <g filter="url(#dropshadow)">
+    <!-- Looped horizontal-to-downward path: Base line -->
+    <path d="
+      M60,40
+      C140,40 220,60 200,100
+      C180,140 260,160 240,200
+      C220,240 300,250 290,260
+    " stroke="#E4572E" stroke-width="4" fill="none"/>
+
+    <!-- Green offset -->
+    <path d="
+      M65,45
+      C145,45 225,65 205,105
+      C185,145 265,165 245,205
+      C225,245 305,255 295,265
+    " stroke="#2E8B57" stroke-width="3.5" fill="none"/>
+
+    <!-- Blue dashed offset -->
+    <path d="
+      M70,50
+      C150,50 230,70 210,110
+      C190,150 270,170 250,210
+      C230,250 310,260 300,270
+    " stroke="#005A99" stroke-width="2" fill="none" stroke-dasharray="5 5"/>
+
+    <!-- Yellow fine offset -->
+    <path d="
+      M75,55
+      C155,55 235,75 215,115
+      C195,155 275,175 255,215
+      C235,255 315,265 305,275
+    " stroke="#FFD100" stroke-width="1.5" fill="none"/>
+
+    <!-- Arrow moved slightly more left and up -->
+    <g transform="translate(300,260)">
+      <polygon points="-16,0 16,0 0,32" fill="#FFD100" stroke="#005A99" stroke-width="1.5"/>
+      <polygon points="-12,3 12,3 0,26" fill="#E4572E"/>
+    </g>
+  </g>
+</svg>`;
+
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250702.csv', 'csv', 'header');
   bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
