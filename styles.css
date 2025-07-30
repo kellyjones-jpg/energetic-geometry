@@ -979,9 +979,10 @@ font-size: 18px;
 }
 
 #placeholder-container svg {
-  max-width: 80%;
+  width: 80%;
   height: auto;
-  margin-top: 16px;
+  display: block;
+  margin: 0 auto;
 }
 
 .placeholder-text {
