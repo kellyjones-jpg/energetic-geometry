@@ -342,7 +342,6 @@ function setup() {
   let canvasHeight = min(835, windowHeight);
   cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent('sketch-container');
-  cnv.style('z-index', '-1');
 
   let caption = createP("Image from Pexels");
   caption.style('text-align', 'center');
@@ -471,7 +470,7 @@ function updateLayout(lockedHeight = 835) {
   const yearEntries = entriesByYear[selectedYear] || [];
   const count = yearEntries.length;
 
-  startY = 155;
+  startY = 175;
   padding = 75;
 
   const availableWidth = windowWidth * 0.9;
@@ -480,7 +479,7 @@ function updateLayout(lockedHeight = 835) {
   numCols = max(floor((availableWidth + padding) / (tentativeShapeSize + padding)), 1);
 
   // Dynamically adjust shape size if entries don’t fit
-  let maxShapeSize = 115;
+  let maxShapeSize = 110;
   let minShapeSize = 15; // Lower if you want denser displays
 
   for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
