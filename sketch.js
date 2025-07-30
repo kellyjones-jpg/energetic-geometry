@@ -189,7 +189,7 @@ const combinedIcon = `
 </svg>
 `;
 
-const svgUnderline = `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="none">
+const svgUnderline = `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" fill="none">
   <!-- Define drop shadow filter -->
   <defs>
     <filter id="dropshadow" height="130%">
