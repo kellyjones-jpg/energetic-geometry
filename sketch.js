@@ -565,8 +565,8 @@ function draw() {
   const totalRows = Math.min(count, numRows);
   const availableW = width * 0.85;
   const availableH = height - startY - 70;
-  const colSpacing = constrain(availableW / totalCols, shapeSize * 1.1, shapeSize * 2.0);
-  const rowSpacing = availableH / totalRows;
+  const colSpacing = constrain(availableW / totalCols, shapeSize * 1.4, shapeSize * 2.4);
+  const rowSpacing = constrain(availableH / totalRows, shapeSize * 1.3, shapeSize * 2.2);
 
   // === DRAW EACH ENTRY ===
   for (let i = 0; i < count; i++) {
@@ -588,12 +588,13 @@ function draw() {
     const hoverScale = minScale + sizeNorm * (maxScale - minScale);
     const isHovered = hoveredEntry && hoveredEntry.name === entry.name;
     const targetScale = isHovered ? hoverScale : baseScale;
-    const opArtWave = 0.05 * sin(frameCount * 0.05 + col * 0.5 + row);
+    const opArtWave = 0.02 * sin(frameCount * 0.05 + col * 0.5 + row);
     entry.currentScale = lerp(entry.currentScale || baseScale, targetScale + opArtWave, 0.1);
 
     // === SLIGHT RANDOM SCALE VARIATION ===
     const scaleJitter = map(noise(row * 0.2 + 1000, col * 0.2 + 500), 0, 1, 0.98, 1.04);
     entry.currentScale *= scaleJitter;
+    entry.currentScale = constrain(entry.currentScale, 0.95, 1.2);
 
     // === POSITION CALCULATION ===
     const outwardOffset = pow(Math.abs(col - totalCols / 2), 1.2) * 3;
@@ -601,11 +602,13 @@ function draw() {
     const colStaggerOffset = (col % 2) * (shapeSize * 0.3);
     const cx = centerX + (col - (totalCols - 1) / 2) * colSpacing + horizontalWaveOffset;
     const bottomPadding = 65;
-    const cy = height - bottomPadding - row * rowSpacing - entryShapeSize / 2 - colStaggerOffset - outwardOffset;
+    const rowOffset = shapeSize * 0.15;
+    const cy = height - bottomPadding - row * rowSpacing - rowOffset - entryShapeSize / 2 - colStaggerOffset - outwardOffset;
+
 
     // === EASING POSITION ===
-    const jitterX = map(noise(i * 0.2, frameCount * 0.002), 0, 1, -10, 10);
-    const jitterY = map(noise(i * 0.2 + 500, frameCount * 0.002), 0, 1, -6, 6);
+    const jitterX = map(noise(i * 0.2, frameCount * 0.002), 0, 1, -4, 4);
+    const jitterY = map(noise(i * 0.2 + 500, frameCount * 0.002), 0, 1, -3, 3);
     const targetX = cx + jitterX;
     const targetY = cy + jitterY;
     entry._screenX = lerp(entry._screenX || targetX, targetX, 0.1);
