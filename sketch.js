@@ -9,7 +9,6 @@ let bgImg;
 let shapeSize, padding, startY, numCols, numRows;
 let hasSelectedYear = false;
 let fadeAlpha = 255;
-let placeholderContainer;
 
 const cropEdgeGroups = {
   // Root vegetables
@@ -189,56 +188,6 @@ const combinedIcon = `
 </svg>
 `;
 
-const svgUnderline = `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" fill="none">
-  <!-- Define drop shadow filter -->
-  <defs>
-    <filter id="dropshadow" height="130%">
-      <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#0A0A0A" flood-opacity="0.6"/>
-    </filter>
-  </defs>
-
-  <!-- Group with drop shadow -->
-  <g filter="url(#dropshadow)">
-    <!-- Looped horizontal-to-downward path: Base line -->
-    <path d="
-      M60,40
-      C140,40 220,60 200,100
-      C180,140 260,160 240,200
-      C220,240 300,250 290,260
-    " stroke="#E4572E" stroke-width="4" fill="none"/>
-
-    <!-- Green offset -->
-    <path d="
-      M65,45
-      C145,45 225,65 205,105
-      C185,145 265,165 245,205
-      C225,245 305,255 295,265
-    " stroke="#2E8B57" stroke-width="3.5" fill="none"/>
-
-    <!-- Blue dashed offset -->
-    <path d="
-      M70,50
-      C150,50 230,70 210,110
-      C190,150 270,170 250,210
-      C230,250 310,260 300,270
-    " stroke="#005A99" stroke-width="2" fill="none" stroke-dasharray="5 5"/>
-
-    <!-- Yellow fine offset -->
-    <path d="
-      M75,55
-      C155,55 235,75 215,115
-      C195,155 275,175 255,215
-      C235,255 315,265 305,275
-    " stroke="#FFD100" stroke-width="1.5" fill="none"/>
-
-    <!-- Arrow moved slightly more left and up -->
-    <g transform="translate(300,260)">
-      <polygon points="-16,0 16,0 0,32" fill="#FFD100" stroke="#005A99" stroke-width="1.5"/>
-      <polygon points="-12,3 12,3 0,26" fill="#E4572E"/>
-    </g>
-  </g>
-</svg>`;
-
 function preload() {
   table = loadTable('data/inspire-agrivoltaics-20250702.csv', 'csv', 'header');
   bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
@@ -287,16 +236,6 @@ function updateCounters(entries) {
   animateCount('acre-count', currentAcres, Math.round(acreCount), 1000);
 }
 
-function updatePlaceholderVisibility() {
-  if (placeholderContainer) {
-    if (hasSelectedYear) {
-      placeholderContainer.hide(); // hide when a year is selected
-    } else {
-      placeholderContainer.show(); // show the placeholder (and svg) otherwise
-    }
-  }
-}
-
 function setup() {
   // Parse table data
   for (let i = 0; i < table.getRowCount(); i++) {
@@ -338,16 +277,19 @@ function setup() {
   selectedYear = availableYears[0];
   updateCounters(entriesByYear[selectedYear]);
 
+  // Responsive canvas sizing
   let canvasWidth = windowWidth * 0.9;
-  let canvasHeight = min(840, windowHeight);
+  let canvasHeight = min(850, windowHeight);
   cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent('sketch-container');
 
+  // Create image caption
   let caption = createP("Image from Pexels");
   caption.style('text-align', 'center');
   caption.class('image-caption');
   caption.parent('sketch-container');
 
+  // Create year timeline
   let timelineContainer = createDiv().id('timeline');
   timelineContainer.style('text-align', 'center');
   timelineContainer.parent('sketch-container');
@@ -358,48 +300,45 @@ function setup() {
 
     let label = createP(year).class('year-label').addClass('suprematist-underline');
     label.parent(yearDiv);
-    if (index % 2 === 0) label.addClass('above');
-    else label.addClass('below');
+
+    if (index % 2 === 0) {
+      label.addClass('above');
+    } else {
+      label.addClass('below');
+    }
 
     let node = createDiv().class('year-node');
     node.parent(yearDiv);
+      label.mousePressed(() => {
+        selectedYear = year;
+        hasSelectedYear = true;  
+        windowResized();
+        updateCounters(entriesByYear[selectedYear]);
 
-    label.mousePressed(() => {
-      selectedYear = year;
-      hasSelectedYear = true;
-      updatePlaceholderVisibility(); // NEW
-      windowResized();
-      updateCounters(entriesByYear[selectedYear]);
-      if (typeof drawSites === 'function') {
-        drawSites(entriesByYear[selectedYear]);
-      }
-      selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
-      label.addClass('active');
-    });
+        if (typeof drawSites === 'function') {
+          drawSites(entriesByYear[selectedYear]);
+        }
+
+        selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
+        label.addClass('active');
+      });
   });
 
+  // General style setup
   textFont('Helvetica');
   textSize(32);
   textAlign(CENTER, CENTER);
   rectMode(CENTER);
-  pixelDensity(displayDensity());
+  pixelDensity(displayDensity()); // For crisp rendering on high-DPI screens
 
-  setupArrows();
+  updateCounters(entriesByYear[selectedYear]);
+  loop();
 
-  // === PLACEHOLDER CONTAINER ===
-  placeholderContainer = createDiv().id('placeholder-container');
-  placeholderContainer.parent('sketch-container');
-  placeholderContainer.style('text-align', 'center');
-  placeholderContainer.style('margin-top', '220px');
-  placeholderContainer.html(`
-    <div class="placeholder-text">
-      Use the controls to navigate through time and<br>
-      reveal agrivoltaic patterns across the land.
-    </div>
-    <div class="placeholder-underline">${svgUnderline}</div>
-  `);
+    // Arrow year navigation (←/→)
+  const prevBtn = select('#prev-year');
+  const nextBtn = select('#next-year');
 
-  updatePlaceholderVisibility(); 
+   setupArrows();
 }
 
 function setupArrows() {
@@ -459,19 +398,22 @@ function changeYear(direction) {
   let currentIndex = availableYears.indexOf(selectedYear);
   let nextIndex = currentIndex + direction;
 
-  if (nextIndex < 0) nextIndex = availableYears.length - 1;
-  else if (nextIndex >= availableYears.length) nextIndex = 0;
+  if (nextIndex < 0) {
+    nextIndex = availableYears.length - 1; // wrap to last
+  } else if (nextIndex >= availableYears.length) {
+    nextIndex = 0; // wrap to first
+  }
 
   selectedYear = availableYears[nextIndex];
   updateYear(selectedYear, nextIndex);
 }
 
-function updateLayout(lockedHeight = 840) {
+function updateLayout(lockedHeight = 850) {
   const yearEntries = entriesByYear[selectedYear] || [];
   const count = yearEntries.length;
 
-  startY = 180;
-  padding = 75;
+  startY = 130;
+  padding = 40;
 
   const availableWidth = windowWidth * 0.9;
   let tentativeShapeSize = constrain(availableWidth * 0.25, 70, 150);
@@ -479,8 +421,8 @@ function updateLayout(lockedHeight = 840) {
   numCols = max(floor((availableWidth + padding) / (tentativeShapeSize + padding)), 1);
 
   // Dynamically adjust shape size if entries don’t fit
-  let maxShapeSize = 115;
-  let minShapeSize = 15; // Lower if you want denser displays
+  let maxShapeSize = 130;
+  let minShapeSize = 20; // Lower if you want denser displays
 
   for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
     const tentativeNumCols = max(floor((availableWidth + padding) / (s + padding)), 1);
@@ -505,7 +447,7 @@ function updateLayout(lockedHeight = 840) {
 
   function windowResized() {
     let canvasWidth = windowWidth * 0.9;
-    let targetHeight = windowHeight < 845 ? windowHeight : 840;
+    let targetHeight = windowHeight < 855 ? windowHeight : 850;
 
     updateLayout(targetHeight);
     resizeCanvas(canvasWidth, targetHeight);
@@ -514,54 +456,128 @@ function updateLayout(lockedHeight = 840) {
 
 function draw() {
   // === BACKGROUND ===
- image(bgImg, 0, 0, width, height);
+  image(bgImg, 0, 0, width, height);
   noStroke();
   rectMode(CORNER);
-  fill(0, 130);
+  fill(0, 130); // dark overlay
   rect(0, 0, width, height);
   rectMode(CENTER);
 
-  const centerX = width / 2;
-  const labelY = 40;
-  const yearY = labelY + 25;
+// === YEAR LABEL ===
+const centerX = width / 2;
+const labelY = 40;
+const yearY = labelY + 25;
 
-  textFont('Helvetica');
-  textAlign(CENTER, BOTTOM);
-  fill(255, fadeAlpha);
-  textSize(28);
-  text("Year Installed:", centerX, labelY);
+textFont('Helvetica');
+textAlign(CENTER, BOTTOM);
+fill(255, fadeAlpha);
+textSize(28);
+text("Year Installed:", centerX, labelY);
 
-  if (hasSelectedYear) {
-    const displayYear = " " + selectedYear;
-    textStyle(BOLD);
-    textSize(36);
-    textAlign(CENTER, CENTER);
+// Multiline placeholder text with line break
+const placeholderText = "\n\n\n\n\n\n\n\n\n\nUse the controls to navigate through time and\nreveal agrivoltaic patterns across the land.";
 
-    const baseYearY = yearY;
-    const adjustedYearY = baseYearY;
+// Show actual year or placeholder
+textStyle(BOLD);
+textSize(36);
 
-    // Calculate width for underline
-    let maxLineWidth = 0;
-    displayYear.split('\n').forEach(line => {
-      const w = textWidth(line);
-      if (w > maxLineWidth) maxLineWidth = w;
-    });
-    const lineWidth = maxLineWidth + 40;
+const displayYear = hasSelectedYear ? " " + selectedYear : placeholderText;
 
-    const startX = centerX - lineWidth / 2;
-    const endX = centerX + lineWidth / 2;
+// Set text alignment and line spacing for multiline display
+textAlign(CENTER, CENTER);
 
-    fill(255);
-    noStroke();
-    text(displayYear, centerX, adjustedYearY);
+// Padding only for placeholder
+const paddingAbove = 0;
+const baseYearY = yearY;
+const adjustedYearY = hasSelectedYear ? baseYearY : baseYearY + paddingAbove;
 
-    // Underline
-    let baseLineY = adjustedYearY + 17;
-    stroke(10, 10, 10, fadeAlpha);
-    strokeWeight(3);
-    line(startX, baseLineY, endX, baseLineY);
-    noStroke();
+// Calculate line width based on widest line in displayYear (approximate)
+let maxLineWidth = 0;
+displayYear.split('\n').forEach(line => {
+  const w = textWidth(line);
+  if (w > maxLineWidth) maxLineWidth = w;
+});
+const lineWidth = maxLineWidth + 40;
+
+const startX = centerX - lineWidth / 2;
+const endX = centerX + lineWidth / 2;
+
+fill(255);
+noStroke();
+
+// Draw the text at adjustedYearY
+text(displayYear, centerX, adjustedYearY);
+
+if (hasSelectedYear) {
+  // === SIMPLE STATIC UNDERLINE FOR SELECTED YEAR ===
+  let baseLineY = adjustedYearY + 17; // underline relative to adjusted text
+
+  stroke(10, 10, 10, fadeAlpha);
+  strokeWeight(3);
+  line(startX, baseLineY, endX, baseLineY);
+  noStroke();
+
+} else {
+  // === SQUIGGLY LINE WITH GRADIENT, SHADOW, AND GLOW ===
+  let baseLineY = adjustedYearY + 290; // underline relative to adjusted text
+
+  textLeading(45);  // Adjust line height for spacing
+
+  // Palette colors for gradient
+  const palette = ['#E4572E', '#2E8B57', '#005A99', '#FFD100'];
+
+  // Gradient helper function
+  function getGradientColor(posRatio) {
+    const totalStops = palette.length - 1;
+    const scaledPos = posRatio * totalStops;
+    const index1 = floor(scaledPos);
+    const index2 = min(index1 + 1, totalStops);
+    const interRatio = scaledPos - index1;
+    const c1 = color(palette[index1]);
+    const c2 = color(palette[index2]);
+    return lerpColor(c1, c2, interRatio);
   }
+
+  const amplitude = 4;
+  const frequency = 0.04;
+  const step = 5;
+
+  // --- Draw subtle shadow first ---
+  stroke('#0A0A0A');
+  strokeWeight(2);
+  noFill();
+  beginShape();
+  for (let x = startX; x <= endX; x += step) {
+    const yOffset = amplitude * sin(x * frequency) + 1;
+    vertex(x, baseLineY + yOffset);
+  }
+  endShape();
+
+  // --- Draw gradient colored squiggle line ---
+  noFill();
+  strokeWeight(7);
+  for (let x = startX; x < endX; x += 1) {
+    const posRatio = (x - startX) / (endX - startX);
+    stroke(getGradientColor(posRatio));
+    const y1 = baseLineY + amplitude * sin(x * frequency);
+    const y2 = baseLineY + amplitude * sin((x + 1) * frequency);
+    line(x, y1, x + 1, y2);
+  }
+
+  // --- Draw thinner white glow layers on top ---
+  const pulse = map(sin(frameCount * 0.05), -1, 1, 150, 255);
+  for (let glow = 1.5; glow >= 1; glow--) {
+    stroke(255, pulse * (glow / 1.5));
+    strokeWeight(glow * 0.75);
+    noFill();
+    beginShape();
+    for (let x = startX; x <= endX; x += step) {
+      const yOffset = amplitude * sin(x * frequency);
+      vertex(x, baseLineY + yOffset);
+    }
+    endShape();
+  }
+}
 
 // === DATA FOR SELECTED YEAR ===
 const yearEntries = entriesByYear[selectedYear] || [];
@@ -684,28 +700,20 @@ if (sortedEntries.length === 0) {
     }
 
     if (entry.cropType?.length > 0) {
-      drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.1, strokeW);
+      drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.35, strokeW);
     }
 
     if (entry.animalType?.length > 0) {
       const yOffset = entryShapeSize * 0.15;
       const animalSize = entryShapeSize * 0.9;
       stroke(0, 80);
-      strokeWeight(strokeW + 1.3);
+      strokeWeight(strokeW + 1.5);
       drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
       strokeWeight(strokeW);
       drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
     }
     pop(); // end entry group
   }
-    if (!('ontouchstart' in window)) {
-    if (!hoveredEntry) {
-      cursor('default');
-    } else {
-      cursor('pointer');
-    }
-  }
-
 }
 
 function showModalWithEntry(entry) {
@@ -886,8 +894,8 @@ function keyPressed() {
 
 
 function updateYear(year, index) {
+  // Unlock the overlay once a year is explicitly selected
   hasSelectedYear = true;
-  updatePlaceholderVisibility(); 
 
   windowResized();
   updateCounters(entriesByYear[year]);
@@ -905,9 +913,10 @@ function updateYear(year, index) {
   });
 
   const srLive = document.getElementById('sr-live');
-  if (srLive) srLive.textContent = `Year changed to ${year}`;
+  if (srLive) {
+    srLive.textContent = `Year changed to ${year}`;
+  }
 }
-
 
 function drawCropEdgeStyle(cropTypes, activities, x, y, size, strokeW = 2) {
   if (!Array.isArray(cropTypes) || cropTypes.length === 0) return;
@@ -1323,7 +1332,7 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size, strokeW
     const fillCol = getActivityColor(activity);
     if (!fillCol) continue;
 
-    const angleOffset = radians(i * 2); // more offset per layer
+    const angleOffset = radians(i * 12); // more offset per layer
     const scaleFactor = 1 - i * layerStep;
     const shapeSize = size * scaleFactor;
 
@@ -1529,8 +1538,8 @@ function drawMinimalSite(site) {
   const { x, y, activity = 'habitat', systemSize = 0.1, siteSize = 0.1 } = site;
 
   const baseColor = getActivityColor(activity);
-  const dotBaseSize = map(siteSize, 0, 1, 6, 6);       // Boosted min/max size
-  const shadowOffset = map(systemSize, 0, 9, 1, 8);      // Larger systems have bigger shadow offset
+  const dotBaseSize = map(siteSize, 0, 10, 16, 60);       // Boosted min/max size
+  const shadowOffset = map(systemSize, 0, 10, 1, 8);      // Larger systems have bigger shadow offset
 
   push();
   translate(x, y);
