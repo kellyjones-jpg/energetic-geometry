@@ -1009,18 +1009,27 @@ font-size: 18px;
  #timeline {
     display: none !important;
   }
+    
   .accordion-button {
     font-size: 1.1rem;
   }
+    
   .accordion-body th,
   .accordion-body td {
     font-size: 0.85rem;
     padding: 0.5rem;
   }
+    
  #year-arrow-controls {
         margin-bottom: 1rem;
       }
-
+    
+    .nav-link {
+    padding-top: 1rem;  /* less top padding on mobile */
+    padding-bottom: 0.5rem; /* add some bottom padding for spacing */
+    display: block; /* ensure links stack vertically */
+  }
+    
     .nav-arrow {
         margin: 1rem;
       }
