@@ -429,7 +429,7 @@ function updateLayout(lockedHeight = 850) {
 
   // Dynamically adjust shape size if entries don’t fit
   let maxShapeSize = 130;
-  let minShapeSize = 20; // Lower if you want denser displays
+  let minShapeSize = 20; // Lower for denser displays
 
   for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
     const tentativeNumCols = max(floor((availableWidth + padding) / (s + padding)), 1);
@@ -463,7 +463,7 @@ function updateLayout(lockedHeight = 850) {
 
 function draw() {
   // === BACKGROUND ===
- image(bgImg, 0, 0, width, height);
+  image(bgImg, 0, 0, width, height);
   noStroke();
   rectMode(CORNER);
   fill(0, 130);
@@ -473,57 +473,37 @@ function draw() {
   const centerX = width / 2;
   const labelY = 40;
   const yearY = labelY + 25;
+  const baseYearY = yearY;
+  const adjustedYearY = hasSelectedYear ? baseYearY : baseYearY;
 
   textFont('Helvetica');
   textAlign(CENTER, BOTTOM);
   fill(255, fadeAlpha);
   textSize(28);
-  
- if (hasSelectedYear) {
-  text("Year Installed:", centerX, labelY);
-  textStyle(BOLD);
-  textSize(36);
-  const displayYear = " " + selectedYear;
-  textAlign(CENTER, CENTER);
 
-  let maxLineWidth = 0;
-  displayYear.split('\n').forEach(line => {
-    const w = textWidth(line);
-    if (w > maxLineWidth) maxLineWidth = w;
-  });
-  const lineWidth = maxLineWidth + 40;
-
-  const startX = centerX - lineWidth / 2;
-  const endX = centerX + lineWidth / 2;
-
-  fill(255);
-  noStroke();
-  text(displayYear, centerX, adjustedYearY);
-
-  let baseLineY = adjustedYearY + 17;
-  stroke(10, 10, 10, fadeAlpha);
-  strokeWeight(3);
-  line(startX, baseLineY, endX, baseLineY);
-  noStroke();
-}
-
-  const baseYearY = yearY;
-  const adjustedYearY = hasSelectedYear ? baseYearY : baseYearY;
-
-  let maxLineWidth = 0;
-  displayYear.split('\n').forEach(line => {
-    const w = textWidth(line);
-    if (w > maxLineWidth) maxLineWidth = w;
-  });
-  const lineWidth = maxLineWidth + 40;
-
-  const startX = centerX - lineWidth / 2;
-  const endX = centerX + lineWidth / 2;
-
-  fill(255);
-  noStroke();
+  let displayYear = ""; // Ensure variable is always declared
 
   if (hasSelectedYear) {
+    text("Year Installed:", centerX, labelY);
+    textStyle(BOLD);
+    textSize(36);
+    displayYear = " " + selectedYear;
+    textAlign(CENTER, CENTER);
+
+    let maxLineWidth = 0;
+    displayYear.split('\n').forEach(line => {
+      const w = textWidth(line);
+      if (w > maxLineWidth) maxLineWidth = w;
+    });
+    const lineWidth = maxLineWidth + 40;
+
+    const startX = centerX - lineWidth / 2;
+    const endX = centerX + lineWidth / 2;
+
+    fill(255);
+    noStroke();
+    text(displayYear, centerX, adjustedYearY);
+
     let baseLineY = adjustedYearY + 17;
     stroke(10, 10, 10, fadeAlpha);
     strokeWeight(3);
@@ -531,17 +511,17 @@ function draw() {
     noStroke();
   }
 
-// === DATA FOR SELECTED YEAR ===
-const yearEntries = entriesByYear[selectedYear] || [];
-const sortedEntries = [...yearEntries].sort((a, b) => (b.acres || 0) - (a.acres || 0));
+  // === DATA FOR SELECTED YEAR ===
+  const yearEntries = entriesByYear[selectedYear] || [];
+  const sortedEntries = [...yearEntries].sort((a, b) => (b.acres || 0) - (a.acres || 0));
 
-if (sortedEntries.length === 0) {
-  fill(255, fadeAlpha);
-  textAlign(CENTER, CENTER);
-  textSize(20);
-  text("No data available for this year.", centerX, height / 2);
-  return;
-}
+  if (sortedEntries.length === 0) {
+    fill(255, fadeAlpha);
+    textAlign(CENTER, CENTER);
+    textSize(20);
+    text("No data available for this year.", centerX, height / 2);
+    return;
+  }
 
   // === VALUE RANGES ===
   const minSiteSize = Math.min(...sortedEntries.map(e => e.acres || 0.1));
