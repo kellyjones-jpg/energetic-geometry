@@ -523,6 +523,14 @@ function draw() {
       displayYear = " " + selectedYear;
       textAlign(CENTER, CENTER);
 
+      // Shadow for selected year
+      fill(0, fadeAlpha);
+      text(displayYear, centerX + 2, adjustedYearY + 2);
+
+      // Main year label
+      fill(255, fadeAlpha);
+      text(displayYear, centerX, adjustedYearY);
+
       let maxLineWidth = 0;
       displayYear.split('\n').forEach(line => {
          const w = textWidth(line);
@@ -532,10 +540,6 @@ function draw() {
 
       const startX = centerX - lineWidth / 2;
       const endX = centerX + lineWidth / 2;
-
-      fill(255);
-      noStroke();
-      text(displayYear, centerX, adjustedYearY);
 
       let baseLineY = adjustedYearY + 17;
       stroke(10, 10, 10, fadeAlpha);
