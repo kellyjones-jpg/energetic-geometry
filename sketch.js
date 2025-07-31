@@ -817,57 +817,52 @@ function keyPressed() {
   }
 
   // Global year navigation
-  const currentYearIndex = availableYears.indexOf(selectedYear);
   if (!modalVisible && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
+    const currentYearIndex = availableYears.indexOf(selectedYear);
     const delta = keyCode === RIGHT_ARROW ? 1 : -1;
     const newIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
     if (newIndex !== currentYearIndex) {
-      selectedYear = availableYears[newIndex];
-      hasSelectedYear = true; 
-      updateYear(selectedYear, newIndex);
+      updateYear(availableYears[newIndex], newIndex); // Centralized logic
     }
     return;
   }
 
   if (!modalVisible && keyCode === HOME) {
-    selectedYear = availableYears[0];
-    hasSelectedYear = true; 
-    updateYear(selectedYear, 0);
+    updateYear(availableYears[0], 0);
     return;
   }
 
   if (!modalVisible && keyCode === END) {
-    selectedYear = availableYears[availableYears.length - 1];
-    hasSelectedYear = true; 
-    updateYear(selectedYear, availableYears.length - 1);
+    updateYear(availableYears[availableYears.length - 1], availableYears.length - 1);
     return;
   }
 }
 
-
 function updateYear(year, index) {
+  selectedYear = year;
   hasSelectedYear = true;
   updatePlaceholderVisibility(); 
 
-  windowResized();
   updateCounters(entriesByYear[year]);
+  windowResized();
 
-  document.querySelectorAll('.year-label').forEach(lbl => {
-    lbl.classList.remove('active');
-  });
-
-  const allLabels = document.querySelectorAll('.year-label');
-  allLabels.forEach(label => {
+  // Clear and reassign year label classes
+  document.querySelectorAll('.year-label').forEach(label => {
     label.classList.remove('active');
     if (label.textContent.trim() === year) {
       label.classList.add('active');
     }
   });
 
+  // Update screen reader live region
   const srLive = document.getElementById('sr-live');
   if (srLive) srLive.textContent = `Year changed to ${year}`;
-}
 
+  // Optional: update sketch with new data
+  if (typeof drawSites === 'function') {
+    drawSites(entriesByYear[year]);
+  }
+}
 
 function drawCropEdgeStyle(cropTypes, activities, x, y, size, strokeW = 2) {
   if (!Array.isArray(cropTypes) || cropTypes.length === 0) return;
