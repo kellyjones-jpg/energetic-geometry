@@ -481,7 +481,7 @@ function draw() {
   text("Year Installed:", centerX, labelY);
   textStyle(BOLD);
   textSize(36);
-  const displayYear = hasSelectedYear ? " " + selectedYear : placeholderText;
+  const displayYear = " " + selectedYear;
   textAlign(CENTER, CENTER);
 
   const baseYearY = yearY;
