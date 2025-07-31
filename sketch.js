@@ -317,7 +317,7 @@ function setup() {
     label.mousePressed(() => {
       selectedYear = year;
       hasSelectedYear = true;
-      updatePlaceholderVisibility(); // NEW
+      updatePlaceholderVisibility(); 
       windowResized();
       updateCounters(entriesByYear[selectedYear]);
       if (typeof drawSites === 'function') {
@@ -340,7 +340,7 @@ function setup() {
   placeholderContainer = createDiv().id('placeholder-container');
   placeholderContainer.parent('sketch-container');
   placeholderContainer.style('text-align', 'center');
-  placeholderContainer.style('margin-top', '220px');
+  placeholderContainer.style('margin-top', '420px');
   placeholderContainer.html(`
     <div class="placeholder-text">
       Use the controls to navigate through time and<br>
