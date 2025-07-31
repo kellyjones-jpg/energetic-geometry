@@ -365,23 +365,44 @@ function setupArrows() {
   prevBtn.classList.add('arrow-button');
   nextBtn.classList.add('arrow-button');
 
-  prevBtn.addEventListener('click', () => changeYear(-1));
-  nextBtn.addEventListener('click', () => changeYear(1));
+    prevBtn.addEventListener('click', () => {
+      if (!hasSelectedYear) {
+        updateYear(availableYears[0], 0);
+      } else {
+        changeYear(-1);
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (!hasSelectedYear) {
+        updateYear(availableYears[0], 0);
+      } else {
+        changeYear(1);
+      }
+    });
 
   // Keyboard support
-  prevBtn.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      changeYear(-1);
-    }
-  });
+    prevBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (!hasSelectedYear) {
+          updateYear(availableYears[0], 0);
+        } else {
+          changeYear(-1);
+        }
+      }
+    });
 
-  nextBtn.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      changeYear(1);
-    }
-  });
+    nextBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (!hasSelectedYear) {
+          updateYear(availableYears[0], 0);
+        } else {
+          changeYear(1);
+        }
+      }
+    });
 
   // Swipe support (mobile)
   let touchStartX = null;
@@ -396,16 +417,26 @@ function setupArrows() {
     const deltaX = touchEndX - touchStartX;
 
     if (Math.abs(deltaX) > 50) {
-      if (deltaX > 0) changeYear(-1); // swipe right → previous
-      else changeYear(1);             // swipe left → next
+      if (!hasSelectedYear) {
+        updateYear(availableYears[0], 0);
+      } else {
+        if (deltaX > 0) changeYear(-1);
+        else changeYear(1);
+      }
     }
-
     touchStartX = null;
   });
 }
 
 function changeYear(direction) {
   let currentIndex = availableYears.indexOf(selectedYear);
+
+  // If no year has been selected yet, select the first one and return
+  if (!hasSelectedYear) {
+    updateYear(availableYears[0], 0);
+    return;
+  }
+
   let nextIndex = currentIndex + direction;
 
   if (nextIndex < 0) nextIndex = availableYears.length - 1;
@@ -778,23 +809,23 @@ function keyPressed() {
     return;
   }
 
-  // Modal navigation
-  if (modalVisible && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
-    const modalTitle = document.getElementById('siteModalLabel');
-    if (!modalTitle) return;
+  // Global year navigation
+  if (!modalVisible && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
+    if (!hasSelectedYear) {
+      updateYear(availableYears[0], 0);
+      return;
+    }
 
-    const currentName = modalTitle.textContent.trim();
-    const currentIndex = yearEntries.findIndex(e => e.name === currentName);
-    if (currentIndex === -1) return;
+    const currentYearIndex = availableYears.indexOf(selectedYear);
+    const delta = keyCode === RIGHT_ARROW ? 1 : -1;
+    const newIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
 
-    let newIndex = currentIndex + (keyCode === RIGHT_ARROW ? 1 : -1);
-    newIndex = constrain(newIndex, 0, yearEntries.length - 1);
-
-    if (newIndex !== currentIndex) {
-      showModalWithEntry(yearEntries[newIndex]);
+    if (newIndex !== currentYearIndex) {
+      updateYear(availableYears[newIndex], newIndex);
     }
     return;
   }
+
 
   // Global year navigation
   if (!modalVisible && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
