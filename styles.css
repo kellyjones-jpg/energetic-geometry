@@ -125,14 +125,16 @@ h1 {
 	padding-bottom: 0;
 	letter-spacing: 0.05em;
 	transition: color 0.2s ease;
+	text-shadow:
+		1.5px -1.5px 0 #0A0A0A;
 }
 
 .nav-link:hover,
 .nav-link:focus {
 	color: #ffffff;
 	text-shadow:
-		1.5px 1.5px 0 #0A0A0A,
-		3px 3px 0 #4C8CF5;
+		1.5px -1.5px 0 #0A0A0A,
+		3px -3px 0 #4C8CF5;
 }
 
 a.title,
