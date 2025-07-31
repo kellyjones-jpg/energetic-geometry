@@ -600,7 +600,9 @@ function draw() {
       const outwardOffset = pow(Math.abs(col - totalCols / 2), 1.2) * 3;
       const horizontalWaveOffset = 10 * sin((row + col) * 0.7);
       const colStaggerOffset = (col % 2) * (shapeSize * 0.3);
-      const cx = centerX + (col - (totalCols - 1) / 2) * colSpacing + horizontalWaveOffset;
+      const gridWidth = (totalCols - 1) * colSpacing;
+      const startX = max((width - gridWidth) / 2, 30); // ensure margin of 30px
+      const cx = startX + col * colSpacing + horizontalWaveOffset;
       const bottomPadding = 65;
       const rowOffset = shapeSize * 0.15;
       const cy = height - bottomPadding - row * rowSpacing - rowOffset - entryShapeSize / 2 - colStaggerOffset - outwardOffset;
