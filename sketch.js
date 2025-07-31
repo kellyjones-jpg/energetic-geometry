@@ -478,11 +478,34 @@ function draw() {
   textAlign(CENTER, BOTTOM);
   fill(255, fadeAlpha);
   textSize(28);
+  
+ if (hasSelectedYear) {
   text("Year Installed:", centerX, labelY);
   textStyle(BOLD);
   textSize(36);
   const displayYear = " " + selectedYear;
   textAlign(CENTER, CENTER);
+
+  let maxLineWidth = 0;
+  displayYear.split('\n').forEach(line => {
+    const w = textWidth(line);
+    if (w > maxLineWidth) maxLineWidth = w;
+  });
+  const lineWidth = maxLineWidth + 40;
+
+  const startX = centerX - lineWidth / 2;
+  const endX = centerX + lineWidth / 2;
+
+  fill(255);
+  noStroke();
+  text(displayYear, centerX, adjustedYearY);
+
+  let baseLineY = adjustedYearY + 17;
+  stroke(10, 10, 10, fadeAlpha);
+  strokeWeight(3);
+  line(startX, baseLineY, endX, baseLineY);
+  noStroke();
+}
 
   const baseYearY = yearY;
   const adjustedYearY = hasSelectedYear ? baseYearY : baseYearY;
@@ -499,7 +522,6 @@ function draw() {
 
   fill(255);
   noStroke();
-  text(displayYear, centerX, adjustedYearY);
 
   if (hasSelectedYear) {
     let baseLineY = adjustedYearY + 17;
@@ -531,7 +553,7 @@ if (sortedEntries.length === 0) {
   const totalCols = max(Math.ceil(count / numRows), 2);
   const totalRows = Math.min(count, numRows);
   const availableW = width * 0.85;
-  const availableH = height - startY - 50;
+  const availableH = height - startY - 70;
   const colSpacing = constrain(availableW / totalCols, shapeSize * 1.1, shapeSize * 2.0);
   const rowSpacing = availableH / totalRows;
 
@@ -637,7 +659,7 @@ if (sortedEntries.length === 0) {
       const yOffset = entryShapeSize * 0.15;
       const animalSize = entryShapeSize * 0.9;
       stroke(0, 80);
-      strokeWeight(strokeW + 1.5);
+      strokeWeight(strokeW + 1.1);
       drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
       strokeWeight(strokeW);
       drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
