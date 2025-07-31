@@ -447,40 +447,36 @@ function changeYear(direction) {
 }
 
 function updateLayout(lockedHeight = 850) {
-   const yearEntries = entriesByYear[selectedYear] || [];
-   const count = yearEntries.length;
+  const yearEntries = entriesByYear[selectedYear] || [];
+  const count = yearEntries.length;
 
-   startY = 130;
-   padding = 40;
+  startY = 130;
+  padding = 40;
 
-   const availableWidth = windowWidth * 0.9;
-   let tentativeShapeSize = constrain(availableWidth * 0.25, 70, 150);
+  const availableWidth = windowWidth * 0.9;
+  const maxShapeSize = 130;
+  const minShapeSize = 20;
 
-   numCols = max(floor((availableWidth + padding) / (tentativeShapeSize + padding)), 1);
+  // Shape sizes from largest to smallest
+  for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
+    const tentativeNumCols = max(floor((availableWidth + padding) / (s + padding)), 1);
+    const tentativeNumRows = ceil(count / tentativeNumCols);
+    const totalHeight = startY + tentativeNumRows * (s + padding) + 100;
 
-   // Dynamically adjust shape size if entries don’t fit
-   let maxShapeSize = 130;
-   let minShapeSize = 20; // Lower for denser displays
+    // Prioritize fitting within locked height first
+    if (totalHeight <= lockedHeight) {
+      shapeSize = s;
+      numCols = tentativeNumCols;
+      numRows = tentativeNumRows;
+      return lockedHeight;
+    }
+  }
 
-   for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
-      const tentativeNumCols = max(floor((availableWidth + padding) / (s + padding)), 1);
-      const tentativeNumRows = ceil(count / tentativeNumCols);
-      const totalHeight = startY + tentativeNumRows * (s + padding) + 100;
-
-      if (totalHeight <= lockedHeight) {
-         shapeSize = s;
-         numCols = tentativeNumCols;
-         numRows = tentativeNumRows;
-         return lockedHeight;
-      }
-   }
-
-   // If nothing fits, use minimum size
-   shapeSize = minShapeSize;
-   numCols = max(floor((availableWidth + padding) / (shapeSize + padding)), 1);
-   numRows = ceil(count / numCols);
-
-   return lockedHeight;
+  // Fallback: minimum shape size
+  shapeSize = minShapeSize;
+  numCols = max(floor((availableWidth + padding) / (shapeSize + padding)), 1);
+  numRows = ceil(count / numCols);
+  return lockedHeight;
 }
 
 function windowResized() {
