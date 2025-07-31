@@ -511,6 +511,12 @@ function draw() {
    let displayYear = ""; // Ensure variable is always declared
 
    if (hasSelectedYear) {
+      // Text shadow (drawn first, slightly offset)
+      fill(0, fadeAlpha); // Shadow color (black, transparent)
+      text("Year Installed:", centerX + 2, labelY + 2);
+
+      // Main text
+      fill(255, fadeAlpha); // White text
       text("Year Installed:", centerX, labelY);
       textStyle(BOLD);
       textSize(36);
