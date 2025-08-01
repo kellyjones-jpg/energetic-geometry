@@ -524,11 +524,11 @@ a.hyperlink:focus {
 
 .label-with-lines .h5 {
 	margin-bottom: 0.4rem;
-	font-size: 1.15rem;
+	font-size: 1.20rem;
 	font-weight: 500;
 	color: #ffffff;
 	text-shadow:
-		1.5px -1.5px 0 #0A0A0A;
+		2px -2px 0 #0A0A0A;
 }
 
 .underline-line {
