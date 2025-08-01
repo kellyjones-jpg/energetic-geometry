@@ -152,7 +152,7 @@ a.hyperlink {
 	letter-spacing: 0.05em;
 	text-shadow:
 		-2.5px -2.5px 0 #0A0A0A,
-		-3px -3px 0 #4C8CF5;
+		-3.5px -3.5px 0 #4C8CF5;
 }
 
 a.hyperlink:hover,
@@ -707,7 +707,7 @@ a.hyperlink:focus {
 }
 
 .modal-header h5 {
-	font-weight: 1.5rem !important;
+	font-size: 1.4rem !important;
 }
 
 .modal-header h5::after,
