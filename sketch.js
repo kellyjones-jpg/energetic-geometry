@@ -487,6 +487,11 @@ function windowResized() {
 
    updateLayout(targetHeight);
    resizeCanvas(canvasWidth, targetHeight);
+
+   if (hasSelectedYear && selectedYear && entriesByYear[selectedYear]) {
+      drawSites(entriesByYear[selectedYear]);
+   }
+
    redraw();
 }
 
