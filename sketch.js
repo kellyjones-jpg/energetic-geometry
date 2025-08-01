@@ -488,12 +488,7 @@ function windowResized() {
 
    updateLayout(targetHeight);
    resizeCanvas(canvasWidth, targetHeight);
-
-   if (hasSelectedYear && selectedYear && entriesByYear[selectedYear]) {
-      drawSites(entriesByYear[selectedYear]);
-   }
-
-   redraw();
+   redraw(); // if you're using noLoop(), this ensures one frame renders
 }
 
 function draw() {
