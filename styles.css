@@ -794,29 +794,25 @@ a.hyperlink:focus {
 	gap: 1rem;
 }
 
+/* Update nav-arrow buttons for SVG arrows */
+
 .nav-arrow {
-	position: relative;
-	background-color: #353839;
-	color: #ffffff;
-	border: 2px solid #0A0A0A;
-	border-radius: 0;
-	/* hard edges */
-	font-size: 2.5rem;
-	width: 50px;
-	height: 50px;
-	cursor: pointer;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
-	user-select: none;
-	outline-offset: 3px;
-
-	clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
-	/* subtle hexagonal shape with sharp corners */
-
-	/* Remove shadows for a hard line */
-	box-shadow: none;
+  position: relative;
+  background-color: #353839;
+  border: 2px solid #0A0A0A;
+  border-radius: 0;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  outline-offset: 3px;
+  clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
+  box-shadow: none;
+  padding: 0; /* remove text padding */
+  font-size: 0; /* remove space for text fallback */
 }
 
 /* Remove the ::before overlay diagonal line for a cleaner look */
@@ -824,13 +820,37 @@ a.hyperlink:focus {
 	content: none;
 }
 
-/* Hover: crisp color changes with no shadows */
-.nav-arrow:focus,
-.nav-arrow:hover {
-	background-color: #454749;
-	color: #ffffff;
-	border-color: #4C8CF5;
-	box-shadow: none;
+.nav-arrow:hover,
+.nav-arrow:focus {
+  background-color: #454749;
+  border-color: #4C8CF5;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+/* SVG arrow inside nav-arrow button */
+.arrow-icon {
+  width: 24px;        /* consistent size */
+  height: 24px;
+  display: inline-block;
+  vertical-align: middle;
+  transition: transform 0.2s ease;
+  pointer-events: none; /* make sure SVG doesn't intercept clicks */
+}
+
+/* Hover/focus subtle nudge animation */
+
+.nav-arrow:hover .arrow-icon,
+.nav-arrow:focus .arrow-icon {
+  transform: translateX(-2px); /* for left arrow */
+}
+
+/* For right arrow button, use a modifier class or direct targeting */
+/* For example, if your right arrow button has id="next-year" */
+
+#next-year:hover .arrow-icon,
+#next-year:focus .arrow-icon {
+  transform: translateX(2px); /* nudge right */
 }
 
 /* Keep existing arrow button transform on hover */
@@ -838,15 +858,15 @@ a.hyperlink:focus {
 	transform: scale(1.1) rotate(3deg);
 }
 
-.row.text-center {
-	flex-grow: 1;
-}
-
 .arrow-button:focus {
 	background-color: #454749;
 	color: #ffffff;
 	border-color: #4C8CF5;
 	box-shadow: none;
+}
+
+.row.text-center {
+	flex-grow: 1;
 }
 
 .icon {
