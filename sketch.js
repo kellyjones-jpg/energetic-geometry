@@ -336,12 +336,16 @@ function setup() {
 
    setupArrows();
 
-placeholderContainer.html(`
+   placeholderContainer = createDiv().id('placeholder-container');
+   placeholderContainer.parent('sketch-container');
+
+   // === PLACEHOLDER CONTAINER ===
+   placeholderContainer.html(`
   <div class="placeholder-text">
     Use the controls to navigate through time and<br>
     reveal agrivoltaic patterns across the land.
     <div class="placeholder-subtext" style="margin-top: 10px; font-size: 14px; opacity: 0.8;">
-      Select a shape to explore a specific site.
+      Select the shapes to explore a specific site.
     </div>
   </div>
 `);
