@@ -338,6 +338,8 @@ function setup() {
 
    placeholderContainer = createDiv().id('placeholder-container');
    placeholderContainer.parent('sketch-container');
+   placeholderContainer.style('text-align', 'center');
+   placeholderContainer.style('margin-top', '420px');
 
    // === PLACEHOLDER CONTAINER ===
    placeholderContainer.html(`
