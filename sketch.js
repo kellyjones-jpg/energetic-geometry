@@ -344,8 +344,7 @@ function setup() {
    // === PLACEHOLDER CONTAINER ===
    placeholderContainer.html(`
   <div class="placeholder-text">
-    Use the controls to navigate through time and<br>
-    reveal agrivoltaic patterns across the land.
+    Use the controls to navigate through time and reveal agrivoltaic patterns across the land.
     <div class="placeholder-subtext" style="margin-top: 30px; font-size: 22px;">
       Select a shape to reveal site details.
     </div>
