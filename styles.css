@@ -1020,12 +1020,13 @@ a.hyperlink:focus {
 #placeholder-container {
 	position: absolute;
 	top: 0;
-	left: 0;
-	width: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	max-width: 700px; 
+	width: 90%; /* keeps it responsive */
 	z-index: 10;
 	text-align: center;
-	pointer-events: none;
-	/* allows interactions to pass through */
+	pointer-events: none; /* allows interactions to pass through */
 }
 
 #placeholder-container .placeholder-text {
