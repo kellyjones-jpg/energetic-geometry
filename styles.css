@@ -725,7 +725,7 @@ a.hyperlink:focus {
 /* Modal body */
 .modal-body {
 	position: relative;
-	font-size: 1rem;
+	font-size: 1.1rem;
 	line-height: 1.5;
 	background-color: #353839;
 	color: #ffffff;
