@@ -346,7 +346,7 @@ function setup() {
   <div class="placeholder-text">
     Use the controls to navigate through time and<br>
     reveal agrivoltaic patterns across the land.
-    <div class="placeholder-subtext" style="margin-top: 20px; font-size: 18px;">
+    <div class="placeholder-subtext" style="margin-top: 20px; font-size: 20px;">
       Select the shapes to explore a specific site.
     </div>
   </div>
