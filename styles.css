@@ -707,7 +707,7 @@ a.hyperlink:focus {
 }
 
 .modal-header h5 {
-	font-weight: 500 !important;
+	font-weight: 1.5rem !important;
 }
 
 .modal-header h5::after,
