@@ -347,7 +347,7 @@ function setup() {
     Use the controls to navigate through time and<br>
     reveal agrivoltaic patterns across the land.
     <div class="placeholder-subtext" style="margin-top: 30px; font-size: 22px;">
-      Select a shape to explore a specific site.
+      Select a shape to reveal site details.
     </div>
   </div>
 `);
