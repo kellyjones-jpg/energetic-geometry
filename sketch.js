@@ -285,8 +285,9 @@ function setup() {
    }
 
    availableYears = Object.keys(entriesByYear).sort();
-   selectedYear = availableYears[0];
-   updateCounters(entriesByYear[selectedYear]);
+   selectedYear = null;
+   hasSelectedYear = false;
+   updateCounters([]);
 
    let canvasWidth = windowWidth * 0.9;
    let canvasHeight = min(850, windowHeight);
@@ -556,7 +557,11 @@ function draw() {
    }
 
    // === DATA FOR SELECTED YEAR ===
-   const yearEntries = entriesByYear[selectedYear] || [];
+   if (!hasSelectedYear || !selectedYear || !entriesByYear[selectedYear]) {
+      return; // Stop early if no user interaction has occurred
+   }
+
+   const yearEntries = entriesByYear[selectedYear];
    const sortedEntries = [...yearEntries].sort((a, b) => (b.acres || 0) - (a.acres || 0));
 
    if (sortedEntries.length === 0) {
@@ -886,11 +891,6 @@ function updateYear(year, index) {
    // Update screen reader live region
    const srLive = document.getElementById('sr-live');
    if (srLive) srLive.textContent = `Year changed to ${year}`;
-
-   // Optional: update sketch with new data
-   if (typeof drawSites === 'function') {
-      drawSites(entriesByYear[year]);
-   }
 }
 
 function drawCropEdgeStyle(cropTypes, activities, x, y, size, strokeW = 2) {
