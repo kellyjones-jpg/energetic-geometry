@@ -435,65 +435,38 @@ a.hyperlink:focus {
 }
 
 /* Accordion button */
-.accordion-button {
-	background-color: transparent;
-	color: #ffffff;
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 1.4rem;
-	border: none;
-	border-radius: 0;
-	box-shadow: none;
-	padding: 1rem 1.5rem;
-	transition: background-color 0.3s ease, color 0.3s ease;
-	text-transform: uppercase;
-	letter-spacing: 0.08em;
-	box-shadow:
-		1.5px 1px 0 #0A0A0A,
-		3px 2px 0 white;
-	outline-offset: 4px;
-}
-
-/* Accordion button hover and focus */
-.accordion-button:hover,
-.accordion-button:focus {
-	background-color: #353839;
-	/* subtle dark highlight */
-	color: #ffffff;
-	text-shadow:
-		1.5px 1.5px 0 #0A0A0A;
-}
-
-/* Accordion button collapsed (default state) */
-.accordion-button.collapsed {
-	background-color: #353839;
-	color: #ffffff;
-	box-shadow:
-		1.5px 1px 0 #0A0A0A,
-		3px 2px 0 white;
-}
-
-/* Accordion button expanded */
-.accordion-button:not(.collapsed) {
-	background-color: #0A0A0A;
-	/* darker background when open */
-	color: #ffffff;
-	font-weight: bold;
-}
-
-/* Remove Bootstrap's default chevron and add custom one */
 .accordion-button::after {
-	content: '\25B6';
-	/* right-pointing triangle */
-	color: #ffffff;
-	transition: transform 0.3s ease;
-	margin-left: auto;
-	filter:
-		drop-shadow(1px 1px 0 #0A0A0A) drop-shadow(1px 0 0 white);
+  content: none;
 }
 
-/* Rotate chevron when expanded */
-.accordion-button:not(.collapsed)::after {
-	transform: rotate(90deg);
+.accordion-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 1.5rem;
+}
+
+.accordion-arrow {
+  display: inline-flex;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+  filter:
+    drop-shadow(1px 1px 0 #0A0A0A)
+    drop-shadow(1px 0 0 white);
+}
+
+.accordion-arrow svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+  fill: white;
+}
+
+.accordion-button:not(.collapsed) .accordion-arrow {
+  transform: rotate(90deg);
 }
 
 /* Accordion body */
@@ -1071,14 +1044,19 @@ a.hyperlink:focus {
 	}
 
 	.accordion-button {
-		font-size: 1.1rem;
-	}
-
-	.accordion-body th,
-	.accordion-body td {
-		font-size: 0.85rem;
-		padding: 0.5rem;
-	}
+	    font-size: 1.1rem;
+	    padding-right: 1rem; /* slightly less padding for arrow */
+	  }
+	
+	  .accordion-arrow {
+	    width: 18px;
+	    height: 18px;
+	  }
+	
+	  .accordion-arrow svg {
+	    width: 18px;
+	    height: 18px;
+	  }
 
 	#year-arrow-controls {
 		margin-bottom: 1rem;
@@ -1143,9 +1121,20 @@ a.hyperlink:focus {
 		padding: 1rem 2rem;
 	}
 
-	.accordion-button {
-		font-size: 1.5rem;
-	}
+	 .accordion-button {
+	    font-size: 1.5rem;
+	    padding-right: 2rem; /* more room for bigger arrow */
+	  }
+	
+	  .accordion-arrow {
+	    width: 32px;
+	    height: 32px;
+	  }
+	
+	  .accordion-arrow svg {
+	    width: 32px;
+	    height: 32px;
+	  }
 
 	.modal-content {
 		padding: 2.5rem 2.5rem;
