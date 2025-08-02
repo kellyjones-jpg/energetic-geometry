@@ -701,12 +701,71 @@ function showModalWithEntry(entry) {
    const modalTitle = document.getElementById('siteModalLabel');
    const modalBody = document.getElementById('siteModalBody');
 
+   // Create p5.Graphics buffer
+   const bufferSize = 180;
+   const pg = createGraphics(bufferSize, bufferSize);
+   pg.pixelDensity(1);
+   pg.clear();
+   pg.push();
+   pg.translate(bufferSize / 2, bufferSize / 2);
+   pg.rectMode(CENTER);
+   pg.ellipseMode(CENTER);
+   pg.angleMode(RADIANS);
+
+   const activityColors = (entry.activities || []).map(getActivityColor);
+   const baseColor = getActivityColor(entry.activities?.[0] || '');
+   const glowStrength = map(entry.megawatts || 0, 0, 10, 5, 30);
+   const strokeW = 3;
+
+   const shapeSize = bufferSize * 0.55;
+   const shadowInfo = drawSuprematistOpShadowRect.call(pg, shapeSize, entry.megawatts, entry.habitat, 0, 0, glowStrength, false, entry.animalType?.[0] || '', activityColors, false);
+
+   if (entry.habitat?.length) {
+      pg.stroke(0, 80);
+      pg.strokeWeight(strokeW + 1.5);
+      drawHabitatShape.call(pg, entry.habitat, 0, 0, shapeSize, baseColor, strokeW);
+   }
+
+   if (entry.activities && entry.habitat) {
+      pg.stroke(0, 80);
+      pg.strokeWeight(strokeW + 1.5);
+      drawCombinedHabitatOverlay.call(pg, entry.habitat, entry.activities, 0, 0, shapeSize, 2);
+   }
+
+   if (entry.arrayType) {
+      pg.push();
+      pg.translate(-shadowInfo.offsetX, -shadowInfo.offsetY);
+      pg.rotate(-shadowInfo.angle);
+      pg.stroke(0, 80);
+      pg.strokeWeight(strokeW + 1.5);
+      drawArrayOverlay.call(pg, entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10, strokeW);
+      pg.pop();
+   }
+
+   if (entry.cropType?.length > 0) {
+      drawCropEdgeStyle.call(pg, entry.cropType, entry.activities, 0, 0, shapeSize * 1.35, strokeW);
+   }
+
+   if (entry.animalType?.length > 0) {
+      const yOffset = shapeSize * 0.15;
+      const animalSize = shapeSize * 0.9;
+      pg.stroke(0, 80);
+      pg.strokeWeight(strokeW + 1.1);
+      drawAnimalLine.call(pg, entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
+      pg.strokeWeight(strokeW);
+      drawAnimalLine.call(pg, entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
+   }
+
+   pg.pop();
+
+   // Convert buffer to data URI
+   const visualImg = pg.canvas.toDataURL();
+
+   // Inject thumbnail + site info into modal
    const capitalizeWords = (str) => str.replace(/\b\w/g, c => c.toUpperCase());
-   const formatArray = (arr) =>
-      Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
+   const formatArray = (arr) => Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
 
    let lines = [];
-
    if (entry.activities?.length)
       lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
    if (!isNaN(entry.megawatts))
@@ -724,30 +783,29 @@ function showModalWithEntry(entry) {
    if (entry.animalType?.length)
       lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
 
-   // Set modal title with link if URL exists
-   modalTitle.innerHTML = entry.url ?
-      `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" class="hyperlink">
-         ${entry.name}${combinedIcon}
-       </a>` :
-      entry.name;
+   modalTitle.innerHTML = entry.url
+      ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" class="hyperlink">
+           ${entry.name}${combinedIcon}
+         </a>`
+      : entry.name;
 
-   // Inject content before the legend
-   const encodingLegend = document.getElementById('encoding-legend');
-   const toggleLegend = document.getElementById('toggle-legend');
-
-   // Clear just the dynamic content
-   // Remove any old inserted content
    modalBody.querySelectorAll('.dynamic-content').forEach(el => el.remove());
 
-   // Create a wrapper div for dynamic content
-   const contentWrapper = document.createElement('div');
-   contentWrapper.classList.add('dynamic-content');
-   contentWrapper.innerHTML = lines.map(line => `<p>${line}</p>`).join('');
+   const wrapper = document.createElement('div');
+   wrapper.classList.add('dynamic-content');
 
-   // Insert it before the toggle button
-   modalBody.insertBefore(contentWrapper, toggleLegend);
+   wrapper.innerHTML = `
+     <div class="modal-site-visual-wrapper">
+       <img class="modal-site-thumbnail" src="${visualImg}" alt="Encoded visual of ${entry.name}" />
+       <div class="modal-site-details">
+         ${lines.map(line => `<p>${line}</p>`).join('')}
+       </div>
+     </div>
+   `;
 
-   // Show modal
+   const toggleLegend = document.getElementById('toggle-legend');
+   modalBody.insertBefore(wrapper, toggleLegend);
+
    const siteModal = new bootstrap.Modal(document.getElementById('siteModal'));
    siteModal.show();
 }
