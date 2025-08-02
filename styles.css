@@ -151,8 +151,8 @@ a.hyperlink {
 	color: #ffffff;
 	letter-spacing: 0.05em;
 	text-shadow:
-		-2.5px -2.5px 0 #0A0A0A,
-		-3.5px -3.5px 0 #4C8CF5;
+		-1.5px -1.5px 0 #0A0A0A,
+		-3px -3px 0 #4C8CF5;
 }
 
 a.hyperlink:hover,
