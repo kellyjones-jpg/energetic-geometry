@@ -764,7 +764,11 @@ function insertModalContent(entry, visualImg) {
 
   wrapper.innerHTML = `
      <div class="modal-site-visual-wrapper">
-       <img class="modal-site-thumbnail" src="${visualImg}" alt="Encoded visual of ${entry.name}" />
+       <div class="col-md-4 float-right">
+       <figure class="modal-site-visual">
+         <img class="modal-site-thumbnail" src="${visualImg}" alt="Encoded visual of ${entry.name}" />
+         </figure>
+      </div>
        <div class="modal-site-details">
          ${lines.map(line => `<p>${line}</p>`).join('')}
        </div>
