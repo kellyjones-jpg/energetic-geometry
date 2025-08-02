@@ -340,13 +340,13 @@ function setup() {
    placeholderContainer = createDiv().id('placeholder-container');
    placeholderContainer.parent('sketch-container');
    placeholderContainer.style('text-align', 'center');
-   placeholderContainer.style('margin-top', '430px');
+   placeholderContainer.style('margin-top', '425px');
 
    // === PLACEHOLDER CONTAINER ===
    placeholderContainer.html(`
   <div class="placeholder-text">
     Use the controls to navigate through time and reveal agrivoltaic patterns across the land.
-    <div class="placeholder-subtext" style="margin-top: 30px; font-size: 22px;">
+    <div class="placeholder-subtext" style="margin-top: 35px; font-size: 22px;">
       Select a shape to reveal site details.
     </div>
   </div>
