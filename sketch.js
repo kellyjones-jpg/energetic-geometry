@@ -10,6 +10,8 @@ let shapeSize, padding, startY, numCols, numRows;
 let hasSelectedYear = false;
 let fadeAlpha = 255;
 let placeholderContainer;
+let modalPreviewEntry = null;
+let modalPreviewCallback = null;
 
 const cropEdgeGroups = {
    // Root vegetables
@@ -340,7 +342,7 @@ function setup() {
    placeholderContainer = createDiv().id('placeholder-container');
    placeholderContainer.parent('sketch-container');
    placeholderContainer.style('text-align', 'center');
-   placeholderContainer.style('margin-top', '425px');
+   placeholderContainer.style('margin-top', '420px');
 
    // === PLACEHOLDER CONTAINER ===
    placeholderContainer.html(`
@@ -695,106 +697,72 @@ function draw() {
       }
       pop(); // end entry group
    }
+   if (modalPreviewEntry && modalPreviewCallback) {
+   const entry = modalPreviewEntry;
+
+   // Centered offscreen drawing
+   const tempX = width + 250;
+   const tempY = height + 250;
+   push();
+   translate(tempX, tempY);
+   scale(1.0); // adjust to shrink visual
+   renderEntryVisual(entry); // <-- existing per-entry logic
+   pop();
+
+   // Give p5 a frame to finish drawing
+   setTimeout(() => {
+      const img = get(tempX - 100, tempY - 100, 200, 200);
+      modalPreviewCallback(img.canvas.toDataURL());
+      modalPreviewEntry = null;
+      modalPreviewCallback = null;
+   }, 10); // slight delay ensures get() works
+   }
 }
 
 function showModalWithEntry(entry) {
-   const modalTitle = document.getElementById('siteModalLabel');
-   const modalBody = document.getElementById('siteModalBody');
+   modalPreviewEntry = entry;
+   modalPreviewCallback = (imgDataURL) => {
+   insertModalContent(entry, imgDataURL); // New helper
+};
+}
 
-   // Create p5.Graphics buffer
-   const bufferSize = 180;
-   const pg = createGraphics(bufferSize, bufferSize);
-   pg.pixelDensity(1);
-   pg.clear();
-   pg.push();
-   pg.translate(bufferSize / 2, bufferSize / 2);
-   pg.rectMode(CENTER);
-   pg.ellipseMode(CENTER);
-   pg.angleMode(RADIANS);
+function insertModalContent(entry, visualImg) {
+  const modalTitle = document.getElementById('siteModalLabel');
+  const modalBody = document.getElementById('siteModalBody');
 
-   const activityColors = (entry.activities || []).map(getActivityColor);
-   const baseColor = getActivityColor(entry.activities?.[0] || '');
-   const glowStrength = map(entry.megawatts || 0, 0, 10, 5, 30);
-   const strokeW = 3;
+  const capitalizeWords = (str) => str.replace(/\b\w/g, c => c.toUpperCase());
+  const formatArray = (arr) => Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
 
-   const shapeSize = bufferSize * 0.55;
-   const shadowInfo = drawSuprematistOpShadowRect.call(pg, shapeSize, entry.megawatts, entry.habitat, 0, 0, glowStrength, false, entry.animalType?.[0] || '', activityColors, false);
+  let lines = [];
+  if (entry.activities?.length)
+    lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
+  if (!isNaN(entry.megawatts))
+    lines.push(`<strong>System Size:</strong> ${entry.megawatts} MW`);
+  if (!isNaN(entry.acres))
+    lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
+  if (entry.year)
+    lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
+  if (entry.arrayType)
+    lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
+  if (entry.habitat?.length)
+    lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
+  if (entry.cropType?.length)
+    lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
+  if (entry.animalType?.length)
+    lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
 
-   if (entry.habitat?.length) {
-      pg.stroke(0, 80);
-      pg.strokeWeight(strokeW + 1.5);
-      drawHabitatShape.call(pg, entry.habitat, 0, 0, shapeSize, baseColor, strokeW);
-   }
+  modalTitle.innerHTML = entry.url
+    ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" class="hyperlink">
+         ${entry.name}${combinedIcon}
+       </a>`
+    : entry.name;
 
-   if (entry.activities && entry.habitat) {
-      pg.stroke(0, 80);
-      pg.strokeWeight(strokeW + 1.5);
-      drawCombinedHabitatOverlay.call(pg, entry.habitat, entry.activities, 0, 0, shapeSize, 2);
-   }
+  modalBody.querySelectorAll('.dynamic-content').forEach(el => el.remove());
 
-   if (entry.arrayType) {
-      pg.push();
-      pg.translate(-shadowInfo.offsetX, -shadowInfo.offsetY);
-      pg.rotate(-shadowInfo.angle);
-      pg.stroke(0, 80);
-      pg.strokeWeight(strokeW + 1.5);
-      drawArrayOverlay.call(pg, entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10, strokeW);
-      pg.pop();
-   }
+  const wrapper = document.createElement('div');
+  wrapper.classList.add('dynamic-content');
 
-   if (entry.cropType?.length > 0) {
-      drawCropEdgeStyle.call(pg, entry.cropType, entry.activities, 0, 0, shapeSize * 1.35, strokeW);
-   }
-
-   if (entry.animalType?.length > 0) {
-      const yOffset = shapeSize * 0.15;
-      const animalSize = shapeSize * 0.9;
-      pg.stroke(0, 80);
-      pg.strokeWeight(strokeW + 1.1);
-      drawAnimalLine.call(pg, entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
-      pg.strokeWeight(strokeW);
-      drawAnimalLine.call(pg, entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
-   }
-
-   pg.pop();
-
-   // Convert buffer to data URI
-   const visualImg = pg.canvas.toDataURL();
-
-   // Inject thumbnail + site info into modal
-   const capitalizeWords = (str) => str.replace(/\b\w/g, c => c.toUpperCase());
-   const formatArray = (arr) => Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
-
-   let lines = [];
-   if (entry.activities?.length)
-      lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
-   if (!isNaN(entry.megawatts))
-      lines.push(`<strong>System Size:</strong> ${entry.megawatts} MW`);
-   if (!isNaN(entry.acres))
-      lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
-   if (entry.year)
-      lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
-   if (entry.arrayType)
-      lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
-   if (entry.habitat?.length)
-      lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
-   if (entry.cropType?.length)
-      lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
-   if (entry.animalType?.length)
-      lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
-
-   modalTitle.innerHTML = entry.url
-      ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" class="hyperlink">
-           ${entry.name}${combinedIcon}
-         </a>`
-      : entry.name;
-
-   modalBody.querySelectorAll('.dynamic-content').forEach(el => el.remove());
-
-   const wrapper = document.createElement('div');
-   wrapper.classList.add('dynamic-content');
-
-   wrapper.innerHTML = `
+  wrapper.innerHTML = `
      <div class="modal-site-visual-wrapper">
        <img class="modal-site-thumbnail" src="${visualImg}" alt="Encoded visual of ${entry.name}" />
        <div class="modal-site-details">
@@ -803,11 +771,11 @@ function showModalWithEntry(entry) {
      </div>
    `;
 
-   const toggleLegend = document.getElementById('toggle-legend');
-   modalBody.insertBefore(wrapper, toggleLegend);
+  const toggleLegend = document.getElementById('toggle-legend');
+  modalBody.insertBefore(wrapper, toggleLegend);
 
-   const siteModal = new bootstrap.Modal(document.getElementById('siteModal'));
-   siteModal.show();
+  const siteModal = new bootstrap.Modal(document.getElementById('siteModal'));
+  siteModal.show();
 }
 
 document.getElementById('toggle-legend').addEventListener('click', function () {
