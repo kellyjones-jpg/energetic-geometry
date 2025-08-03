@@ -493,8 +493,8 @@ function windowResized() {
    redraw(); // if you're using noLoop(), this ensures one frame renders
 }
 
-function renderEntryVisual(entry) {
-  push();
+function renderEntryVisual(entry, pg) {
+  pg.push();
 
   const size = 140;
   const strokeW = 3;
@@ -512,49 +512,45 @@ function renderEntryVisual(entry) {
     false,
     entry.animalType?.[0] || '',
     activityColors,
-    false
+    false,
+    pg // pass pg into drawing function
   );
 
-  // Habitat overlay
   if (entry.habitat?.length) {
-    stroke(0, 80);
-    strokeWeight(strokeW + 1);
-    drawHabitatShape(entry.habitat, 0, 0, size, baseColor, strokeW);
+    pg.stroke(0, 80);
+    pg.strokeWeight(strokeW + 1);
+    drawHabitatShape(entry.habitat, 0, 0, size, baseColor, strokeW, pg);
   }
 
-  // Combined activity/habitat overlay
   if (entry.activities && entry.habitat) {
-    stroke(0, 80);
-    strokeWeight(strokeW + 1);
-    drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, size, 1.5);
+    pg.stroke(0, 80);
+    pg.strokeWeight(strokeW + 1);
+    drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, size, 1.5, pg);
   }
 
-  // PV Array
   if (entry.arrayType) {
-    push();
-    translate(-shadowInfo.offsetX, -shadowInfo.offsetY);
-    rotate(-shadowInfo.angle);
-    stroke(0, 80);
-    strokeWeight(strokeW + 1);
-    drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.1, 7, strokeW);
-    pop();
+    pg.push();
+    pg.translate(-shadowInfo.offsetX, -shadowInfo.offsetY);
+    pg.rotate(-shadowInfo.angle);
+    pg.stroke(0, 80);
+    pg.strokeWeight(strokeW + 1);
+    drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.1, 7, strokeW, pg);
+    pg.pop();
   }
 
-  // Crop edge
   if (entry.cropType?.length > 0) {
-    drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, size * 1.3, strokeW);
+    drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, size * 1.3, strokeW, pg);
   }
 
-  // Animal line
   if (entry.animalType?.length > 0) {
     const yOffset = size * 0.15;
     const animalSize = size * 0.9;
-    stroke(0, 80);
-    strokeWeight(strokeW + 0.5);
-    drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
+    pg.stroke(0, 80);
+    pg.strokeWeight(strokeW + 0.5);
+    drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, pg);
   }
 
-  pop();
+  pg.pop();
 }
 
 function draw() {
@@ -761,25 +757,22 @@ function draw() {
       }
       pop(); // end entry group
    }
+
    if (modalPreviewEntry && modalPreviewCallback) {
    const entry = modalPreviewEntry;
 
-   // Centered offscreen drawing
-   const tempX = width + 250;
-   const tempY = height + 250;
-   push();
-   translate(tempX, tempY);
-   scale(1.0); // adjust to shrink visual
-   renderEntryVisual(entry); // <-- existing per-entry logic
-   pop();
+   const pg = createGraphics(200, 200);
+   pg.pixelDensity(1);
+   pg.clear();
+   pg.translate(100, 100); // center visual
 
-   // Give p5 a frame to finish drawing
+   renderEntryVisual(entry, pg); // draw directly onto pg
+
    setTimeout(() => {
-      const img = get(tempX - 100, tempY - 100, 200, 200);
-      modalPreviewCallback(img.canvas.toDataURL());
+      modalPreviewCallback(pg.canvas.toDataURL());
       modalPreviewEntry = null;
       modalPreviewCallback = null;
-   }, 10); // slight delay ensures get() works
+   }, 10);
    }
 }
 
@@ -982,7 +975,7 @@ function updateYear(year, index) {
    if (srLive) srLive.textContent = `Year changed to ${year}`;
 }
 
-function drawCropEdgeStyle(cropTypes, activities, x, y, size, strokeW = 2) {
+function drawCropEdgeStyle(cropTypes, activities, x, y, size, strokeW = 2, pg) {
    if (!Array.isArray(cropTypes) || cropTypes.length === 0) return;
    if (!Array.isArray(activities) || activities.length === 0) return;
 
@@ -992,17 +985,17 @@ function drawCropEdgeStyle(cropTypes, activities, x, y, size, strokeW = 2) {
    const uniqueGroups = [...new Set(groups)];
    if (uniqueGroups.length === 0) return;
 
-   push();
-   translate(x, y);
-   noFill();
+   pg.push();
+   pg.translate(x, y);
+   pg.noFill();
 
    for (let i = 0; i < activities.length; i++) {
       const activity = activities[i];
       const strokeColor = getActivityColor(activity);
       if (!strokeColor) continue;
 
-      strokeWeight(strokeW);
-      stroke(strokeColor);
+      pg.strokeWeight(strokeW);
+      pg.stroke(strokeColor);
 
       for (let j = 0; j < uniqueGroups.length; j++) {
          const group = uniqueGroups[j];
@@ -1011,144 +1004,145 @@ function drawCropEdgeStyle(cropTypes, activities, x, y, size, strokeW = 2) {
          switch (group) {
             case 'root':
             case 'cruciferous':
-               drawPointedEdge(size, offsetIndex);
+               drawPointedEdge(size, offsetIndex, pg);
                break;
             case 'leafy':
             case 'herb':
-               drawWavyEdge(size, offsetIndex);
+               drawWavyEdge(size, offsetIndex, pg);
                break;
             case 'fruit':
             case 'berry':
-               drawLobedEdge(size, offsetIndex);
+               drawLobedEdge(size, offsetIndex, pg);
                break;
             case 'grain':
             case 'legume':
-               drawLinearSpikes(size, offsetIndex);
+               drawLinearSpikes(size, offsetIndex, pg);
                break;
             case 'vine':
-               drawSpiralOverlay(size, offsetIndex);
+               drawSpiralOverlay(size, offsetIndex, pg);
                break;
             case 'mixed':
             case 'various':
-               drawDotRing(size, offsetIndex);
+               drawDotRing(size, offsetIndex, pg);
                break;
          }
       }
    }
 
-   pop();
+   pg.pop();
 }
 
-function drawPointedEdge(size, offsetIndex = 0) {
-   let steps = 72;
-   let extraSpacing = offsetIndex * 6;
-   push();
-   rotate(radians((offsetIndex * 17) % 360));
-   beginShape();
-   for (let i = 0; i <= steps; i++) {
-      let angle = TWO_PI * i / steps;
-      let radius = size * 0.6 + extraSpacing + (i % 2 === 0 ? 12 : -10);
-      let x = cos(angle) * radius;
-      let y = sin(angle) * radius;
-      vertex(x, y);
-   }
-   endShape(CLOSE);
-   pop();
+function drawPointedEdge(size, offsetIndex = 0, pg) {
+  let steps = 72;
+  let extraSpacing = offsetIndex * 6;
+  pg.push();
+  pg.rotate(radians((offsetIndex * 17) % 360));
+  pg.beginShape();
+  for (let i = 0; i <= steps; i++) {
+    let angle = TWO_PI * i / steps;
+    let radius = size * 0.6 + extraSpacing + (i % 2 === 0 ? 12 : -10);
+    let x = cos(angle) * radius;
+    let y = sin(angle) * radius;
+    pg.vertex(x, y);
+  }
+  pg.endShape(CLOSE);
+  pg.pop();
 }
 
-function drawWavyEdge(size, offsetIndex = 0) {
+
+function drawWavyEdge(size, offsetIndex = 0, pg) {
    let waves = 6 + offsetIndex * 2;
    let amp = 10 + offsetIndex * 1.5;
    let extraSpacing = offsetIndex * 6;
-   push();
-   rotate(radians((offsetIndex * 23) % 360));
-   beginShape();
+   pg.push();
+   pg.rotate(radians((offsetIndex * 23) % 360));
+   pg.beginShape();
    for (let angle = 0; angle <= TWO_PI + 0.05; angle += 0.05) {
       let r = size * 0.55 + extraSpacing + amp * sin(waves * angle);
       let x = cos(angle) * r;
       let y = sin(angle) * r;
-      curveVertex(x, y);
+      pg.curveVertex(x, y);
    }
-   endShape(CLOSE);
-   pop();
+   pg.endShape(CLOSE);
+   pg.pop();
 }
 
-function drawLobedEdge(size, offsetIndex = 0) {
+function drawLobedEdge(size, offsetIndex = 0, pg) {
    let lobes = 4 + offsetIndex * 1.5;
    let amp = 8 + offsetIndex;
    let extraSpacing = offsetIndex * 6;
-   push();
-   rotate(radians((offsetIndex * 31) % 360));
-   beginShape();
+   pg.push();
+   pg.rotate(radians((offsetIndex * 31) % 360));
+   pg.beginShape();
    for (let angle = 0; angle <= TWO_PI + 0.05; angle += 0.05) {
       let r = size * 0.55 + extraSpacing + amp * sin(lobes * angle);
       let x = cos(angle) * r;
       let y = sin(angle) * r;
-      curveVertex(x, y);
+      pg.curveVertex(x, y);
    }
-   endShape(CLOSE);
-   pop();
+   pg.endShape(CLOSE);
+   pg.pop();
 }
 
-function drawLinearSpikes(size, offsetIndex = 0) {
+function drawLinearSpikes(size, offsetIndex = 0, pg) {
    let lines = 12 + offsetIndex * 2; // more lines per layer
    let baseRadius = size * 0.4 + offsetIndex * 5; // inner radius spacing
    let spikeLength = size * 0.3 + offsetIndex * 3; // grows with index
 
-   push();
-   rotate(radians((offsetIndex * 15) % 360)); // rotational tension
+   pg.push();
+   pg.rotate(radians((offsetIndex * 15) % 360)); // rotational tension
    for (let i = 0; i < lines; i++) {
       let angle = TWO_PI * i / lines;
       let x1 = cos(angle) * baseRadius;
       let y1 = sin(angle) * baseRadius;
       let x2 = cos(angle) * (baseRadius + spikeLength);
       let y2 = sin(angle) * (baseRadius + spikeLength);
-      line(x1, y1, x2, y2);
+      pg.line(x1, y1, x2, y2);
    }
-   pop();
+   pg.pop();
 }
 
-function drawSpiralOverlay(size, offsetIndex = 0) {
-   noFill();
+function drawSpiralOverlay(size, offsetIndex = 0, pg) {
+   pg.noFill();
    let turns = 100;
    let spacing = size * 0.005; // smaller spacing
-   push();
-   rotate(radians((offsetIndex * 37) % 360));
-   beginShape();
+   pg.push();
+   pg.rotate(radians((offsetIndex * 37) % 360));
+   pg.beginShape();
    for (let i = 0; i < turns; i++) {
       let angle = i * 0.2;
       let r = spacing * i + offsetIndex * 2;
       let x = cos(angle) * r;
       let y = sin(angle) * r;
-      curveVertex(x, y);
+      pg.curveVertex(x, y);
    }
-   endShape();
-   pop();
+   pg.endShape();
+   pg.pop();
 }
 
-function drawDotRing(size, offsetIndex = 0) {
+function drawDotRing(size, offsetIndex = 0, pg) {
    let dots = 24 + offsetIndex * 2;
    let r = size * 0.65 + offsetIndex * 6;
    let dotSize = 4 + offsetIndex * 0.5;
-   push();
-   rotate(radians((offsetIndex * 19) % 360));
+   pg.push();
+   pg.rotate(radians((offsetIndex * 19) % 360));
    for (let i = 0; i < dots; i++) {
       let angle = TWO_PI * i / dots;
       let x = cos(angle) * r;
       let y = sin(angle) * r;
       ellipse(x, y, dotSize, dotSize);
    }
-   pop();
+   pg.pop();
 }
 
 // Draw different line styles based on Animal Type
-function drawAnimalLine(animalType, activities, x, y, size, strokeW = 1.3) {
+function drawAnimalLine(animalType, activities, x, y, size, strokeW = 1.3, pg) {
    if (!animalType || activities.length === 0) return;
    let style = getLineStyle(animalType);
    if (!style) return;
 
-   push();
-   noFill();
+   pg.push();
+   pg.noFill();
 
    const baseStrokeW = strokeW || style.weight * 1; // Thicker lines
    const lineLength = size * 1.5; // Slightly longer lines
@@ -1159,38 +1153,38 @@ function drawAnimalLine(animalType, activities, x, y, size, strokeW = 1.3) {
       if (!strokeColor) continue;
 
       // Shadow for depth
-      stroke(0, 60);
-      strokeWeight(baseStrokeW * 1.1);
-      push();
-      translate(2, 2); // subtle offset shadow
-      drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength);
-      pop();
+      pg.stroke(0, 60);
+      pg.strokeWeight(baseStrokeW * 1.1);
+      pg.push();
+      pg.translate(2, 2); // subtle offset shadow
+      drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength, pg);
+      pg.pop();
 
       // Main colored line
-      stroke(strokeColor);
-      strokeWeight(baseStrokeW);
-      drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength);
+      pg.stroke(strokeColor);
+      pg.strokeWeight(baseStrokeW);
+      drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength, pg);
    }
 
-   pop();
+   pg.pop();
 }
 
-function drawAnimalLineShape(type, x, y, length) {
+function drawAnimalLineShape(type, x, y, length, pg) {
    switch (type) {
       case 'wavy':
-         drawWavyLine(x, y, length);
+         drawWavyLine(x, y, length, pg);
          break;
       case 'dashed':
-         drawDashedLine(x, y, length);
+         drawDashedLine(x, y, length, pg);
          break;
       case 'bezier':
-         drawBezierLine(x, y, length);
+         drawBezierLine(x, y, length, pg);
          break;
       case 'straight':
-         line(x - length / 2, y, x + length / 2, y);
+         pg.line(x - length / 2, y, x + length / 2, y);
          break;
       case 'textured':
-         drawTexturedLine(x, y, length);
+         drawTexturedLine(x, y, length, pg);
          break;
    }
 }
@@ -1226,36 +1220,36 @@ function getLineStyle(animalType) {
 }
 
 // Enhanced Wavy line: smoother waves, higher amplitude for boldness
-function drawWavyLine(x, y, length) {
-   noFill();
-   beginShape();
+function drawWavyLine(x, y, length, pg) {
+   pg.noFill();
+   pg.beginShape();
    let amplitude = 7;
    let waves = 5;
    let steps = 50;
    for (let i = 0; i <= steps; i++) {
       let px = x - length / 2 + (length / steps) * i;
       let py = y + sin((i / steps) * waves * TWO_PI) * amplitude;
-      vertex(px, py);
+      pg.vertex(px, py);
    }
-   endShape();
+   pg.endShape();
 }
 
 // Enhanced Dashed line: longer dashes, sharper gaps, crisp edges
-function drawDashedLine(x, y, length) {
+function drawDashedLine(x, y, length, pg) {
    let dashLength = 14;
    let gapLength = 8;
    let startX = x - length / 2;
    let endX = x + length / 2;
    for (let px = startX; px < endX; px += dashLength + gapLength) {
-      line(px, y, px + dashLength, y);
+      pg.line(px, y, px + dashLength, y);
    }
 }
 
 // Enhanced Bezier line: stronger curvature, more elegant S shape
-function drawBezierLine(x, y, length) {
-   noFill();
-   strokeJoin(ROUND);
-   bezier(
+function drawBezierLine(x, y, length, pg) {
+   pg.noFill();
+   pg.strokeJoin(ROUND);
+   pg.bezier(
       x - length / 2, y,
       x - length / 3, y - length / 2,
       x + length / 3, y + length / 2,
@@ -1264,18 +1258,18 @@ function drawBezierLine(x, y, length) {
 }
 
 // Textured line: clean segmented lines
-function drawTexturedLine(x, y, length) {
+function drawTexturedLine(x, y, length, pg) {
    let segmentLength = 8;
    let gap = 5;
    let startX = x - length / 2;
    let endX = x + length / 2;
 
    for (let px = startX; px < endX; px += segmentLength + gap) {
-      line(px, y, px + segmentLength, y);
+      pg.line(px, y, px + segmentLength, y);
    }
 }
 
-function drawHabitatShape(habitatList, x, y, size, baseColor, strokeW = 2) {
+function drawHabitatShape(habitatList, x, y, size, baseColor, strokeW = 2, pg) {
    if (!Array.isArray(habitatList)) return;
 
    habitatList = habitatList
@@ -1284,114 +1278,114 @@ function drawHabitatShape(habitatList, x, y, size, baseColor, strokeW = 2) {
 
    if (habitatList.length === 0) return;
 
-   push();
-   translate(x, y);
-   rectMode(CENTER);
-   angleMode(RADIANS);
-   strokeWeight(strokeW);
-   stroke(0, 60);
+   pg.push();
+   pg.translate(x, y);
+   pg.rectMode(CENTER);
+   pg.angleMode(RADIANS);
+   pg.strokeWeight(strokeW);
+   pg.stroke(0, 60);
 
    for (let i = 0; i < habitatList.length; i++) {
       let habitat = habitatList[i];
       let angleOffset = PI / 6 * i;
       let alpha = map(i, 0, habitatList.length, 200, 60);
       let fillColor = color(
-         red(baseColor),
-         green(baseColor),
-         blue(baseColor),
+         pg.red(baseColor),
+         pg.green(baseColor),
+         pg.blue(baseColor),
          alpha
       );
 
       // Slight scaling and rotation per layer
       let scaleFactor = 1 - i * 0.08;
-      push();
-      rotate(angleOffset);
-      scale(scaleFactor);
+      pg.push();
+      pg.rotate(angleOffset);
+      pg.scale(scaleFactor);
 
       // Shadow layer (deeper)
-      fill(0, 30);
-      translate(3, 3);
+      pg.fill(0, 30);
+      pg.translate(3, 3);
       switch (habitat) {
          case 'pollinator':
-            drawSolarHexagon(size * 0.5);
+            drawSolarHexagon(size * 0.5, pg);
             break;
          case 'native grasses':
-            rect(0, 0, size * 0.3, size);
+            rect(0, 0, size * 0.3, size, pg);
             break;
          case 'naturalized':
-            ellipse(0, 0, size, size);
+            ellipse(0, 0, size, size, pg);
             break;
       }
-      translate(-3, -3);
+      pg.translate(-3, -3);
 
       // Main filled layer
-      fill(fillColor);
+      pg.fill(fillColor);
       switch (habitat) {
          case 'pollinator':
-            drawSolarHexagon(size * 0.5);
+            drawSolarHexagon(size * 0.5, pg);
             break;
          case 'native grasses':
-            rect(0, 0, size * 0.3, size);
-            drawVerticalLines(size * 0.3, size, 5, baseColor);
+            pg.rect(0, 0, size * 0.3, size, pg);
+            drawVerticalLines(size * 0.3, size, 5, baseColor, pg);
             break;
          case 'naturalized':
-            ellipse(0, 0, size, size);
-            drawGlowEllipse(size, baseColor);
+            pg.ellipse(0, 0, size, size);
+            drawGlowEllipse(size, baseColor, pg);
             break;
       }
 
-      pop();
+      pg.pop();
    }
 
-   pop();
+   pg.pop();
 }
 
 // Helper: Draw hexagon with inner "cell" lines to evoke solar panel cells
-function drawSolarHexagon(r) {
-   stroke(255, 150);
-   strokeWeight(1);
-   noFill();
-   beginShape();
+function drawSolarHexagon(r, pg) {
+   pg.stroke(255, 150);
+   pg.strokeWeight(1);
+   pg.noFill();
+   pg.beginShape();
    for (let j = 0; j < 6; j++) {
       let angle = TWO_PI / 6 * j - PI / 2;
-      vertex(cos(angle) * r, sin(angle) * r);
+      pg.vertex(cos(angle) * r, sin(angle) * r);
    }
-   endShape(CLOSE);
+   pg.endShape(CLOSE);
 
    // Inner lines to mimic cell grid
    for (let k = 1; k <= 2; k++) {
       let innerR = r * (1 - k * 0.3);
-      beginShape();
+      pg.beginShape();
       for (let j = 0; j < 6; j++) {
          let angle = TWO_PI / 6 * j - PI / 2;
-         vertex(cos(angle) * innerR, sin(angle) * innerR);
+         pg.vertex(cos(angle) * innerR, sin(angle) * innerR);
       }
-      endShape(CLOSE);
+      pg.endShape(CLOSE);
    }
 }
 
 // Helper: Draw vertical lines inside a rectangle (native grasses)
-function drawVerticalLines(w, h, count, baseColor) {
-   stroke(red(baseColor), green(baseColor), blue(baseColor), 100);
-   strokeWeight(0.5);
+function drawVerticalLines(w, h, count, baseColor, pg) {
+   pg.stroke(red(baseColor), pg.green(baseColor), pg.blue(baseColor), 100);
+   pg.strokeWeight(0.5);
    for (let i = 1; i < count; i++) {
       let x = map(i, 1, count - 1, -w / 2, w / 2);
-      line(x, -h / 2, x, h / 2);
+      pg.line(x, -h / 2, x, h / 2);
    }
 }
 
 // Helper: Draw subtle glow effect on ellipse
-function drawGlowEllipse(size, baseColor) {
-   noFill();
-   stroke(red(baseColor), green(baseColor), blue(baseColor), 50);
-   strokeWeight(3);
-   ellipse(0, 0, size * 1.1, size * 1.1);
-   strokeWeight(1);
-   ellipse(0, 0, size * 1.3, size * 1.3);
+function drawGlowEllipse(size, baseColor, pg) {
+   pg.noFill();
+   pg.stroke(red(baseColor), pg.green(baseColor), pg.blue(baseColor), 50);
+   pg.strokeWeight(3);
+   pg.ellipse(0, 0, size * 1.1, size * 1.1);
+   pg.strokeWeight(1);
+   pg.ellipse(0, 0, size * 1.3, size * 1.3);
 }
 
 
-function drawCombinedHabitatOverlay(habitatList, activities, x, y, size, strokeW = 1.2) {
+function drawCombinedHabitatOverlay(habitatList, activities, x, y, size, strokeW = 1.2, pg) {
    if (!Array.isArray(habitatList) || !Array.isArray(activities)) return;
 
    const cleanedHabitats = habitatList
@@ -1406,12 +1400,12 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size, strokeW
 
    const nestingCount = cleanedActivities.length;
 
-   push();
-   translate(x, y);
-   angleMode(RADIANS);
-   rectMode(CENTER);
-   strokeWeight(strokeW);
-   stroke(0, 60);
+   pg.push();
+   pg.translate(x, y);
+   pg.angleMode(RADIANS);
+   pg.rectMode(CENTER);
+   pg.strokeWeight(strokeW);
+   pg.stroke(0, 60);
 
    const layerStep = 0.85 / nestingCount;
 
@@ -1422,40 +1416,40 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size, strokeW
       const fillCol = getActivityColor(activity);
       if (!fillCol) continue;
 
-      const angleOffset = radians(i * 12); // more offset per layer
+      const angleOffset = pg.radians(i * 12); // more offset per layer
       const scaleFactor = 1 - i * layerStep;
       const shapeSize = size * scaleFactor;
 
-      push();
-      rotate(angleOffset);
+      pg.push();
+      pg.rotate(angleOffset);
 
       // Glow ring
-      noFill();
-      stroke(red(fillCol), green(fillCol), blue(fillCol), 40);
-      strokeWeight(6);
-      ellipse(0, 0, shapeSize * 1.1, shapeSize * 1.1);
-      strokeWeight(1);
-      noStroke();
+      pg.noFill();
+      pg.stroke(red(fillCol), green(fillCol), blue(fillCol), 40);
+      pg.strokeWeight(6);
+      pg.ellipse(0, 0, shapeSize * 1.1, shapeSize * 1.1);
+      pg.strokeWeight(1);
+      nopg.stroke();
 
       // Slight blur fill base
-      fill(0, 20);
-      push();
-      translate(2, 2);
-      drawShapeByType(shapeType, shapeSize * 0.95, shapeSize * 0.95);
-      pop();
+      pg.fill(0, 20);
+      pg.push();
+      pg.translate(2, 2);
+      drawShapeByType(shapeType, shapeSize * 0.95, shapeSize * 0.95, pg);
+      pg.pop();
 
       // Main layer
-      fill(fillCol);
+      pg.fill(fillCol);
       if (shapeType === 'rect') {
-         drawShapeByType(shapeType, shapeSize * 0.35, shapeSize * 1.1);
+         drawShapeByType(shapeType, shapeSize * 0.35, shapeSize * 1.1, pg);
       } else {
-         drawShapeByType(shapeType, shapeSize, shapeSize);
+         drawShapeByType(shapeType, shapeSize, shapeSize, pg);
       }
 
-      pop();
+      pg.pop();
    }
 
-   pop();
+   pg.pop();
 }
 
 function getHabitatShapeType(habitat) {
@@ -1464,7 +1458,7 @@ function getHabitatShapeType(habitat) {
    if (habitat.includes('naturalized')) return 'ellipse';
 }
 
-function pointInHexagon(px, py, r) {
+function pointInHexagon(px, py, r,) {
    px = abs(px);
    py = abs(py);
 
@@ -1472,74 +1466,74 @@ function pointInHexagon(px, py, r) {
    return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
 }
 
-function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, density = 7) {
+function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, density = 7, pg) {
    if (!arrayType || !Array.isArray(activities) || activities.length === 0) return;
 
-   push();
-   translate(x, y);
-   rectMode(CENTER);
-   strokeWeight(strokeW);
-   stroke(0, 60);
-   noFill();
+   pg.push();
+   pg.translate(x, y);
+   pg.rectMode(CENTER);
+   pg.strokeWeight(strokeW);
+   pg.stroke(0, 60);
+   pg.noFill();
 
    switch (arrayType.toLowerCase()) {
       case 'fixed':
-         drawCrosshatchGridMultiColor(activities, size, density);
+         drawCrosshatchGridMultiColor(activities, size, density, pg);
          break;
       case 'single-axis tracking':
-         drawIsometricGridMultiColor(activities, size, density, 1.1);
+         drawIsometricGridMultiColor(activities, size, density, 1.1, pg);
          break;
       case 'dual-axis tracking':
-         drawDottedMatrixMultiColor(activities, size, density);
+         drawDottedMatrixMultiColor(activities, size, density, pg);
          break;
    }
 
-   pop();
+   pg.pop();
 }
 
-function drawCrosshatchGridMultiColor(activities, size, density = 10) {
+function drawCrosshatchGridMultiColor(activities, size, density = 10, pg) {
    let colorCount = activities.length;
 
-   push();
-   rotate(PI / 4); // Diamond orientation
+   pg.push();
+   pg.rotate(PI / 4); // Diamond orientation
 
    for (let i = -size / 2, idx = 0; i <= size / 2; i += density, idx++) {
       let col = getActivityColor(activities[idx % colorCount]);
 
       // === Black base lines for depth ===
-      stroke(0, 120); // semi-opaque black
-      strokeWeight(2);
-      line(i, -size / 2, i, size / 2);
-      line(-size / 2, i, size / 2, i);
+      pg.stroke(0, 120); // semi-opaque black
+      pg.strokeWeight(2);
+      pg.line(i, -size / 2, i, size / 2);
+      pg.line(-size / 2, i, size / 2, i);
 
       // === Colored lines on top ===
-      stroke(col);
-      strokeWeight(1.2);
-      line(i, -size / 2, i, size / 2);
-      line(-size / 2, i, size / 2, i);
+      pg.stroke(col);
+      pg.strokeWeight(1.2);
+      pg.line(i, -size / 2, i, size / 2);
+      pg.line(-size / 2, i, size / 2, i);
 
       // === Glow at grid intersections ===
-      push();
-      noStroke();
-      fill(0, 80); // black shadow
-      ellipse(i + 0.5, i + 0.5, density * 0.4);
-      ellipse(i - 0.5, -i + 0.5, density * 0.4);
-      fill(col.levels ? color(col.levels[0], col.levels[1], col.levels[2], 100) : col);
-      ellipse(i, i, density * 0.3);
-      ellipse(i, -i, density * 0.3);
-      pop();
+      pg.push();
+      nopg.stroke();
+      pg.fill(0, 80); // black shadow
+      pg.ellipse(i + 0.5, i + 0.5, density * 0.4);
+      pg.ellipse(i - 0.5, -i + 0.5, density * 0.4);
+      pg.fill(col.levels ? color(col.levels[0], col.levels[1], col.levels[2], 100) : col);
+      pg.ellipse(i, i, density * 0.3);
+      pg.ellipse(i, -i, density * 0.3);
+      pg.pop();
    }
 
-   pop();
+   pg.pop();
 }
 
-function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1) {
+function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1, pg) {
    let colorCount = activities.length;
    let idx = 0;
    let halfSize = size / 2;
 
-   push();
-   rotate(HALF_PI);
+   pg.push();
+   pg.rotate(HALF_PI);
 
    for (let x = -halfSize; x <= halfSize; x += density) {
       let colA = getActivityColor(activities[idx % colorCount]);
@@ -1547,41 +1541,41 @@ function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1)
       let y2a = halfSize * slope;
 
       // === Black base stroke ===
-      stroke(0, 120);
-      strokeWeight(2);
-      line(x, y1a, x + halfSize, y2a);
+      pg.stroke(0, 120);
+      pg.strokeWeight(2);
+      pg.line(x, y1a, x + halfSize, y2a);
 
       // === Colored line ===
-      stroke(colA);
-      strokeWeight(1.2);
-      line(x, y1a, x + halfSize, y2a);
+      pg.stroke(colA);
+      pg.strokeWeight(1.2);
+      pg.line(x, y1a, x + halfSize, y2a);
       idx++;
 
       let colB = getActivityColor(activities[idx % colorCount]);
       let y1b = -halfSize * slope;
       let y2b = halfSize * slope;
 
-      stroke(0, 120);
-      strokeWeight(2);
-      line(x + halfSize, y1b, x, y2b);
+      pg.stroke(0, 120);
+      pg.strokeWeight(2);
+      pg.line(x + halfSize, y1b, x, y2b);
 
-      stroke(colB);
-      strokeWeight(1.2);
-      line(x + halfSize, y1b, x, y2b);
+      pg.stroke(colB);
+      pg.strokeWeight(1.2);
+      pg.line(x + halfSize, y1b, x, y2b);
       idx++;
    }
 
    // Highlight lines
-   stroke(255, 70);
-   strokeWeight(0.8);
+   pg.stroke(255, 70);
+   pg.strokeWeight(0.8);
    for (let i = -halfSize; i <= halfSize; i += density * 5) {
-      line(i, -halfSize * slope, i + halfSize, halfSize * slope);
+      pg.line(i, -halfSize * slope, i + halfSize, halfSize * slope);
    }
 
-   pop();
+   pg.pop();
 }
 
-function drawDottedMatrixMultiColor(activities, size, density = 10) {
+function drawDottedMatrixMultiColor(activities, size, density = 10, pg) {
    let colorCount = activities.length;
    let dotSize = 4;
    let idx = 0;
@@ -1591,17 +1585,17 @@ function drawDottedMatrixMultiColor(activities, size, density = 10) {
          let col = getActivityColor(activities[idx % colorCount]);
 
          // === Black shadow circle ===
-         noStroke();
-         fill(0, 120);
-         ellipse(x + 0.5, y + 0.5, dotSize + 1.5);
+         pg.noStroke();
+         pg.fill(0, 120);
+         pg.ellipse(x + 0.5, y + 0.5, dotSize + 1.5);
 
          // === Colored dot ===
-         fill(col);
-         ellipse(x, y, dotSize);
+         pg.fill(col);
+         pg.ellipse(x, y, dotSize);
 
          // === White highlight glint ===
-         fill(255, 150);
-         ellipse(x - dotSize * 0.15, y - dotSize * 0.15, dotSize * 0.3);
+         pg.fill(255, 150);
+         pg.ellipse(x - dotSize * 0.15, y - dotSize * 0.15, dotSize * 0.3);
 
          idx++;
       }
@@ -1619,12 +1613,12 @@ function getActivityColor(activity) {
       case 'greenhouse':
          return color('#FFD100'); // Solar Gold
       default:
-         pop();
+         pg.pop();
          return;
    }
 }
 
-function drawMinimalSite(site) {
+function drawMinimalSite(site, pg) {
    const {
       x,
       y,
@@ -1637,41 +1631,41 @@ function drawMinimalSite(site) {
    const dotBaseSize = map(siteSize, 0, 10, 16, 60); // Boosted min/max size
    const shadowOffset = map(systemSize, 0, 10, 1, 8); // Larger systems have bigger shadow offset
 
-   push();
-   translate(x, y);
-   noStroke();
+   pg.push();
+   pg.translate(x, y);
+   pg.noStroke();
 
    // Suprematist-style drop shadow (with light angle)
-   fill(0, 140);
+   pg.fill(0, 140);
    const lightAngle = radians(10);
-   push();
-   rotate(lightAngle);
-   ellipse(shadowOffset, shadowOffset, dotBaseSize, dotBaseSize);
-   pop();
+   pg.push();
+   pg.rotate(lightAngle);
+   pg.ellipse(shadowOffset, shadowOffset, dotBaseSize, dotBaseSize);
+   pg.pop();
 
    // Glow ring
-   stroke(baseColor); // Reduced opacity
-   strokeWeight(dotBaseSize * 0.15); // Thinner glow
-   ellipse(0, 0, dotBaseSize * 1.4);
+   pg.stroke(baseColor); // Reduced opacity
+   pg.strokeWeight(dotBaseSize * 0.15); // Thinner glow
+   pg.ellipse(0, 0, dotBaseSize * 1.4);
 
    // Add subtle linear glow overlays to mimic panel reflections
-   stroke(baseColor);
-   strokeWeight(1);
+   pg.stroke(baseColor);
+   pg.strokeWeight(1);
    const linesCount = 5;
    for (let i = 1; i <= linesCount; i++) {
       let posX = map(i, 1, linesCount + 1, -dotBaseSize * 0.75, dotBaseSize * 0.75);
-      line(posX, -dotBaseSize * 0.75, posX, dotBaseSize * 0.75);
+      pg.line(posX, -dotBaseSize * 0.75, posX, dotBaseSize * 0.75);
    }
 
    // Core dot
-   noStroke();
-   fill(baseColor);
-   ellipse(0, 0, dotBaseSize);
+   pg.noStroke();
+   pg.fill(baseColor);
+   pg.ellipse(0, 0, dotBaseSize);
 
-   pop();
+   pg.pop();
 }
 
-function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, posY, glowStrength = 40, isHover = false, animalLineType = '', agrivoltaicColors = []) {
+function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, posY, glowStrength = 40, isHover = false, animalLineType = '', agrivoltaicColors = [], pg) {
    let sz = constrain(systemSize || 0.1, 0.1, 10);
 
    let shapeType = 'diamond'; // fallback
@@ -1689,10 +1683,10 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
       shapeType = animalLineType.toLowerCase();
    }
 
-   push();
-   translate(posX, posY);
-   rectMode(CENTER);
-   noStroke();
+   pg.push();
+   pg.translate(posX, posY);
+   pg.rectMode(CENTER);
+   pg.noStroke();
 
    // Size & offsets based on system size
    let offset = map(sz, 0, 10, 2, 10);
@@ -1741,96 +1735,96 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, p
       let layerAlpha = glowAlpha * (0.3 / i);
       let layerColor = lerpColor(agrivoltaicColors[colorIndex], agrivoltaicColors[nextIndex], lerpAmt);
       layerColor.setAlpha(layerAlpha);
-      fill(layerColor);
+      pg.fill(layerColor);
 
       if (i % 2 === 0) {
-         push();
-         rotate(PI / 6); // simulate panel angle
-         drawShapeByType('diamond', layerW, layerH);
-         pop();
+         pg.push();
+         pg.rotate(PI / 6); // simulate panel angle
+         drawShapeByType('diamond', layerW, layerH, pg);
+         pg.pop();
       } else {
-         drawShapeByType(shapeType, layerW, layerH);
+         drawShapeByType(shapeType, layerW, layerH, pg);
       }
    }
 
-   const panelLightAngle = radians(10);
+   const panelLightAngle = pg.radians(10);
 
    // --- Shadow layers with consistent light angle ---
-   fill('#0A0A0A');
-   push();
-   rotate(panelLightAngle);
-   translate(offset, offset);
-   if (rotateRectVertical) rotate(PI);
-   drawShapeByType(shapeType, shadowW, shadowH);
-   pop();
+   pg.fill('#0A0A0A');
+   pg.push();
+   pg.rotate(panelLightAngle);
+   pg.translate(offset, offset);
+   if (rotateRectVertical) pg.rotate(PI);
+   drawShapeByType(shapeType, shadowW, shadowH, pg);
+   pg.pop();
 
    fill(255);
-   push();
-   rotate(panelLightAngle - radians(4));
-   translate(offset * 1.4, offset * 0.8);
-   if (rotateRectVertical) rotate(PI);
-   drawShapeByType(shapeType, highlightW, highlightH);
-   pop();
+   pg.push();
+   pg.rotate(panelLightAngle - pg.radians(4));
+   pg.translate(offset * 1.4, offset * 0.8);
+   if (rotateRectVertical) pg.rotate(PI);
+   drawShapeByType(shapeType, highlightW, highlightH, pg);
+   pg.pop();
 
-   fill('#0A0A0A');
-   push();
-   rotate(panelLightAngle - radians(7));
-   translate(-offset * 0.6, offset * 0.5);
-   if (rotateRectVertical) rotate(PI);
-   drawShapeByType(shapeType, shadowW * 0.88, shadowH * 0.88);
-   pop();
+   pg.fill('#0A0A0A');
+   pg.push();
+   pg.rotate(panelLightAngle - pg.radians(7));
+   pg.translate(-offset * 0.6, offset * 0.5);
+   if (rotateRectVertical) pg.rotate(PI);
+   drawShapeByType(shapeType, shadowW * 0.88, shadowH * 0.88, pg);
+   pg.pop();
 
    // --- Sharp highlight outline for "glass panel" effect ---
-   stroke(255, glowAlpha * 0.7);
-   noFill();
-   strokeWeight(2);
+   pg.stroke(255, glowAlpha * 0.7);
+   pg.noFill();
+   pg.strokeWeight(2);
    if (rotateRectVertical) {
-      push();
-      rotate(PI);
-      drawShapeByType(shapeType, shadowW * 0.75, shadowH * 0.75);
-      pop();
+      pg.push();
+      pg.rotate(PI);
+      drawShapeByType(shapeType, shadowW * 0.75, shadowH * 0.75, pg);
+      pg.pop();
    } else {
-      drawShapeByType(shapeType, shadowW * 0.75, shadowH * 0.75);
+      drawShapeByType(shapeType, shadowW * 0.75, shadowH * 0.75, pg);
    }
 
-   pop();
+   pg.pop();
 
    return {
       offsetX: offset * 1.4,
       offsetY: offset * 0.8,
-      angle: panelLightAngle - radians(4),
+      angle: panelLightAngle - pg.radians(4),
       size: highlightSize,
       glowAlpha,
    };
 }
 
-function drawShapeByType(type, w, h) {
+function drawShapeByType(type, w, h, pg) {
    switch (type) {
       case 'hexagon':
-         beginShape();
+         pg.beginShape();
          for (let i = 0; i < 6; i++) {
             let angle = TWO_PI / 6 * i - PI / 2;
-            vertex(cos(angle) * w / 2, sin(angle) * h / 2);
+            pg.vertex(cos(angle) * w / 2, sin(angle) * h / 2);
          }
-         endShape(CLOSE);
+         pg.endShape(CLOSE);
          break;
       case 'ellipse':
-         ellipse(0, 0, w, h);
+         pg.ellipse(0, 0, w, h);
          break;
       case 'rect':
-         rect(0, 0, w, h);
+         pg.rect(0, 0, w, h);
          break;
       case 'diamond':
       default:
-         push();
-         rotate(PI / 4); // Rotate square 45 degrees to get diamond
-         rect(0, 0, w, h);
-         pop();
+         pg.push();
+         pg.rotate(PI / 4); // Rotate square 45 degrees to get diamond
+         pg.rect(0, 0, w, h);
+         pg.pop();
          break;
    }
 }
 
-function pathShapeByType(type, size) {
+function pathShapeByType(type, size, pg) {
    let r = size / 2;
    let ctx = drawingContext;
 
@@ -1847,11 +1841,11 @@ function pathShapeByType(type, size) {
          break;
 
       case 'ellipse':
-         ctx.ellipse(0, 0, size, size);
+         ctx.ellipse(0, 0, size, size, pg);
          break;
 
       case 'rect':
-         ctx.rect(-size * 0.275, -size * 0.5, size * 0.55, size);
+         ctx.rect(-size * 0.275, -size * 0.5, size * 0.55, size, pg);
          break;
 
       case 'diamond':
@@ -1865,51 +1859,51 @@ function pathShapeByType(type, size) {
    }
 }
 
-function drawPVWarpStyle(pvType, activities, x, y, size) {
+function drawPVWarpStyle(pvType, activities, x, y, size, pg) {
    if (!pvType || !activities || activities.length === 0) return;
 
    let type = pvType.trim().toLowerCase();
    let warpStyle = pvWarpStyles[type];
    if (!warpStyle) return;
 
-   push();
-   translate(x, y);
-   noFill();
-   blendMode(ADD); // enhances glow-style overlap
+   pg.push();
+   pg.translate(x, y);
+   pg.noFill();
+   pg.blendMode(ADD); // enhances glow-style overlap
 
    switch (warpStyle) {
       case 'linear':
-         strokeWeight(2);
+         pg.strokeWeight(2);
          // Draw dynamic diagonal zig-zag lines with subtle wave movement
          for (let i = -size; i <= size; i += 8) {
             let waveOffset = sin((frameCount * 0.03 + i) * 3) * 6;
             let colorIndex = Math.floor((i + size) / 8) % activities.length;
-            stroke(getActivityColor(activities[colorIndex]));
-            line(i, -size + waveOffset, -i * 0.2, size - waveOffset);
+            pg.stroke(getActivityColor(activities[colorIndex]));
+            pg.line(i, -size + waveOffset, -i * 0.2, size - waveOffset);
          }
          // Add subtle horizontal grid lines for photovoltaic cell effect
-         stroke(255, 80);
-         strokeWeight(0.5);
+         pg.stroke(255, 80);
+         pg.strokeWeight(0.5);
          for (let yOff = -size; yOff <= size; yOff += 10) {
             let horizOffset = sin(frameCount * 0.05 + yOff) * 2;
-            line(-size, yOff + horizOffset, size, yOff + horizOffset);
+            pg.line(-size, yOff + horizOffset, size, yOff + horizOffset);
          }
          break;
 
       case 'symmetric':
-         strokeWeight(3.5);
+         pg.strokeWeight(3.5);
          // Vertical wave-distorted lines
          for (let i = 0; i < size; i += 4) {
             let yOffset = sin((i + frameCount) * 0.12) * 12;
             let colorIndex = Math.floor(i / 4) % activities.length;
-            stroke(getActivityColor(activities[colorIndex]));
-            line(-size / 2 + i, -yOffset, -size / 2 + i, yOffset);
+            pg.stroke(getActivityColor(activities[colorIndex]));
+            pg.line(-size / 2 + i, -yOffset, -size / 2 + i, yOffset);
 
             // Add crossing horizontal lines to form subtle grid cells
             if (i % 12 === 0) {
-               stroke(255, 80);
-               strokeWeight(1);
-               line(-size / 2 + i - 2, -yOffset / 2, -size / 2 + i + 2, yOffset / 2);
+               pg.stroke(255, 80);
+               pg.strokeWeight(1);
+               pg.line(-size / 2 + i - 2, -yOffset / 2, -size / 2 + i + 2, yOffset / 2);
             }
          }
          break;
@@ -1917,10 +1911,10 @@ function drawPVWarpStyle(pvType, activities, x, y, size) {
       case 'radial':
          // Pulsating concentric ellipses with color cycling
          for (let r = 12, idx = 0; r < size; r += 10, idx++) {
-            stroke(getActivityColor(activities[idx % activities.length]));
-            strokeWeight(2 + sin((frameCount + r) * 0.1) * 1.5);
-            ellipse(0, 0, r * 2, r * 2);
+            pg.stroke(getActivityColor(activities[idx % activities.length]));
+            pg.strokeWeight(2 + sin((frameCount + r) * 0.1) * 1.5);
+            pg.ellipse(0, 0, r * 2, r * 2);
          }
    }
-   pop();
+   pg.pop();
 }
