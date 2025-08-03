@@ -504,17 +504,16 @@ function renderEntryVisual(entry, pg) {
 
   // Shadow + base shape
   const shadowInfo = drawSuprematistOpShadowRect(
-    size,
-    entry.megawatts,
-    entry.habitat,
-    0, 0,
-    20,
-    false,
-    entry.animalType?.[0] || '',
-    activityColors,
-    false,
-    pg // pass pg into drawing function
-  );
+  entryShapeSize,
+  entry.megawatts,
+  entry.habitat,
+  0, 0,
+  glowStrength,
+  isHovered,
+  entry.animalType?.[0] || '',
+  activityColors,
+  { flipped: true, pg }
+);
 
   if (entry.habitat?.length) {
     pg.stroke(0, 80);
@@ -1665,7 +1664,8 @@ function drawMinimalSite(site, pg) {
    pg.pop();
 }
 
-function drawSuprematistOpShadowRect(baseSize, systemSize, habitat = [], posX, posY, glowStrength = 40, isHover = false, animalLineType = '', agrivoltaicColors = [], pg) {
+function drawSuprematistOpShadowRect(baseSize, systemSize, habitat, posX, posY, glowStrength = 40, isHover = false, animalLineType = '', agrivoltaicColors = [], options = {}) {
+  const { flipped = false, pg = window } = options;
    let sz = constrain(systemSize || 0.1, 0.1, 10);
 
    let shapeType = 'diamond'; // fallback
