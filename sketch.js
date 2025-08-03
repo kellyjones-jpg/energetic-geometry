@@ -493,6 +493,70 @@ function windowResized() {
    redraw(); // if you're using noLoop(), this ensures one frame renders
 }
 
+function renderEntryVisual(entry) {
+  push();
+
+  const size = 140;
+  const strokeW = 3;
+
+  const activityColors = (entry.activities || []).map(getActivityColor);
+  const baseColor = getActivityColor(entry.activities?.[0] || '');
+
+  // Shadow + base shape
+  const shadowInfo = drawSuprematistOpShadowRect(
+    size,
+    entry.megawatts,
+    entry.habitat,
+    0, 0,
+    20,
+    false,
+    entry.animalType?.[0] || '',
+    activityColors,
+    false
+  );
+
+  // Habitat overlay
+  if (entry.habitat?.length) {
+    stroke(0, 80);
+    strokeWeight(strokeW + 1);
+    drawHabitatShape(entry.habitat, 0, 0, size, baseColor, strokeW);
+  }
+
+  // Combined activity/habitat overlay
+  if (entry.activities && entry.habitat) {
+    stroke(0, 80);
+    strokeWeight(strokeW + 1);
+    drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, size, 1.5);
+  }
+
+  // PV Array
+  if (entry.arrayType) {
+    push();
+    translate(-shadowInfo.offsetX, -shadowInfo.offsetY);
+    rotate(-shadowInfo.angle);
+    stroke(0, 80);
+    strokeWeight(strokeW + 1);
+    drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.1, 7, strokeW);
+    pop();
+  }
+
+  // Crop edge
+  if (entry.cropType?.length > 0) {
+    drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, size * 1.3, strokeW);
+  }
+
+  // Animal line
+  if (entry.animalType?.length > 0) {
+    const yOffset = size * 0.15;
+    const animalSize = size * 0.9;
+    stroke(0, 80);
+    strokeWeight(strokeW + 0.5);
+    drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
+  }
+
+  pop();
+}
+
 function draw() {
    // === BACKGROUND ===
    image(bgImg, 0, 0, width, height);
