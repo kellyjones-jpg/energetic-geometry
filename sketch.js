@@ -722,13 +722,13 @@ function draw() {
       if (entry.habitat?.length) {
          stroke(0, 80);
          strokeWeight(strokeW + 1.5);
-         drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor, strokeW, pg = window);
+         drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor, strokeW, window);
       }
 
       if (entry.activities && entry.habitat) {
          stroke(0, 80);
          strokeWeight(strokeW + 1.5);
-         drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize, 2, pg = window);
+         drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize, 2, window);
       }
 
       if (entry.arrayType) {
@@ -737,12 +737,12 @@ function draw() {
          rotate(-shadowInfo.angle);
          stroke(0, 80);
          strokeWeight(strokeW + 1.5);
-         drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10, strokeW, pg = window);
+         drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10, strokeW, window);
          pop();
       }
 
       if (entry.cropType?.length > 0) {
-         drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.35, strokeW, pg = window);
+         drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.35, strokeW, window);
       }
 
       if (entry.animalType?.length > 0) {
@@ -750,9 +750,9 @@ function draw() {
          const animalSize = entryShapeSize * 0.9;
          stroke(0, 80);
          strokeWeight(strokeW + 1.1);
-         drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, pg = window);
+         drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, window);
          strokeWeight(strokeW);
-         drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, pg = window);
+         drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, window);
       }
       pop(); // end entry group
    }
@@ -1168,7 +1168,7 @@ function drawAnimalLine(animalType, activities, x, y, size, strokeW = 1.3, pg) {
    pg.pop();
 }
 
-function drawAnimalLineShape(type, x, y, length, pg) {
+function drawAnimalLineShape(type, x, y, length, pg = window) {
    switch (type) {
       case 'wavy':
          drawWavyLine(x, y, length, pg);
@@ -1219,7 +1219,7 @@ function getLineStyle(animalType) {
 }
 
 // Enhanced Wavy line: smoother waves, higher amplitude for boldness
-function drawWavyLine(x, y, length, pg) {
+function drawWavyLine(x, y, length, pg = window) {
    pg.noFill();
    pg.beginShape();
    let amplitude = 7;
@@ -1234,7 +1234,7 @@ function drawWavyLine(x, y, length, pg) {
 }
 
 // Enhanced Dashed line: longer dashes, sharper gaps, crisp edges
-function drawDashedLine(x, y, length, pg) {
+function drawDashedLine(x, y, length, pg = window) {
    let dashLength = 14;
    let gapLength = 8;
    let startX = x - length / 2;
@@ -1245,7 +1245,7 @@ function drawDashedLine(x, y, length, pg) {
 }
 
 // Enhanced Bezier line: stronger curvature, more elegant S shape
-function drawBezierLine(x, y, length, pg) {
+function drawBezierLine(x, y, length, pg = window) {
    pg.noFill();
    pg.strokeJoin(ROUND);
    pg.bezier(
@@ -1257,7 +1257,7 @@ function drawBezierLine(x, y, length, pg) {
 }
 
 // Textured line: clean segmented lines
-function drawTexturedLine(x, y, length, pg) {
+function drawTexturedLine(x, y, length, pg = window) {
    let segmentLength = 8;
    let gap = 5;
    let startX = x - length / 2;
@@ -1268,7 +1268,7 @@ function drawTexturedLine(x, y, length, pg) {
    }
 }
 
-function drawHabitatShape(habitatList, x, y, size, baseColor, strokeW = 2, pg) {
+function drawHabitatShape(habitatList, x, y, size, baseColor, strokeW = 2, pg = window) {
    if (!Array.isArray(habitatList)) return;
 
    habitatList = habitatList
@@ -1340,7 +1340,7 @@ function drawHabitatShape(habitatList, x, y, size, baseColor, strokeW = 2, pg) {
 }
 
 // Helper: Draw hexagon with inner "cell" lines to evoke solar panel cells
-function drawSolarHexagon(r, pg) {
+function drawSolarHexagon(r, pg = window) {
    pg.stroke(255, 150);
    pg.strokeWeight(1);
    pg.noFill();
@@ -1364,7 +1364,7 @@ function drawSolarHexagon(r, pg) {
 }
 
 // Helper: Draw vertical lines inside a rectangle (native grasses)
-function drawVerticalLines(w, h, count, baseColor, pg) {
+function drawVerticalLines(w, h, count, baseColor, pg = window) {
    pg.stroke(red(baseColor), pg.green(baseColor), pg.blue(baseColor), 100);
    pg.strokeWeight(0.5);
    for (let i = 1; i < count; i++) {
@@ -1374,7 +1374,7 @@ function drawVerticalLines(w, h, count, baseColor, pg) {
 }
 
 // Helper: Draw subtle glow effect on ellipse
-function drawGlowEllipse(size, baseColor, pg) {
+function drawGlowEllipse(size, baseColor, pg = window) {
    pg.noFill();
    pg.stroke(red(baseColor), pg.green(baseColor), pg.blue(baseColor), 50);
    pg.strokeWeight(3);
@@ -1384,7 +1384,7 @@ function drawGlowEllipse(size, baseColor, pg) {
 }
 
 
-function drawCombinedHabitatOverlay(habitatList, activities, x, y, size, strokeW = 1.2, pg) {
+function drawCombinedHabitatOverlay(habitatList, activities, x, y, size, strokeW = 1.2, pg = window) {
    if (!Array.isArray(habitatList) || !Array.isArray(activities)) return;
 
    const cleanedHabitats = habitatList
@@ -1400,7 +1400,7 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size, strokeW
    const nestingCount = cleanedActivities.length;
 
    pg.push();
-   pg.translate(x, y);
+   translate(x, y);
    pg.angleMode(RADIANS);
    pg.rectMode(CENTER);
    pg.strokeWeight(strokeW);
@@ -1465,11 +1465,11 @@ function pointInHexagon(px, py, r,) {
    return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
 }
 
-function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, density = 7, pg) {
+function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, density = 7, pg = window) {
    if (!arrayType || !Array.isArray(activities) || activities.length === 0) return;
 
    pg.push();
-   pg.translate(x, y);
+   translate(x, y);
    pg.rectMode(CENTER);
    pg.strokeWeight(strokeW);
    pg.stroke(0, 60);
@@ -1490,7 +1490,7 @@ function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, dens
    pg.pop();
 }
 
-function drawCrosshatchGridMultiColor(activities, size, density = 10, pg) {
+function drawCrosshatchGridMultiColor(activities, size, density = 10, pg = window) {
    let colorCount = activities.length;
 
    pg.push();
@@ -1526,7 +1526,7 @@ function drawCrosshatchGridMultiColor(activities, size, density = 10, pg) {
    pg.pop();
 }
 
-function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1, pg) {
+function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1, pg = window) {
    let colorCount = activities.length;
    let idx = 0;
    let halfSize = size / 2;
@@ -1574,7 +1574,7 @@ function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1,
    pg.pop();
 }
 
-function drawDottedMatrixMultiColor(activities, size, density = 10, pg) {
+function drawDottedMatrixMultiColor(activities, size, density = 10, pg = window) {
    let colorCount = activities.length;
    let dotSize = 4;
    let idx = 0;
@@ -1617,7 +1617,7 @@ function getActivityColor(activity) {
    }
 }
 
-function drawMinimalSite(site, pg) {
+function drawMinimalSite(site, pg = window) {
    const {
       x,
       y,
@@ -1631,7 +1631,7 @@ function drawMinimalSite(site, pg) {
    const shadowOffset = map(systemSize, 0, 10, 1, 8); // Larger systems have bigger shadow offset
 
    pg.push();
-   pg.translate(x, y);
+   translate(x, y);
    pg.noStroke();
 
    // Suprematist-style drop shadow (with light angle)
@@ -1798,7 +1798,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat, posX, posY, 
    };
 }
 
-function drawShapeByType(type, w, h, pg) {
+function drawShapeByType(type, w, h, pg = window) {
    switch (type) {
       case 'hexagon':
          pg.beginShape();
@@ -1824,7 +1824,7 @@ function drawShapeByType(type, w, h, pg) {
    }
 }
 
-function pathShapeByType(type, size, pg) {
+function pathShapeByType(type, size, pg = window) {
    let r = size / 2;
    let ctx = drawingContext;
 
@@ -1859,7 +1859,7 @@ function pathShapeByType(type, size, pg) {
    }
 }
 
-function drawPVWarpStyle(pvType, activities, x, y, size, pg) {
+function drawPVWarpStyle(pvType, activities, x, y, size, pg = window) {
    if (!pvType || !activities || activities.length === 0) return;
 
    let type = pvType.trim().toLowerCase();
