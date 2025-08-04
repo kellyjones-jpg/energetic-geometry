@@ -722,13 +722,13 @@ function draw() {
       if (entry.habitat?.length) {
          stroke(0, 80);
          strokeWeight(strokeW + 1.5);
-         drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor, strokeW);
+         drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor, strokeW, window);
       }
 
       if (entry.activities && entry.habitat) {
          stroke(0, 80);
          strokeWeight(strokeW + 1.5);
-         drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize, 2);
+         drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize, 2, pg);
       }
 
       if (entry.arrayType) {
@@ -737,12 +737,12 @@ function draw() {
          rotate(-shadowInfo.angle);
          stroke(0, 80);
          strokeWeight(strokeW + 1.5);
-         drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10, strokeW);
+         drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10, strokeW, pg);
          pop();
       }
 
       if (entry.cropType?.length > 0) {
-         drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.35, strokeW);
+         drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.35, strokeW, pg);
       }
 
       if (entry.animalType?.length > 0) {
@@ -750,9 +750,9 @@ function draw() {
          const animalSize = entryShapeSize * 0.9;
          stroke(0, 80);
          strokeWeight(strokeW + 1.1);
-         drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
+         drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, pg);
          strokeWeight(strokeW);
-         drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW);
+         drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, pg);
       }
       pop(); // end entry group
    }
