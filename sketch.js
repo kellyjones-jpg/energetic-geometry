@@ -1428,7 +1428,7 @@ function drawCombinedHabitatOverlay(habitatList, activities, x, y, size, strokeW
       pg.strokeWeight(6);
       pg.ellipse(0, 0, shapeSize * 1.1, shapeSize * 1.1);
       pg.strokeWeight(1);
-      nopg.stroke();
+      pg.nostroke();
 
       // Slight blur fill base
       pg.fill(0, 20);
@@ -1513,7 +1513,7 @@ function drawCrosshatchGridMultiColor(activities, size, density = 10, pg) {
 
       // === Glow at grid intersections ===
       pg.push();
-      nopg.stroke();
+      pg.nostroke();
       pg.fill(0, 80); // black shadow
       pg.ellipse(i + 0.5, i + 0.5, density * 0.4);
       pg.ellipse(i - 0.5, -i + 0.5, density * 0.4);
