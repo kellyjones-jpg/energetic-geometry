@@ -25,6 +25,13 @@ h3 {
 		1px -1px 0 #0A0A0A;
 }
 
+h2 {
+	font-size: 2rem;
+	line-height: 1.2;
+	text-shadow:
+		1.5px -1.5px 0 #0A0A0A;
+}
+
 h1 {
 	font-size: 2.5rem;
 	line-height: 1.2;
