@@ -770,12 +770,16 @@ function draw() {
    if (modalPreviewEntry && modalPreviewCallback) {
    const entry = modalPreviewEntry;
 
-   const pg = createGraphics(300, 300);
+   const scaleFactor = 0.5; 
+
+   const pg = createGraphics(200, 200);
    pg.pixelDensity(1);
    pg.clear();
-   pg.translate(200, 200); // center visual
 
-   renderEntryVisual(entry, pg); // draw directly onto pg
+   pg.translate(100, 100); 
+   pg.scale(scaleFactor);
+
+   renderEntryVisual(entry, pg);
 
    setTimeout(() => {
       modalPreviewCallback(pg.canvas.toDataURL());
