@@ -494,6 +494,11 @@ function windowResized() {
 }
 
 function renderEntryVisual(entry, pg) {
+  // Ensure pg is a valid drawing context
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window; // fallback to main canvas context
+  }
+
   pg.push();
 
   const size = 140;
@@ -502,18 +507,23 @@ function renderEntryVisual(entry, pg) {
   const activityColors = (entry.activities || []).map(getActivityColor);
   const baseColor = getActivityColor(entry.activities?.[0] || '');
 
+  // You may want to set these explicitly here to avoid referencing undeclared vars
+  const entryShapeSize = size; // or however you want to define it for previews
+  const glowStrength = 20;     // or a computed value
+  const isHovered = false;     // previews aren't hover states
+
   // Shadow + base shape
   const shadowInfo = drawSuprematistOpShadowRect(
-  entryShapeSize,
-  entry.megawatts,
-  entry.habitat,
-  0, 0,
-  glowStrength,
-  isHovered,
-  entry.animalType?.[0] || '',
-  activityColors,
-  { flipped: true, pg }
-);
+    entryShapeSize,
+    entry.megawatts,
+    entry.habitat,
+    0, 0,
+    glowStrength,
+    isHovered,
+    entry.animalType?.[0] || '',
+    activityColors,
+    { flipped: true, pg }
+  );
 
   if (entry.habitat?.length) {
     pg.stroke(0, 80);
