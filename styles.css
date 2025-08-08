@@ -725,7 +725,7 @@ a.hyperlink:focus {
 /* Modal body */
 .modal-body {
 	position: relative;
-	font-size: 1.1rem;
+	font-size: 1.2rem;
 	line-height: 1.5;
 	background-color: #353839;
 	color: #ffffff;
@@ -788,7 +788,7 @@ a.hyperlink:focus {
 }
 
 .modal-site-thumbnail {
-	width: 160px;
+	width: 200px;
 	height: auto;
 	flex-shrink: 0;
 	border-radius: 8px;
@@ -1121,8 +1121,8 @@ a.hyperlink:focus {
 	}
 
 	.modal-site-thumbnail {
-		margin-bottom: 1rem;
-		width: 70%;
+		margin-bottom: 0.5rem;
+		width: 80%;
 		max-width: 220px;
 	}
 
