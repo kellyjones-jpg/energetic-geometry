@@ -770,7 +770,7 @@ function draw() {
    if (modalPreviewEntry && modalPreviewCallback) {
    const entry = modalPreviewEntry;
 
-   const scaleFactor = 0.65;
+   const scaleFactor = 0.55;
    const pg = createGraphics(200, 200);
    pg.pixelDensity(1);
    pg.clear();
