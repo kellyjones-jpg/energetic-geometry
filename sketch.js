@@ -192,7 +192,7 @@ const combinedIcon = `
 `;
 
 function preload() {
-   table = loadTable('data/inspire-agrivoltaics-20250702.csv', 'csv', 'header');
+   table = loadTable('data/inspire-agrivoltaics-20250808.csv', 'csv', 'header');
    bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
 }
 
