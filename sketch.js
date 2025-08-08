@@ -770,10 +770,10 @@ function draw() {
    if (modalPreviewEntry && modalPreviewCallback) {
    const entry = modalPreviewEntry;
 
-   const pg = createGraphics(100, 100);
+   const pg = createGraphics(200, 200);
    pg.pixelDensity(1);
    pg.clear();
-   pg.translate(100, 100); // center visual
+   pg.translate(50, 50); // center visual
 
    renderEntryVisual(entry, pg); // draw directly onto pg
 
