@@ -1475,17 +1475,20 @@ function pointInHexagon(px, py, r,) {
    return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
 }
 
-function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, density = 7, pg = window) {
+function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, density = 7, pg) {
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window; // fallback to main canvas context
+  }
    if (!arrayType || !Array.isArray(activities) || activities.length === 0) return;
 
    pg.push();
-   translate(x, y);
+   pg.translate(x, y);
    pg.rectMode(CENTER);
    pg.strokeWeight(strokeW);
    pg.stroke(0, 60);
    pg.noFill();
 
-   switch (arrayType.toLowerCase()) {
+   switch (arrayType?.toLowerCase()) {
       case 'fixed':
          drawCrosshatchGridMultiColor(activities, size, density, pg);
          break;
@@ -1500,11 +1503,15 @@ function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, dens
    pg.pop();
 }
 
-function drawCrosshatchGridMultiColor(activities, size, density = 10, pg = window) {
-   let colorCount = activities.length;
+function drawCrosshatchGridMultiColor(activities, size, density = 10, pg) {
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window;
+  }
 
-   pg.push();
-   pg.rotate(PI / 4); // Diamond orientation
+  let colorCount = activities.length;
+
+  pg.push();
+  pg.rotate(PI / 4); // Diamond orientation
 
    for (let i = -size / 2, idx = 0; i <= size / 2; i += density, idx++) {
       let col = getActivityColor(activities[idx % colorCount]);
@@ -1536,13 +1543,17 @@ function drawCrosshatchGridMultiColor(activities, size, density = 10, pg = windo
    pg.pop();
 }
 
-function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1, pg = window) {
-   let colorCount = activities.length;
-   let idx = 0;
-   let halfSize = size / 2;
+function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1, pg) {
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window;
+  }
 
-   pg.push();
-   pg.rotate(HALF_PI);
+  let colorCount = activities.length;
+  let idx = 0;
+  let halfSize = size / 2;
+
+  pg.push();
+  pg.rotate(HALF_PI);
 
    for (let x = -halfSize; x <= halfSize; x += density) {
       let colA = getActivityColor(activities[idx % colorCount]);
@@ -1584,10 +1595,14 @@ function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1,
    pg.pop();
 }
 
-function drawDottedMatrixMultiColor(activities, size, density = 10, pg = window) {
-   let colorCount = activities.length;
-   let dotSize = 4;
-   let idx = 0;
+function drawDottedMatrixMultiColor(activities, size, density = 10, pg) {
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window;
+  }
+
+  let colorCount = activities.length;
+  let dotSize = 4;
+  let idx = 0;
 
    for (let x = -size / 2; x < size / 2; x += density) {
       for (let y = -size / 2; y < size / 2; y += density) {
@@ -1614,7 +1629,7 @@ function drawDottedMatrixMultiColor(activities, size, density = 10, pg = window)
 function getActivityColor(activity) {
    switch (activity.trim().toLowerCase()) {
       case 'crop production':
-         return color('#E4572E'); // Vivd Orange
+         return color('#E4572E'); // Vivid Orange
       case 'habitat':
          return color('#2E8B57'); // Sea Green
       case 'grazing':
@@ -1622,26 +1637,22 @@ function getActivityColor(activity) {
       case 'greenhouse':
          return color('#FFD100'); // Solar Gold
       default:
-         pg.pop();
-         return;
+         return null; // No matching activity
    }
 }
 
-function drawMinimalSite(site, pg = window) {
-   const {
-      x,
-      y,
-      activity = 'habitat',
-      systemSize = 0.1,
-      siteSize = 0.1
-   } = site;
+function drawMinimalSite(site, pg) {
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window;
+  }
 
-   const baseColor = getActivityColor(activity);
-   const dotBaseSize = map(siteSize, 0, 10, 16, 60); // Boosted min/max size
-   const shadowOffset = map(systemSize, 0, 10, 1, 8); // Larger systems have bigger shadow offset
+  const { x, y, activity = 'habitat', systemSize = 0.1, siteSize = 0.1 } = site;
+  const baseColor = getActivityColor(activity);
+  const dotBaseSize = map(siteSize, 0, 10, 16, 60);
+  const shadowOffset = map(systemSize, 0, 10, 1, 8);
 
-   pg.push();
-   translate(x, y);
+  pg.push();
+  pg.translate(x, y);
    pg.noStroke();
 
    // Suprematist-style drop shadow (with light angle)
@@ -1675,7 +1686,10 @@ function drawMinimalSite(site, pg = window) {
 }
 
 function drawSuprematistOpShadowRect(baseSize, systemSize, habitat, posX, posY, glowStrength = 40, isHover = false, animalLineType = '', agrivoltaicColors = [], options = {}) {
-  const { flipped = false, pg = window } = options;
+  let { flipped = false, pg } = options;
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window;
+  }
    let sz = constrain(systemSize || 0.1, 0.1, 10);
 
    let shapeType = 'diamond'; // fallback
@@ -1808,7 +1822,10 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat, posX, posY, 
    };
 }
 
-function drawShapeByType(type, w, h, pg = window) {
+function drawShapeByType(type, w, h, pg) {
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window;
+  }
    switch (type) {
       case 'hexagon':
          pg.beginShape();
@@ -1834,7 +1851,10 @@ function drawShapeByType(type, w, h, pg = window) {
    }
 }
 
-function pathShapeByType(type, size, pg = window) {
+function pathShapeByType(type, size, pg) {
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window;
+  }
    let r = size / 2;
    let ctx = drawingContext;
 
@@ -1869,7 +1889,10 @@ function pathShapeByType(type, size, pg = window) {
    }
 }
 
-function drawPVWarpStyle(pvType, activities, x, y, size, pg = window) {
+function drawPVWarpStyle(pvType, activities, x, y, size, pg) {
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window;
+  }
    if (!pvType || !activities || activities.length === 0) return;
 
    let type = pvType.trim().toLowerCase();
