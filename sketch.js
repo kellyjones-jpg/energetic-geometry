@@ -773,7 +773,7 @@ function draw() {
    const pg = createGraphics(300, 300);
    pg.pixelDensity(1);
    pg.clear();
-   pg.translate(100, 100); // center visual
+   pg.translate(150, 150); // center visual
 
    renderEntryVisual(entry, pg); // draw directly onto pg
 
