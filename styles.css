@@ -781,10 +781,10 @@ a.hyperlink:focus {
 
 .modal-site-visual-wrapper {
 	display: flex;
-	gap: 1rem;
+	gap: 1.1rem;
 	flex-wrap: wrap;
 	align-items: flex-start;
-	margin-top: 1rem;
+	margin-top: 0.5rem;
 }
 
 .modal-site-thumbnail {
