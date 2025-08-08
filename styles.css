@@ -784,11 +784,11 @@ a.hyperlink:focus {
 	gap: 1.1rem;
 	flex-wrap: wrap;
 	align-items: flex-start;
-	margin-top: 0.5rem;
+	margin-top: 0.75rem;
 }
 
 .modal-site-thumbnail {
-	width: 200px;
+	width: 250px;
 	height: auto;
 	flex-shrink: 0;
 	border-radius: 8px;
@@ -1126,8 +1126,8 @@ a.hyperlink:focus {
 
 	.modal-site-thumbnail {
 		margin-bottom: 0.5rem;
-		width: 80%;
-		max-width: 220px;
+		width: 90%;
+		max-width: 250px;
 	}
 
 	.modal-site-details {
