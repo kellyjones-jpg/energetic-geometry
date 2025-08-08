@@ -10,7 +10,7 @@ p {
 	font-size: 1rem;
 	line-height: 1.5;
 	text-shadow:
-		1px -1px 0 #0A0A0A;
+		0.5px -0.5px 0 #0A0A0A;
 }
 
 h4 {
