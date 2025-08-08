@@ -5,7 +5,7 @@ body {
 	margin: 0;
 	padding: 0;
 	text-shadow:
-		2px -2px 0 #0A0A0A;
+		1px -1px 0 #0A0A0A;
 }
 
 h4 {
@@ -13,7 +13,7 @@ h4 {
 	line-height: 1.2;
 	margin-bottom: 1.5rem;
 	text-shadow:
-		2px -2px 0 #0A0A0A;
+		1px -1px 0 #0A0A0A;
 }
 
 h3 {
@@ -22,7 +22,7 @@ h3 {
 	font-weight: bold;
 	line-height: 1.2;
 	text-shadow:
-		2px -2px 0 #0A0A0A;
+		1px -1px 0 #0A0A0A;
 }
 
 h1 {
@@ -474,7 +474,7 @@ a.hyperlink:focus {
 	background-color: #353839;
 	color: #ffffff;
 	text-shadow:
-		2px -2px 0 #0A0A0A;
+		1px -1px 0 #0A0A0A;
 	box-shadow:
 		1.5px 1px 0 #0A0A0A,
 		3px 2px 0 white;
@@ -508,7 +508,7 @@ a.hyperlink:focus {
 .accordion-body {
 	color: #ffffff;
 	text-shadow:
-		2px -2px 0 #0A0A0A;
+		1px -1px 0 #0A0A0A;
 	font-family: Helvetica, Arial, sans-serif;
 	border-top: 2px solid white;
 	padding: 1.25rem 1.5rem;
