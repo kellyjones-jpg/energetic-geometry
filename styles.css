@@ -954,25 +954,29 @@ a.hyperlink:focus {
 }
 
 .encoding-table td {
-	color: #ffffff;
-	font-family: Helvetica, Arial, sans-serif;
-	padding: 0.75rem 1rem;
-	vertical-align: middle;
-	border-color: #ffffff;
+  color: #ffffff;
+  font-family: Helvetica, Arial, sans-serif;
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+  border-color: #ffffff;
+}
+
+.encoding-table td:first-child {
+  border-right: 1.5px dotted rgba(255, 255, 255, 0.6);
 }
 
 .encoding-table {
-	border-collapse: collapse;
-	width: 100%;
-	background-color: transparent;
+  border-collapse: collapse;
+  width: 100%;
+  background-color: transparent;
 }
 
 .encoding-table tr {
-	border-bottom: 1px solid white;
+  border-bottom: 1px solid white;
 }
 
 .encoding-table tr:last-child {
-	border-bottom: none;
+  border-bottom: none;
 }
 
 .legend-toggle {
