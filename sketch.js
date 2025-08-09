@@ -144,7 +144,8 @@ const cropEdgeGroups = {
 const pvWarpStyles = {
    'monofacial': 'linear',
    'bifacial': 'symmetric',
-   'translucent': 'radial'
+   'translucent': 'radial',
+   'other': 'noise'
 };
 
 const combinedIcon = `
@@ -820,15 +821,24 @@ function capitalizeLastWordPV(str) {
   if (!str) return '';
   let parts = str.trim().split(' ');
   if (parts.length === 0) return '';
+
+  if (parts.length === 1) {
+    // Just one word — capitalize first letter, lowercase the rest
+    return parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase();
+  }
+
   let lastWord = parts.pop();
   // Make last word uppercase if it matches "pv" (case-insensitive)
   if (lastWord.toLowerCase() === 'pv') {
     lastWord = lastWord.toUpperCase();
+  } else {
+    lastWord = lastWord.charAt(0).toUpperCase() + lastWord.slice(1).toLowerCase();
   }
-  // Rejoin all words, capitalizing each word except last which is forced uppercase PV
+
   let firstPart = parts
     .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
     .join(' ');
+
   return (firstPart ? firstPart + ' ' : '') + lastWord;
 }
 
@@ -1955,18 +1965,18 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
   if (!pg || typeof pg.push !== 'function') {
     pg = window;
   }
-   if (!pvTech || !activities || activities.length === 0) return;
+  if (!pvTech || !activities || activities.length === 0) return;
 
-   let type = pvTech.trim().toLowerCase();
-   let warpStyle = pvWarpStyles[type];
-   if (!warpStyle) return;
+  let type = pvTech.trim().toLowerCase();
+  let warpStyle = pvWarpStyles[type];
+  if (!warpStyle) return;
 
-   pg.push();
-   pg.translate(x, y);
-   pg.noFill();
-   pg.blendMode(ADD); // enhances glow-style overlap
+  pg.push();
+  pg.translate(x, y);
+  pg.noFill();
+  pg.blendMode(ADD);
 
-   switch (warpStyle) {
+  switch (warpStyle) {
       case 'linear':
          pg.strokeWeight(2);
          // Draw dynamic diagonal zig-zag lines with subtle wave movement
@@ -2010,6 +2020,22 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
             pg.strokeWeight(2 + sin((frameCount + r) * 0.1) * 1.5);
             pg.ellipse(0, 0, r * 2, r * 2);
          }
+
+       case 'noise':
+      pg.strokeWeight(1.5);
+      for (let i = -size; i <= size; i += 6) {
+        for (let j = -size; j <= size; j += 6) {
+          let noiseVal = noise(i * 0.1 + frameCount * 0.02, j * 0.1 + frameCount * 0.02);
+          let alpha = map(noiseVal, 0, 1, 50, 200);
+          let colorIndex = (Math.floor(i / 6) + Math.floor(j / 6)) % activities.length;
+          let col = getActivityColor(activities[colorIndex]);
+          pg.stroke(red(col), green(col), blue(col), alpha);
+          pg.point(i + noiseVal * 4, j + noiseVal * 4);
+        }
+      }
+      break;
+    default:
+      break;
    }
    pg.pop();
 }
