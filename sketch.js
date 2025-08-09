@@ -570,9 +570,9 @@ function renderEntryVisual(entry, pg, isModal = false) {
 
   if (entry.animalType?.length > 0) {
     const yOffset = size * 0.15;
-    const animalSize = size * 0.9;
+    const animalSize = size * 1;
     pg.stroke(0, 80);
-    pg.strokeWeight(strokeW + 0.5);
+    pg.strokeWeight(strokeW + 0.75);
     drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, pg);
   }
 
