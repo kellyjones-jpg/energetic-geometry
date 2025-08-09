@@ -497,10 +497,10 @@ function windowResized() {
    redraw(); 
 }
 
-function renderEntryVisual(entry, pg) {
+function renderEntryVisual(entry, pg, isModal = false) {
   // Ensure pg is a valid drawing context
   if (!pg || typeof pg.push !== 'function') {
-    pg = window; // fallback to main canvas context
+    pg = window;
   }
 
   pg.clear();  // Clear with transparency for modal thumbnails
@@ -512,9 +512,9 @@ function renderEntryVisual(entry, pg) {
 
   const activityColors = (entry.activities || []).map(getActivityColor);
   const baseColor = getActivityColor(entry.activities?.[0] || '');
-  const entryShapeSize = size; 
+  const entryShapeSize = size;
   const glowStrength = 20;
-  const isHovered = false; 
+  const isHovered = false;
 
   // Shadow + base shape
   const shadowInfo = drawSuprematistOpShadowRect(
@@ -547,8 +547,11 @@ function renderEntryVisual(entry, pg) {
     pg.rotate(-shadowInfo.angle);
     pg.stroke(0, 80);
     pg.strokeWeight(strokeW + 1);
-    // Correct argument order: size, strokeW, density, pg
-    drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, strokeW + 1, 7, pg);
+
+    // Adjust grid density for modal thumbnails
+    const gridDensity = isModal ? 14 : 7;
+
+    drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, strokeW + 1, gridDensity, pg);
     pg.pop();
   }
 
