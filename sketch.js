@@ -355,6 +355,10 @@ function setup() {
 `);
 
    updatePlaceholderVisibility();
+
+   // === CREATE REUSABLE PREVIEW BUFFER ===
+   previewPg = createGraphics(200, 200);
+   previewPg.pixelDensity(1);
 }
 
 function setupArrows() {
@@ -774,17 +778,16 @@ if (modalPreviewEntry && modalPreviewCallback) {
    const entry = modalPreviewEntry;
 
    const scaleFactor = 0.55;
-   const pg = createGraphics(200, 200);
-   pg.pixelDensity(1);
-   pg.clear();
+   previewPg.clear();
+   previewPg.push();
+   previewPg.translate(100, 100);
+   previewPg.scale(scaleFactor);
 
-   pg.translate(100, 100); 
-   pg.scale(scaleFactor);
-
-   renderEntryVisual(entry, pg); // ensure pg flows through all nested calls
+   renderEntryVisual(entry, previewPg);
+   previewPg.pop();
 
    setTimeout(() => {
-      modalPreviewCallback(pg.canvas.toDataURL());
+      modalPreviewCallback(previewPg.canvas.toDataURL());
       modalPreviewEntry = null;
       modalPreviewCallback = null;
    }, 10);
