@@ -848,23 +848,23 @@ function insertModalContent(entry, visualImg) {
 
   let lines = [];
   if (entry.activities?.length)
-    lines.push(`<span class="underline-line"><strong>Agrivoltaic Activities:</strong></span> ${formatArray(entry.activities)}`);
+    lines.push(`<span class="suprematist-underline"><strong>Agrivoltaic Activities:</strong></span> ${formatArray(entry.activities)}`);
   if (!isNaN(entry.megawatts))
-    lines.push(`<span class="underline-line"><strong>System Size:</strong></span> ${entry.megawatts} Megawatts`);
+    lines.push(`<span class="suprematist-underline"><strong>System Size:</strong></span> ${entry.megawatts} Megawatts`);
   if (!isNaN(entry.acres))
-    lines.push(`<span class="underline-line"><strong>Site Size:</strong></span> ${entry.acres} Acres`);
+    lines.push(`<span class="suprematist-underline"><strong>Site Size:</strong></span> ${entry.acres} Acres`);
   if (entry.year)
-    lines.push(`<span class="underline-line"><strong>Year Installed:</strong></span> ${entry.year}`);
+    lines.push(`<span class="suprematist-underline"><strong>Year Installed:</strong></span> ${entry.year}`);
   if (entry.pvTech)
-    lines.push(`<span class="underline-line"><strong>PV Technology:</strong></span> ${capitalizeLastWordPV(entry.pvTech)}`);
+    lines.push(`<span class="suprematist-underline"><strong>PV Technology:</strong></span> ${capitalizeLastWordPV(entry.pvTech)}`);
   if (entry.arrayType)
-    lines.push(`<span class="underline-line"><strong>Type of Array:</strong></span> ${capitalizeWords(entry.arrayType)}`);
+    lines.push(`<span class="suprematist-underline"><strong>Type of Array:</strong></span> ${capitalizeWords(entry.arrayType)}`);
   if (entry.habitat?.length)
-    lines.push(`<span class="underline-line"><strong>Habitat Types:</strong></span> ${formatArray(entry.habitat)}`);
+    lines.push(`<span class="suprematist-underline"><strong>Habitat Types:</strong></span> ${formatArray(entry.habitat)}`);
   if (entry.cropType?.length)
-    lines.push(`<span class="underline-line"><strong>Crop Type:</strong></span> ${formatArray(entry.cropType)}`);
+    lines.push(`<span class="suprematist-underline"><strong>Crop Type:</strong></span> ${formatArray(entry.cropType)}`);
   if (entry.animalType?.length)
-    lines.push(`<span class="underline-line"><strong>Animal Type:</strong></span> ${formatArray(entry.animalType)}`);
+    lines.push(`<span class="suprematist-underline"><strong>Animal Type:</strong></span> ${formatArray(entry.animalType)}`);
 
   modalTitle.innerHTML = entry.url
     ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" class="hyperlink">
