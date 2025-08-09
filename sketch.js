@@ -462,7 +462,7 @@ function updateLayout(lockedHeight = 850) {
 
    const availableWidth = windowWidth * 0.7;
    const maxShapeSize = 125;
-   const minShapeSize = 15;
+   const minShapeSize = 20;
 
    // Shape sizes from largest to smallest
    for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
