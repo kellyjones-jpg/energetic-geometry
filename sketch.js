@@ -1965,79 +1965,87 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
   if (!pg || typeof pg.push !== 'function') {
     pg = window;
   }
-  if (!pvTech || !activities || activities.length === 0) return;
+  if (!pvTech) return;
 
   let type = pvTech.trim().toLowerCase();
-  let warpStyle = pvWarpStyles[type];
-  if (!warpStyle) return;
+
+  // Helper to safely get color or fallback white
+  function safeGetColor(index) {
+    if (activities && activities.length > 0) {
+      let act = activities[index % activities.length];
+      if (act) return getActivityColor(act);
+    }
+    return pg.color(255, 255, 255); // default white fallback
+  }
 
   pg.push();
   pg.translate(x, y);
   pg.noFill();
   pg.blendMode(ADD);
 
-  switch (warpStyle) {
-   case 'linear':
-   pg.strokeWeight(2);
-   pg.stroke(getActivityColor(activities[0])); // Single color or cycle
-   // Path: M10 50 Q60 10 110 50
-   pg.noFill();
-   pg.beginShape();
-   pg.vertex(-size/2, size/2);
-   pg.quadraticVertex(0, -size/2, size/2, size/2);
-   pg.endShape();
+  switch (type) {
+    case 'linear': // monofacial
+      pg.strokeWeight(2);
+      pg.stroke(safeGetColor(0)); // single color or cycle
 
-   // White horizontal base line: x1=20, y1=50, x2=100, y2=50
-   pg.stroke(255);
-   pg.line(-size*0.25, size/2, size*0.416, size/2);
-   break;
-      case 'symmetric':
-      pg.strokeWeight(2.5);
-      pg.noFill();
-      // Path: M10 50 Q40 10 60 50 Q80 10 110 50
-      pg.stroke(getActivityColor(activities[0]));
+      // Path: M10 50 Q60 10 110 50 (approximate with quadratic curve)
       pg.beginShape();
-      pg.vertex(-size/2, size/2);
-      pg.quadraticVertex(-size/6, -size/2, 0, size/2);
-      pg.quadraticVertex(size/6, -size/2, size/2, size/2);
+      pg.vertex(-size / 2, size / 2);
+      pg.quadraticVertex(0, -size / 2, size / 2, size / 2);
       pg.endShape();
 
-      // White lines for vertical bars
+      // White horizontal base line (approx)
       pg.stroke(255);
-      pg.line(-size/6, size/2, -size/6 * 0.5, -size/2);
-      pg.line(size/6 * 0.5, -size/2, size/6, size/2);
+      pg.line(-size * 0.25, size / 2, size * 0.416, size / 2);
       break;
-      case 'radial':
+
+    case 'symmetric': // bifacial
+      pg.strokeWeight(2.5);
       pg.noFill();
-      let radii = [size*0.66, size*0.4, size*0.2]; // match SVG proportions
+      pg.stroke(safeGetColor(0));
+      // Path: M10 50 Q40 10 60 50 Q80 10 110 50
+      pg.beginShape();
+      pg.vertex(-size / 2, size / 2);
+      pg.quadraticVertex(-size / 6, -size / 2, 0, size / 2);
+      pg.quadraticVertex(size / 6, -size / 2, size / 2, size / 2);
+      pg.endShape();
+
+      // White lines for vertical bars (approx)
+      pg.stroke(255);
+      pg.line(-size / 6, size / 2, -size / 6 * 0.5, -size / 2);
+      pg.line(size / 6 * 0.5, -size / 2, size / 6, size / 2);
+      break;
+
+    case 'radial': // translucent
+      pg.noFill();
+      let radii = [size * 0.66, size * 0.4, size * 0.2];
       for (let r of radii) {
-         pg.stroke(getActivityColor(activities[0]));
-         pg.ellipse(0, 0, r, r);
+        pg.stroke(safeGetColor(0));
+        pg.ellipse(0, 0, r, r);
       }
       break;
-     case 'noise':
+
+    case 'noise': // other
       pg.strokeWeight(2);
       let spacing = 8; // distance between dots
       for (let i = -size / 2; i <= size / 2; i += spacing) {
-         for (let j = -size / 2; j <= size / 2; j += spacing) {
-            // Small jitter so it feels "noisy" but still evenly spaced
-            let n = noise((i + x) * 0.1 + frameCount * 0.02, (j + y) * 0.1 + frameCount * 0.02);
-            let jitterX = map(n, 0, 1, -1.5, 1.5);
-            let jitterY = map(n, 0, 1, -1.5, 1.5);
+        for (let j = -size / 2; j <= size / 2; j += spacing) {
+          let n = noise((i + x) * 0.1 + frameCount * 0.02, (j + y) * 0.1 + frameCount * 0.02);
+          let jitterX = map(n, 0, 1, -1.5, 1.5);
+          let jitterY = map(n, 0, 1, -1.5, 1.5);
 
-            let colorIndex = (Math.floor(i / spacing) + Math.floor(j / spacing)) % activities.length;
-            let col = getActivityColor(activities[colorIndex]);
+          let colorIndex = (Math.floor(i / spacing) + Math.floor(j / spacing));
+          let col = safeGetColor(colorIndex);
 
-            pg.stroke(red(col), green(col), blue(col), 180);
-            pg.point(i + jitterX, j + jitterY);
-         }
+          pg.stroke(red(col), green(col), blue(col), 180);
+          pg.point(i + jitterX, j + jitterY);
+        }
       }
       break;
 
     default:
-      // fallback or no-op
       break;
-   }
+  }
 
-   pg.pop();
+  pg.pop();
 }
