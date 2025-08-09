@@ -13,6 +13,14 @@ p {
 		0.75px -0.75px 0 #0A0A0A;
 }
 
+h5 {
+	font-size: 1.15rem;
+	line-height: 1.2;
+	margin-bottom: 0.5rem;
+	text-shadow:
+		0.95px -0.95px 0 #0A0A0A;
+}
+
 h4 {
 	font-size: 1.25rem;
 	line-height: 1.2;
