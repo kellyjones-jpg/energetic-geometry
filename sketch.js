@@ -195,7 +195,7 @@ const combinedIcon = `
 `;
 
 function preload() {
-   table = loadTable('data/inspire-agrivoltaics-20250809.csv', 'csv', 'header');
+   table = loadTable('data/inspire-agrivoltaics-20250808.csv', 'csv', 'header');
    bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
 }
 
@@ -1965,87 +1965,87 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
   if (!pg || typeof pg.push !== 'function') {
     pg = window;
   }
-  if (!pvTech) return;
+  if (!pvTech || !activities || activities.length === 0) return;
 
   let type = pvTech.trim().toLowerCase();
-
-  // Helper to safely get color or fallback white
-  function safeGetColor(index) {
-    if (activities && activities.length > 0) {
-      let act = activities[index % activities.length];
-      if (act) return getActivityColor(act);
-    }
-    return pg.color(255, 255, 255); // default white fallback
-  }
+  let warpStyle = pvWarpStyles[type];
+  if (!warpStyle) return;
 
   pg.push();
   pg.translate(x, y);
   pg.noFill();
   pg.blendMode(ADD);
 
-  switch (type) {
-    case 'linear': // monofacial
-      pg.strokeWeight(2);
-      pg.stroke(safeGetColor(0)); // single color or cycle
+  switch (warpStyle) {
+      case 'linear':
+         pg.strokeWeight(2);
+         // Draw dynamic diagonal zig-zag lines with subtle wave movement
+         for (let i = -size; i <= size; i += 8) {
+            let waveOffset = sin((frameCount * 0.03 + i) * 3) * 6;
+            let colorIndex = Math.floor((i + size) / 8) % activities.length;
+            pg.stroke(getActivityColor(activities[colorIndex]));
+            pg.line(i, -size + waveOffset, -i * 0.2, size - waveOffset);
+         }
+         // Add subtle horizontal grid lines for photovoltaic cell effect
+         pg.stroke(255, 80);
+         pg.strokeWeight(0.5);
+         for (let yOff = -size; yOff <= size; yOff += 10) {
+            let horizOffset = sin(frameCount * 0.05 + yOff) * 2;
+            pg.line(-size, yOff + horizOffset, size, yOff + horizOffset);
+         }
+         break;
 
-      // Path: M10 50 Q60 10 110 50 (approximate with quadratic curve)
-      pg.beginShape();
-      pg.vertex(-size / 2, size / 2);
-      pg.quadraticVertex(0, -size / 2, size / 2, size / 2);
-      pg.endShape();
+      case 'symmetric':
+         pg.strokeWeight(3.5);
+         // Vertical wave-distorted lines
+         for (let i = 0; i < size; i += 4) {
+            let yOffset = sin((i + frameCount) * 0.12) * 12;
+            let colorIndex = Math.floor(i / 4) % activities.length;
+            pg.stroke(getActivityColor(activities[colorIndex]));
+            pg.line(-size / 2 + i, -yOffset, -size / 2 + i, yOffset);
 
-      // White horizontal base line (approx)
-      pg.stroke(255);
-      pg.line(-size * 0.25, size / 2, size * 0.416, size / 2);
-      break;
+            // Add crossing horizontal lines to form subtle grid cells
+            if (i % 12 === 0) {
+               pg.stroke(255, 80);
+               pg.strokeWeight(1);
+               pg.line(-size / 2 + i - 2, -yOffset / 2, -size / 2 + i + 2, yOffset / 2);
+            }
+         }
+         break;
 
-    case 'symmetric': // bifacial
-      pg.strokeWeight(2.5);
-      pg.noFill();
-      pg.stroke(safeGetColor(0));
-      // Path: M10 50 Q40 10 60 50 Q80 10 110 50
-      pg.beginShape();
-      pg.vertex(-size / 2, size / 2);
-      pg.quadraticVertex(-size / 6, -size / 2, 0, size / 2);
-      pg.quadraticVertex(size / 6, -size / 2, size / 2, size / 2);
-      pg.endShape();
+      case 'radial':
+         // Pulsating concentric ellipses with color cycling
+         for (let r = 12, idx = 0; r < size; r += 10, idx++) {
+            pg.stroke(getActivityColor(activities[idx % activities.length]));
+            pg.strokeWeight(2 + sin((frameCount + r) * 0.1) * 1.5);
+            pg.ellipse(0, 0, r * 2, r * 2);
+         }
+         break;
 
-      // White lines for vertical bars (approx)
-      pg.stroke(255);
-      pg.line(-size / 6, size / 2, -size / 6 * 0.5, -size / 2);
-      pg.line(size / 6 * 0.5, -size / 2, size / 6, size / 2);
-      break;
-
-    case 'radial': // translucent
-      pg.noFill();
-      let radii = [size * 0.66, size * 0.4, size * 0.2];
-      for (let r of radii) {
-        pg.stroke(safeGetColor(0));
-        pg.ellipse(0, 0, r, r);
-      }
-      break;
-
-    case 'noise': // other
+     case 'noise':
       pg.strokeWeight(2);
       let spacing = 8; // distance between dots
       for (let i = -size / 2; i <= size / 2; i += spacing) {
-        for (let j = -size / 2; j <= size / 2; j += spacing) {
-          let n = noise((i + x) * 0.1 + frameCount * 0.02, (j + y) * 0.1 + frameCount * 0.02);
-          let jitterX = map(n, 0, 1, -1.5, 1.5);
-          let jitterY = map(n, 0, 1, -1.5, 1.5);
+         for (let j = -size / 2; j <= size / 2; j += spacing) {
+            // Small jitter so it feels "noisy" but still evenly spaced
+            let n = noise((i + x) * 0.1 + frameCount * 0.02, (j + y) * 0.1 + frameCount * 0.02);
+            let jitterX = map(n, 0, 1, -1.5, 1.5);
+            let jitterY = map(n, 0, 1, -1.5, 1.5);
 
-          let colorIndex = (Math.floor(i / spacing) + Math.floor(j / spacing));
-          let col = safeGetColor(colorIndex);
+            let colorIndex = (Math.floor(i / spacing) + Math.floor(j / spacing)) % activities.length;
+            let col = getActivityColor(activities[colorIndex]);
 
-          pg.stroke(red(col), green(col), blue(col), 180);
-          pg.point(i + jitterX, j + jitterY);
-        }
+            pg.stroke(red(col), green(col), blue(col), 180);
+            pg.point(i + jitterX, j + jitterY);
+         }
       }
       break;
 
     default:
-      break;
-  }
 
-  pg.pop();
+      // fallback or no-op
+      break;
+   }
+
+   pg.pop();
 }
