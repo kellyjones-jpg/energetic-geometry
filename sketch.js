@@ -1985,23 +1985,31 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
   pg.noFill();
   pg.blendMode(ADD);
 
-  // Setup shadow parameters for all styles to create drop shadow
-  pg.drawingContext.shadowOffsetX = 2;
-  pg.drawingContext.shadowOffsetY = 2;
-  pg.drawingContext.shadowBlur = 6;
-  pg.drawingContext.shadowColor = 'rgba(0, 0, 0, 0.5)';
-
   switch (warpStyle) {
+
     case 'linear':
+      // Draw shadow lines first, shifted by (3,3)
       pg.strokeWeight(2 + sin(frameCount * 0.1) * 1.5);
       for (let i = -size; i <= size; i += 8) {
         let waveOffset = sin((frameCount * 0.03 + i) * 3) * 6;
         let jitter = (noise(i * 0.1, frameCount * 0.05) - 0.5) * 3;
         let colorIndex = Math.floor((i + size) / 8) % activities.length;
         let col = getWarpColor(colorIndex);
+
+        // shadow
+        pg.stroke(0, 0, 0, 80);
+        pg.line(
+          i + jitter + 3,
+          -size + waveOffset + 3,
+          -i * 0.2 + jitter + 3,
+          size - waveOffset + 3
+        );
+
+        // main line
         pg.stroke(red(col), green(col), blue(col), 180 + 75 * sin(frameCount * 0.1 + i));
         pg.line(i + jitter, -size + waveOffset, -i * 0.2 + jitter, size - waveOffset);
       }
+      // subtle horizontal grid lines (no shadow needed)
       pg.stroke(255, 50 + 50 * sin(frameCount * 0.1));
       pg.strokeWeight(0.5);
       for (let yOff = -size; yOff <= size; yOff += 10) {
@@ -2011,25 +2019,38 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
       break;
 
     case 'symmetric':
-      pg.strokeWeight(3.5 + sin(frameCount * 0.15) * 1.5);
       for (let i = 0; i < size; i += 4) {
         let yOffset = sin((i + frameCount) * 0.12) * 12;
         let jitterX = (noise(i * 0.1, frameCount * 0.1) - 0.5) * 2;
         let colorIndex = Math.floor(i / 4) % activities.length;
         let col = getWarpColor(colorIndex);
+        let baseStrokeWeight = 3.5 + sin(frameCount * 0.15) * 1.5;
 
-        // Glow layers behind main line for glow effect
+        // shadow glow layers shifted (3,3)
+        for (let glow = 4; glow >= 1; glow--) {
+          pg.stroke(0, 0, 0, 30 / glow);
+          pg.strokeWeight(baseStrokeWeight + glow * 1.5);
+          pg.line(
+            -size / 2 + i + jitterX + 3,
+            -yOffset + 3,
+            -size / 2 + i + jitterX + 3,
+            yOffset + 3
+          );
+        }
+
+        // main glow layers behind main line (no shift)
         for (let glow = 4; glow >= 1; glow--) {
           pg.stroke(red(col), green(col), blue(col), 30 / glow);
-          pg.strokeWeight(pg.strokeWeight() + glow * 1.5);
+          pg.strokeWeight(baseStrokeWeight + glow * 1.5);
           pg.line(-size / 2 + i + jitterX, -yOffset, -size / 2 + i + jitterX, yOffset);
         }
 
-        // Main sharp line on top
+        // main sharp line on top
         pg.stroke(red(col), green(col), blue(col), 200);
-        pg.strokeWeight(3.5 + sin(frameCount * 0.15) * 1.5);
+        pg.strokeWeight(baseStrokeWeight);
         pg.line(-size / 2 + i + jitterX, -yOffset, -size / 2 + i + jitterX, yOffset);
 
+        // crossing horizontal lines with alpha pulse, no shadow
         if (i % 12 === 0) {
           pg.stroke(255, 80 + 40 * sin(frameCount * 0.3 + i));
           pg.strokeWeight(1);
@@ -2043,25 +2064,39 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
         let baseCol = getWarpColor(idx % activities.length);
         let pulse = sin((frameCount + r * 5) * 0.1);
 
-        // Glow rings behind main ellipse
+        // shadow glow rings shifted (3,3)
+        for (let glow = 3; glow >= 1; glow--) {
+          pg.stroke(0, 0, 0, 40 / glow * (0.5 + pulse));
+          pg.strokeWeight(2 + glow * 2);
+          pg.ellipse(3, 3, r * 2 + glow * 10, r * 2 + glow * 10);
+        }
+
+        // glow rings behind main ellipse (no shift)
         for (let glow = 3; glow >= 1; glow--) {
           pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 40 / glow * (0.5 + pulse));
           pg.strokeWeight(2 + glow * 2);
           pg.ellipse(0, 0, r * 2 + glow * 10, r * 2 + glow * 10);
         }
 
-        // Main pulsating ellipse
+        // main pulsating ellipse
         pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 180 + 75 * pulse);
         pg.strokeWeight(2 + pulse * 1.5);
         pg.ellipse(0, 0, r * 2, r * 2);
 
-        // Tiny noisy points on ellipse perimeter for texture
+        // tiny noisy points on ellipse perimeter with shadow
         let pointsCount = 12;
         for (let p = 0; p < pointsCount; p++) {
           let angle = TWO_PI * p / pointsCount + frameCount * 0.02;
           let noiseFactor = noise(p * 0.1, frameCount * 0.05);
           let px = cos(angle) * (r + noiseFactor * 4);
           let py = sin(angle) * (r + noiseFactor * 4);
+
+          // shadow point (shifted)
+          pg.stroke(0, 0, 0, 100);
+          pg.strokeWeight(1.5 + 2);
+          pg.point(px + 2, py + 2);
+
+          // main point
           pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 150);
           pg.strokeWeight(1.5);
           pg.point(px, py);
@@ -2071,7 +2106,7 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
 
     case 'noise':
       pg.strokeWeight(2);
-      let spacing = 8;
+      let spacing = 8; // distance between dots
       for (let i = -size / 2; i <= size / 2; i += spacing) {
         for (let j = -size / 2; j <= size / 2; j += spacing) {
           let n = noise((i + x) * 0.1 + frameCount * 0.02, (j + y) * 0.1 + frameCount * 0.02);
@@ -2081,7 +2116,14 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
           let colorIndex = (Math.floor(i / spacing) + Math.floor(j / spacing)) % activities.length;
           let col = getWarpColor(colorIndex);
 
+          // shadow point (shifted)
+          pg.stroke(0, 0, 0, 100);
+          pg.strokeWeight(2 + 1);
+          pg.point(i + jitterX + 2, j + jitterY + 2);
+
+          // main point
           pg.stroke(red(col), green(col), blue(col), 180);
+          pg.strokeWeight(2);
           pg.point(i + jitterX, j + jitterY);
         }
       }
@@ -2091,12 +2133,6 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
       // fallback or no-op
       break;
   }
-
-  // Disable shadow after drawing so it doesn't affect other drawings
-  pg.drawingContext.shadowOffsetX = 0;
-  pg.drawingContext.shadowOffsetY = 0;
-  pg.drawingContext.shadowBlur = 0;
-  pg.drawingContext.shadowColor = 'transparent';
 
   pg.pop();
 }
