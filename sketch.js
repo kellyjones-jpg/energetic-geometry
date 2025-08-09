@@ -1221,7 +1221,7 @@ function drawAnimalLine(animalType, activities, x, y, size, strokeW = 1.3, pg = 
 
     // Subtle shadow
     pg.stroke(0, 80);
-    pg.strokeWeight(baseStrokeW * 1.15);
+    pg.strokeWeight(baseStrokeW * 1.05);
     pg.push();
     pg.translate(1.5, 1.5);
     drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength, pg);
