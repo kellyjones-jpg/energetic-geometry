@@ -509,7 +509,7 @@ function renderEntryVisual(entry, pg, isModal = false) {
 
   const size = 140;
   const strokeW = 3;
-  const scaleFactor = 1.15;
+  const scaleFactor = 1.25;
   const offset = size * (scaleFactor - 1) / 2;
 
   pg.translate(offset, offset);
@@ -792,7 +792,6 @@ pop(); // end entry group
 if (modalPreviewEntry && modalPreviewCallback) {
   const entry = modalPreviewEntry;
 
-  const scaleFactor = 0.45;
   const pg = createGraphics(200, 200);
   pg.pixelDensity(1);
   pg.clear();
@@ -801,8 +800,6 @@ if (modalPreviewEntry && modalPreviewCallback) {
   pg.ellipseMode(CENTER);
 
   pg.push();
-  pg.translate(pg.width / 2, pg.height / 1);
-  pg.scale(scaleFactor);
 
   renderEntryVisual(entry, pg);
 
