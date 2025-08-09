@@ -286,8 +286,8 @@ a.hyperlink:focus {
 }
 
 .legend-rectangle {
-  width: 36px;  
-  height: 24px; 
+  width: 24px;   /* narrower */
+  height: 36px;  /* taller */
   border-radius: 0;
 }
 
