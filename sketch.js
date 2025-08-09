@@ -1221,7 +1221,7 @@ function drawAnimalLine(animalType, activities, x, y, size, strokeW = 1.3, pg = 
 
     // Subtle shadow
     pg.stroke(0, 80);
-    pg.strokeWeight(baseStrokeW * 1.05);
+    pg.strokeWeight(baseStrokeW * 1.15);
     pg.push();
     pg.translate(1.5, 1.5);
     drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength, pg);
@@ -1324,7 +1324,6 @@ function drawTexturedLine(x, y, length, pg = window) {
     pg.line(px, y, px + segmentLength, y);
   }
 }
-
 
 function drawHabitatShape(habitatList, x, y, size, baseColor, strokeW = 2, pg = window) {
   if (!pg || typeof pg.push !== 'function') pg = window;
@@ -1610,13 +1609,11 @@ function drawIsometricGridMultiColor(activities, size, density = 2, slope = 0.7,
     pg = window;
   }
 
-  let colorCount = activities.length;
-  let idx = 0;
-  let halfSize = size / 2;
-  let angle = (HALF_PI + PI) / 2;  // midpoint between HALF_PI and PI
+   let colorCount = activities.length;
+   let idx = 0;
+   let halfSize = size / 2;
 
-  pg.push();
-  pg.rotate(angle);
+   pg.rotate(PI);
 
    for (let x = -halfSize; x <= halfSize; x += density) {
       let colA = getActivityColor(activities[idx % colorCount]);
