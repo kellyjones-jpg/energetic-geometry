@@ -763,7 +763,7 @@ if (entry.cropType?.length > 0) {
 }
 
 if (entry.pvTech?.length > 0) {
-   drawPVWarpStyle(entry.pvTech, entry.activities, 0, 0, size, pg);
+   drawPVWarpStyle(entry.pvTech, entry.activities, 0, 0, entryShapeSize, pg);
 }
 
 if (entry.animalType?.length > 0) {
