@@ -847,32 +847,24 @@ function insertModalContent(entry, visualImg) {
   const formatArray = (arr) => Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
 
   let lines = [];
-   if (entry.activities?.length)
-   lines.push(`<strong>Agrivoltaic Activities:</strong> <span class="suprematist-underline">${formatArray(entry.activities)}</span>`);
-
-   if (!isNaN(entry.megawatts))
-   lines.push(`<strong>System Size:</strong> <span class="suprematist-underline">${entry.megawatts} Megawatts</span>`);
-
-   if (!isNaN(entry.acres))
-   lines.push(`<strong>Site Size:</strong> <span class="suprematist-underline">${entry.acres} Acres</span>`);
-
-   if (entry.year)
-   lines.push(`<strong>Year Installed:</strong> <span class="suprematist-underline">${entry.year}</span>`);
-
-   if (entry.pvTech)
-   lines.push(`<strong>PV Technology:</strong> <span class="suprematist-underline">${capitalizeLastWordPV(entry.pvTech)}</span>`);
-
-   if (entry.arrayType)
-   lines.push(`<strong>Type of Array:</strong> <span class="suprematist-underline">${capitalizeWords(entry.arrayType)}</span>`);
-
-   if (entry.habitat?.length)
-   lines.push(`<strong>Habitat Types:</strong> <span class="suprematist-underline">${formatArray(entry.habitat)}</span>`);
-
-   if (entry.cropType?.length)
-   lines.push(`<strong>Crop Type:</strong> <span class="suprematist-underline">${formatArray(entry.cropType)}</span>`);
-
-   if (entry.animalType?.length)
-   lines.push(`<strong>Animal Type:</strong> <span class="suprematist-underline">${formatArray(entry.animalType)}</span>`);
+  if (entry.activities?.length)
+    lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
+  if (!isNaN(entry.megawatts))
+    lines.push(`<strong>System Size:</strong> ${entry.megawatts} Megawatts`);
+  if (!isNaN(entry.acres))
+    lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
+  if (entry.year)
+    lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
+  if (entry.pvTech)
+    lines.push(`<strong>PV Technology:</strong> ${capitalizeLastWordPV(entry.pvTech)}`);
+  if (entry.arrayType)
+    lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
+  if (entry.habitat?.length)
+    lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
+  if (entry.cropType?.length)
+    lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
+  if (entry.animalType?.length)
+    lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
 
   modalTitle.innerHTML = entry.url
     ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" class="hyperlink">
