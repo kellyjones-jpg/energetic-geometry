@@ -1214,28 +1214,18 @@ function drawAnimalLine(animalType, activities, x, y, size, strokeW = 1.3, pg = 
     let strokeColor = getActivityColor(activities[i]);
     if (!strokeColor) continue;
 
-    // Multiple shadows for stronger effect
-    for (let offset = 3; offset <= 5; offset += 1) {
-      pg.stroke(0, map(offset, 3, 5, 150, 80));
-      pg.strokeWeight(baseStrokeW * 1.1);
-      pg.push();
-      pg.translate(offset, offset);
-      drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength, pg);
-      pg.pop();
-    }
+    // Subtle shadow
+    pg.stroke(0, 80);
+    pg.strokeWeight(baseStrokeW * 1.05);
+    pg.push();
+    pg.translate(1.5, 1.5);
+    drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength, pg);
+    pg.pop();
 
     // Main colored line
     pg.stroke(strokeColor);
     pg.strokeWeight(baseStrokeW);
     drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength, pg);
-
-    // Optional subtle highlight opposite side
-    pg.stroke(255, 60);
-    pg.strokeWeight(baseStrokeW * 0.4);
-    pg.push();
-    pg.translate(-1, -1);
-    drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength, pg);
-    pg.pop();
   }
 
   pg.pop();
