@@ -1989,7 +1989,7 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
 
     case 'linear':
       // Draw shadow lines first, shifted by (3,3)
-      pg.strokeWeight(2 + sin(frameCount * 0.1) * 1.5);
+      pg.strokeWeight(4 + sin(frameCount * 0.1) * 1.5);
       for (let i = -size; i <= size; i += 8) {
         let waveOffset = sin((frameCount * 0.03 + i) * 3) * 6;
         let jitter = (noise(i * 0.1, frameCount * 0.05) - 0.5) * 3;
@@ -2024,12 +2024,12 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
         let jitterX = (noise(i * 0.1, frameCount * 0.1) - 0.5) * 2;
         let colorIndex = Math.floor(i / 4) % activities.length;
         let col = getWarpColor(colorIndex);
-        let baseStrokeWeight = 3.5 + sin(frameCount * 0.15) * 1.5;
+        let baseStrokeWeight = 5 + sin(frameCount * 0.15) * 1.5;
 
         // shadow glow layers shifted (3,3)
         for (let glow = 4; glow >= 1; glow--) {
           pg.stroke(0, 0, 0, 30 / glow);
-          pg.strokeWeight(baseStrokeWeight + glow * 1.5);
+          pg.strokeWeight(baseStrokeWeight + glow * 3.5);
           pg.line(
             -size / 2 + i + jitterX + 3,
             -yOffset + 3,
@@ -2067,20 +2067,20 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
         // shadow glow rings shifted (3,3)
         for (let glow = 3; glow >= 1; glow--) {
           pg.stroke(0, 0, 0, 40 / glow * (0.5 + pulse));
-          pg.strokeWeight(2 + glow * 2);
+          pg.strokeWeight(3 + glow * 2);
           pg.ellipse(3, 3, r * 2 + glow * 10, r * 2 + glow * 10);
         }
 
         // glow rings behind main ellipse (no shift)
         for (let glow = 3; glow >= 1; glow--) {
           pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 40 / glow * (0.5 + pulse));
-          pg.strokeWeight(2 + glow * 2);
+          pg.strokeWeight(3 + glow * 2);
           pg.ellipse(0, 0, r * 2 + glow * 10, r * 2 + glow * 10);
         }
 
         // main pulsating ellipse
         pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 180 + 75 * pulse);
-        pg.strokeWeight(2 + pulse * 1.5);
+        pg.strokeWeight(3 + pulse * 1.5);
         pg.ellipse(0, 0, r * 2, r * 2);
 
         // tiny noisy points on ellipse perimeter with shadow
