@@ -901,14 +901,9 @@ a.hyperlink:focus {
 	border-radius: 2px;
 }
 
+/* Color Coding: diagonal red/green bar (activity color-like) */
 .color-icon {
-  background:
-    linear-gradient(45deg, #E4572E 25%, transparent 25%) top left,
-    linear-gradient(45deg, #2E8B57 25%, transparent 25%) top right,
-    linear-gradient(45deg, #005A99 25%, transparent 25%) bottom left,
-    linear-gradient(45deg, #FFD100 25%, transparent 25%) bottom right;
-  background-size: 50% 50%;
-  background-repeat: repeat;
+	background: linear-gradient(135deg, #E4572E 50%, #2E8B57 50%);
 }
 
 /* Pulsating Glow */
