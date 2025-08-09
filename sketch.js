@@ -509,7 +509,12 @@ function renderEntryVisual(entry, pg, isModal = false) {
 
   const size = 140;
   const strokeW = 3;
+  const scaleFactor = 1.15;
+  const offset = size * (scaleFactor - 1) / 2;
 
+  pg.translate(offset, offset);
+  pg.scale(scaleFactor);
+  
   const activityColors = (entry.activities || []).map(getActivityColor);
   const baseColor = getActivityColor(entry.activities?.[0] || '');
   const entryShapeSize = size;
