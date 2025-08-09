@@ -2020,22 +2020,31 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
             pg.strokeWeight(2 + sin((frameCount + r) * 0.1) * 1.5);
             pg.ellipse(0, 0, r * 2, r * 2);
          }
+         break;
 
-       case 'noise':
-      pg.strokeWeight(1.5);
-      for (let i = -size; i <= size; i += 6) {
-        for (let j = -size; j <= size; j += 6) {
-          let noiseVal = noise(i * 0.1 + frameCount * 0.02, j * 0.1 + frameCount * 0.02);
-          let alpha = map(noiseVal, 0, 1, 50, 200);
-          let colorIndex = (Math.floor(i / 6) + Math.floor(j / 6)) % activities.length;
-          let col = getActivityColor(activities[colorIndex]);
-          pg.stroke(red(col), green(col), blue(col), alpha);
-          pg.point(i + noiseVal * 4, j + noiseVal * 4);
-        }
+     case 'noise':
+      pg.strokeWeight(2);
+      let spacing = 8; // distance between dots
+      for (let i = -size / 2; i <= size / 2; i += spacing) {
+         for (let j = -size / 2; j <= size / 2; j += spacing) {
+            // Small jitter so it feels "noisy" but still evenly spaced
+            let n = noise((i + x) * 0.1 + frameCount * 0.02, (j + y) * 0.1 + frameCount * 0.02);
+            let jitterX = map(n, 0, 1, -1.5, 1.5);
+            let jitterY = map(n, 0, 1, -1.5, 1.5);
+
+            let colorIndex = (Math.floor(i / spacing) + Math.floor(j / spacing)) % activities.length;
+            let col = getActivityColor(activities[colorIndex]);
+
+            pg.stroke(red(col), green(col), blue(col), 180);
+            pg.point(i + jitterX, j + jitterY);
+         }
       }
       break;
+
     default:
+      // fallback or no-op
       break;
    }
+
    pg.pop();
 }
