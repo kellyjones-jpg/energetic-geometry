@@ -1555,7 +1555,7 @@ function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, dens
          drawCrosshatchGridMultiColor(activities, size, density, pg);
          break;
       case 'single-axis tracking':
-         drawIsometricGridMultiColor(activities, size, density, 1.1, pg);
+         drawIsometricGridMultiColor(activities, size, density, 0.9, pg);
          break;
       case 'dual-axis tracking':
          drawDottedMatrixMultiColor(activities, size, density, pg);
@@ -1605,7 +1605,7 @@ function drawCrosshatchGridMultiColor(activities, size, density = 10, pg) {
    pg.pop();
 }
 
-function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1, pg) {
+function drawIsometricGridMultiColor(activities, size, density = 2, slope = 0.9, pg) {
   if (!pg || typeof pg.push !== 'function') {
     pg = window;
   }
