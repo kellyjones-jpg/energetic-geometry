@@ -1613,48 +1613,47 @@ function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1,
   let colorCount = activities.length;
   let idx = 0;
   let halfSize = size / 2;
+  let angle = (HALF_PI + PI) / 2;  // 135 degrees
+
+  let y1 = -halfSize * slope;
+  let y2 = halfSize * slope;
 
   pg.push();
-  pg.rotate(HALF_PI);
+  pg.translate(pg.width / 2, pg.height / 2);
+  pg.rotate(angle);
 
-   for (let x = -halfSize; x <= halfSize; x += density) {
-      let colA = getActivityColor(activities[idx % colorCount]);
-      let y1a = -halfSize * slope;
-      let y2a = halfSize * slope;
+  for (let x = -halfSize; x <= halfSize; x += density) {
+    let colA = getActivityColor(activities[idx % colorCount]);
 
-      // === Black base stroke ===
-      pg.stroke(0, 120);
-      pg.strokeWeight(2);
-      pg.line(x, y1a, x + halfSize, y2a);
+    pg.stroke(0, 120);
+    pg.strokeWeight(2);
+    pg.line(x, y1, x + halfSize, y2);
 
-      // === Colored line ===
-      pg.stroke(colA);
-      pg.strokeWeight(1.2);
-      pg.line(x, y1a, x + halfSize, y2a);
-      idx++;
+    pg.stroke(colA);
+    pg.strokeWeight(1.2);
+    pg.line(x, y1, x + halfSize, y2);
+    idx++;
 
-      let colB = getActivityColor(activities[idx % colorCount]);
-      let y1b = -halfSize * slope;
-      let y2b = halfSize * slope;
+    let colB = getActivityColor(activities[idx % colorCount]);
 
-      pg.stroke(0, 120);
-      pg.strokeWeight(2);
-      pg.line(x + halfSize, y1b, x, y2b);
+    pg.stroke(0, 120);
+    pg.strokeWeight(2);
+    pg.line(x + halfSize, y1, x, y2);
 
-      pg.stroke(colB);
-      pg.strokeWeight(1.2);
-      pg.line(x + halfSize, y1b, x, y2b);
-      idx++;
-   }
+    pg.stroke(colB);
+    pg.strokeWeight(1.2);
+    pg.line(x + halfSize, y1, x, y2);
+    idx++;
+  }
 
-   // Highlight lines
-   pg.stroke(255, 70);
-   pg.strokeWeight(0.8);
-   for (let i = -halfSize; i <= halfSize; i += density * 5) {
-      pg.line(i, -halfSize * slope, i + halfSize, halfSize * slope);
-   }
+  // Highlight lines
+  pg.stroke(255, 70);
+  pg.strokeWeight(0.8);
+  for (let i = -halfSize; i <= halfSize; i += density * 5) {
+    pg.line(i, y1, i + halfSize, y2);
+  }
 
-   pg.pop();
+  pg.pop();
 }
 
 function drawDottedMatrixMultiColor(activities, size, density = 10, pg) {
