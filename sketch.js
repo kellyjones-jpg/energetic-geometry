@@ -195,7 +195,7 @@ const combinedIcon = `
 `;
 
 function preload() {
-   table = loadTable('data/inspire-agrivoltaics-20250808.csv', 'csv', 'header');
+   table = loadTable('data/inspire-agrivoltaics-20250809.csv', 'csv', 'header');
    bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
 }
 
@@ -1978,16 +1978,17 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
 
   switch (warpStyle) {
       case 'linear':
-         pg.strokeWeight(2);
-         // Draw dynamic diagonal zig-zag lines with subtle wave movement
+         pg.strokeWeight(2 + sin(frameCount * 0.1) * 1.5);
          for (let i = -size; i <= size; i += 8) {
             let waveOffset = sin((frameCount * 0.03 + i) * 3) * 6;
+            let jitter = (noise(i * 0.1, frameCount * 0.05) - 0.5) * 3;
             let colorIndex = Math.floor((i + size) / 8) % activities.length;
-            pg.stroke(getActivityColor(activities[colorIndex]));
-            pg.line(i, -size + waveOffset, -i * 0.2, size - waveOffset);
+            let col = getActivityColor(activities[colorIndex]);
+            pg.stroke(red(col), green(col), blue(col), 180 + 75 * sin(frameCount * 0.1 + i));
+            pg.line(i + jitter, -size + waveOffset, -i * 0.2 + jitter, size - waveOffset);
          }
-         // Add subtle horizontal grid lines for photovoltaic cell effect
-         pg.stroke(255, 80);
+         // subtle horizontal grid lines, pulse alpha
+         pg.stroke(255, 50 + 50 * sin(frameCount * 0.1));
          pg.strokeWeight(0.5);
          for (let yOff = -size; yOff <= size; yOff += 10) {
             let horizOffset = sin(frameCount * 0.05 + yOff) * 2;
@@ -1996,17 +1997,29 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
          break;
 
       case 'symmetric':
-         pg.strokeWeight(3.5);
-         // Vertical wave-distorted lines
+         pg.strokeWeight(3.5 + sin(frameCount * 0.15) * 1.5);
          for (let i = 0; i < size; i += 4) {
+            // vertical wave-distorted lines with jitter
             let yOffset = sin((i + frameCount) * 0.12) * 12;
+            let jitterX = (noise(i * 0.1, frameCount * 0.1) - 0.5) * 2;
             let colorIndex = Math.floor(i / 4) % activities.length;
-            pg.stroke(getActivityColor(activities[colorIndex]));
-            pg.line(-size / 2 + i, -yOffset, -size / 2 + i, yOffset);
+            let col = getActivityColor(activities[colorIndex]);
+            
+            // Draw glow layers behind main line for glow effect
+            for (let glow = 4; glow >= 1; glow--) {
+               pg.stroke(red(col), green(col), blue(col), 30 / glow);
+               pg.strokeWeight(pg.strokeWeight() + glow * 1.5);
+               pg.line(-size / 2 + i + jitterX, -yOffset, -size / 2 + i + jitterX, yOffset);
+            }
+            
+            // Draw main sharp line on top
+            pg.stroke(red(col), green(col), blue(col), 200);
+            pg.strokeWeight(3.5 + sin(frameCount * 0.15) * 1.5);
+            pg.line(-size / 2 + i + jitterX, -yOffset, -size / 2 + i + jitterX, yOffset);
 
-            // Add crossing horizontal lines to form subtle grid cells
+            // Add crossing horizontal lines forming subtle grid cells with alpha pulse
             if (i % 12 === 0) {
-               pg.stroke(255, 80);
+               pg.stroke(255, 80 + 40 * sin(frameCount * 0.3 + i));
                pg.strokeWeight(1);
                pg.line(-size / 2 + i - 2, -yOffset / 2, -size / 2 + i + 2, yOffset / 2);
             }
@@ -2014,11 +2027,34 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
          break;
 
       case 'radial':
-         // Pulsating concentric ellipses with color cycling
+         // Pulsating concentric ellipses with glow and alpha cycling
          for (let r = 12, idx = 0; r < size; r += 10, idx++) {
-            pg.stroke(getActivityColor(activities[idx % activities.length]));
-            pg.strokeWeight(2 + sin((frameCount + r) * 0.1) * 1.5);
+            let baseCol = getActivityColor(activities[idx % activities.length]);
+            let pulse = sin((frameCount + r * 5) * 0.1);
+            
+            // Glow rings behind main ellipse
+            for (let glow = 3; glow >= 1; glow--) {
+               pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 40 / glow * (0.5 + pulse));
+               pg.strokeWeight(2 + glow * 2);
+               pg.ellipse(0, 0, r * 2 + glow * 10, r * 2 + glow * 10);
+            }
+
+            // Main pulsating ellipse
+            pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 180 + 75 * pulse);
+            pg.strokeWeight(2 + pulse * 1.5);
             pg.ellipse(0, 0, r * 2, r * 2);
+
+            // Add some tiny noisy points on ellipse perimeter for texture
+            let pointsCount = 12;
+            for (let p = 0; p < pointsCount; p++) {
+               let angle = TWO_PI * p / pointsCount + frameCount * 0.02;
+               let noiseFactor = noise(p * 0.1, frameCount * 0.05);
+               let px = cos(angle) * (r + noiseFactor * 4);
+               let py = sin(angle) * (r + noiseFactor * 4);
+               pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 150);
+               pg.strokeWeight(1.5);
+               pg.point(px, py);
+            }
          }
          break;
 
