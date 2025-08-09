@@ -901,7 +901,7 @@ a.hyperlink:focus {
 	border-radius: 2px;
 }
 
-/* Color Coding: diagonal red/green bar (activity color-like) */
+/* Color Coding */
 .color-icon {
 	background: linear-gradient(135deg, #E4572E 50%, #2E8B57 50%);
 }
