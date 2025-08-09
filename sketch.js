@@ -266,7 +266,7 @@ function setup() {
       let cropType = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
       let pvTechStr = table.getString(i, 'PV Technology') || '';
       let arrayTypeStr = table.getString(i, 'Type Of Array') || '';
-      let year = table.getString(i, 'Year Installed') || 'Unknown';
+      let year = String(table.getString(i, 'Year Installed') || 'Unknown').trim();
       let megawatts = parseFloat(table.getString(i, 'System Size') || 0);
       let acres = parseFloat(table.getString(i, 'Site Size') || 0);
       let url = table.getString(i, 'URL') || '';
