@@ -275,30 +275,31 @@ a.hyperlink:focus {
 
 /* Legend shape base */
 .legend-shape {
-	width: 24px;
-	height: 24px;
-	display: inline-block;
-	vertical-align: middle;
-	margin-right: 8px;
-	box-sizing: content-box;
-	border: 3px solid white;
-	background: transparent;
-}
-
-/* Specific shapes */
-.legend-hexagon {
-	clip-path: polygon(25% 5%, 75% 5%,
-			100% 50%,
-			75% 95%, 25% 95%,
-			0% 50%);
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  box-sizing: content-box;
+  border: 3px solid white;
+  background: transparent;
 }
 
 .legend-rectangle {
-	border-radius: 0;
+  width: 36px;  
+  height: 24px; 
+  border-radius: 0;
+}
+
+.legend-hexagon {
+  clip-path: polygon(25% 5%, 75% 5%,
+    100% 50%,
+    75% 95%, 25% 95%,
+    0% 50%);
 }
 
 .legend-circle {
-	border-radius: 50%;
+  border-radius: 50%;
 }
 
 /* System Size Shadow Visuals */
