@@ -294,12 +294,9 @@ function setup() {
    updateCounters([]);
 
    let canvasWidth = windowWidth * 0.9;
-   let canvasHeight = min(835, windowHeight);
+   let canvasHeight = min(850, windowHeight);
    cnv = createCanvas(canvasWidth, canvasHeight);
    cnv.parent('sketch-container');
-
-   updateLayout(835);  // call layout update at setup with fixed max height
-   resizeCanvas(canvasWidth, canvasHeight); // ensure canvas resized after layout
 
    let caption = createP("Image from Pexels");
    caption.style('text-align', 'center');
@@ -456,45 +453,46 @@ function changeYear(direction) {
    updateYear(selectedYear, nextIndex);
 }
 
-function updateLayout(lockedHeight = 835) {
+function updateLayout(lockedHeight = 850) {
    const yearEntries = entriesByYear[selectedYear] || [];
    const count = yearEntries.length;
 
    startY = 130;
-   padding = 40;
+   padding = 45;
 
-   const availableWidth = windowWidth * 0.9;
+   const availableWidth = windowWidth * 1;
    const maxShapeSize = 130;
    const minShapeSize = 20;
 
+   // Shape sizes from largest to smallest
    for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
       const tentativeNumCols = max(floor((availableWidth + padding) / (s + padding)), 1);
       const tentativeNumRows = ceil(count / tentativeNumCols);
       const totalHeight = startY + tentativeNumRows * (s + padding) + 100;
 
+      // Prioritize fitting within locked height first
       if (totalHeight <= lockedHeight) {
          shapeSize = s;
          numCols = tentativeNumCols;
          numRows = tentativeNumRows;
-         return totalHeight;  // return actual total height needed here
+         return lockedHeight;
       }
    }
 
-   // fallback when min size still too large vertically
+   // Fallback: minimum shape size
    shapeSize = minShapeSize;
    numCols = max(floor((availableWidth + padding) / (shapeSize + padding)), 1);
    numRows = ceil(count / numCols);
-   const totalHeight = startY + numRows * (shapeSize + padding) + 100;
-   return totalHeight;  // return actual total height needed here
+   return lockedHeight;
 }
 
 function windowResized() {
    let canvasWidth = windowWidth * 0.9;
-   let targetHeight = windowHeight < 840 ? windowHeight : 835;
+   let targetHeight = windowHeight < 855 ? windowHeight : 850;
 
-   let layoutHeight = updateLayout(targetHeight);
-   resizeCanvas(canvasWidth, layoutHeight);
-   redraw();
+   updateLayout(targetHeight);
+   resizeCanvas(canvasWidth, targetHeight);
+   redraw(); 
 }
 
 function renderEntryVisual(entry, pg) {
@@ -657,8 +655,8 @@ function draw() {
    // === DRAW EACH ENTRY ===
    for (let i = 0; i < count; i++) {
       const entry = sortedEntries[i];
-      const col = i % numCols;
-      const row = Math.floor(i / numCols);
+      const row = i % numRows;
+      const col = Math.floor(i / numRows);
 
       // === SHAPE SIZE ===
       let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, shapeSize * 0.6, shapeSize);
@@ -686,13 +684,13 @@ function draw() {
       const outwardOffset = pow(Math.abs(col - totalCols / 2), 1.2) * 3;
       const horizontalWaveOffset = 10 * sin((row + col) * 0.7);
       const colStaggerOffset = (col % 2) * (shapeSize * 0.3);
-      const totalGridWidth = numCols * (shapeSize + padding) - padding;
-      const totalGridHeight = numRows * rowSpacing;
-      const startX = (width - totalGridWidth) / 2;
-      const cx = startX + col * (shapeSize + padding);
-      const bottomPadding = height - (startY + totalGridHeight);
+      const gridWidth = (totalCols - 1) * colSpacing;
+      const startX = max((width - gridWidth) / 2, 30); // ensure margin of 30px
+      const cx = startX + col * colSpacing + horizontalWaveOffset;
+      const bottomPadding = 65;
       const rowOffset = shapeSize * 0.15;
       const cy = height - bottomPadding - row * rowSpacing - rowOffset - entryShapeSize / 2 - colStaggerOffset - outwardOffset;
+
 
       // === EASING POSITION ===
       const jitterX = map(noise(i * 0.2, frameCount * 0.002), 0, 1, -4, 4);
