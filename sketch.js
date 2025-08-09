@@ -549,8 +549,12 @@ function renderEntryVisual(entry, pg) {
     pg.pop();
   }
 
-  if (entry.cropType?.length > 0) {
+    if (entry.cropType?.length > 0) {
     drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, size * 1.3, strokeW, pg);
+  }
+
+  if (entry.pvTech?.length > 0) {
+    drawPVWarpStyle(entry.pvTech, entry.activities, 0, 0, size, pg);
   }
 
   if (entry.animalType?.length > 0) {
@@ -756,6 +760,10 @@ if (entry.arrayType) {
 
 if (entry.cropType?.length > 0) {
    drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.35, strokeW, this);
+}
+
+if (entry.pvTech?.length > 0) {
+   drawPVWarpStyle(entry.pvTech, entry.activities, 0, 0, size, pg);
 }
 
 if (entry.animalType?.length > 0) {
