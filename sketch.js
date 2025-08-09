@@ -293,7 +293,7 @@ function setup() {
    hasSelectedYear = false;
    updateCounters([]);
 
-   let canvasWidth = windowWidth * 0.7;
+   let canvasWidth = windowWidth * 0.9;
    let canvasHeight = min(850, windowHeight);
    cnv = createCanvas(canvasWidth, canvasHeight);
    cnv.parent('sketch-container');
@@ -460,9 +460,9 @@ function updateLayout(lockedHeight = 850) {
    startY = 130;
    padding = 40;
 
-   const availableWidth = windowWidth * 0.9;
-   const maxShapeSize = 130;
-   const minShapeSize = 20;
+   const availableWidth = windowWidth * 0.7;
+   const maxShapeSize = 125;
+   const minShapeSize = 15;
 
    // Shape sizes from largest to smallest
    for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
