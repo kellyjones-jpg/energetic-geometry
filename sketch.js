@@ -801,7 +801,7 @@ if (modalPreviewEntry && modalPreviewCallback) {
   pg.ellipseMode(CENTER);
 
   pg.push();
-  pg.translate(pg.width / 2, pg.height / 2);
+  pg.translate(pg.width / 2, pg.height / 1);
   pg.scale(scaleFactor);
 
   renderEntryVisual(entry, pg);
