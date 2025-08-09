@@ -460,7 +460,7 @@ function updateLayout(lockedHeight = 850) {
    startY = 130;
    padding = 40;
 
-   const availableWidth = windowWidth * 0.7;
+   const availableWidth = windowWidth * 0.8;
    const maxShapeSize = 125;
    const minShapeSize = 20;
 
