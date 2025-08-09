@@ -1190,26 +1190,36 @@ function drawAnimalLine(animalType, activities, x, y, size, strokeW = 1.3, pg = 
   pg.push();
   pg.noFill();
 
-  const baseStrokeW = strokeW || style.weight * 1; // Thicker lines
-  const lineLength = size * 1.5; // Slightly longer lines
-  const lineSpacing = 7; // Increased vertical spacing
+  const baseStrokeW = strokeW || style.weight * 1;
+  const lineLength = size * 1.5;
+  const lineSpacing = 7;
 
   for (let i = 0; i < activities.length; i++) {
     let strokeColor = getActivityColor(activities[i]);
     if (!strokeColor) continue;
 
-    // Shadow for depth
-    pg.stroke(0, 60);
-    pg.strokeWeight(baseStrokeW * 1.1);
-    pg.push();
-    pg.translate(2, 2); // subtle offset shadow
-    drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength, pg);
-    pg.pop();
+    // Multiple shadows for stronger effect
+    for (let offset = 3; offset <= 5; offset += 1) {
+      pg.stroke(0, map(offset, 3, 5, 150, 80));
+      pg.strokeWeight(baseStrokeW * 1.1);
+      pg.push();
+      pg.translate(offset, offset);
+      drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength, pg);
+      pg.pop();
+    }
 
     // Main colored line
     pg.stroke(strokeColor);
     pg.strokeWeight(baseStrokeW);
     drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength, pg);
+
+    // Optional subtle highlight opposite side
+    pg.stroke(255, 60);
+    pg.strokeWeight(baseStrokeW * 0.4);
+    pg.push();
+    pg.translate(-1, -1);
+    drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength, pg);
+    pg.pop();
   }
 
   pg.pop();
