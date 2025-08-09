@@ -1971,117 +1971,132 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
   let warpStyle = pvWarpStyles[type];
   if (!warpStyle) return;
 
+  // Helper for fallback color without altering activities or getActivityColor
+  function getWarpColor(idx) {
+    if (activities && activities[idx]) {
+      return getActivityColor(activities[idx]);
+    }
+    // Default fallback color (bright cyan with some alpha)
+    return color(0, 255, 255, 200);
+  }
+
   pg.push();
   pg.translate(x, y);
   pg.noFill();
   pg.blendMode(ADD);
 
+  // Setup shadow parameters for all styles to create drop shadow
+  pg.drawingContext.shadowOffsetX = 2;
+  pg.drawingContext.shadowOffsetY = 2;
+  pg.drawingContext.shadowBlur = 6;
+  pg.drawingContext.shadowColor = 'rgba(0, 0, 0, 0.5)';
+
   switch (warpStyle) {
-      case 'linear':
-         pg.strokeWeight(2 + sin(frameCount * 0.1) * 1.5);
-         for (let i = -size; i <= size; i += 8) {
-            let waveOffset = sin((frameCount * 0.03 + i) * 3) * 6;
-            let jitter = (noise(i * 0.1, frameCount * 0.05) - 0.5) * 3;
-            let colorIndex = Math.floor((i + size) / 8) % activities.length;
-            let col = getActivityColor(activities[colorIndex]);
-            pg.stroke(red(col), green(col), blue(col), 180 + 75 * sin(frameCount * 0.1 + i));
-            pg.line(i + jitter, -size + waveOffset, -i * 0.2 + jitter, size - waveOffset);
-         }
-         // subtle horizontal grid lines, pulse alpha
-         pg.stroke(255, 50 + 50 * sin(frameCount * 0.1));
-         pg.strokeWeight(0.5);
-         for (let yOff = -size; yOff <= size; yOff += 10) {
-            let horizOffset = sin(frameCount * 0.05 + yOff) * 2;
-            pg.line(-size, yOff + horizOffset, size, yOff + horizOffset);
-         }
-         break;
+    case 'linear':
+      pg.strokeWeight(2 + sin(frameCount * 0.1) * 1.5);
+      for (let i = -size; i <= size; i += 8) {
+        let waveOffset = sin((frameCount * 0.03 + i) * 3) * 6;
+        let jitter = (noise(i * 0.1, frameCount * 0.05) - 0.5) * 3;
+        let colorIndex = Math.floor((i + size) / 8) % activities.length;
+        let col = getWarpColor(colorIndex);
+        pg.stroke(red(col), green(col), blue(col), 180 + 75 * sin(frameCount * 0.1 + i));
+        pg.line(i + jitter, -size + waveOffset, -i * 0.2 + jitter, size - waveOffset);
+      }
+      pg.stroke(255, 50 + 50 * sin(frameCount * 0.1));
+      pg.strokeWeight(0.5);
+      for (let yOff = -size; yOff <= size; yOff += 10) {
+        let horizOffset = sin(frameCount * 0.05 + yOff) * 2;
+        pg.line(-size, yOff + horizOffset, size, yOff + horizOffset);
+      }
+      break;
 
-      case 'symmetric':
-         pg.strokeWeight(3.5 + sin(frameCount * 0.15) * 1.5);
-         for (let i = 0; i < size; i += 4) {
-            // vertical wave-distorted lines with jitter
-            let yOffset = sin((i + frameCount) * 0.12) * 12;
-            let jitterX = (noise(i * 0.1, frameCount * 0.1) - 0.5) * 2;
-            let colorIndex = Math.floor(i / 4) % activities.length;
-            let col = getActivityColor(activities[colorIndex]);
-            
-            // Draw glow layers behind main line for glow effect
-            for (let glow = 4; glow >= 1; glow--) {
-               pg.stroke(red(col), green(col), blue(col), 30 / glow);
-               pg.strokeWeight(pg.strokeWeight() + glow * 1.5);
-               pg.line(-size / 2 + i + jitterX, -yOffset, -size / 2 + i + jitterX, yOffset);
-            }
-            
-            // Draw main sharp line on top
-            pg.stroke(red(col), green(col), blue(col), 200);
-            pg.strokeWeight(3.5 + sin(frameCount * 0.15) * 1.5);
-            pg.line(-size / 2 + i + jitterX, -yOffset, -size / 2 + i + jitterX, yOffset);
+    case 'symmetric':
+      pg.strokeWeight(3.5 + sin(frameCount * 0.15) * 1.5);
+      for (let i = 0; i < size; i += 4) {
+        let yOffset = sin((i + frameCount) * 0.12) * 12;
+        let jitterX = (noise(i * 0.1, frameCount * 0.1) - 0.5) * 2;
+        let colorIndex = Math.floor(i / 4) % activities.length;
+        let col = getWarpColor(colorIndex);
 
-            // Add crossing horizontal lines forming subtle grid cells with alpha pulse
-            if (i % 12 === 0) {
-               pg.stroke(255, 80 + 40 * sin(frameCount * 0.3 + i));
-               pg.strokeWeight(1);
-               pg.line(-size / 2 + i - 2, -yOffset / 2, -size / 2 + i + 2, yOffset / 2);
-            }
-         }
-         break;
+        // Glow layers behind main line for glow effect
+        for (let glow = 4; glow >= 1; glow--) {
+          pg.stroke(red(col), green(col), blue(col), 30 / glow);
+          pg.strokeWeight(pg.strokeWeight() + glow * 1.5);
+          pg.line(-size / 2 + i + jitterX, -yOffset, -size / 2 + i + jitterX, yOffset);
+        }
 
-      case 'radial':
-         // Pulsating concentric ellipses with glow and alpha cycling
-         for (let r = 12, idx = 0; r < size; r += 10, idx++) {
-            let baseCol = getActivityColor(activities[idx % activities.length]);
-            let pulse = sin((frameCount + r * 5) * 0.1);
-            
-            // Glow rings behind main ellipse
-            for (let glow = 3; glow >= 1; glow--) {
-               pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 40 / glow * (0.5 + pulse));
-               pg.strokeWeight(2 + glow * 2);
-               pg.ellipse(0, 0, r * 2 + glow * 10, r * 2 + glow * 10);
-            }
+        // Main sharp line on top
+        pg.stroke(red(col), green(col), blue(col), 200);
+        pg.strokeWeight(3.5 + sin(frameCount * 0.15) * 1.5);
+        pg.line(-size / 2 + i + jitterX, -yOffset, -size / 2 + i + jitterX, yOffset);
 
-            // Main pulsating ellipse
-            pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 180 + 75 * pulse);
-            pg.strokeWeight(2 + pulse * 1.5);
-            pg.ellipse(0, 0, r * 2, r * 2);
+        if (i % 12 === 0) {
+          pg.stroke(255, 80 + 40 * sin(frameCount * 0.3 + i));
+          pg.strokeWeight(1);
+          pg.line(-size / 2 + i - 2, -yOffset / 2, -size / 2 + i + 2, yOffset / 2);
+        }
+      }
+      break;
 
-            // Add some tiny noisy points on ellipse perimeter for texture
-            let pointsCount = 12;
-            for (let p = 0; p < pointsCount; p++) {
-               let angle = TWO_PI * p / pointsCount + frameCount * 0.02;
-               let noiseFactor = noise(p * 0.1, frameCount * 0.05);
-               let px = cos(angle) * (r + noiseFactor * 4);
-               let py = sin(angle) * (r + noiseFactor * 4);
-               pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 150);
-               pg.strokeWeight(1.5);
-               pg.point(px, py);
-            }
-         }
-         break;
+    case 'radial':
+      for (let r = 12, idx = 0; r < size; r += 10, idx++) {
+        let baseCol = getWarpColor(idx % activities.length);
+        let pulse = sin((frameCount + r * 5) * 0.1);
 
-     case 'noise':
+        // Glow rings behind main ellipse
+        for (let glow = 3; glow >= 1; glow--) {
+          pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 40 / glow * (0.5 + pulse));
+          pg.strokeWeight(2 + glow * 2);
+          pg.ellipse(0, 0, r * 2 + glow * 10, r * 2 + glow * 10);
+        }
+
+        // Main pulsating ellipse
+        pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 180 + 75 * pulse);
+        pg.strokeWeight(2 + pulse * 1.5);
+        pg.ellipse(0, 0, r * 2, r * 2);
+
+        // Tiny noisy points on ellipse perimeter for texture
+        let pointsCount = 12;
+        for (let p = 0; p < pointsCount; p++) {
+          let angle = TWO_PI * p / pointsCount + frameCount * 0.02;
+          let noiseFactor = noise(p * 0.1, frameCount * 0.05);
+          let px = cos(angle) * (r + noiseFactor * 4);
+          let py = sin(angle) * (r + noiseFactor * 4);
+          pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 150);
+          pg.strokeWeight(1.5);
+          pg.point(px, py);
+        }
+      }
+      break;
+
+    case 'noise':
       pg.strokeWeight(2);
-      let spacing = 8; // distance between dots
+      let spacing = 8;
       for (let i = -size / 2; i <= size / 2; i += spacing) {
-         for (let j = -size / 2; j <= size / 2; j += spacing) {
-            // Small jitter so it feels "noisy" but still evenly spaced
-            let n = noise((i + x) * 0.1 + frameCount * 0.02, (j + y) * 0.1 + frameCount * 0.02);
-            let jitterX = map(n, 0, 1, -1.5, 1.5);
-            let jitterY = map(n, 0, 1, -1.5, 1.5);
+        for (let j = -size / 2; j <= size / 2; j += spacing) {
+          let n = noise((i + x) * 0.1 + frameCount * 0.02, (j + y) * 0.1 + frameCount * 0.02);
+          let jitterX = map(n, 0, 1, -1.5, 1.5);
+          let jitterY = map(n, 0, 1, -1.5, 1.5);
 
-            let colorIndex = (Math.floor(i / spacing) + Math.floor(j / spacing)) % activities.length;
-            let col = getActivityColor(activities[colorIndex]);
+          let colorIndex = (Math.floor(i / spacing) + Math.floor(j / spacing)) % activities.length;
+          let col = getWarpColor(colorIndex);
 
-            pg.stroke(red(col), green(col), blue(col), 180);
-            pg.point(i + jitterX, j + jitterY);
-         }
+          pg.stroke(red(col), green(col), blue(col), 180);
+          pg.point(i + jitterX, j + jitterY);
+        }
       }
       break;
 
     default:
-
       // fallback or no-op
       break;
-   }
+  }
 
-   pg.pop();
+  // Disable shadow after drawing so it doesn't affect other drawings
+  pg.drawingContext.shadowOffsetX = 0;
+  pg.drawingContext.shadowOffsetY = 0;
+  pg.drawingContext.shadowBlur = 0;
+  pg.drawingContext.shadowColor = 'transparent';
+
+  pg.pop();
 }
