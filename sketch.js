@@ -355,10 +355,6 @@ function setup() {
 `);
 
    updatePlaceholderVisibility();
-
-   // === CREATE REUSABLE PREVIEW BUFFER ===
-   previewPg = createGraphics(200, 200);
-   previewPg.pixelDensity(1);
 }
 
 function setupArrows() {
@@ -498,26 +494,24 @@ function windowResized() {
 }
 
 function renderEntryVisual(entry, pg) {
+  // Ensure pg is valid
   if (!pg || typeof pg.push !== 'function') {
-    pg = window;
+    pg = window; // fallback to main canvas context
   }
 
   pg.push();
 
-  const size = 140;         // fixed preview size base
-  const strokeW = 3;        // preview stroke weight
+  const size = 140;
+  const strokeW = 3;
+
   const activityColors = (entry.activities || []).map(getActivityColor);
   const baseColor = getActivityColor(entry.activities?.[0] || '');
-  const entryShapeSize = size; 
-  const glowStrength = map(entry.megawatts || 0, 0, 50, 5, 30); // match draw()
-  const isHovered = false;  // no hover in modal
 
-  // === Equivalent transforms to main draw() ===
-  pg.translate(pg.width / 2, pg.height / 2); // center in preview
-  pg.rotate(PI / 36);                        // baseline small rotation
-  pg.scale(1);                               // previews start at normal scale
+  const entryShapeSize = size;
+  const glowStrength = 20; // constant for previews
+  const isHovered = false; // previews aren't hover states
 
-  // === Base shadow + shape (matches drawSuprematistOpShadowRect usage) ===
+  // Always pass pg explicitly to shadow rect
   const shadowInfo = drawSuprematistOpShadowRect(
     entryShapeSize,
     entry.megawatts,
@@ -527,52 +521,47 @@ function renderEntryVisual(entry, pg) {
     isHovered,
     entry.animalType?.[0] || '',
     activityColors,
-    { flipped: true, pg }
+    true, // flipped orientation
+    pg
   );
 
-  // === HABITAT SHAPE ===
   if (entry.habitat?.length) {
     pg.stroke(0, 80);
-    pg.strokeWeight(strokeW + 1.5);
-    drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor, strokeW, pg);
+    pg.strokeWeight(strokeW + 1);
+    drawHabitatShape(entry.habitat, 0, 0, size, baseColor, strokeW, pg);
   }
 
-  // === COMBINED HABITAT OVERLAY ===
   if (entry.activities && entry.habitat) {
     pg.stroke(0, 80);
-    pg.strokeWeight(strokeW + 1.5);
-    drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize, 2, pg);
+    pg.strokeWeight(strokeW + 1);
+    drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, size, 1.5, pg);
   }
 
-  // === ARRAY OVERLAY ===
   if (entry.arrayType) {
     pg.push();
     pg.translate(-shadowInfo.offsetX, -shadowInfo.offsetY);
     pg.rotate(-shadowInfo.angle);
     pg.stroke(0, 80);
-    pg.strokeWeight(strokeW + 1.5);
-    drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10, strokeW, pg);
+    pg.strokeWeight(strokeW + 1);
+    drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.1, 7, strokeW, pg);
     pg.pop();
   }
 
-  // === CROP EDGE STYLE ===
   if (entry.cropType?.length > 0) {
-    drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.35, strokeW, pg);
+    drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, size * 1.3, strokeW, pg);
   }
 
-  // === ANIMAL LINE ===
   if (entry.animalType?.length > 0) {
-    const yOffset = entryShapeSize * 0.15;
-    const animalSize = entryShapeSize * 0.9;
+    const yOffset = size * 0.15;
+    const animalSize = size * 0.9;
     pg.stroke(0, 80);
-    pg.strokeWeight(strokeW + 1.1);
-    drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, pg);
-    pg.strokeWeight(strokeW);
+    pg.strokeWeight(strokeW + 0.5);
     drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, pg);
   }
 
   pg.pop();
 }
+
 
 function draw() {
    // === BACKGROUND ===
@@ -785,16 +774,17 @@ if (modalPreviewEntry && modalPreviewCallback) {
    const entry = modalPreviewEntry;
 
    const scaleFactor = 0.55;
-   previewPg.clear();
-   previewPg.push();
-   previewPg.translate(100, 100);
-   previewPg.scale(scaleFactor);
+   const pg = createGraphics(200, 200);
+   pg.pixelDensity(1);
+   pg.clear();
 
-   renderEntryVisual(entry, previewPg);
-   previewPg.pop();
+   pg.translate(100, 100); 
+   pg.scale(scaleFactor);
+
+   renderEntryVisual(entry, pg); // ensure pg flows through all nested calls
 
    setTimeout(() => {
-      modalPreviewCallback(previewPg.canvas.toDataURL());
+      modalPreviewCallback(pg.canvas.toDataURL());
       modalPreviewEntry = null;
       modalPreviewCallback = null;
    }, 10);
