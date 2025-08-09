@@ -549,7 +549,7 @@ function renderEntryVisual(entry, pg, isModal = false) {
     pg.strokeWeight(strokeW + 1);
 
     // Adjust grid density for modal thumbnails
-    const gridDensity = isModal ? 14 : 7;
+    const gridDensity = isModal ? 21 : 7;
 
     drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, strokeW + 1, gridDensity, pg);
     pg.pop();
