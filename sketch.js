@@ -1555,7 +1555,7 @@ function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, dens
          drawCrosshatchGridMultiColor(activities, size, density, pg);
          break;
       case 'single-axis tracking':
-         drawIsometricGridMultiColor(activities, size, density, slope, pg, 0.9);
+         drawIsometricGridMultiColor(activities, size, density, 0.9, pg);
          break;
       case 'dual-axis tracking':
          drawDottedMatrixMultiColor(activities, size, density, pg);
@@ -1605,7 +1605,7 @@ function drawCrosshatchGridMultiColor(activities, size, density = 10, pg) {
    pg.pop();
 }
 
-function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1, pg, widthScale = 1) {
+function drawIsometricGridMultiColor(activities, size, density = 2, slope = 0.9, pg) {
   if (!pg || typeof pg.push !== 'function') {
     pg = window;
   }
@@ -1614,48 +1614,47 @@ function drawIsometricGridMultiColor(activities, size, density = 2, slope = 1.1,
   let idx = 0;
   let halfSize = size / 2;
 
-  // Scale halfSize by widthScale for dynamic width adjustment
-  let scaledHalfSize = halfSize * widthScale;
-
   pg.push();
   pg.rotate(HALF_PI);
 
-  for (let x = -scaledHalfSize; x <= scaledHalfSize; x += density) {
-    let colA = getActivityColor(activities[idx % colorCount]);
-    let y1a = -scaledHalfSize * slope;
-    let y2a = scaledHalfSize * slope;
+   for (let x = -halfSize; x <= halfSize; x += density) {
+      let colA = getActivityColor(activities[idx % colorCount]);
+      let y1a = -halfSize * slope;
+      let y2a = halfSize * slope;
 
-    pg.stroke(0, 120);
-    pg.strokeWeight(2);
-    pg.line(x, y1a, x + scaledHalfSize, y2a);
+      // === Black base stroke ===
+      pg.stroke(0, 120);
+      pg.strokeWeight(2);
+      pg.line(x, y1a, x + halfSize, y2a);
 
-    pg.stroke(colA);
-    pg.strokeWeight(1.2);
-    pg.line(x, y1a, x + scaledHalfSize, y2a);
-    idx++;
+      // === Colored line ===
+      pg.stroke(colA);
+      pg.strokeWeight(1.2);
+      pg.line(x, y1a, x + halfSize, y2a);
+      idx++;
 
-    let colB = getActivityColor(activities[idx % colorCount]);
-    let y1b = -scaledHalfSize * slope;
-    let y2b = scaledHalfSize * slope;
+      let colB = getActivityColor(activities[idx % colorCount]);
+      let y1b = -halfSize * slope;
+      let y2b = halfSize * slope;
 
-    pg.stroke(0, 120);
-    pg.strokeWeight(2);
-    pg.line(x + scaledHalfSize, y1b, x, y2b);
+      pg.stroke(0, 120);
+      pg.strokeWeight(2);
+      pg.line(x + halfSize, y1b, x, y2b);
 
-    pg.stroke(colB);
-    pg.strokeWeight(1.2);
-    pg.line(x + scaledHalfSize, y1b, x, y2b);
-    idx++;
-  }
+      pg.stroke(colB);
+      pg.strokeWeight(1.2);
+      pg.line(x + halfSize, y1b, x, y2b);
+      idx++;
+   }
 
-  // Highlight lines
-  pg.stroke(255, 70);
-  pg.strokeWeight(0.8);
-  for (let i = -scaledHalfSize; i <= scaledHalfSize; i += density * 5) {
-    pg.line(i, -scaledHalfSize * slope, i + scaledHalfSize, scaledHalfSize * slope);
-  }
+   // Highlight lines
+   pg.stroke(255, 70);
+   pg.strokeWeight(0.8);
+   for (let i = -halfSize; i <= halfSize; i += density * 5) {
+      pg.line(i, -halfSize * slope, i + halfSize, halfSize * slope);
+   }
 
-  pg.pop();
+   pg.pop();
 }
 
 function drawDottedMatrixMultiColor(activities, size, density = 10, pg) {
