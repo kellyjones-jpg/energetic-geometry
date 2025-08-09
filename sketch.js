@@ -66,6 +66,8 @@ const cropEdgeGroups = {
    // Fruits & berries
    "berries": "berry",
    "blueberries": "berry",
+   "currants": "berry",
+   "elderberry": "berry",
    "raspberry": "berry",
    "strawberries": "berry",
    "native berry plants": "berry",
