@@ -811,6 +811,22 @@ if (modalPreviewEntry && modalPreviewCallback) {
 }
 }
 
+function capitalizeLastWordPV(str) {
+  if (!str) return '';
+  let parts = str.trim().split(' ');
+  if (parts.length === 0) return '';
+  let lastWord = parts.pop();
+  // Make last word uppercase if it matches "pv" (case-insensitive)
+  if (lastWord.toLowerCase() === 'pv') {
+    lastWord = lastWord.toUpperCase();
+  }
+  // Rejoin all words, capitalizing each word except last which is forced uppercase PV
+  let firstPart = parts
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+  return (firstPart ? firstPart + ' ' : '') + lastWord;
+}
+
 function showModalWithEntry(entry) {
    modalPreviewEntry = entry;
    modalPreviewCallback = (imgDataURL) => {
@@ -829,13 +845,13 @@ function insertModalContent(entry, visualImg) {
   if (entry.activities?.length)
     lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
   if (!isNaN(entry.megawatts))
-    lines.push(`<strong>System Size:</strong> ${entry.megawatts} MW`);
+    lines.push(`<strong>System Size:</strong> ${entry.megawatts} Megawatts`);
   if (!isNaN(entry.acres))
     lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
   if (entry.year)
     lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
   if (entry.pvTech)
-    lines.push(`<strong>PV Technology:</strong> ${capitalizeWords(entry.pvTech)}`);
+    lines.push(`<strong>PV Technology:</strong> ${capitalizeLastWordPV(entry.pvTech)}`);
   if (entry.arrayType)
     lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
   if (entry.habitat?.length)
