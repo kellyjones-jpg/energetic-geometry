@@ -1823,7 +1823,7 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat, posX, posY, 
    drawShapeByType(shapeType, shadowW, shadowH, pg);
    pg.pop();
 
-   fill(255);
+   pg.fill(255);
    pg.push();
    pg.rotate(panelLightAngle - pg.radians(4));
    pg.translate(offset * 1.4, offset * 0.8);
