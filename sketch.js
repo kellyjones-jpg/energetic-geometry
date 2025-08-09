@@ -263,6 +263,7 @@ function setup() {
       let animalType = animalTypeStr.split(/,\s*/).map(a => a.trim().toLowerCase()).filter(a => a.length > 0);
       let cropTypeStr = table.getString(i, 'Crop Types') || '';
       let cropType = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
+      let pvTechStr = table.getString(i, 'PV Technology') || '';
       let arrayTypeStr = table.getString(i, 'Type Of Array') || '';
       let year = table.getString(i, 'Year Installed') || 'Unknown';
       let megawatts = parseFloat(table.getString(i, 'System Size') || 0);
@@ -275,6 +276,7 @@ function setup() {
          habitat,
          animalType,
          cropType,
+         pvTech: pvTechStr.trim().toLowerCase(),
          arrayType: arrayTypeStr.trim().toLowerCase(),
          year,
          megawatts,
@@ -813,6 +815,8 @@ function insertModalContent(entry, visualImg) {
     lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
   if (entry.year)
     lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
+  if (entry.pvTech)
+    lines.push(`<strong>PV Technology:</strong> ${capitalizeWords(entry.pvTech)}`);
   if (entry.arrayType)
     lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
   if (entry.habitat?.length)
@@ -1907,13 +1911,13 @@ function pathShapeByType(type, size, pg) {
    }
 }
 
-function drawPVWarpStyle(pvType, activities, x, y, size, pg) {
+function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
   if (!pg || typeof pg.push !== 'function') {
     pg = window;
   }
-   if (!pvType || !activities || activities.length === 0) return;
+   if (!pvTech || !activities || activities.length === 0) return;
 
-   let type = pvType.trim().toLowerCase();
+   let type = pvTech.trim().toLowerCase();
    let warpStyle = pvWarpStyles[type];
    if (!warpStyle) return;
 
