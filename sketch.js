@@ -503,6 +503,8 @@ function renderEntryVisual(entry, pg) {
     pg = window; // fallback to main canvas context
   }
 
+  pg.clear();  // Clear with transparency for modal thumbnails
+
   pg.push();
 
   const size = 140;
@@ -545,11 +547,12 @@ function renderEntryVisual(entry, pg) {
     pg.rotate(-shadowInfo.angle);
     pg.stroke(0, 80);
     pg.strokeWeight(strokeW + 1);
-    drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.1, 7, strokeW, pg);
+    // Correct argument order: size, strokeW, density, pg
+    drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, strokeW + 1, 7, pg);
     pg.pop();
   }
 
-    if (entry.cropType?.length > 0) {
+  if (entry.cropType?.length > 0) {
     drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, size * 1.3, strokeW, pg);
   }
 
@@ -778,25 +781,30 @@ if (entry.animalType?.length > 0) {
 pop(); // end entry group
 }
 
-// === MODAL PREVIEW ===
 if (modalPreviewEntry && modalPreviewCallback) {
-   const entry = modalPreviewEntry;
+  const entry = modalPreviewEntry;
 
-   const scaleFactor = 0.55;
-   const pg = createGraphics(200, 200);
-   pg.pixelDensity(1);
-   pg.clear();
+  const scaleFactor = 0.55;
+  const pg = createGraphics(200, 200);
+  pg.pixelDensity(1);
+  pg.clear();
+  pg.colorMode(RGB, 255, 255, 255, 255);
+  pg.rectMode(CENTER);
+  pg.ellipseMode(CENTER);
 
-   pg.translate(100, 100); 
-   pg.scale(scaleFactor);
+  pg.push();
+  pg.translate(pg.width / 2, pg.height / 2);
+  pg.scale(scaleFactor);
 
-   renderEntryVisual(entry, pg); // ensure pg flows through all nested calls
+  renderEntryVisual(entry, pg);
 
-   setTimeout(() => {
-      modalPreviewCallback(pg.canvas.toDataURL());
-      modalPreviewEntry = null;
-      modalPreviewCallback = null;
-   }, 10);
+  pg.pop();
+
+  setTimeout(() => {
+    modalPreviewCallback(pg.canvas.toDataURL());
+    modalPreviewEntry = null;
+    modalPreviewCallback = null;
+  }, 10);
 }
 }
 
