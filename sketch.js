@@ -490,7 +490,7 @@ function windowResized() {
 
    updateLayout(targetHeight);
    resizeCanvas(canvasWidth, targetHeight);
-   redraw(); // if you're using noLoop(), this ensures one frame renders
+   redraw(); 
 }
 
 function renderEntryVisual(entry, pg) {
@@ -506,11 +506,9 @@ function renderEntryVisual(entry, pg) {
 
   const activityColors = (entry.activities || []).map(getActivityColor);
   const baseColor = getActivityColor(entry.activities?.[0] || '');
-
-  // You may want to set these explicitly here to avoid referencing undeclared vars
-  const entryShapeSize = size; // or however you want to define it for previews
-  const glowStrength = 20;     // or a computed value
-  const isHovered = false;     // previews aren't hover states
+  const entryShapeSize = size; 
+  const glowStrength = 20;
+  const isHovered = false; 
 
   // Shadow + base shape
   const shadowInfo = drawSuprematistOpShadowRect(
