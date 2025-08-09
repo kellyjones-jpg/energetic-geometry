@@ -266,7 +266,7 @@ function setup() {
       let cropType = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
       let pvTechStr = table.getString(i, 'PV Technology') || '';
       let arrayTypeStr = table.getString(i, 'Type Of Array') || '';
-      let year = String(table.getString(i, 'Year Installed') || 'Unknown').trim();
+      let year = table.getString(i, 'Year Installed') || 'Unknown';
       let megawatts = parseFloat(table.getString(i, 'System Size') || 0);
       let acres = parseFloat(table.getString(i, 'Site Size') || 0);
       let url = table.getString(i, 'URL') || '';
@@ -1961,58 +1961,83 @@ function pathShapeByType(type, size, pg) {
    }
 }
 
-function drawPVWarpStyle(pvTech, activities, x, y, size, spacing = 6, pg) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
+function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window;
+  }
   if (!pvTech || !activities || activities.length === 0) return;
 
   let type = pvTech.trim().toLowerCase();
+  let warpStyle = pvWarpStyles[type];
+  if (!warpStyle) return;
 
   pg.push();
   pg.translate(x, y);
   pg.noFill();
-  pg.strokeWeight(1.2);
+  pg.blendMode(ADD);
 
-  const cols = Math.floor(size / spacing);
-  const rows = Math.floor(size / spacing);
+  switch (warpStyle) {
+   case 'linear':
+   pg.strokeWeight(2);
+   pg.stroke(getActivityColor(activities[0])); // Single color or cycle
+   // Path: M10 50 Q60 10 110 50
+   pg.noFill();
+   pg.beginShape();
+   pg.vertex(-size/2, size/2);
+   pg.quadraticVertex(0, -size/2, size/2, size/2);
+   pg.endShape();
 
-  switch (type) {
-    case 'monofacial': // horizontal lines
-      pg.stroke(0);
-      for (let row = 0; row <= rows; row++) {
-        let yPos = -size / 2 + row * spacing;
-        pg.line(-size / 2, yPos, size / 2, yPos);
+   // White horizontal base line: x1=20, y1=50, x2=100, y2=50
+   pg.stroke(255);
+   pg.line(-size*0.25, size/2, size*0.416, size/2);
+   break;
+      case 'symmetric':
+      pg.strokeWeight(2.5);
+      pg.noFill();
+      // Path: M10 50 Q40 10 60 50 Q80 10 110 50
+      pg.stroke(getActivityColor(activities[0]));
+      pg.beginShape();
+      pg.vertex(-size/2, size/2);
+      pg.quadraticVertex(-size/6, -size/2, 0, size/2);
+      pg.quadraticVertex(size/6, -size/2, size/2, size/2);
+      pg.endShape();
+
+      // White lines for vertical bars
+      pg.stroke(255);
+      pg.line(-size/6, size/2, -size/6 * 0.5, -size/2);
+      pg.line(size/6 * 0.5, -size/2, size/6, size/2);
+      break;
+      case 'radial':
+      pg.noFill();
+      let radii = [size*0.66, size*0.4, size*0.2]; // match SVG proportions
+      for (let r of radii) {
+         pg.stroke(getActivityColor(activities[0]));
+         pg.ellipse(0, 0, r, r);
       }
       break;
+     case 'noise':
+      pg.strokeWeight(2);
+      let spacing = 8; // distance between dots
+      for (let i = -size / 2; i <= size / 2; i += spacing) {
+         for (let j = -size / 2; j <= size / 2; j += spacing) {
+            // Small jitter so it feels "noisy" but still evenly spaced
+            let n = noise((i + x) * 0.1 + frameCount * 0.02, (j + y) * 0.1 + frameCount * 0.02);
+            let jitterX = map(n, 0, 1, -1.5, 1.5);
+            let jitterY = map(n, 0, 1, -1.5, 1.5);
 
-    case 'bifacial': // symmetric cross-hatch
-      pg.stroke(0);
-      // vertical lines
-      for (let col = 0; col <= cols; col++) {
-        let xPos = -size / 2 + col * spacing;
-        pg.line(xPos, -size / 2, xPos, size / 2);
-      }
-      // horizontal lines
-      for (let row = 0; row <= rows; row++) {
-        let yPos = -size / 2 + row * spacing;
-        pg.line(-size / 2, yPos, size / 2, yPos);
-      }
-      break;
+            let colorIndex = (Math.floor(i / spacing) + Math.floor(j / spacing)) % activities.length;
+            let col = getActivityColor(activities[colorIndex]);
 
-    case 'translucent': // evenly spaced dots
-      pg.stroke(0);
-      for (let col = 0; col <= cols; col++) {
-        for (let row = 0; row <= rows; row++) {
-          let xPos = -size / 2 + col * spacing;
-          let yPos = -size / 2 + row * spacing;
-          pg.point(xPos, yPos);
-        }
+            pg.stroke(red(col), green(col), blue(col), 180);
+            pg.point(i + jitterX, j + jitterY);
+         }
       }
       break;
 
     default:
-      // fallback: no PV warp
+      // fallback or no-op
       break;
-  }
+   }
 
-  pg.pop();
+   pg.pop();
 }
