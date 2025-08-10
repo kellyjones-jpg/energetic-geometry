@@ -143,10 +143,10 @@ const cropEdgeGroups = {
 };
 
 const pvWarpStyles = {
-  'monofacial pv': 'linear',
-  'bifacial pv': 'symmetric',
-  'translucent pv': 'radial',
-  'other': 'noise'
+   'monofacial pv': 'linear',
+   'bifacial pv': 'symmetric',
+   'translucent pv': 'radial',
+   'other': 'noise'
 };
 
 const combinedIcon = `
@@ -496,121 +496,123 @@ function windowResized() {
 
    updateLayout(targetHeight);
    resizeCanvas(canvasWidth, targetHeight);
-   redraw(); 
+   redraw();
 }
 
 function capitalizeLastWordPV(str) {
-  if (!str) return '';
-  let parts = str.trim().split(/\s+/); // split on any whitespace
+   if (!str) return '';
+   let parts = str.trim().split(/\s+/); // split on any whitespace
 
-  if (parts.length === 0) return '';
+   if (parts.length === 0) return '';
 
-  if (parts.length === 1) {
-    return parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase();
-  }
+   if (parts.length === 1) {
+      return parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase();
+   }
 
-  let lastWord = parts.pop();
+   let lastWord = parts.pop();
 
-  if (lastWord.toLowerCase() === 'pv') {
-    lastWord = 'PV'; // simpler
-  } else {
-    lastWord = lastWord.charAt(0).toUpperCase() + lastWord.slice(1).toLowerCase();
-  }
+   if (lastWord.toLowerCase() === 'pv') {
+      lastWord = 'PV'; // simpler
+   } else {
+      lastWord = lastWord.charAt(0).toUpperCase() + lastWord.slice(1).toLowerCase();
+   }
 
-  let firstPart = parts
-    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-    .join(' ');
+   let firstPart = parts
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(' ');
 
-  return (firstPart ? firstPart + ' ' : '') + lastWord;
+   return (firstPart ? firstPart + ' ' : '') + lastWord;
 }
 
 function normalizePvTechForLookup(str) {
-  if (!str) return '';
-  const s = str.trim().toLowerCase();
-  if (s === 'other') return 'other';
-  return s;
+   if (!str) return '';
+   const s = str.trim().toLowerCase();
+   if (s === 'other') return 'other';
+   return s;
 }
 
 function renderEntryVisual(entry, pg, isModal = false) {
-  // Ensure pg is a valid drawing context
-  if (!pg || typeof pg.push !== 'function') {
-    pg = window;
-  }
+   // Ensure pg is a valid drawing context
+   if (!pg || typeof pg.push !== 'function') {
+      pg = window;
+   }
 
-  pg.clear();  // Clear with transparency for modal thumbnails
+   pg.clear(); // Clear with transparency for modal thumbnails
 
-  pg.push();
+   pg.push();
 
-  const size = 140;
-  const strokeW = 3;
-  const scaleFactor = 1.15;
-  const offset = size * (scaleFactor - 1) / 2;
+   const size = 140;
+   const strokeW = 3;
+   const scaleFactor = 1.15;
+   const offset = size * (scaleFactor - 1) / 2;
 
-  pg.translate(offset, offset);
-  pg.scale(scaleFactor);
+   pg.translate(offset, offset);
+   pg.scale(scaleFactor);
 
-  const activityColors = (entry.activities || []).map(getActivityColor);
-  const baseColor = getActivityColor(entry.activities?.[0] || '');
-  const entryShapeSize = size;
-  const glowStrength = 20;
-  const isHovered = false;
+   const activityColors = (entry.activities || []).map(getActivityColor);
+   const baseColor = getActivityColor(entry.activities?.[0] || '');
+   const entryShapeSize = size;
+   const glowStrength = 20;
+   const isHovered = false;
 
-  // Shadow + base shape
-  const shadowInfo = drawSuprematistOpShadowRect(
-    entryShapeSize,
-    entry.megawatts,
-    entry.habitat,
-    0, 0,
-    glowStrength,
-    isHovered,
-    entry.animalType?.[0] || '',
-    activityColors,
-    { flipped: true, pg }
-  );
+   // Shadow + base shape
+   const shadowInfo = drawSuprematistOpShadowRect(
+      entryShapeSize,
+      entry.megawatts,
+      entry.habitat,
+      0, 0,
+      glowStrength,
+      isHovered,
+      entry.animalType?.[0] || '',
+      activityColors, {
+         flipped: true,
+         pg
+      }
+   );
 
-  if (entry.habitat?.length) {
-    pg.stroke(0, 80);
-    pg.strokeWeight(strokeW + 1);
-    drawHabitatShape(entry.habitat, 0, 0, size, baseColor, strokeW, pg);
-  }
+   if (entry.habitat?.length) {
+      pg.stroke(0, 80);
+      pg.strokeWeight(strokeW + 1);
+      drawHabitatShape(entry.habitat, 0, 0, size, baseColor, strokeW, pg);
+   }
 
-  if (entry.activities && entry.habitat) {
-    pg.stroke(0, 80);
-    pg.strokeWeight(strokeW + 1);
-    drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, size, 1.5, pg);
-  }
-  
-  if (entry.pvTech?.length > 0) {
-  const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
-  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, size, pg);
-}
+   if (entry.activities && entry.habitat) {
+      pg.stroke(0, 80);
+      pg.strokeWeight(strokeW + 1);
+      drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, size, 1.5, pg);
+   }
 
-  if (entry.arrayType) {
-    pg.push();
-    pg.translate(-shadowInfo.offsetX, -shadowInfo.offsetY);
-    pg.rotate(-shadowInfo.angle);
-    pg.stroke(0, 80);
-    pg.strokeWeight(strokeW + 1);
+   if (entry.pvTech?.length > 0) {
+      const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
+      drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, size, pg);
+   }
 
-    // Adjust grid density for modal thumbnails
-    const gridDensity = isModal ? 21 : 7;
+   if (entry.arrayType) {
+      pg.push();
+      pg.translate(-shadowInfo.offsetX, -shadowInfo.offsetY);
+      pg.rotate(-shadowInfo.angle);
+      pg.stroke(0, 80);
+      pg.strokeWeight(strokeW + 1);
 
-    drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, strokeW + 1, gridDensity, pg);
-    pg.pop();
-  }
+      // Adjust grid density for modal thumbnails
+      const gridDensity = isModal ? 21 : 7;
 
-  if (entry.cropType?.length > 0) {
-    drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, size * 1.3, strokeW, pg);
-  }
+      drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, strokeW + 1, gridDensity, pg);
+      pg.pop();
+   }
 
-  if (entry.animalType?.length > 0) {
-    const yOffset = size * 0.25;
-    const animalSize = size * 1;
-    pg.stroke(0, 80);
-    pg.strokeWeight(strokeW + 0.75);
-    drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, pg);
-  }
-  pg.pop();
+   if (entry.cropType?.length > 0) {
+      drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, size * 1.3, strokeW, pg);
+   }
+
+   if (entry.animalType?.length > 0) {
+      const yOffset = size * 0.25;
+      const animalSize = size * 1;
+      pg.stroke(0, 80);
+      pg.strokeWeight(strokeW + 0.75);
+      drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, pg);
+   }
+   pg.pop();
 }
 
 function draw() {
@@ -755,149 +757,149 @@ function draw() {
       const baseAngle = (col % 2 === 0) ? PI / 36 : -PI / 36;
       const randomAngle = map(noise(row * 0.3, col * 0.2), 0, 1, -PI / 90, PI / 90);
 
- // === DRAW ENTRY ===
-push();
-translate(entry._screenX, entry._screenY);
-rotate(baseAngle + randomAngle);
-scale(entry.currentScale);
-entry._radius = entryShapeSize * entry.currentScale * 0.5;
+      // === DRAW ENTRY ===
+      push();
+      translate(entry._screenX, entry._screenY);
+      rotate(baseAngle + randomAngle);
+      scale(entry.currentScale);
+      entry._radius = entryShapeSize * entry.currentScale * 0.5;
 
-const activityColors = (entry.activities || []).map(getActivityColor);
-const baseColor = getActivityColor(entry.activities?.[0] || '');
-const glowStrength = isHovered ?
-   map(entry.megawatts || 0, 0, maxMW, 5, 30) * 1.5 :
-   map(entry.megawatts || 0, 0, maxMW, 5, 30);
+      const activityColors = (entry.activities || []).map(getActivityColor);
+      const baseColor = getActivityColor(entry.activities?.[0] || '');
+      const glowStrength = isHovered ?
+         map(entry.megawatts || 0, 0, maxMW, 5, 30) * 1.5 :
+         map(entry.megawatts || 0, 0, maxMW, 5, 30);
 
-const shadowInfo = drawSuprematistOpShadowRect(
-   entryShapeSize,
-   entry.megawatts,
-   entry.habitat,
-   0, 0,
-   glowStrength,
-   isHovered,
-   entry.animalType?.[0] || '',
-   activityColors,
-   true // flipped orientation
-);
+      const shadowInfo = drawSuprematistOpShadowRect(
+         entryShapeSize,
+         entry.megawatts,
+         entry.habitat,
+         0, 0,
+         glowStrength,
+         isHovered,
+         entry.animalType?.[0] || '',
+         activityColors,
+         true // flipped orientation
+      );
 
-// Pass the main canvas context (this) instead of window
-if (entry.habitat?.length) {
-   stroke(0, 80);
-   strokeWeight(strokeW + 1.5);
-   drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor, strokeW, this);
-}
+      // Pass the main canvas context (this) instead of window
+      if (entry.habitat?.length) {
+         stroke(0, 80);
+         strokeWeight(strokeW + 1.5);
+         drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor, strokeW, this);
+      }
 
-if (entry.activities && entry.habitat) {
-   stroke(0, 80);
-   strokeWeight(strokeW + 1.5);
-   drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize, 2, this);
-}
+      if (entry.activities && entry.habitat) {
+         stroke(0, 80);
+         strokeWeight(strokeW + 1.5);
+         drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize, 2, this);
+      }
 
-if (entry.pvTech?.length > 0) {
-  const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
-  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, entryShapeSize, this);
-}
+      if (entry.pvTech?.length > 0) {
+         const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
+         drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, entryShapeSize, this);
+      }
 
-if (entry.arrayType) {
-   push();
-   translate(-shadowInfo.offsetX, -shadowInfo.offsetY);
-   rotate(-shadowInfo.angle);
-   stroke(0, 80);
-   strokeWeight(strokeW + 1.5);
-   drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10, strokeW, this);
-   pop();
-}
+      if (entry.arrayType) {
+         push();
+         translate(-shadowInfo.offsetX, -shadowInfo.offsetY);
+         rotate(-shadowInfo.angle);
+         stroke(0, 80);
+         strokeWeight(strokeW + 1.5);
+         drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10, strokeW, this);
+         pop();
+      }
 
-if (entry.cropType?.length > 0) {
-   drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.35, strokeW, this);
-}
+      if (entry.cropType?.length > 0) {
+         drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.35, strokeW, this);
+      }
 
-if (entry.animalType?.length > 0) {
-   const yOffset = entryShapeSize * 0.15;
-   const animalSize = entryShapeSize * 0.9;
-   stroke(0, 80);
-   strokeWeight(strokeW + 1.1);
-   drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, this);
-   strokeWeight(strokeW);
-   drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, this);
-}
+      if (entry.animalType?.length > 0) {
+         const yOffset = entryShapeSize * 0.15;
+         const animalSize = entryShapeSize * 0.9;
+         stroke(0, 80);
+         strokeWeight(strokeW + 1.1);
+         drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, this);
+         strokeWeight(strokeW);
+         drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, this);
+      }
 
-pop(); // end entry group
-}
+      pop(); // end entry group
+   }
 
-if (modalPreviewEntry && typeof modalPreviewCallback === 'function') {
-  const entry = modalPreviewEntry;
+   if (modalPreviewEntry && typeof modalPreviewCallback === 'function') {
+      const entry = modalPreviewEntry;
 
-  const scaleFactor = 0.55;
-  const pg = createGraphics(250, 250);
-  pg.pixelDensity(1);
-  pg.clear();
-  pg.colorMode(RGB, 255, 255, 255, 255);
-  pg.rectMode(CENTER);
-  pg.ellipseMode(CENTER);
+      const scaleFactor = 0.55;
+      const pg = createGraphics(250, 250);
+      pg.pixelDensity(1);
+      pg.clear();
+      pg.colorMode(RGB, 255, 255, 255, 255);
+      pg.rectMode(CENTER);
+      pg.ellipseMode(CENTER);
 
-  pg.push();
-  pg.translate(pg.width / 2, pg.height / 2);
-  pg.scale(scaleFactor);
+      pg.push();
+      pg.translate(pg.width / 2, pg.height / 2);
+      pg.scale(scaleFactor);
 
-  renderEntryVisual(entry, pg);
+      renderEntryVisual(entry, pg);
 
-  pg.pop();
+      pg.pop();
 
-  setTimeout(() => {
-    modalPreviewCallback(pg.canvas.toDataURL());
-    modalPreviewEntry = null;
-    modalPreviewCallback = null;
-  }, 10);
-}
+      setTimeout(() => {
+         modalPreviewCallback(pg.canvas.toDataURL());
+         modalPreviewEntry = null;
+         modalPreviewCallback = null;
+      }, 10);
+   }
 }
 
 function showModalWithEntry(entry) {
    modalPreviewEntry = entry;
    modalPreviewCallback = (imgDataURL) => {
-   insertModalContent(entry, imgDataURL); // New helper
-};
+      insertModalContent(entry, imgDataURL); // New helper
+   };
 }
 
 function insertModalContent(entry, visualImg) {
-  const modalTitle = document.getElementById('siteModalLabel');
-  const modalBody = document.getElementById('siteModalBody');
+   const modalTitle = document.getElementById('siteModalLabel');
+   const modalBody = document.getElementById('siteModalBody');
 
-  const capitalizeWords = (str) => str.replace(/\b\w/g, c => c.toUpperCase());
-  const formatArray = (arr) => Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
+   const capitalizeWords = (str) => str.replace(/\b\w/g, c => c.toUpperCase());
+   const formatArray = (arr) => Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
 
-  let lines = [];
-  if (entry.activities?.length)
-    lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
-  if (!isNaN(entry.megawatts))
-    lines.push(`<strong>System Size:</strong> ${entry.megawatts} Megawatts`);
-  if (!isNaN(entry.acres))
-    lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
-  if (entry.year)
-    lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
-  if (entry.pvTech)
-    lines.push(`<strong>PV Technology:</strong> ${capitalizeLastWordPV(entry.pvTech)}`);
-  if (entry.arrayType)
-    lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
-  if (entry.habitat?.length)
-    lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
-  if (entry.cropType?.length)
-    lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
-  if (entry.animalType?.length)
-    lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
+   let lines = [];
+   if (entry.activities?.length)
+      lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
+   if (!isNaN(entry.megawatts))
+      lines.push(`<strong>System Size:</strong> ${entry.megawatts} Megawatts`);
+   if (!isNaN(entry.acres))
+      lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
+   if (entry.year)
+      lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
+   if (entry.pvTech)
+      lines.push(`<strong>PV Technology:</strong> ${capitalizeLastWordPV(entry.pvTech)}`);
+   if (entry.arrayType)
+      lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
+   if (entry.habitat?.length)
+      lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
+   if (entry.cropType?.length)
+      lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
+   if (entry.animalType?.length)
+      lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
 
-  modalTitle.innerHTML = entry.url
-    ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" class="hyperlink">
+   modalTitle.innerHTML = entry.url ?
+      `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" class="hyperlink">
          ${entry.name}${combinedIcon}
-       </a>`
-    : entry.name;
+       </a>` :
+      entry.name;
 
-  modalBody.querySelectorAll('.dynamic-content').forEach(el => el.remove());
+   modalBody.querySelectorAll('.dynamic-content').forEach(el => el.remove());
 
-  const wrapper = document.createElement('div');
-  wrapper.classList.add('dynamic-content');
+   const wrapper = document.createElement('div');
+   wrapper.classList.add('dynamic-content');
 
-  wrapper.innerHTML = `
+   wrapper.innerHTML = `
      <div class="modal-site-visual-wrapper">
        <div class="col-md-4 float-right">
        <figure class="modal-site-visual">
@@ -910,11 +912,11 @@ function insertModalContent(entry, visualImg) {
      </div>
    `;
 
-  const toggleLegend = document.getElementById('toggle-legend');
-  modalBody.insertBefore(wrapper, toggleLegend);
+   const toggleLegend = document.getElementById('toggle-legend');
+   modalBody.insertBefore(wrapper, toggleLegend);
 
-  const siteModal = new bootstrap.Modal(document.getElementById('siteModal'));
-  siteModal.show();
+   const siteModal = new bootstrap.Modal(document.getElementById('siteModal'));
+   siteModal.show();
 }
 
 document.getElementById('toggle-legend').addEventListener('click', function () {
@@ -1054,513 +1056,529 @@ function updateYear(year, index) {
 }
 
 function drawCropEdgeStyle(cropTypes, activities, x, y, size, strokeW = 2, pg = window) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
-  if (!Array.isArray(cropTypes) || cropTypes.length === 0) return;
-  if (!Array.isArray(activities) || activities.length === 0) return;
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   if (!Array.isArray(cropTypes) || cropTypes.length === 0) return;
+   if (!Array.isArray(activities) || activities.length === 0) return;
 
-  const groups = cropTypes
-    .map(crop => cropEdgeGroups[crop.trim().toLowerCase()])
-    .filter(Boolean);
-  const uniqueGroups = [...new Set(groups)];
-  if (uniqueGroups.length === 0) return;
+   const groups = cropTypes
+      .map(crop => cropEdgeGroups[crop.trim().toLowerCase()])
+      .filter(Boolean);
+   const uniqueGroups = [...new Set(groups)];
+   if (uniqueGroups.length === 0) return;
 
-  pg.push();
-  pg.translate(x, y);
-  pg.noFill();
+   pg.push();
+   pg.translate(x, y);
+   pg.noFill();
 
-  for (let i = 0; i < activities.length; i++) {
-    const activity = activities[i];
-    const strokeColor = getActivityColor(activity);
-    if (!strokeColor) continue;
+   for (let i = 0; i < activities.length; i++) {
+      const activity = activities[i];
+      const strokeColor = getActivityColor(activity);
+      if (!strokeColor) continue;
 
-    pg.strokeWeight(strokeW);
-    pg.stroke(strokeColor);
+      pg.strokeWeight(strokeW);
+      pg.stroke(strokeColor);
 
-    for (let j = 0; j < uniqueGroups.length; j++) {
-      const group = uniqueGroups[j];
-      const offsetIndex = j + i;
+      for (let j = 0; j < uniqueGroups.length; j++) {
+         const group = uniqueGroups[j];
+         const offsetIndex = j + i;
 
-      switch (group) {
-        case 'root':
-        case 'cruciferous':
-          drawPointedEdge(size, offsetIndex, pg);
-          break;
-        case 'leafy':
-        case 'herb':
-          drawWavyEdge(size, offsetIndex, pg);
-          break;
-        case 'fruit':
-        case 'berry':
-          drawLobedEdge(size, offsetIndex, pg);
-          break;
-        case 'grain':
-        case 'legume':
-          drawLinearSpikes(size, offsetIndex, pg);
-          break;
-        case 'vine':
-          drawSpiralOverlay(size, offsetIndex, pg);
-          break;
-        case 'mixed':
-        case 'various':
-          drawDotRing(size, offsetIndex, pg);
-          break;
+         switch (group) {
+            case 'root':
+            case 'cruciferous':
+               drawPointedEdge(size, offsetIndex, pg);
+               break;
+            case 'leafy':
+            case 'herb':
+               drawWavyEdge(size, offsetIndex, pg);
+               break;
+            case 'fruit':
+            case 'berry':
+               drawLobedEdge(size, offsetIndex, pg);
+               break;
+            case 'grain':
+            case 'legume':
+               drawLinearSpikes(size, offsetIndex, pg);
+               break;
+            case 'vine':
+               drawSpiralOverlay(size, offsetIndex, pg);
+               break;
+            case 'mixed':
+            case 'various':
+               drawDotRing(size, offsetIndex, pg);
+               break;
+         }
       }
-    }
-  }
+   }
 
-  pg.pop();
+   pg.pop();
 }
 
 function drawPointedEdge(size, offsetIndex = 0, pg = window) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
-  let steps = 72;
-  let extraSpacing = offsetIndex * 6;
-  pg.push();
-  pg.rotate(pg.radians((offsetIndex * 17) % 360));
-  pg.beginShape();
-  for (let i = 0; i <= steps; i++) {
-    let angle = pg.TWO_PI * i / steps;
-    let radius = size * 0.6 + extraSpacing + (i % 2 === 0 ? 12 : -10);
-    let x = pg.cos(angle) * radius;
-    let y = pg.sin(angle) * radius;
-    pg.vertex(x, y);
-  }
-  pg.endShape(pg.CLOSE);
-  pg.pop();
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   let steps = 72;
+   let extraSpacing = offsetIndex * 6;
+   pg.push();
+   pg.rotate(pg.radians((offsetIndex * 17) % 360));
+   pg.beginShape();
+   for (let i = 0; i <= steps; i++) {
+      let angle = pg.TWO_PI * i / steps;
+      let radius = size * 0.6 + extraSpacing + (i % 2 === 0 ? 12 : -10);
+      let x = pg.cos(angle) * radius;
+      let y = pg.sin(angle) * radius;
+      pg.vertex(x, y);
+   }
+   pg.endShape(pg.CLOSE);
+   pg.pop();
 }
 
 function drawWavyEdge(size, offsetIndex = 0, pg = window) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
-  let waves = 6 + offsetIndex * 2;
-  let amp = 10 + offsetIndex * 1.5;
-  let extraSpacing = offsetIndex * 6;
-  pg.push();
-  pg.rotate(pg.radians((offsetIndex * 23) % 360));
-  pg.beginShape();
-  for (let angle = 0; angle <= pg.TWO_PI + 0.05; angle += 0.05) {
-    let r = size * 0.55 + extraSpacing + amp * pg.sin(waves * angle);
-    let x = pg.cos(angle) * r;
-    let y = pg.sin(angle) * r;
-    pg.curveVertex(x, y);
-  }
-  pg.endShape(pg.CLOSE);
-  pg.pop();
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   let waves = 6 + offsetIndex * 2;
+   let amp = 10 + offsetIndex * 1.5;
+   let extraSpacing = offsetIndex * 6;
+   pg.push();
+   pg.rotate(pg.radians((offsetIndex * 23) % 360));
+   pg.beginShape();
+   for (let angle = 0; angle <= pg.TWO_PI + 0.05; angle += 0.05) {
+      let r = size * 0.55 + extraSpacing + amp * pg.sin(waves * angle);
+      let x = pg.cos(angle) * r;
+      let y = pg.sin(angle) * r;
+      pg.curveVertex(x, y);
+   }
+   pg.endShape(pg.CLOSE);
+   pg.pop();
 }
 
 function drawLobedEdge(size, offsetIndex = 0, pg = window) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
-  let lobes = 4 + offsetIndex * 1.5;
-  let amp = 8 + offsetIndex;
-  let extraSpacing = offsetIndex * 6;
-  pg.push();
-  pg.rotate(pg.radians((offsetIndex * 31) % 360));
-  pg.beginShape();
-  for (let angle = 0; angle <= pg.TWO_PI + 0.05; angle += 0.05) {
-    let r = size * 0.55 + extraSpacing + amp * pg.sin(lobes * angle);
-    let x = pg.cos(angle) * r;
-    let y = pg.sin(angle) * r;
-    pg.curveVertex(x, y);
-  }
-  pg.endShape(pg.CLOSE);
-  pg.pop();
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   let lobes = 4 + offsetIndex * 1.5;
+   let amp = 8 + offsetIndex;
+   let extraSpacing = offsetIndex * 6;
+   pg.push();
+   pg.rotate(pg.radians((offsetIndex * 31) % 360));
+   pg.beginShape();
+   for (let angle = 0; angle <= pg.TWO_PI + 0.05; angle += 0.05) {
+      let r = size * 0.55 + extraSpacing + amp * pg.sin(lobes * angle);
+      let x = pg.cos(angle) * r;
+      let y = pg.sin(angle) * r;
+      pg.curveVertex(x, y);
+   }
+   pg.endShape(pg.CLOSE);
+   pg.pop();
 }
 
 function drawLinearSpikes(size, offsetIndex = 0, pg = window) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
-  let lines = 12 + offsetIndex * 2;
-  let baseRadius = size * 0.4 + offsetIndex * 5;
-  let spikeLength = size * 0.3 + offsetIndex * 3;
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   let lines = 12 + offsetIndex * 2;
+   let baseRadius = size * 0.4 + offsetIndex * 5;
+   let spikeLength = size * 0.3 + offsetIndex * 3;
 
-  pg.push();
-  pg.rotate(pg.radians((offsetIndex * 15) % 360));
-  for (let i = 0; i < lines; i++) {
-    let angle = pg.TWO_PI * i / lines;
-    let x1 = pg.cos(angle) * baseRadius;
-    let y1 = pg.sin(angle) * baseRadius;
-    let x2 = pg.cos(angle) * (baseRadius + spikeLength);
-    let y2 = pg.sin(angle) * (baseRadius + spikeLength);
-    pg.line(x1, y1, x2, y2);
-  }
-  pg.pop();
+   pg.push();
+   pg.rotate(pg.radians((offsetIndex * 15) % 360));
+   for (let i = 0; i < lines; i++) {
+      let angle = pg.TWO_PI * i / lines;
+      let x1 = pg.cos(angle) * baseRadius;
+      let y1 = pg.sin(angle) * baseRadius;
+      let x2 = pg.cos(angle) * (baseRadius + spikeLength);
+      let y2 = pg.sin(angle) * (baseRadius + spikeLength);
+      pg.line(x1, y1, x2, y2);
+   }
+   pg.pop();
 }
 
 function drawSpiralOverlay(size, offsetIndex = 0, pg = window) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
-  pg.noFill();
-  let turns = 100;
-  let spacing = size * 0.005;
-  pg.push();
-  pg.rotate(pg.radians((offsetIndex * 37) % 360));
-  pg.beginShape();
-  for (let i = 0; i < turns; i++) {
-    let angle = i * 0.2;
-    let r = spacing * i + offsetIndex * 2;
-    let x = pg.cos(angle) * r;
-    let y = pg.sin(angle) * r;
-    pg.curveVertex(x, y);
-  }
-  pg.endShape();
-  pg.pop();
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   pg.noFill();
+   let turns = 100;
+   let spacing = size * 0.005;
+   pg.push();
+   pg.rotate(pg.radians((offsetIndex * 37) % 360));
+   pg.beginShape();
+   for (let i = 0; i < turns; i++) {
+      let angle = i * 0.2;
+      let r = spacing * i + offsetIndex * 2;
+      let x = pg.cos(angle) * r;
+      let y = pg.sin(angle) * r;
+      pg.curveVertex(x, y);
+   }
+   pg.endShape();
+   pg.pop();
 }
 
 function drawDotRing(size, offsetIndex = 0, pg = window) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
-  let dots = 24 + offsetIndex * 2;
-  let r = size * 0.65 + offsetIndex * 6;
-  let dotSize = 4 + offsetIndex * 0.5;
-  pg.push();
-  pg.rotate(pg.radians((offsetIndex * 19) % 360));
-  for (let i = 0; i < dots; i++) {
-    let angle = pg.TWO_PI * i / dots;
-    let x = pg.cos(angle) * r;
-    let y = pg.sin(angle) * r;
-    pg.ellipse(x, y, dotSize, dotSize);
-  }
-  pg.pop();
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   let dots = 24 + offsetIndex * 2;
+   let r = size * 0.65 + offsetIndex * 6;
+   let dotSize = 4 + offsetIndex * 0.5;
+   pg.push();
+   pg.rotate(pg.radians((offsetIndex * 19) % 360));
+   for (let i = 0; i < dots; i++) {
+      let angle = pg.TWO_PI * i / dots;
+      let x = pg.cos(angle) * r;
+      let y = pg.sin(angle) * r;
+      pg.ellipse(x, y, dotSize, dotSize);
+   }
+   pg.pop();
 }
 
 
 // Draw different line styles based on Animal Type
 function drawAnimalLine(animalType, activities, x, y, size, strokeW = 1.3, pg = window) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
-  if (!animalType || !Array.isArray(activities) || activities.length === 0) return;
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   if (!animalType || !Array.isArray(activities) || activities.length === 0) return;
 
-  let style = getLineStyle(animalType);
-  if (!style) return;
+   let style = getLineStyle(animalType);
+   if (!style) return;
 
-  pg.push();
-  pg.noFill();
+   pg.push();
+   pg.noFill();
 
-  const baseStrokeW = strokeW || style.weight * 1;
-  const lineLength = size * 1.5;
-  const lineSpacing = 7;
+   const baseStrokeW = strokeW || style.weight * 1;
+   const lineLength = size * 1.5;
+   const lineSpacing = 7;
 
-  for (let i = 0; i < activities.length; i++) {
-    let strokeColor = getActivityColor(activities[i]);
-    if (!strokeColor) continue;
+   for (let i = 0; i < activities.length; i++) {
+      let strokeColor = getActivityColor(activities[i]);
+      if (!strokeColor) continue;
 
-    // Subtle shadow
-    pg.stroke(0, 80);
-    pg.strokeWeight(baseStrokeW * 1.05);
-    pg.push();
-    pg.translate(1.5, 1.5);
-    drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength, pg);
-    pg.pop();
+      // Subtle shadow
+      pg.stroke(0, 80);
+      pg.strokeWeight(baseStrokeW * 1.05);
+      pg.push();
+      pg.translate(1.5, 1.5);
+      drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength, pg);
+      pg.pop();
 
-    // Main colored line
-    pg.stroke(strokeColor);
-    pg.strokeWeight(baseStrokeW);
-    drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength, pg);
-  }
+      // Main colored line
+      pg.stroke(strokeColor);
+      pg.strokeWeight(baseStrokeW);
+      drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength, pg);
+   }
 
-  pg.pop();
+   pg.pop();
 }
 
 function drawAnimalLineShape(type, x, y, length, pg = window) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
-  switch (type) {
-    case 'wavy':
-      drawWavyLine(x, y, length, pg);
-      break;
-    case 'dashed':
-      drawDashedLine(x, y, length, pg);
-      break;
-    case 'bezier':
-      drawBezierLine(x, y, length, pg);
-      break;
-    case 'straight':
-      pg.line(x - length / 2, y, x + length / 2, y);
-      break;
-    case 'textured':
-      drawTexturedLine(x, y, length, pg);
-      break;
-  }
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   switch (type) {
+      case 'wavy':
+         drawWavyLine(x, y, length, pg);
+         break;
+      case 'dashed':
+         drawDashedLine(x, y, length, pg);
+         break;
+      case 'bezier':
+         drawBezierLine(x, y, length, pg);
+         break;
+      case 'straight':
+         pg.line(x - length / 2, y, x + length / 2, y);
+         break;
+      case 'textured':
+         drawTexturedLine(x, y, length, pg);
+         break;
+   }
 }
 
 function getLineStyle(animalType) {
-  let typeStr = String(animalType || '').trim().toLowerCase();
-  if (!typeStr) return null;
+   let typeStr = String(animalType || '').trim().toLowerCase();
+   if (!typeStr) return null;
 
-  switch (typeStr) {
-    case 'sheep': return { type: 'wavy', weight: 3 };
-    case 'llamas and alpacas': return { type: 'dashed', weight: 3 };
-    case 'horse': return { type: 'bezier', weight: 4 };
-    case 'cows': return { type: 'straight', weight: 6 };
-    case 'cattle': return { type: 'textured', weight: 4 };
-    default: return null;
-  }
+   switch (typeStr) {
+      case 'sheep':
+         return {
+            type: 'wavy', weight: 3
+         };
+      case 'llamas and alpacas':
+         return {
+            type: 'dashed', weight: 3
+         };
+      case 'horse':
+         return {
+            type: 'bezier', weight: 4
+         };
+      case 'cows':
+         return {
+            type: 'straight', weight: 6
+         };
+      case 'cattle':
+         return {
+            type: 'textured', weight: 4
+         };
+      default:
+         return null;
+   }
 }
 
 // Enhanced Wavy line: smoother waves, higher amplitude for boldness
 function drawWavyLine(x, y, length, pg = window) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
-  pg.noFill();
-  pg.beginShape();
-  let amplitude = 7;
-  let waves = 5;
-  let steps = 50;
-  for (let i = 0; i <= steps; i++) {
-    let px = x - length / 2 + (length / steps) * i;
-    let py = y + pg.sin((i / steps) * waves * pg.TWO_PI) * amplitude;
-    pg.vertex(px, py);
-  }
-  pg.endShape();
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   pg.noFill();
+   pg.beginShape();
+   let amplitude = 7;
+   let waves = 5;
+   let steps = 50;
+   for (let i = 0; i <= steps; i++) {
+      let px = x - length / 2 + (length / steps) * i;
+      let py = y + pg.sin((i / steps) * waves * pg.TWO_PI) * amplitude;
+      pg.vertex(px, py);
+   }
+   pg.endShape();
 }
 
 // Enhanced Dashed line: longer dashes, sharper gaps, crisp edges
 function drawDashedLine(x, y, length, pg = window) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
-  let dashLength = 14;
-  let gapLength = 8;
-  let startX = x - length / 2;
-  let endX = x + length / 2;
-  for (let px = startX; px < endX; px += dashLength + gapLength) {
-    pg.line(px, y, px + dashLength, y);
-  }
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   let dashLength = 14;
+   let gapLength = 8;
+   let startX = x - length / 2;
+   let endX = x + length / 2;
+   for (let px = startX; px < endX; px += dashLength + gapLength) {
+      pg.line(px, y, px + dashLength, y);
+   }
 }
 
 // Enhanced Bezier line: stronger curvature, more elegant S shape
 function drawBezierLine(x, y, length, pg = window) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
-  pg.noFill();
-  pg.strokeJoin(pg.ROUND);
-  pg.bezier(
-    x - length / 2, y,
-    x - length / 3, y - length / 2,
-    x + length / 3, y + length / 2,
-    x + length / 2, y
-  );
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   pg.noFill();
+   pg.strokeJoin(pg.ROUND);
+   pg.bezier(
+      x - length / 2, y,
+      x - length / 3, y - length / 2,
+      x + length / 3, y + length / 2,
+      x + length / 2, y
+   );
 }
 
 // Textured line: clean segmented lines
 function drawTexturedLine(x, y, length, pg = window) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
-  let segmentLength = 8;
-  let gap = 5;
-  let startX = x - length / 2;
-  let endX = x + length / 2;
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   let segmentLength = 8;
+   let gap = 5;
+   let startX = x - length / 2;
+   let endX = x + length / 2;
 
-  for (let px = startX; px < endX; px += segmentLength + gap) {
-    pg.line(px, y, px + segmentLength, y);
-  }
+   for (let px = startX; px < endX; px += segmentLength + gap) {
+      pg.line(px, y, px + segmentLength, y);
+   }
 }
 
 
 function drawHabitatShape(habitatList, x, y, size, baseColor, strokeW = 2, pg = window) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
-  if (!Array.isArray(habitatList)) return;
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   if (!Array.isArray(habitatList)) return;
 
-  habitatList = habitatList
-    .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
-    .filter(h => h !== '');
+   habitatList = habitatList
+      .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
+      .filter(h => h !== '');
 
-  if (habitatList.length === 0) return;
+   if (habitatList.length === 0) return;
 
-  pg.push();
-  pg.translate(x, y);
-  pg.rectMode(pg.CENTER);
-  pg.angleMode(pg.RADIANS);
-  pg.strokeWeight(strokeW);
-  pg.stroke(0, 60);
+   pg.push();
+   pg.translate(x, y);
+   pg.rectMode(pg.CENTER);
+   pg.angleMode(pg.RADIANS);
+   pg.strokeWeight(strokeW);
+   pg.stroke(0, 60);
 
-  for (let i = 0; i < habitatList.length; i++) {
-    let habitat = habitatList[i];
-    let angleOffset = pg.PI / 6 * i;
-    let alpha = pg.map(i, 0, habitatList.length, 200, 60);
-    let fillColor = pg.color(
-      pg.red(baseColor),
-      pg.green(baseColor),
-      pg.blue(baseColor),
-      alpha
-    );
+   for (let i = 0; i < habitatList.length; i++) {
+      let habitat = habitatList[i];
+      let angleOffset = pg.PI / 6 * i;
+      let alpha = pg.map(i, 0, habitatList.length, 200, 60);
+      let fillColor = pg.color(
+         pg.red(baseColor),
+         pg.green(baseColor),
+         pg.blue(baseColor),
+         alpha
+      );
 
-    // Slight scaling and rotation per layer
-    let scaleFactor = 1 - i * 0.08;
-    pg.push();
-    pg.rotate(angleOffset);
-    pg.scale(scaleFactor);
+      // Slight scaling and rotation per layer
+      let scaleFactor = 1 - i * 0.08;
+      pg.push();
+      pg.rotate(angleOffset);
+      pg.scale(scaleFactor);
 
-    // Shadow layer (deeper)
-    pg.fill(0, 30);
-    pg.translate(3, 3);
-    switch (habitat) {
-      case 'pollinator':
-        drawSolarHexagon(size * 0.5, pg);
-        break;
-      case 'native grasses':
-        pg.rect(0, 0, size * 0.3, size);
-        break;
-      case 'naturalized':
-        pg.ellipse(0, 0, size, size);
-        break;
-    }
-    pg.translate(-3, -3);
+      // Shadow layer (deeper)
+      pg.fill(0, 30);
+      pg.translate(3, 3);
+      switch (habitat) {
+         case 'pollinator':
+            drawSolarHexagon(size * 0.5, pg);
+            break;
+         case 'native grasses':
+            pg.rect(0, 0, size * 0.3, size);
+            break;
+         case 'naturalized':
+            pg.ellipse(0, 0, size, size);
+            break;
+      }
+      pg.translate(-3, -3);
 
-    // Main filled layer
-    pg.fill(fillColor);
-    switch (habitat) {
-      case 'pollinator':
-        drawSolarHexagon(size * 0.5, pg);
-        break;
-      case 'native grasses':
-        pg.rect(0, 0, size * 0.3, size);
-        drawVerticalLines(size * 0.3, size, 5, baseColor, pg);
-        break;
-      case 'naturalized':
-        pg.ellipse(0, 0, size, size);
-        drawGlowEllipse(size, baseColor, pg);
-        break;
-    }
+      // Main filled layer
+      pg.fill(fillColor);
+      switch (habitat) {
+         case 'pollinator':
+            drawSolarHexagon(size * 0.5, pg);
+            break;
+         case 'native grasses':
+            pg.rect(0, 0, size * 0.3, size);
+            drawVerticalLines(size * 0.3, size, 5, baseColor, pg);
+            break;
+         case 'naturalized':
+            pg.ellipse(0, 0, size, size);
+            drawGlowEllipse(size, baseColor, pg);
+            break;
+      }
 
-    pg.pop();
-  }
+      pg.pop();
+   }
 
-  pg.pop();
+   pg.pop();
 }
 
 // Draw hexagon with inner "cell" lines to evoke solar panel cells
 function drawSolarHexagon(r, pg = window) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
-  pg.stroke(255, 150);
-  pg.strokeWeight(1);
-  pg.noFill();
-  pg.beginShape();
-  for (let j = 0; j < 6; j++) {
-    let angle = pg.TWO_PI / 6 * j - pg.PI / 2;
-    pg.vertex(pg.cos(angle) * r, pg.sin(angle) * r);
-  }
-  pg.endShape(pg.CLOSE);
-
-  // Inner lines to mimic cell grid
-  for (let k = 1; k <= 2; k++) {
-    let innerR = r * (1 - k * 0.3);
-    pg.beginShape();
-    for (let j = 0; j < 6; j++) {
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   pg.stroke(255, 150);
+   pg.strokeWeight(1);
+   pg.noFill();
+   pg.beginShape();
+   for (let j = 0; j < 6; j++) {
       let angle = pg.TWO_PI / 6 * j - pg.PI / 2;
-      pg.vertex(pg.cos(angle) * innerR, pg.sin(angle) * innerR);
-    }
-    pg.endShape(pg.CLOSE);
-  }
+      pg.vertex(pg.cos(angle) * r, pg.sin(angle) * r);
+   }
+   pg.endShape(pg.CLOSE);
+
+   // Inner lines to mimic cell grid
+   for (let k = 1; k <= 2; k++) {
+      let innerR = r * (1 - k * 0.3);
+      pg.beginShape();
+      for (let j = 0; j < 6; j++) {
+         let angle = pg.TWO_PI / 6 * j - pg.PI / 2;
+         pg.vertex(pg.cos(angle) * innerR, pg.sin(angle) * innerR);
+      }
+      pg.endShape(pg.CLOSE);
+   }
 }
 
 // Draw vertical lines inside a rectangle (native grasses)
 function drawVerticalLines(w, h, count, baseColor, pg = window) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
-  pg.stroke(pg.red(baseColor), pg.green(baseColor), pg.blue(baseColor), 100);
-  pg.strokeWeight(0.5);
-  for (let i = 1; i < count; i++) {
-    let x = pg.map(i, 1, count - 1, -w / 2, w / 2);
-    pg.line(x, -h / 2, x, h / 2);
-  }
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   pg.stroke(pg.red(baseColor), pg.green(baseColor), pg.blue(baseColor), 100);
+   pg.strokeWeight(0.5);
+   for (let i = 1; i < count; i++) {
+      let x = pg.map(i, 1, count - 1, -w / 2, w / 2);
+      pg.line(x, -h / 2, x, h / 2);
+   }
 }
 
 // Draw subtle glow effect on ellipse
 function drawGlowEllipse(size, baseColor, pg = window) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
-  pg.noFill();
-  pg.stroke(pg.red(baseColor), pg.green(baseColor), pg.blue(baseColor), 50);
-  pg.strokeWeight(3);
-  pg.ellipse(0, 0, size * 1.1, size * 1.1);
-  pg.strokeWeight(1);
-  pg.ellipse(0, 0, size * 1.3, size * 1.3);
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   pg.noFill();
+   pg.stroke(pg.red(baseColor), pg.green(baseColor), pg.blue(baseColor), 50);
+   pg.strokeWeight(3);
+   pg.ellipse(0, 0, size * 1.1, size * 1.1);
+   pg.strokeWeight(1);
+   pg.ellipse(0, 0, size * 1.3, size * 1.3);
 }
 
 function drawCombinedHabitatOverlay(
-  habitatList,
-  activities,
-  x,
-  y,
-  size,
-  strokeW = 1.2,
-  pg = window
+   habitatList,
+   activities,
+   x,
+   y,
+   size,
+   strokeW = 1.2,
+   pg = window
 ) {
-  if (!pg || typeof pg.push !== 'function') pg = window;
-  if (!Array.isArray(habitatList) || !Array.isArray(activities)) return;
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   if (!Array.isArray(habitatList) || !Array.isArray(activities)) return;
 
-  const cleanedHabitats = habitatList
-    .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
-    .filter(h => h !== '');
+   const cleanedHabitats = habitatList
+      .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
+      .filter(h => h !== '');
 
-  const cleanedActivities = activities
-    .map(a => (typeof a === 'string' ? a.trim().toLowerCase() : ''))
-    .filter(a => a !== '');
+   const cleanedActivities = activities
+      .map(a => (typeof a === 'string' ? a.trim().toLowerCase() : ''))
+      .filter(a => a !== '');
 
-  if (cleanedHabitats.length === 0 || cleanedActivities.length === 0) return;
+   if (cleanedHabitats.length === 0 || cleanedActivities.length === 0) return;
 
-  const nestingCount = cleanedActivities.length;
+   const nestingCount = cleanedActivities.length;
 
-  pg.push();
-  pg.translate(x, y);
-  pg.angleMode(pg.RADIANS);
-  pg.rectMode(pg.CENTER);
-  pg.strokeWeight(strokeW);
-  pg.stroke(0, 60);
+   pg.push();
+   pg.translate(x, y);
+   pg.angleMode(pg.RADIANS);
+   pg.rectMode(pg.CENTER);
+   pg.strokeWeight(strokeW);
+   pg.stroke(0, 60);
 
-  const layerStep = 0.85 / nestingCount;
+   const layerStep = 0.85 / nestingCount;
 
-  for (let i = 0; i < nestingCount; i++) {
-    const habitat = cleanedHabitats[i % cleanedHabitats.length];
-    const shapeType = getHabitatShapeType(habitat);
-    const activity = cleanedActivities[i];
-    const fillCol = getActivityColor(activity);
-    if (!fillCol) continue;
+   for (let i = 0; i < nestingCount; i++) {
+      const habitat = cleanedHabitats[i % cleanedHabitats.length];
+      const shapeType = getHabitatShapeType(habitat);
+      const activity = cleanedActivities[i];
+      const fillCol = getActivityColor(activity);
+      if (!fillCol) continue;
 
-    const angleOffset = pg.radians(i * 12); // more offset per layer
-    const scaleFactor = 1 - i * layerStep;
-    const shapeSize = size * scaleFactor;
+      const angleOffset = pg.radians(i * 12); // more offset per layer
+      const scaleFactor = 1 - i * layerStep;
+      const shapeSize = size * scaleFactor;
 
-    pg.push();
-    pg.rotate(angleOffset);
+      pg.push();
+      pg.rotate(angleOffset);
 
-    // Glow ring
-    pg.noFill();
-    pg.stroke(pg.red(fillCol), pg.green(fillCol), pg.blue(fillCol), 40);
-    pg.strokeWeight(6);
-    pg.ellipse(0, 0, shapeSize * 1.1, shapeSize * 1.1);
-    pg.strokeWeight(1);
-    pg.noStroke();
+      // Glow ring
+      pg.noFill();
+      pg.stroke(pg.red(fillCol), pg.green(fillCol), pg.blue(fillCol), 40);
+      pg.strokeWeight(6);
+      pg.ellipse(0, 0, shapeSize * 1.1, shapeSize * 1.1);
+      pg.strokeWeight(1);
+      pg.noStroke();
 
-    // Slight blur fill base
-    pg.fill(0, 20);
-    pg.push();
-    pg.translate(2, 2);
-    drawShapeByType(shapeType, shapeSize * 0.95, shapeSize * 0.95, pg);
-    pg.pop();
+      // Slight blur fill base
+      pg.fill(0, 20);
+      pg.push();
+      pg.translate(2, 2);
+      drawShapeByType(shapeType, shapeSize * 0.95, shapeSize * 0.95, pg);
+      pg.pop();
 
-    // Main layer
-    pg.fill(fillCol);
-    if (shapeType === 'rect') {
-      drawShapeByType(shapeType, shapeSize * 0.35, shapeSize * 1.1, pg);
-    } else {
-      drawShapeByType(shapeType, shapeSize, shapeSize, pg);
-    }
+      // Main layer
+      pg.fill(fillCol);
+      if (shapeType === 'rect') {
+         drawShapeByType(shapeType, shapeSize * 0.35, shapeSize * 1.1, pg);
+      } else {
+         drawShapeByType(shapeType, shapeSize, shapeSize, pg);
+      }
 
-    pg.pop();
-  }
+      pg.pop();
+   }
 
-  pg.pop();
+   pg.pop();
 }
 
 function getHabitatShapeType(habitat) {
-  habitat = String(habitat || '').toLowerCase();
-  if (habitat.includes('pollinator')) return 'hexagon';
-  if (habitat.includes('native grasses')) return 'rect';
-  if (habitat.includes('naturalized')) return 'ellipse';
-  return null;
+   habitat = String(habitat || '').toLowerCase();
+   if (habitat.includes('pollinator')) return 'hexagon';
+   if (habitat.includes('native grasses')) return 'rect';
+   if (habitat.includes('naturalized')) return 'ellipse';
+   return null;
 }
 
 function pointInHexagon(px, py, r) {
-  px = Math.abs(px);
-  py = Math.abs(py);
+   px = Math.abs(px);
+   py = Math.abs(py);
 
-  if (px > r * 0.8660254 || py > r * 0.5 + r * 0.288675) return false;
-  return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
+   if (px > r * 0.8660254 || py > r * 0.5 + r * 0.288675) return false;
+   return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
 }
 
 function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, density = 7, pg) {
-  if (!pg || typeof pg.push !== 'function') {
-    pg = window; // fallback to main canvas context
-  }
+   if (!pg || typeof pg.push !== 'function') {
+      pg = window; // fallback to main canvas context
+   }
    if (!arrayType || !Array.isArray(activities) || activities.length === 0) return;
 
    pg.push();
@@ -1586,14 +1604,14 @@ function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, dens
 }
 
 function drawCrosshatchGridMultiColor(activities, size, density = 10, pg) {
-  if (!pg || typeof pg.push !== 'function') {
-    pg = window;
-  }
+   if (!pg || typeof pg.push !== 'function') {
+      pg = window;
+   }
 
-  let colorCount = activities.length;
+   let colorCount = activities.length;
 
-  pg.push();
-  pg.rotate(PI / 4); // Diamond orientation
+   pg.push();
+   pg.rotate(PI / 4); // Diamond orientation
 
    for (let i = -size / 2, idx = 0; i <= size / 2; i += density, idx++) {
       let col = getActivityColor(activities[idx % colorCount]);
@@ -1626,16 +1644,16 @@ function drawCrosshatchGridMultiColor(activities, size, density = 10, pg) {
 }
 
 function drawIsometricGridMultiColor(activities, size, density = 2, slope = 0.9, pg) {
-  if (!pg || typeof pg.push !== 'function') {
-    pg = window;
-  }
+   if (!pg || typeof pg.push !== 'function') {
+      pg = window;
+   }
 
-  let colorCount = activities.length;
-  let idx = 0;
-  let halfSize = size / 2;
+   let colorCount = activities.length;
+   let idx = 0;
+   let halfSize = size / 2;
 
-  pg.push();
-  pg.rotate(HALF_PI);
+   pg.push();
+   pg.rotate(HALF_PI);
 
    for (let x = -halfSize; x <= halfSize; x += density) {
       let colA = getActivityColor(activities[idx % colorCount]);
@@ -1678,13 +1696,13 @@ function drawIsometricGridMultiColor(activities, size, density = 2, slope = 0.9,
 }
 
 function drawDottedMatrixMultiColor(activities, size, density = 10, pg) {
-  if (!pg || typeof pg.push !== 'function') {
-    pg = window;
-  }
+   if (!pg || typeof pg.push !== 'function') {
+      pg = window;
+   }
 
-  let colorCount = activities.length;
-  let dotSize = 4;
-  let idx = 0;
+   let colorCount = activities.length;
+   let dotSize = 4;
+   let idx = 0;
 
    for (let x = -size / 2; x < size / 2; x += density) {
       for (let y = -size / 2; y < size / 2; y += density) {
@@ -1724,17 +1742,23 @@ function getActivityColor(activity) {
 }
 
 function drawMinimalSite(site, pg) {
-  if (!pg || typeof pg.push !== 'function') {
-    pg = window;
-  }
+   if (!pg || typeof pg.push !== 'function') {
+      pg = window;
+   }
 
-  const { x, y, activity = 'habitat', systemSize = 0.1, siteSize = 0.1 } = site;
-  const baseColor = getActivityColor(activity);
-  const dotBaseSize = map(siteSize, 0, 10, 16, 60);
-  const shadowOffset = map(systemSize, 0, 10, 1, 8);
+   const {
+      x,
+      y,
+      activity = 'habitat',
+      systemSize = 0.1,
+      siteSize = 0.1
+   } = site;
+   const baseColor = getActivityColor(activity);
+   const dotBaseSize = map(siteSize, 0, 10, 16, 60);
+   const shadowOffset = map(systemSize, 0, 10, 1, 8);
 
-  pg.push();
-  pg.translate(x, y);
+   pg.push();
+   pg.translate(x, y);
    pg.noStroke();
 
    // Suprematist-style drop shadow (with light angle)
@@ -1768,10 +1792,12 @@ function drawMinimalSite(site, pg) {
 }
 
 function drawSuprematistOpShadowRect(baseSize, systemSize, habitat, posX, posY, glowStrength = 40, isHover = false, animalLineType = '', agrivoltaicColors = [], options = {}) {
-  let { flipped = false, pg } = options;
-  if (!pg || typeof pg.push !== 'function') {
-    pg = window;
-  }
+   let {
+      flipped = false, pg
+   } = options;
+   if (!pg || typeof pg.push !== 'function') {
+      pg = window;
+   }
    let sz = constrain(systemSize || 0.1, 0.1, 10);
 
    let shapeType = 'diamond'; // fallback
@@ -1905,9 +1931,9 @@ function drawSuprematistOpShadowRect(baseSize, systemSize, habitat, posX, posY, 
 }
 
 function drawShapeByType(type, w, h, pg) {
-  if (!pg || typeof pg.push !== 'function') {
-    pg = window;
-  }
+   if (!pg || typeof pg.push !== 'function') {
+      pg = window;
+   }
    switch (type) {
       case 'hexagon':
          pg.beginShape();
@@ -1934,9 +1960,9 @@ function drawShapeByType(type, w, h, pg) {
 }
 
 function pathShapeByType(type, size, pg) {
-  if (!pg || typeof pg.push !== 'function') {
-    pg = window;
-  }
+   if (!pg || typeof pg.push !== 'function') {
+      pg = window;
+   }
    let r = size / 2;
    let ctx = drawingContext;
 
@@ -1972,181 +1998,181 @@ function pathShapeByType(type, size, pg) {
 }
 
 function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
-  if (!pg || typeof pg.push !== 'function') {
-    pg = window;
-  }
-  if (!pvTech || !activities || activities.length === 0) return;
+   if (!pg || typeof pg.push !== 'function') {
+      pg = window;
+   }
+   if (!pvTech || !activities || activities.length === 0) return;
 
-  let type = pvTech.trim().toLowerCase();
-  let warpStyle = pvWarpStyles[type];
-  if (!warpStyle) return;
+   let type = pvTech.trim().toLowerCase();
+   let warpStyle = pvWarpStyles[type];
+   if (!warpStyle) return;
 
-  // Helper for fallback color without altering activities or getActivityColor
-  function getWarpColor(idx) {
-    if (activities && activities[idx]) {
-      return getActivityColor(activities[idx]);
-    }
-    // Default fallback color (bright cyan with some alpha)
-    return color(0, 255, 255, 200);
-  }
+   // Helper for fallback color without altering activities or getActivityColor
+   function getWarpColor(idx) {
+      if (activities && activities[idx]) {
+         return getActivityColor(activities[idx]);
+      }
+      // Default fallback color (bright cyan with some alpha)
+      return color(0, 255, 255, 200);
+   }
 
-  pg.push();
-  pg.translate(x, y);
-  pg.noFill();
-  pg.blendMode(ADD);
+   pg.push();
+   pg.translate(x, y);
+   pg.noFill();
+   pg.blendMode(ADD);
 
- switch (warpStyle) {
-case 'linear': {
-  const archAmplitude = size * 0.3;
-  const archWidth = size * 0.8;
-  const baseLineY = size * 0.7;
+   switch (warpStyle) {
+      case 'linear': {
+         const archAmplitude = size * 0.3;
+         const archWidth = size * 0.8;
+         const baseLineY = size * 0.7;
 
-  for (let i = -size; i <= size; i += 8) {
-    let waveOffset = archAmplitude * sin((i / archWidth) * PI);
+         for (let i = -size; i <= size; i += 8) {
+            let waveOffset = archAmplitude * sin((i / archWidth) * PI);
 
-    let jitterX = (noise(i * 0.12, frameCount * 0.1) - 0.5) * 3;
-    let jitterY = (noise(i * 0.24, frameCount * 0.12) - 0.5) * 3;
+            let jitterX = (noise(i * 0.12, frameCount * 0.1) - 0.5) * 3;
+            let jitterY = (noise(i * 0.24, frameCount * 0.12) - 0.5) * 3;
 
-    let colorIndex = Math.floor((i + size) / 8) % activities.length;
-    let col = getWarpColor(colorIndex);
+            let colorIndex = Math.floor((i + size) / 8) % activities.length;
+            let col = getWarpColor(colorIndex);
 
-    let alphaMain = 120;
-    let strokeW = 2;
+            let alphaMain = 120;
+            let strokeW = 2;
 
-    pg.blendMode(BLEND);
-    pg.stroke(red(col), green(col), blue(col), alphaMain);
-    pg.strokeWeight(strokeW);
-    pg.line(i + jitterX, waveOffset + jitterY, i + jitterX, baseLineY + jitterY);
-  }
-}
-break;
-
-case 'symmetric': {
-  const centerX = 0;
-
-  for (let i = 0; i < size; i += 4) {
-    let yOffset = sin((i + frameCount) * 0.12) * 8;          // smaller amplitude
-    let yOffsetMirrored = -yOffset;
-
-    let jitterX = (noise(i * 0.1, frameCount * 0.1) - 0.5) * 3;
-    let jitterY = (noise(i * 0.1, frameCount * 0.12) - 0.5) * 3;
-
-    let colorIndex = Math.floor(i / 4) % activities.length;
-    let col = getWarpColor(colorIndex);
-    let baseStrokeWeight = 2 + sin(frameCount * 0.1) * 1;   // lighter stroke
-
-    // Subtle fizz animation
-    let fizz = sin(frameCount * 0.25 + i * 0.07) * 0.3;     // lower amplitude
-    fizz = constrain(fizz, -1, 1);
-
-    // Glow color tinted lightly (no pure white)
-    let glowCol = lerpColor(col, color(red(col), green(col), blue(col), 50), 0.5 + 0.5 * fizz);
-
-    // Minimal colored glow aura with low alpha additive blending
-    pg.blendMode(ADD);
-    for (let glow = 3; glow >= 1; glow--) {
-      let alphaGlow = 30 - glow * 5 + 20 * fizz;
-      let weightGlow = baseStrokeWeight + glow * 1.5;
-      pg.stroke(red(glowCol), green(glowCol), blue(glowCol), alphaGlow);
-      pg.strokeWeight(weightGlow);
-      pg.line(centerX - size / 2 + i + jitterX, yOffset + jitterY, centerX - size / 2 + i + jitterX, yOffsetMirrored + jitterY);
-    }
-
-    // Main sharp vertical line
-    pg.blendMode(BLEND);
-    pg.stroke(red(col), green(col), blue(col), 100 + 50 * fizz); // alpha max ~150
-    pg.strokeWeight(baseStrokeWeight);
-    pg.line(centerX - size / 2 + i + jitterX, yOffset + jitterY, centerX - size / 2 + i + jitterX, yOffsetMirrored + jitterY);
-
-    // Optional: very subtle crossing diagonal flicker, very low alpha
-    if (i % 20 === 0) {
-      pg.stroke(red(col), green(col), blue(col), 50 + 40 * fizz);
-      pg.strokeWeight(1.5);
-      pg.line(centerX - size / 2 + i, yOffset + jitterY, centerX - size / 2 + i + 10, yOffsetMirrored + jitterY);
-    }
-  }
-}
-break;
-
-case 'radial': {
-  const centerX = 0;
-  const centerY = 0;
-
-  for (let r = 10, idx = 0; r < size; r += 10, idx++) {
-    let baseCol = getWarpColor(idx % activities.length);
-    let pulse = sin((frameCount + r * 5) * 0.08) * 0.3;  // slower pulse
-
-    let jitterX = (noise(r * 0.12, frameCount * 0.1) - 0.5) * 3;
-    let jitterY = (noise(r * 0.12, frameCount * 0.12) - 0.5) * 3;
-
-    let fizz = sin(frameCount * 0.2 + r * 0.04) * 0.4;    // subtle fizz
-    fizz = constrain(fizz, -1, 1);
-
-    // Glow color tinted lightly (no white, just more transparent)
-    let glowCol = lerpColor(baseCol, color(red(baseCol), green(baseCol), blue(baseCol), 50), 0.4 + 0.6 * fizz);
-
-    // Glow rings with additive blending, low alpha and weight
-    pg.blendMode(ADD);
-    for (let glow = 3; glow >= 1; glow--) {
-      let alphaGlow = 40 - glow * 10 + 25 * fizz;
-      let weightGlow = 3 + glow * 2;
-      pg.stroke(red(glowCol), green(glowCol), blue(glowCol), alphaGlow);
-      pg.strokeWeight(weightGlow);
-      pg.noFill();
-      pg.ellipse(centerX + jitterX, centerY + jitterY, r * 2 + glow * 6, r * 2 + glow * 6);
-    }
-
-    // Main ellipse with subtle pulse scale
-    pg.blendMode(BLEND);
-    pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 120 + 60 * pulse);
-    pg.strokeWeight(2 + pulse);
-    pg.noFill();
-    pg.ellipse(centerX + jitterX, centerY + jitterY, r * 2, r * 2);
-
-    // Flickering perimeter points with low alpha and small stroke weight
-    const pointsCount = 12;
-    for (let p = 0; p < pointsCount; p++) {
-      let angle = TWO_PI * p / pointsCount + frameCount * 0.04;
-      let noiseFactor = noise(p * 0.12, frameCount * 0.04);
-      let px = centerX + cos(angle) * (r + noiseFactor * 3);
-      let py = centerY + sin(angle) * (r + noiseFactor * 3);
-
-      pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 80 + 40 * fizz);
-      pg.strokeWeight(1.5);
-      pg.point(px, py);
-    }
-  }
-}
-break;
-
-    case 'noise':
-      pg.strokeWeight(2);
-      let spacing = 8; // distance between dots
-      for (let i = -size / 2; i <= size / 2; i += spacing) {
-        for (let j = -size / 2; j <= size / 2; j += spacing) {
-          let n = noise((i + x) * 0.1 + frameCount * 0.02, (j + y) * 0.1 + frameCount * 0.02);
-          let jitterX = map(n, 0, 1, -1.5, 1.5);
-          let jitterY = map(n, 0, 1, -1.5, 1.5);
-
-          let colorIndex = (Math.floor(i / spacing) + Math.floor(j / spacing)) % activities.length;
-          let col = getWarpColor(colorIndex);
-
-          // Shadow point (shifted)
-          pg.stroke(0, 0, 0, 100);
-          pg.strokeWeight(3);
-          pg.point(i + jitterX + 2, j + jitterY + 2);
-
-          // Main point
-          pg.stroke(red(col), green(col), blue(col), 180);
-          pg.strokeWeight(2);
-          pg.point(i + jitterX, j + jitterY);
-        }
+            pg.blendMode(BLEND);
+            pg.stroke(red(col), green(col), blue(col), alphaMain);
+            pg.strokeWeight(strokeW);
+            pg.line(i + jitterX, waveOffset + jitterY, i + jitterX, baseLineY + jitterY);
+         }
       }
       break;
 
-    default:
-      break;
-  }
+      case 'symmetric': {
+         const centerX = 0;
 
-  pg.pop();
+         for (let i = 0; i < size; i += 4) {
+            let yOffset = sin((i + frameCount) * 0.12) * 8; // smaller amplitude
+            let yOffsetMirrored = -yOffset;
+
+            let jitterX = (noise(i * 0.1, frameCount * 0.1) - 0.5) * 3;
+            let jitterY = (noise(i * 0.1, frameCount * 0.12) - 0.5) * 3;
+
+            let colorIndex = Math.floor(i / 4) % activities.length;
+            let col = getWarpColor(colorIndex);
+            let baseStrokeWeight = 2 + sin(frameCount * 0.1) * 1; // lighter stroke
+
+            // Subtle fizz animation
+            let fizz = sin(frameCount * 0.25 + i * 0.07) * 0.3; // lower amplitude
+            fizz = constrain(fizz, -1, 1);
+
+            // Glow color tinted lightly (no pure white)
+            let glowCol = lerpColor(col, color(red(col), green(col), blue(col), 50), 0.5 + 0.5 * fizz);
+
+            // Minimal colored glow aura with low alpha additive blending
+            pg.blendMode(ADD);
+            for (let glow = 3; glow >= 1; glow--) {
+               let alphaGlow = 30 - glow * 5 + 20 * fizz;
+               let weightGlow = baseStrokeWeight + glow * 1.5;
+               pg.stroke(red(glowCol), green(glowCol), blue(glowCol), alphaGlow);
+               pg.strokeWeight(weightGlow);
+               pg.line(centerX - size / 2 + i + jitterX, yOffset + jitterY, centerX - size / 2 + i + jitterX, yOffsetMirrored + jitterY);
+            }
+
+            // Main sharp vertical line
+            pg.blendMode(BLEND);
+            pg.stroke(red(col), green(col), blue(col), 100 + 50 * fizz); // alpha max ~150
+            pg.strokeWeight(baseStrokeWeight);
+            pg.line(centerX - size / 2 + i + jitterX, yOffset + jitterY, centerX - size / 2 + i + jitterX, yOffsetMirrored + jitterY);
+
+            // Optional: very subtle crossing diagonal flicker, very low alpha
+            if (i % 20 === 0) {
+               pg.stroke(red(col), green(col), blue(col), 50 + 40 * fizz);
+               pg.strokeWeight(1.5);
+               pg.line(centerX - size / 2 + i, yOffset + jitterY, centerX - size / 2 + i + 10, yOffsetMirrored + jitterY);
+            }
+         }
+      }
+      break;
+
+      case 'radial': {
+         const centerX = 0;
+         const centerY = 0;
+
+         for (let r = 10, idx = 0; r < size; r += 10, idx++) {
+            let baseCol = getWarpColor(idx % activities.length);
+            let pulse = sin((frameCount + r * 5) * 0.08) * 0.3; // slower pulse
+
+            let jitterX = (noise(r * 0.12, frameCount * 0.1) - 0.5) * 3;
+            let jitterY = (noise(r * 0.12, frameCount * 0.12) - 0.5) * 3;
+
+            let fizz = sin(frameCount * 0.2 + r * 0.04) * 0.4; // subtle fizz
+            fizz = constrain(fizz, -1, 1);
+
+            // Glow color tinted lightly (no white, just more transparent)
+            let glowCol = lerpColor(baseCol, color(red(baseCol), green(baseCol), blue(baseCol), 50), 0.4 + 0.6 * fizz);
+
+            // Glow rings with additive blending, low alpha and weight
+            pg.blendMode(ADD);
+            for (let glow = 3; glow >= 1; glow--) {
+               let alphaGlow = 40 - glow * 10 + 25 * fizz;
+               let weightGlow = 3 + glow * 2;
+               pg.stroke(red(glowCol), green(glowCol), blue(glowCol), alphaGlow);
+               pg.strokeWeight(weightGlow);
+               pg.noFill();
+               pg.ellipse(centerX + jitterX, centerY + jitterY, r * 2 + glow * 6, r * 2 + glow * 6);
+            }
+
+            // Main ellipse with subtle pulse scale
+            pg.blendMode(BLEND);
+            pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 120 + 60 * pulse);
+            pg.strokeWeight(2 + pulse);
+            pg.noFill();
+            pg.ellipse(centerX + jitterX, centerY + jitterY, r * 2, r * 2);
+
+            // Flickering perimeter points with low alpha and small stroke weight
+            const pointsCount = 12;
+            for (let p = 0; p < pointsCount; p++) {
+               let angle = TWO_PI * p / pointsCount + frameCount * 0.04;
+               let noiseFactor = noise(p * 0.12, frameCount * 0.04);
+               let px = centerX + cos(angle) * (r + noiseFactor * 3);
+               let py = centerY + sin(angle) * (r + noiseFactor * 3);
+
+               pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 80 + 40 * fizz);
+               pg.strokeWeight(1.5);
+               pg.point(px, py);
+            }
+         }
+      }
+      break;
+
+      case 'noise':
+         pg.strokeWeight(2);
+         let spacing = 8; // distance between dots
+         for (let i = -size / 2; i <= size / 2; i += spacing) {
+            for (let j = -size / 2; j <= size / 2; j += spacing) {
+               let n = noise((i + x) * 0.1 + frameCount * 0.02, (j + y) * 0.1 + frameCount * 0.02);
+               let jitterX = map(n, 0, 1, -1.5, 1.5);
+               let jitterY = map(n, 0, 1, -1.5, 1.5);
+
+               let colorIndex = (Math.floor(i / spacing) + Math.floor(j / spacing)) % activities.length;
+               let col = getWarpColor(colorIndex);
+
+               // Shadow point (shifted)
+               pg.stroke(0, 0, 0, 100);
+               pg.strokeWeight(3);
+               pg.point(i + jitterX + 2, j + jitterY + 2);
+
+               // Main point
+               pg.stroke(red(col), green(col), blue(col), 180);
+               pg.strokeWeight(2);
+               pg.point(i + jitterX, j + jitterY);
+            }
+         }
+         break;
+
+      default:
+         break;
+   }
+
+   pg.pop();
 }
