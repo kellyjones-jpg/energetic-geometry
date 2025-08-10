@@ -579,6 +579,11 @@ function renderEntryVisual(entry, pg, isModal = false) {
     pg.strokeWeight(strokeW + 1);
     drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, size, 1.5, pg);
   }
+  
+  if (entry.pvTech?.length > 0) {
+  const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
+  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, size, pg);
+}
 
   if (entry.arrayType) {
     pg.push();
@@ -597,12 +602,6 @@ function renderEntryVisual(entry, pg, isModal = false) {
   if (entry.cropType?.length > 0) {
     drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, size * 1.3, strokeW, pg);
   }
-
-  
-  if (entry.pvTech?.length > 0) {
-  const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
-  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, size, pg);
-}
 
   if (entry.animalType?.length > 0) {
     const yOffset = size * 0.25;
@@ -801,6 +800,11 @@ if (entry.activities && entry.habitat) {
    strokeWeight(strokeW + 1.5);
    drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize, 2, this);
 }
+     
+if (entry.pvTech?.length > 0) {
+  const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
+  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, entryShapeSize, this);
+}
 
 if (entry.arrayType) {
    push();
@@ -814,11 +818,6 @@ if (entry.arrayType) {
 
 if (entry.cropType?.length > 0) {
    drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.35, strokeW, this);
-}
-
-if (entry.pvTech?.length > 0) {
-  const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
-  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, entryShapeSize, this);
 }
 
 if (entry.animalType?.length > 0) {
