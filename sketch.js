@@ -498,6 +498,44 @@ function windowResized() {
    redraw(); 
 }
 
+function capitalizeLastWordPV(str) {
+  if (!str) return '';
+  let parts = str.trim().split(' ');
+  if (parts.length === 0) return '';
+
+  if (parts.length === 1) {
+    // Just one word — capitalize first letter, lowercase the rest
+    return parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase();
+  }
+
+  let lastWord = parts.pop();
+  // Make last word uppercase if it matches "pv" (case-insensitive)
+  if (lastWord.toLowerCase() === 'pv') {
+    lastWord = lastWord.toUpperCase();
+  } else {
+    lastWord = lastWord.charAt(0).toUpperCase() + lastWord.slice(1).toLowerCase();
+  }
+
+  let firstPart = parts
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+
+  return (firstPart ? firstPart + ' ' : '') + lastWord;
+}
+
+function normalizePvTechForLookup(str) {
+  if (!str) return '';
+  const s = str.trim().toLowerCase();
+
+  if (s === 'other') return 'other';
+
+  // If it already ends with ' pv', return as is
+  if (s.endsWith(' pv')) return s;
+
+  // Otherwise, add ' pv'
+  return s + ' pv';
+}
+
 function renderEntryVisual(entry, pg, isModal = false) {
   // Ensure pg is a valid drawing context
   if (!pg || typeof pg.push !== 'function') {
@@ -565,9 +603,10 @@ function renderEntryVisual(entry, pg, isModal = false) {
     drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, size * 1.3, strokeW, pg);
   }
 
-  if (entry.pvTech?.length > 0) {
-    drawPVWarpStyle(entry.pvTech, entry.activities, 0, 0, size, pg);
-  }
+if (entry.pvTech?.length > 0) {
+  const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
+  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, size, pg);
+}
 
   if (entry.animalType?.length > 0) {
     const yOffset = size * 0.25;
@@ -775,7 +814,8 @@ if (entry.cropType?.length > 0) {
 }
 
 if (entry.pvTech?.length > 0) {
-   drawPVWarpStyle(entry.pvTech, entry.activities, 0, 0, entryShapeSize, this);
+  const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
+  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, size, pg);
 }
 
 if (entry.animalType?.length > 0) {
@@ -815,31 +855,6 @@ if (modalPreviewEntry && modalPreviewCallback) {
     modalPreviewCallback = null;
   }, 10);
 }
-}
-
-function capitalizeLastWordPV(str) {
-  if (!str) return '';
-  let parts = str.trim().split(' ');
-  if (parts.length === 0) return '';
-
-  if (parts.length === 1) {
-    // Just one word — capitalize first letter, lowercase the rest
-    return parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase();
-  }
-
-  let lastWord = parts.pop();
-  // Make last word uppercase if it matches "pv" (case-insensitive)
-  if (lastWord.toLowerCase() === 'pv') {
-    lastWord = lastWord.toUpperCase();
-  } else {
-    lastWord = lastWord.charAt(0).toUpperCase() + lastWord.slice(1).toLowerCase();
-  }
-
-  let firstPart = parts
-    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-    .join(' ');
-
-  return (firstPart ? firstPart + ' ' : '') + lastWord;
 }
 
 function showModalWithEntry(entry) {
