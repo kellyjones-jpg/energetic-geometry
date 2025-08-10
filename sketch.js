@@ -815,7 +815,7 @@ if (entry.cropType?.length > 0) {
 
 if (entry.pvTech?.length > 0) {
   const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
-  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, size, pg);
+  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, entryShapeSize, this);
 }
 
 if (entry.animalType?.length > 0) {
