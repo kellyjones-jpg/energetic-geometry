@@ -833,8 +833,8 @@ pop(); // end entry group
 if (modalPreviewEntry && typeof modalPreviewCallback === 'function') {
   const entry = modalPreviewEntry;
 
-  const scaleFactor = 0.45;
-  const pg = createGraphics(200, 200);
+  const scaleFactor = 0.55;
+  const pg = createGraphics(250, 250);
   pg.pixelDensity(1);
   pg.clear();
   pg.colorMode(RGB, 255, 255, 255, 255);
