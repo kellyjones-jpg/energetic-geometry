@@ -614,161 +614,153 @@ function renderEntryVisual(entry, pg, isModal = false) {
 }
 
 function draw() {
-  // === BACKGROUND ===
-  image(bgImg, 0, 0, width, height);
-  noStroke();
-  rectMode(CORNER);
-  fill(0, 130);
-  rect(0, 0, width, height);
-  rectMode(CENTER);
+   // === BACKGROUND ===
+   image(bgImg, 0, 0, width, height);
+   noStroke();
+   rectMode(CORNER);
+   fill(0, 130);
+   rect(0, 0, width, height);
+   rectMode(CENTER);
 
-  const centerX = width / 2;
-  const labelY = 40;
-  const yearY = labelY + 25;
-  const baseYearY = yearY;
-  const adjustedYearY = hasSelectedYear ? baseYearY : baseYearY;
+   const centerX = width / 2;
+   const labelY = 40;
+   const yearY = labelY + 25;
+   const baseYearY = yearY;
+   const adjustedYearY = hasSelectedYear ? baseYearY : baseYearY;
 
-  // Reserve vertical space for "Year Installed" text + padding
-  const topMargin = width < 600 ? 120 : 90;
+   textFont('Helvetica');
+   textAlign(CENTER, BOTTOM);
+   fill(255, fadeAlpha);
+   textSize(28);
 
-  textFont('Helvetica');
-  textAlign(CENTER, BOTTOM);
-  fill(255, fadeAlpha);
-  textSize(28);
+   let displayYear = ""; // Ensure variable is always declared
 
-  let displayYear = ""; // Ensure variable is always declared
+   if (hasSelectedYear) {
+      // Text shadow (drawn first, slightly offset)
+      fill(0, fadeAlpha); // Shadow color (black, transparent)
+      text("Year Installed:", centerX + 2, labelY + 2);
 
-  if (hasSelectedYear) {
-    // Text shadow (drawn first, slightly offset)
-    fill(0, fadeAlpha); // Shadow color (black, transparent)
-    text("Year Installed:", centerX + 2, labelY + 2);
+      // Main text
+      fill(255, fadeAlpha); // White text
+      text("Year Installed:", centerX, labelY);
+      textStyle(BOLD);
+      textSize(36);
+      displayYear = " " + selectedYear;
+      textAlign(CENTER, CENTER);
 
-    // Main text
-    fill(255, fadeAlpha); // White text
-    text("Year Installed:", centerX, labelY);
-    textStyle(BOLD);
-    textSize(36);
-    displayYear = " " + selectedYear;
-    textAlign(CENTER, CENTER);
+      // Shadow for selected year
+      fill(0, fadeAlpha);
+      text(displayYear, centerX + 2, adjustedYearY + 2);
 
-    // Shadow for selected year
-    fill(0, fadeAlpha);
-    text(displayYear, centerX + 2, adjustedYearY + 2);
+      // Main year label
+      fill(255, fadeAlpha);
+      text(displayYear, centerX, adjustedYearY);
 
-    // Main year label
-    fill(255, fadeAlpha);
-    text(displayYear, centerX, adjustedYearY);
+      let maxLineWidth = 0;
+      displayYear.split('\n').forEach(line => {
+         const w = textWidth(line);
+         if (w > maxLineWidth) maxLineWidth = w;
+      });
+      const lineWidth = maxLineWidth + 40;
 
-    let maxLineWidth = 0;
-    displayYear.split('\n').forEach(line => {
-      const w = textWidth(line);
-      if (w > maxLineWidth) maxLineWidth = w;
-    });
-    const lineWidth = maxLineWidth + 40;
+      const startX = centerX - lineWidth / 2;
+      const endX = centerX + lineWidth / 2;
 
-    const startX = centerX - lineWidth / 2;
-    const endX = centerX + lineWidth / 2;
+      let baseLineY = adjustedYearY + 17;
+      stroke(10, 10, 10, fadeAlpha);
+      strokeWeight(3);
+      line(startX, baseLineY, endX, baseLineY);
+      noStroke();
+   }
 
-    const baseLineY = adjustedYearY + 17;
-    stroke(10, 10, 10, fadeAlpha);
-    strokeWeight(3);
-    line(startX, baseLineY, endX, baseLineY);
-    noStroke();
-  }
+   // === DATA FOR SELECTED YEAR ===
+   if (!hasSelectedYear || !selectedYear || !entriesByYear[selectedYear]) {
+      return; // Stop early if no user interaction has occurred
+   }
 
-  // === DATA FOR SELECTED YEAR ===
-  if (!hasSelectedYear || !selectedYear || !entriesByYear[selectedYear]) {
-    return; // Stop early if no user interaction has occurred
-  }
+   const yearEntries = entriesByYear[selectedYear];
+   const sortedEntries = [...yearEntries].sort((a, b) => (b.acres || 0) - (a.acres || 0));
 
-  const yearEntries = entriesByYear[selectedYear];
-  const sortedEntries = [...yearEntries].sort((a, b) => (b.acres || 0) - (a.acres || 0));
+   if (sortedEntries.length === 0) {
+      fill(255, fadeAlpha);
+      textAlign(CENTER, CENTER);
+      textSize(20);
+      text("No data available for this year.", centerX, height / 2);
+      return;
+   }
 
-  if (sortedEntries.length === 0) {
-    fill(255, fadeAlpha);
-    textAlign(CENTER, CENTER);
-    textSize(20);
-    text("No data available for this year.", centerX, height / 2);
-    return;
-  }
+   // === VALUE RANGES ===
+   const minSiteSize = Math.min(...sortedEntries.map(e => e.acres || 0.1));
+   const maxSiteSize = Math.max(...sortedEntries.map(e => e.acres || 1));
+   const maxMW = Math.max(1, ...sortedEntries.map(e => e.megawatts || 0));
+   const count = sortedEntries.length;
 
-  // === VALUE RANGES ===
-  const minSiteSize = Math.min(...sortedEntries.map(e => e.acres || 0.1));
-  const maxSiteSize = Math.max(...sortedEntries.map(e => e.acres || 1));
-  const maxMW = Math.max(1, ...sortedEntries.map(e => e.megawatts || 0));
-  const count = sortedEntries.length;
+   // === SPACING CONFIG ===
+   const totalCols = max(Math.ceil(count / numRows), 2);
+   const totalRows = Math.min(count, numRows);
+   const availableW = width * 0.85;
+   const availableH = height - startY - 70;
+   const colSpacing = constrain(availableW / totalCols, shapeSize * 1.4, shapeSize * 2.4);
+   const rowSpacing = constrain(availableH / totalRows, shapeSize * 1.3, shapeSize * 2.2);
 
-  // === SPACING CONFIG ===
-  const totalCols = max(Math.ceil(count / numRows), 2);
-  const totalRows = Math.min(count, numRows);
+   // === DRAW EACH ENTRY ===
+   for (let i = 0; i < count; i++) {
+      const entry = sortedEntries[i];
+      const row = i % numRows;
+      const col = Math.floor(i / numRows);
 
-  const availableW = width * 0.85;
+      // === SHAPE SIZE ===
+      let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, shapeSize * 0.6, shapeSize);
+      entryShapeSize = constrain(entryShapeSize, 30, (availableH / numRows) * 0.85);
+      let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 2, 5.5);
+      strokeW = constrain(strokeW, 2, 5.5);
 
-  // Subtract topMargin here to keep sites below text area
-  const availableH = height - startY - 70 - topMargin;
+      // === SCALE ANIMATION ===
+      const baseScale = 1;
+      const maxScale = 1.2;
+      const minScale = 1.05;
+      const sizeNorm = map(shapeSize, 30, 150, 0, 1);
+      const hoverScale = minScale + sizeNorm * (maxScale - minScale);
+      const isHovered = hoveredEntry && hoveredEntry.name === entry.name;
+      const targetScale = isHovered ? hoverScale : baseScale;
+      const opArtWave = 0.02 * sin(frameCount * 0.05 + col * 0.5 + row);
+      entry.currentScale = lerp(entry.currentScale || baseScale, targetScale + opArtWave, 0.1);
 
-  const colSpacing = constrain(availableW / totalCols, shapeSize * 1.4, shapeSize * 2.4);
-  const rowSpacing = constrain(availableH / totalRows, shapeSize * 1.3, shapeSize * 2.2);
+      // === SLIGHT RANDOM SCALE VARIATION ===
+      const scaleJitter = map(noise(row * 0.2 + 1000, col * 0.2 + 500), 0, 1, 0.98, 1.04);
+      entry.currentScale *= scaleJitter;
+      entry.currentScale = constrain(entry.currentScale, 0.95, 1.2);
 
-  // === DRAW EACH ENTRY ===
-  for (let i = 0; i < count; i++) {
-    const entry = sortedEntries[i];
-    const row = i % numRows;
-    const col = Math.floor(i / numRows);
+      // === POSITION CALCULATION ===
+      const outwardOffset = pow(Math.abs(col - totalCols / 2), 1.2) * 3;
+      const horizontalWaveOffset = 10 * sin((row + col) * 0.7);
+      const colStaggerOffset = (col % 2) * (shapeSize * 0.3);
+      const gridWidth = (totalCols - 1) * colSpacing;
+      const startX = max((width - gridWidth) / 2, 30); // ensure margin of 30px
+      const cx = startX + col * colSpacing + horizontalWaveOffset;
+      const bottomPadding = 65;
+      const rowOffset = shapeSize * 0.15;
+      const cy = height - bottomPadding - row * rowSpacing - rowOffset - entryShapeSize / 2 - colStaggerOffset - outwardOffset;
 
-    // === SHAPE SIZE ===
-    let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, shapeSize * 0.6, shapeSize);
-    entryShapeSize = constrain(entryShapeSize, 30, (availableH / numRows) * 0.85);
-    let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 2, 5.5);
-    strokeW = constrain(strokeW, 2, 5.5);
 
-    // === SCALE ANIMATION ===
-    const baseScale = 1;
-    const maxScale = 1.2;
-    const minScale = 1.05;
-    const sizeNorm = map(shapeSize, 30, 150, 0, 1);
-    const hoverScale = minScale + sizeNorm * (maxScale - minScale);
-    const isHovered = hoveredEntry && hoveredEntry.name === entry.name;
-    const targetScale = isHovered ? hoverScale : baseScale;
-    const opArtWave = 0.02 * sin(frameCount * 0.05 + col * 0.5 + row);
-    entry.currentScale = lerp(entry.currentScale || baseScale, targetScale + opArtWave, 0.1);
+      // === EASING POSITION ===
+      const jitterX = map(noise(i * 0.2, frameCount * 0.002), 0, 1, -4, 4);
+      const jitterY = map(noise(i * 0.2 + 500, frameCount * 0.002), 0, 1, -3, 3);
+      const targetX = cx + jitterX;
+      const targetY = cy + jitterY;
+      entry._screenX = lerp(entry._screenX || targetX, targetX, 0.1);
+      entry._screenY = lerp(entry._screenY || targetY, targetY, 0.1);
 
-    // === SLIGHT RANDOM SCALE VARIATION ===
-    const scaleJitter = map(noise(row * 0.2 + 1000, col * 0.2 + 500), 0, 1, 0.98, 1.04);
-    entry.currentScale *= scaleJitter;
-    entry.currentScale = constrain(entry.currentScale, 0.95, 1.2);
+      // === ANGLE OFFSET ===
+      const baseAngle = (col % 2 === 0) ? PI / 36 : -PI / 36;
+      const randomAngle = map(noise(row * 0.3, col * 0.2), 0, 1, -PI / 90, PI / 90);
 
-    // === POSITION CALCULATION ===
-    const outwardOffset = pow(Math.abs(col - totalCols / 2), 1.2) * 3;
-    const horizontalWaveOffset = 10 * sin((row + col) * 0.7);
-    const colStaggerOffset = (col % 2) * (shapeSize * 0.3);
-    const gridWidth = (totalCols - 1) * colSpacing;
-    const startX = max((width - gridWidth) / 2, 30); // ensure margin of 30px
-    const cx = startX + col * colSpacing + horizontalWaveOffset;
-    const bottomPadding = 65;
-    const rowOffset = shapeSize * 0.15;
-
-    // Shift cy down by topMargin to keep sites below text area
-    const cy = height - bottomPadding - row * rowSpacing - rowOffset - entryShapeSize / 2 - colStaggerOffset - outwardOffset - topMargin;
-
-    // === EASING POSITION ===
-    const jitterX = map(noise(i * 0.2, frameCount * 0.002), 0, 1, -4, 4);
-    const jitterY = map(noise(i * 0.2 + 500, frameCount * 0.002), 0, 1, -3, 3);
-    const targetX = cx + jitterX;
-    const targetY = cy + jitterY;
-    entry._screenX = lerp(entry._screenX || targetX, targetX, 0.1);
-    entry._screenY = lerp(entry._screenY || targetY, targetY, 0.1);
-
-    // === ANGLE OFFSET ===
-    const baseAngle = (col % 2 === 0) ? PI / 36 : -PI / 36;
-    const randomAngle = map(noise(row * 0.3, col * 0.2), 0, 1, -PI / 90, PI / 90);
-
-    // === DRAW ENTRY ===
-    push();
-    translate(entry._screenX, entry._screenY);
-    rotate(baseAngle + randomAngle);
-    scale(entry.currentScale);
-    entry._radius = entryShapeSize * entry.currentScale * 0.5;
+ // === DRAW ENTRY ===
+push();
+translate(entry._screenX, entry._screenY);
+rotate(baseAngle + randomAngle);
+scale(entry.currentScale);
+entry._radius = entryShapeSize * entry.currentScale * 0.5;
 
 const activityColors = (entry.activities || []).map(getActivityColor);
 const baseColor = getActivityColor(entry.activities?.[0] || '');
@@ -800,7 +792,7 @@ if (entry.activities && entry.habitat) {
    strokeWeight(strokeW + 1.5);
    drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize, 2, this);
 }
-     
+
 if (entry.pvTech?.length > 0) {
   const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
   drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, entryShapeSize, this);
