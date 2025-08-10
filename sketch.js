@@ -142,9 +142,9 @@ const cropEdgeGroups = {
 };
 
 const pvWarpStyles = {
-  'monofacial PV': 'linear',
-  'bifacial PV': 'symmetric',
-  'translucent PV': 'radial',
+  'Monofacial PV': 'linear',
+  'Bifacial PV': 'symmetric',
+  'Translucent PV': 'radial',
   'other': 'noise'
 };
 
