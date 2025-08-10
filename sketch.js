@@ -830,7 +830,7 @@ if (entry.animalType?.length > 0) {
 pop(); // end entry group
 }
 
-if (modalPreviewEntry && modalPreviewCallback) {
+if (modalPreviewEntry && typeof modalPreviewCallback === 'function') {
   const entry = modalPreviewEntry;
 
   const scaleFactor = 0.45;
