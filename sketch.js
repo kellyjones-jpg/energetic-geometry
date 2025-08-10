@@ -603,11 +603,6 @@ function renderEntryVisual(entry, pg, isModal = false) {
     drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, size * 1.3, strokeW, pg);
   }
 
-if (entry.pvTech?.length > 0) {
-  const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
-  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, size, pg);
-}
-
   if (entry.animalType?.length > 0) {
     const yOffset = size * 0.25;
     const animalSize = size * 1;
@@ -616,6 +611,10 @@ if (entry.pvTech?.length > 0) {
     drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, pg);
   }
 
+  if (entry.pvTech?.length > 0) {
+  const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
+  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, size, pg);
+}
   pg.pop();
 }
 
@@ -813,11 +812,6 @@ if (entry.cropType?.length > 0) {
    drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.35, strokeW, this);
 }
 
-if (entry.pvTech?.length > 0) {
-  const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
-  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, entryShapeSize, this);
-}
-
 if (entry.animalType?.length > 0) {
    const yOffset = entryShapeSize * 0.15;
    const animalSize = entryShapeSize * 0.9;
@@ -827,6 +821,12 @@ if (entry.animalType?.length > 0) {
    strokeWeight(strokeW);
    drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, this);
 }
+
+if (entry.pvTech?.length > 0) {
+  const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
+  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, entryShapeSize, this);
+}
+
 pop(); // end entry group
 }
 
