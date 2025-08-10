@@ -2139,7 +2139,7 @@ case 'radial': {
 
   for (let r = 10, idx = 0; r < size; r += 10, idx++) {
     let baseCol = getWarpColor(idx % activities.length);
-    let pulse = sin((frameCount + r * 5) * 0.1) * 0.3;  // reduced pulse amplitude
+    let pulse = sin((frameCount + r * 5) * 0.06) * 0.3;  // slower pulse
 
     let jitterX = (noise(r * 0.12, frameCount * 0.1) - 0.5) * 3;
     let jitterY = (noise(r * 0.12, frameCount * 0.12) - 0.5) * 3;
