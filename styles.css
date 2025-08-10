@@ -1150,8 +1150,8 @@ a.hyperlink:focus {
 
 	.modal-site-thumbnail {
 		margin-bottom: 0.5rem;
-		width: 80%;
-		max-width: 220px;
+		width: 90%;
+		max-width: 250px;
 	}
 
 	.modal-site-details {
