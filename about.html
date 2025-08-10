@@ -1,111 +1,2254 @@
-<!DOCTYPE html>
-<html lang="en">
-   <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <title>About | Energetic Geometry: The Art and Power of Agrivoltaics</title>
-      <link rel="icon" href="images/kj-favicon.png" type="image/png" />
-      <link rel="apple-touch-icon" href="icons/favicon.png" />
-      <!-- Google Font -->
-      <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet" />
-      <!-- Bootstrap CSS -->
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-      <!-- Bootstrap Icons -->
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
-      <!-- Global Styles -->
-      <link rel="stylesheet" href="styles.css">
-   </head>
-   <body>
-      <div class="container my-4">
-         <!-- Header and nav -->
-         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1 class="mb-0"><a class="title" href="index.html" aria-label="Home">
-               Energetic Geometry:<br />
-               The Art and Power of Agrivoltaics</a>
-            </h1>
-            <nav class="mb-0">
-               <ul class="nav">
-                  <li class="nav-item">
-                     <a class="nav-link suprematist-underline" href="about.html" aria-label="About">About</a>
-                  </li>
-                  <li class="nav-item suprematist-underline">
-                     <a class="nav-link d-flex align-items-center" href="help.html" aria-label="Help">
-                     Help <i class="bi bi-question-circle ms-1" aria-hidden="true"></i>
-                     </a>
-                  </li>
-               </ul>
-            </nav>
-         </div>
-         <!-- About Content -->
-         <div class="interior-border pb-2" style="text-shadow: -0.50px 0.50px 0 #0A0A0A">
-            <h2 class="mt-4">About</h2>
-            <p class="lead"><em>Energetic Geometry: The Art and Power of Agrivoltaics</em> is an interactive web-based visualization that reimagines agrivoltaic data as abstract, geometric visuals&mdash;blending art, science, and creative coding into an accessible experience.</p>
-            <div class="col-md-5 float-end mt-2 mb-4 px-3">
-               <img src="images/project-cover-full-v3.webp" alt="Energetic Geometry visual" class="img-fluid suprematist-op-dropshadow" />
-            </div>
-            <h3>What is Agrivoltaics?</h3>
-            <p>Agrivoltaics is the practice of co-locating solar infrastructure with agricultural activity—whether that means planting crops beneath the panels, restoring habitat, or rotating livestock through a solar panel field (also known as a photovoltaic or PV field). Rather than treating farmland and solar sites as separate choices, this hybrid approach combines them in new and adaptable ways.</p>
-            <h3>Artistic Foundations</h3>
-            <p>The visual logic is shaped by influences from abstraction, systems-based art, and perceptual design. Suprematist works by Kazimir Malevich and El Lissitzky inform its geometric clarity and spatial structure, while Sol LeWitt's conceptual art frames the generative code as a system for executing ideas.</p>
-            <p>Dynamic, rule-based visuals reflect the procedural approaches of Casey Reas, Ben Fry, and Vera Molnár, who transform data into visual form. Optical strategies drawn from Bridget Riley and Victor Vasarely amplify motion and ecological rhythm, while Marius Watz contributes a sense of generative flow and systemic emergence.</p>
-            <p>Helvetica, selected to align with Robert Bringhurst's principles of clarity and restraint, provides a neutral typographic foundation that supports the visual complexity without distraction.</p>
-            <h3>Data Source</h3>
-            <p>
-               This project draws on publicly available data from the Innovative Solar Practices Integrated with Rural Economies and Ecosystems (InSPIRE) 
-               <a class="hyperlink d-inline-flex align-items-center"
-                  href="https://openei.org/wiki/InSPIRE/Agrivoltaics_Map"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="InSPIRE Agrivoltaics Map (opens in new window)">
-                  Agrivoltaics Map
-                  <svg
-                     width="16" height="16" viewBox="0 0 24 24"
-                     xmlns="http://www.w3.org/2000/svg"
-                     aria-hidden="true"
-                     style="vertical-align: middle; margin-left: 4px;"
-                     >
-                     <defs>
-                        <!-- Default shadow -->
-                        <filter id="defaultShadow" x="-50%" y="-50%" width="200%" height="200%">
-                           <feDropShadow dx="-2" dy="2" stdDeviation="0" flood-color="#0A0A0A" />
-                           <feDropShadow dx="-3" dy="3" stdDeviation="0" flood-color="#4C8CF5" />
-                        </filter>
-                     </defs>
-                     <g filter="url(#defaultShadow)">
-                        <!-- Rotated square frame -->
-                        <rect
-                           x="4" y="4" width="16" height="16"
-                           fill="none"
-                           stroke="currentColor"
-                           stroke-width="2"
-                           transform="rotate(45 12 12)"
-                           rx="1"
-                           ry="1"
-                           />
-                        <!-- Arrow shaft -->
-                        <line
-                           x1="9" y1="15"
-                           x2="15" y2="9"
-                           stroke="currentColor"
-                           stroke-width="2.5"
-                           stroke-linecap="round"
-                           />
-                        <!-- Arrowhead -->
-                        <polyline
-                           points="9,9 15,9 15,15"
-                           fill="none"
-                           stroke="currentColor"
-                           stroke-width="2.5"
-                           stroke-linejoin="round"
-                           />
-                     </g>
-                  </svg>
-               </a>
-               &mdash;a project led by the U.S. Department of Energy and managed by the National Renewable Energy Laboratory. InSPIRE supports the growth of agrivoltaics by providing open data, field research, and tools that promote sustainable solar-agriculture practices. Their dataset forms the foundation for the visual translations in this project.
-            </p>
-            <h3>A New Kind of Visualization</h3>
-            <p>By weaving abstraction, data, and creative code&mdash;with p5.js as a key catalyst, <em>Energetic Geometry</em> celebrates agrivoltaics as a thriving balance of energy and life, where solar panels power the land above and rich ecosystems flourish below. Moving beyond conventional charts and diagrams, it invites users to engage with data through a different lens. Generative data visualization opens a window to deeper understanding by unfolding patterns, relationships, and interconnections that might otherwise remain unseen.</p>
-         </div>
+let table;
+let entries = [];
+let entriesByYear = {};
+let selectedYear;
+let availableYears = [];
+let cnv;
+let hoveredEntry = null;
+let bgImg;
+let shapeSize, padding, startY, numCols, numRows;
+let hasSelectedYear = false;
+let fadeAlpha = 255;
+let placeholderContainer;
+let modalPreviewEntry = null;
+let modalPreviewCallback = null;
+let keyboardFocusedIndex = -1;
+
+const cropEdgeGroups = {
+   // Root vegetables
+   "carrots": "root",
+   "beets": "root",
+   "radish": "root",
+   "daikon": "root",
+   "garlic": "root",
+   "onions": "root",
+   "shallots": "root",
+   "leeks": "root",
+   "yams": "root",
+   "turnips": "root",
+   "potatoes": "root",
+   "sweet potato": "root",
+   "dryland taro": "root",
+   "asparagus": "root",
+   "celery": "root",
+   "fennel": "root",
+
+   // Leafy greens
+   "spinach": "leafy",
+   "kale": "leafy",
+   "chard": "leafy",
+   "swiss chard": "leafy",
+   "lettuce": "leafy",
+   "buttercrunch head lettuce": "leafy",
+   "red salad bowl lettuce": "leafy",
+   "arugula": "leafy",
+   "greens": "leafy",
+   "leafy greens": "leafy",
+   "collards": "leafy",
+   "salad greens": "leafy",
+   "microgreens": "leafy",
+
+   // Fruit-bearing vegetables (Solanaceae, cucurbits)
+   "tomatoes": "fruit",
+   "cherry tomatoes": "fruit",
+   "peppers": "fruit",
+   "bell pepper": "fruit",
+   "squash": "fruit",
+   "summer squash": "fruit",
+   "winter squash": "fruit",
+   "melons": "fruit",
+   "eggplant": "fruit",
+   "cucumbers": "fruit",
+   "cucurbits & solanaceous crops": "fruit",
+   "pumpkins": "fruit",
+   "zucchini": "fruit",
+   "chiles": "fruit",
+
+   // Fruits & berries
+   "berries": "berry",
+   "blueberries": "berry",
+   "currants": "berry",
+   "elderberry": "berry",
+   "raspberry": "berry",
+   "strawberries": "berry",
+   "native berry plants": "berry",
+   "poha berries": "berry",
+   "persimmons": "fruit",
+   "peaches": "fruit",
+   "pears": "fruit",
+   "apples": "fruit",
+   "watermelon": "fruit",
+
+   // Herbs
+   "herbs": "herb",
+   "basil": "herb",
+   "genovese basil": "herb",
+   "cilantro": "herb",
+   "parsley": "herb",
+
+   // Grains & grasses
+   "hay": "grain",
+   "corn": "grain",
+   "soy": "grain",
+   "soybean": "grain",
+   "spring wheat": "grain",
+   "saffron": "grain",
+   "sorghum": "grain",
+   "clover": "grain",
+   "grain and specialty crops": "grain",
+   "alfalfa": "grain",
+
+   // Legumes
+   "beans": "legume",
+   "bush beans": "legume",
+   "string beans": "legume",
+   "green beans": "legume",
+   "peas": "legume",
+
+   // Vining / perennial
+   "grapes": "vine",
+   "kiwis": "vine",
+   "kiwi": "vine",
+   "lavender": "vine",
+   "vanilla": "vine",
+   "tea": "vine",
+   "mamaki tea": "vine",
+   "peppercorn": "vine",
+   "maile": "vine",
+   "coffee": "vine",
+   "protea": "vine",
+
+   // Cruciferous vegetables
+   "broccoli": "cruciferous",
+   "cabbage": "cruciferous",
+   "bok choy": "cruciferous",
+   "kohlrabi": "cruciferous",
+   "cauliflower": "cruciferous",
+
+   // Mixed / general
+   "mixed vegetables": "mixed",
+   "assorted vegetables": "mixed",
+   "various vegetables": "mixed",
+   "vegetables": "mixed",
+   "vegetables, herbs, fruits": "mixed",
+   "leafy greens, berries": "mixed",
+   "tomato, pepper, 20+ crop types": "mixed",
+   "tomato, pepper, kale, radish, eggplant, 30+ crop types": "mixed",
+   "pepper, kale, broccoli, beans, chard": "mixed",
+   "peppers, tomatoes, squash, lettuce, herbs": "mixed",
+   "potatoes, tomatoes, basil, beans, squash": "mixed",
+   "vegetables (kohlrabi, cabbage, broccoli, kale, chard, peppers, parsley, tomatoes)": "mixed",
+   "vegetables (kohlrabi, cabbage, kale, chard, peppers, basil, tomatoes)": "mixed",
+   "native berry plants, vegetable crops, and forage crops": "mixed",
+};
+
+const pvWarpStyles = {
+  'monofacial pv': 'linear',
+  'bifacial pv': 'symmetric',
+  'translucent pv': 'radial',
+  'other': 'noise'
+};
+
+const combinedIcon = `
+<svg
+  width="16" height="16" viewBox="0 0 24 24"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden="true"
+  style="vertical-align: middle; margin-left: 4px;"
+>
+  <defs>
+    <!-- Default shadow -->
+    <filter id="defaultShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="-2" dy="2" stdDeviation="0" flood-color="#0A0A0A" />
+      <feDropShadow dx="-3" dy="3" stdDeviation="0" flood-color="#4C8CF5" />
+    </filter>
+  </defs>
+
+  <g filter="url(#defaultShadow)">
+    <!-- Rotated square frame -->
+    <rect
+      x="4" y="4" width="16" height="16"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      transform="rotate(45 12 12)"
+      rx="1"
+      ry="1"
+    />
+    <!-- Arrow shaft -->
+    <line
+      x1="9" y1="15"
+      x2="15" y2="9"
+      stroke="currentColor"
+      stroke-width="2.5"
+      stroke-linecap="round"
+    />
+    <!-- Arrowhead -->
+    <polyline
+      points="9,9 15,9 15,15"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+      stroke-linejoin="round"
+    />
+  </g>
+</svg>
+`;
+
+function preload() {
+   table = loadTable('data/inspire-agrivoltaics-20250810.csv', 'csv', 'header');
+   bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
+}
+
+// Animate number count from start to end over 'duration' milliseconds
+function animateCount(id, start, end, duration) {
+   const element = document.getElementById(id);
+   if (!element) return; // safety check
+
+   let startTime = null;
+
+   function step(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const currentValue = Math.floor(progress * (end - start) + start);
+      element.textContent = currentValue.toLocaleString();
+      if (progress < 1) {
+         requestAnimationFrame(step);
+      }
+   }
+
+   requestAnimationFrame(step);
+}
+
+function updateCounters(entries) {
+   if (!hasSelectedYear) {
+      select('#site-count').html('');
+      select('#megawatt-count').html('');
+      select('#acre-count').html('');
+      return;
+   }
+
+   let siteCount = entries.length;
+   let megawattCount = entries.reduce((sum, e) => sum + (e.megawatts || 0), 0);
+   let acreCount = entries.reduce((sum, e) => sum + (e.acres || 0), 0);
+
+   // Get current displayed values (or use 0 if not available)
+   const currentSite = parseInt(document.getElementById('site-count')?.textContent.replace(/,/g, '')) || 0;
+   const currentMW = parseInt(document.getElementById('megawatt-count')?.textContent.replace(/,/g, '')) || 0;
+   const currentAcres = parseInt(document.getElementById('acre-count')?.textContent.replace(/,/g, '')) || 0;
+
+   // Animate each number
+   animateCount('site-count', currentSite, siteCount, 1000);
+   animateCount('megawatt-count', currentMW, Math.round(megawattCount), 1000);
+   animateCount('acre-count', currentAcres, Math.round(acreCount), 1000);
+}
+
+function updatePlaceholderVisibility() {
+   if (placeholderContainer) {
+      if (hasSelectedYear) {
+         placeholderContainer.hide();
+      } else {
+         placeholderContainer.show();
+      }
+   }
+}
+
+function setup() {
+   // Parse table data
+   for (let i = 0; i < table.getRowCount(); i++) {
+      let name = table.getString(i, 'Name') || '';
+      let activityStr = table.getString(i, 'Agrivoltaic Activities') || '';
+      let activities = activityStr.split(/,\s*/).map(a => a.trim().toLowerCase()).filter(a => a.length > 0);
+      let habitatStr = String(table.getString(i, 'Habitat Type') || '').trim();
+      let habitat = habitatStr ? habitatStr.split(/,\s*/) : [];
+      let animalTypeStr = table.getString(i, 'Animal Type') || '';
+      let animalType = animalTypeStr.split(/,\s*/).map(a => a.trim().toLowerCase()).filter(a => a.length > 0);
+      let cropTypeStr = table.getString(i, 'Crop Types') || '';
+      let cropType = cropTypeStr ? cropTypeStr.split(/,\s*/) : [];
+      let pvTechStr = table.getString(i, 'PV Technology') || '';
+      let arrayTypeStr = table.getString(i, 'Type Of Array') || '';
+      let year = table.getString(i, 'Year Installed') || 'Unknown';
+      let megawatts = parseFloat(table.getString(i, 'System Size') || 0);
+      let acres = parseFloat(table.getString(i, 'Site Size') || 0);
+      let url = table.getString(i, 'URL') || '';
+
+      let entry = {
+         name,
+         activities,
+         habitat,
+         animalType,
+         cropType,
+         pvTech: pvTechStr.trim().toLowerCase(),
+         arrayType: arrayTypeStr.trim().toLowerCase(),
+         year,
+         megawatts,
+         acres,
+         url: url.trim(),
+         currentScale: 1
+      };
+
+      entries.push(entry);
+      if (!entriesByYear[year]) entriesByYear[year] = [];
+      entriesByYear[year].push(entry);
+   }
+
+   availableYears = Object.keys(entriesByYear).sort();
+   selectedYear = null;
+   hasSelectedYear = false;
+   updateCounters([]);
+
+   let canvasWidth = windowWidth * 0.9;
+   let canvasHeight = min(850, windowHeight);
+   cnv = createCanvas(canvasWidth, canvasHeight);
+   cnv.parent('sketch-container');
+
+   let caption = createP("Image from Pexels");
+   caption.style('text-align', 'center');
+   caption.class('image-caption');
+   caption.parent('sketch-container');
+
+   let timelineContainer = createDiv().id('timeline');
+   timelineContainer.style('text-align', 'center');
+   timelineContainer.parent('sketch-container');
+
+   availableYears.forEach((year, index) => {
+      let yearDiv = createDiv().class('timeline-year');
+      yearDiv.parent(timelineContainer);
+
+      let label = createP(year).class('year-label').addClass('suprematist-underline');
+      label.parent(yearDiv);
+      if (index % 2 === 0) label.addClass('above');
+      else label.addClass('below');
+
+      let node = createDiv().class('year-node');
+      node.parent(yearDiv);
+
+      label.mousePressed(() => {
+         selectedYear = year;
+         hasSelectedYear = true;
+         updatePlaceholderVisibility();
+         windowResized();
+         updateCounters(entriesByYear[selectedYear]);
+         if (typeof drawSites === 'function') {
+            drawSites(entriesByYear[selectedYear]);
+         }
+         selectAll('.year-label').forEach(lbl => lbl.removeClass('active'));
+         label.addClass('active');
+      });
+   });
+
+   textFont('Helvetica');
+   textSize(32);
+   textAlign(CENTER, CENTER);
+   rectMode(CENTER);
+   pixelDensity(displayDensity());
+
+   setupArrows();
+
+   placeholderContainer = createDiv().id('placeholder-container');
+   placeholderContainer.parent('sketch-container');
+   placeholderContainer.style('text-align', 'center');
+   placeholderContainer.style('margin-top', '420px');
+
+   // === PLACEHOLDER CONTAINER ===
+   placeholderContainer.html(`
+  <div class="placeholder-text">
+    Use the controls to navigate through time and reveal agrivoltaic patterns across the land.
+    <div class="placeholder-subtext" style="margin-top: 35px; font-size: 22px;">
+      Select a shape to reveal site details.
+    </div>
+  </div>
+`);
+
+   updatePlaceholderVisibility();
+}
+
+function setupArrows() {
+   const prevBtn = document.getElementById('prev-year');
+   const nextBtn = document.getElementById('next-year');
+
+   if (!prevBtn || !nextBtn) return;
+
+   // Make buttons keyboard-focusable
+   prevBtn.setAttribute('tabindex', '0');
+   nextBtn.setAttribute('tabindex', '0');
+
+   prevBtn.classList.add('arrow-button');
+   nextBtn.classList.add('arrow-button');
+
+   prevBtn.addEventListener('click', () => {
+      if (!hasSelectedYear) {
+         updateYear(availableYears[0], 0);
+      } else {
+         changeYear(-1);
+      }
+   });
+
+   nextBtn.addEventListener('click', () => {
+      if (!hasSelectedYear) {
+         updateYear(availableYears[0], 0);
+      } else {
+         changeYear(1);
+      }
+   });
+
+   // Keyboard support
+   prevBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+         e.preventDefault();
+         if (!hasSelectedYear) {
+            updateYear(availableYears[0], 0);
+         } else {
+            changeYear(-1);
+         }
+      }
+   });
+
+   nextBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+         e.preventDefault();
+         if (!hasSelectedYear) {
+            updateYear(availableYears[0], 0);
+         } else {
+            changeYear(1);
+         }
+      }
+   });
+
+   // Swipe support (mobile)
+   let touchStartX = null;
+
+   window.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+   });
+
+   window.addEventListener('touchend', (e) => {
+      if (touchStartX === null) return;
+      const touchEndX = e.changedTouches[0].screenX;
+      const deltaX = touchEndX - touchStartX;
+
+      if (Math.abs(deltaX) > 50) {
+         if (!hasSelectedYear) {
+            updateYear(availableYears[0], 0);
+         } else {
+            if (deltaX > 0) changeYear(-1);
+            else changeYear(1);
+         }
+      }
+      touchStartX = null;
+   });
+}
+
+function changeYear(direction) {
+   let currentIndex = availableYears.indexOf(selectedYear);
+
+   // If no year has been selected yet, select the first one and return
+   if (!hasSelectedYear) {
+      updateYear(availableYears[0], 0);
+      return;
+   }
+
+   let nextIndex = currentIndex + direction;
+
+   if (nextIndex < 0) nextIndex = availableYears.length - 1;
+   else if (nextIndex >= availableYears.length) nextIndex = 0;
+
+   selectedYear = availableYears[nextIndex];
+   updateYear(selectedYear, nextIndex);
+}
+
+function updateLayout(lockedHeight = 850) {
+   const yearEntries = entriesByYear[selectedYear] || [];
+   const count = yearEntries.length;
+
+   startY = 130;
+   padding = 40;
+
+   const availableWidth = windowWidth * 0.7;
+   const maxShapeSize = 125;
+   const minShapeSize = 20;
+
+   // Shape sizes from largest to smallest
+   for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
+      const tentativeNumCols = max(floor((availableWidth + padding) / (s + padding)), 1);
+      const tentativeNumRows = ceil(count / tentativeNumCols);
+      const totalHeight = startY + tentativeNumRows * (s + padding) + 100;
+
+      // Prioritize fitting within locked height first
+      if (totalHeight <= lockedHeight) {
+         shapeSize = s;
+         numCols = tentativeNumCols;
+         numRows = tentativeNumRows;
+         return lockedHeight;
+      }
+   }
+
+   // Fallback: minimum shape size
+   shapeSize = minShapeSize;
+   numCols = max(floor((availableWidth + padding) / (shapeSize + padding)), 1);
+   numRows = ceil(count / numCols);
+   return lockedHeight;
+}
+
+function windowResized() {
+   let canvasWidth = windowWidth * 0.9;
+   let targetHeight = windowHeight < 855 ? windowHeight : 850;
+
+   updateLayout(targetHeight);
+   resizeCanvas(canvasWidth, targetHeight);
+   redraw(); 
+}
+
+function capitalizeLastWordPV(str) {
+  if (!str) return '';
+  let parts = str.trim().split(/\s+/); // split on any whitespace
+
+  if (parts.length === 0) return '';
+
+  if (parts.length === 1) {
+    return parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase();
+  }
+
+  let lastWord = parts.pop();
+
+  if (lastWord.toLowerCase() === 'pv') {
+    lastWord = 'PV'; // simpler
+  } else {
+    lastWord = lastWord.charAt(0).toUpperCase() + lastWord.slice(1).toLowerCase();
+  }
+
+  let firstPart = parts
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+
+  return (firstPart ? firstPart + ' ' : '') + lastWord;
+}
+
+function normalizePvTechForLookup(str) {
+  if (!str) return '';
+  const s = str.trim().toLowerCase();
+  if (s === 'other') return 'other';
+  return s;
+}
+
+function renderEntryVisual(entry, pg, isModal = false) {
+  // Ensure pg is a valid drawing context
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window;
+  }
+
+  pg.clear();  // Clear with transparency for modal thumbnails
+
+  pg.push();
+
+  const size = 140;
+  const strokeW = 3;
+  const scaleFactor = 1.15;
+  const offset = size * (scaleFactor - 1) / 2;
+
+  pg.translate(offset, offset);
+  pg.scale(scaleFactor);
+
+  const activityColors = (entry.activities || []).map(getActivityColor);
+  const baseColor = getActivityColor(entry.activities?.[0] || '');
+  const entryShapeSize = size;
+  const glowStrength = 20;
+  const isHovered = false;
+
+  // Shadow + base shape
+  const shadowInfo = drawSuprematistOpShadowRect(
+    entryShapeSize,
+    entry.megawatts,
+    entry.habitat,
+    0, 0,
+    glowStrength,
+    isHovered,
+    entry.animalType?.[0] || '',
+    activityColors,
+    { flipped: true, pg }
+  );
+
+  if (entry.habitat?.length) {
+    pg.stroke(0, 80);
+    pg.strokeWeight(strokeW + 1);
+    drawHabitatShape(entry.habitat, 0, 0, size, baseColor, strokeW, pg);
+  }
+
+  if (entry.activities && entry.habitat) {
+    pg.stroke(0, 80);
+    pg.strokeWeight(strokeW + 1);
+    drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, size, 1.5, pg);
+  }
+
+  if (entry.arrayType) {
+    pg.push();
+    pg.translate(-shadowInfo.offsetX, -shadowInfo.offsetY);
+    pg.rotate(-shadowInfo.angle);
+    pg.stroke(0, 80);
+    pg.strokeWeight(strokeW + 1);
+
+    // Adjust grid density for modal thumbnails
+    const gridDensity = isModal ? 21 : 7;
+
+    drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, strokeW + 1, gridDensity, pg);
+    pg.pop();
+  }
+
+  if (entry.cropType?.length > 0) {
+    drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, size * 1.3, strokeW, pg);
+  }
+
+  if (entry.animalType?.length > 0) {
+    const yOffset = size * 0.25;
+    const animalSize = size * 1;
+    pg.stroke(0, 80);
+    pg.strokeWeight(strokeW + 0.75);
+    drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, pg);
+  }
+
+  if (entry.pvTech?.length > 0) {
+  const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
+  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, size, pg);
+}
+  pg.pop();
+}
+
+function draw() {
+  // === BACKGROUND ===
+  image(bgImg, 0, 0, width, height);
+  noStroke();
+  rectMode(CORNER);
+  fill(0, 130);
+  rect(0, 0, width, height);
+  rectMode(CENTER);
+
+  const centerX = width / 2;
+  const labelY = 40;
+  const yearY = labelY + 25;
+  const baseYearY = yearY;
+  const adjustedYearY = hasSelectedYear ? baseYearY : baseYearY;
+
+  // Reserve vertical space for "Year Installed" text + padding
+  const topMargin = width < 600 ? 120 : 90;
+
+  textFont('Helvetica');
+  textAlign(CENTER, BOTTOM);
+  fill(255, fadeAlpha);
+  textSize(28);
+
+  let displayYear = ""; // Ensure variable is always declared
+
+  if (hasSelectedYear) {
+    // Text shadow (drawn first, slightly offset)
+    fill(0, fadeAlpha); // Shadow color (black, transparent)
+    text("Year Installed:", centerX + 2, labelY + 2);
+
+    // Main text
+    fill(255, fadeAlpha); // White text
+    text("Year Installed:", centerX, labelY);
+    textStyle(BOLD);
+    textSize(36);
+    displayYear = " " + selectedYear;
+    textAlign(CENTER, CENTER);
+
+    // Shadow for selected year
+    fill(0, fadeAlpha);
+    text(displayYear, centerX + 2, adjustedYearY + 2);
+
+    // Main year label
+    fill(255, fadeAlpha);
+    text(displayYear, centerX, adjustedYearY);
+
+    let maxLineWidth = 0;
+    displayYear.split('\n').forEach(line => {
+      const w = textWidth(line);
+      if (w > maxLineWidth) maxLineWidth = w;
+    });
+    const lineWidth = maxLineWidth + 40;
+
+    const startX = centerX - lineWidth / 2;
+    const endX = centerX + lineWidth / 2;
+
+    const baseLineY = adjustedYearY + 17;
+    stroke(10, 10, 10, fadeAlpha);
+    strokeWeight(3);
+    line(startX, baseLineY, endX, baseLineY);
+    noStroke();
+  }
+
+  // === DATA FOR SELECTED YEAR ===
+  if (!hasSelectedYear || !selectedYear || !entriesByYear[selectedYear]) {
+    return; // Stop early if no user interaction has occurred
+  }
+
+  const yearEntries = entriesByYear[selectedYear];
+  const sortedEntries = [...yearEntries].sort((a, b) => (b.acres || 0) - (a.acres || 0));
+
+  if (sortedEntries.length === 0) {
+    fill(255, fadeAlpha);
+    textAlign(CENTER, CENTER);
+    textSize(20);
+    text("No data available for this year.", centerX, height / 2);
+    return;
+  }
+
+  // === VALUE RANGES ===
+  const minSiteSize = Math.min(...sortedEntries.map(e => e.acres || 0.1));
+  const maxSiteSize = Math.max(...sortedEntries.map(e => e.acres || 1));
+  const maxMW = Math.max(1, ...sortedEntries.map(e => e.megawatts || 0));
+  const count = sortedEntries.length;
+
+  // === SPACING CONFIG ===
+  const totalCols = max(Math.ceil(count / numRows), 2);
+  const totalRows = Math.min(count, numRows);
+
+  const availableW = width * 0.85;
+
+  // Subtract topMargin here to keep sites below text area
+  const availableH = height - startY - 70 - topMargin;
+
+  const colSpacing = constrain(availableW / totalCols, shapeSize * 1.4, shapeSize * 2.4);
+  const rowSpacing = constrain(availableH / totalRows, shapeSize * 1.3, shapeSize * 2.2);
+
+  // === DRAW EACH ENTRY ===
+  for (let i = 0; i < count; i++) {
+    const entry = sortedEntries[i];
+    const row = i % numRows;
+    const col = Math.floor(i / numRows);
+
+    // === SHAPE SIZE ===
+    let entryShapeSize = map(entry.acres, minSiteSize, maxSiteSize, shapeSize * 0.6, shapeSize);
+    entryShapeSize = constrain(entryShapeSize, 30, (availableH / numRows) * 0.85);
+    let strokeW = map(entry.acres, minSiteSize, maxSiteSize, 2, 5.5);
+    strokeW = constrain(strokeW, 2, 5.5);
+
+    // === SCALE ANIMATION ===
+    const baseScale = 1;
+    const maxScale = 1.2;
+    const minScale = 1.05;
+    const sizeNorm = map(shapeSize, 30, 150, 0, 1);
+    const hoverScale = minScale + sizeNorm * (maxScale - minScale);
+    const isHovered = hoveredEntry && hoveredEntry.name === entry.name;
+    const targetScale = isHovered ? hoverScale : baseScale;
+    const opArtWave = 0.02 * sin(frameCount * 0.05 + col * 0.5 + row);
+    entry.currentScale = lerp(entry.currentScale || baseScale, targetScale + opArtWave, 0.1);
+
+    // === SLIGHT RANDOM SCALE VARIATION ===
+    const scaleJitter = map(noise(row * 0.2 + 1000, col * 0.2 + 500), 0, 1, 0.98, 1.04);
+    entry.currentScale *= scaleJitter;
+    entry.currentScale = constrain(entry.currentScale, 0.95, 1.2);
+
+    // === POSITION CALCULATION ===
+    const outwardOffset = pow(Math.abs(col - totalCols / 2), 1.2) * 3;
+    const horizontalWaveOffset = 10 * sin((row + col) * 0.7);
+    const colStaggerOffset = (col % 2) * (shapeSize * 0.3);
+    const gridWidth = (totalCols - 1) * colSpacing;
+    const startX = max((width - gridWidth) / 2, 30); // ensure margin of 30px
+    const cx = startX + col * colSpacing + horizontalWaveOffset;
+    const bottomPadding = 65;
+    const rowOffset = shapeSize * 0.15;
+
+    // Shift cy down by topMargin to keep sites below text area
+    const cy = height - bottomPadding - row * rowSpacing - rowOffset - entryShapeSize / 2 - colStaggerOffset - outwardOffset - topMargin;
+
+    // === EASING POSITION ===
+    const jitterX = map(noise(i * 0.2, frameCount * 0.002), 0, 1, -4, 4);
+    const jitterY = map(noise(i * 0.2 + 500, frameCount * 0.002), 0, 1, -3, 3);
+    const targetX = cx + jitterX;
+    const targetY = cy + jitterY;
+    entry._screenX = lerp(entry._screenX || targetX, targetX, 0.1);
+    entry._screenY = lerp(entry._screenY || targetY, targetY, 0.1);
+
+    // === ANGLE OFFSET ===
+    const baseAngle = (col % 2 === 0) ? PI / 36 : -PI / 36;
+    const randomAngle = map(noise(row * 0.3, col * 0.2), 0, 1, -PI / 90, PI / 90);
+
+    // === DRAW ENTRY ===
+    push();
+    translate(entry._screenX, entry._screenY);
+    rotate(baseAngle + randomAngle);
+    scale(entry.currentScale);
+    entry._radius = entryShapeSize * entry.currentScale * 0.5;
+
+const activityColors = (entry.activities || []).map(getActivityColor);
+const baseColor = getActivityColor(entry.activities?.[0] || '');
+const glowStrength = isHovered ?
+   map(entry.megawatts || 0, 0, maxMW, 5, 30) * 1.5 :
+   map(entry.megawatts || 0, 0, maxMW, 5, 30);
+
+const shadowInfo = drawSuprematistOpShadowRect(
+   entryShapeSize,
+   entry.megawatts,
+   entry.habitat,
+   0, 0,
+   glowStrength,
+   isHovered,
+   entry.animalType?.[0] || '',
+   activityColors,
+   true // flipped orientation
+);
+
+// Pass the main canvas context (this) instead of window
+if (entry.habitat?.length) {
+   stroke(0, 80);
+   strokeWeight(strokeW + 1.5);
+   drawHabitatShape(entry.habitat, 0, 0, entryShapeSize, baseColor, strokeW, this);
+}
+
+if (entry.activities && entry.habitat) {
+   stroke(0, 80);
+   strokeWeight(strokeW + 1.5);
+   drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, entryShapeSize, 2, this);
+}
+
+if (entry.arrayType) {
+   push();
+   translate(-shadowInfo.offsetX, -shadowInfo.offsetY);
+   rotate(-shadowInfo.angle);
+   stroke(0, 80);
+   strokeWeight(strokeW + 1.5);
+   drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, 1.2, 10, strokeW, this);
+   pop();
+}
+
+if (entry.cropType?.length > 0) {
+   drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.35, strokeW, this);
+}
+
+if (entry.animalType?.length > 0) {
+   const yOffset = entryShapeSize * 0.15;
+   const animalSize = entryShapeSize * 0.9;
+   stroke(0, 80);
+   strokeWeight(strokeW + 1.1);
+   drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, this);
+   strokeWeight(strokeW);
+   drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, this);
+}
+
+if (entry.pvTech?.length > 0) {
+  const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
+  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, entryShapeSize, this);
+}
+
+pop(); // end entry group
+}
+
+if (modalPreviewEntry && typeof modalPreviewCallback === 'function') {
+  const entry = modalPreviewEntry;
+
+  const scaleFactor = 0.55;
+  const pg = createGraphics(250, 250);
+  pg.pixelDensity(1);
+  pg.clear();
+  pg.colorMode(RGB, 255, 255, 255, 255);
+  pg.rectMode(CENTER);
+  pg.ellipseMode(CENTER);
+
+  pg.push();
+  pg.translate(pg.width / 2, pg.height / 2);
+  pg.scale(scaleFactor);
+
+  renderEntryVisual(entry, pg);
+
+  pg.pop();
+
+  setTimeout(() => {
+    modalPreviewCallback(pg.canvas.toDataURL());
+    modalPreviewEntry = null;
+    modalPreviewCallback = null;
+  }, 10);
+}
+}
+
+function showModalWithEntry(entry) {
+   modalPreviewEntry = entry;
+   modalPreviewCallback = (imgDataURL) => {
+   insertModalContent(entry, imgDataURL); // New helper
+};
+}
+
+function insertModalContent(entry, visualImg) {
+  const modalTitle = document.getElementById('siteModalLabel');
+  const modalBody = document.getElementById('siteModalBody');
+
+  const capitalizeWords = (str) => str.replace(/\b\w/g, c => c.toUpperCase());
+  const formatArray = (arr) => Array.isArray(arr) ? arr.map(s => capitalizeWords(s)).join(', ') : String(arr);
+
+  let lines = [];
+  if (entry.activities?.length)
+    lines.push(`<strong>Agrivoltaic Activities:</strong> ${formatArray(entry.activities)}`);
+  if (!isNaN(entry.megawatts))
+    lines.push(`<strong>System Size:</strong> ${entry.megawatts} Megawatts`);
+  if (!isNaN(entry.acres))
+    lines.push(`<strong>Site Size:</strong> ${entry.acres} Acres`);
+  if (entry.year)
+    lines.push(`<strong>Year Installed:</strong> ${entry.year}`);
+  if (entry.pvTech)
+    lines.push(`<strong>PV Technology:</strong> ${capitalizeLastWordPV(entry.pvTech)}`);
+  if (entry.arrayType)
+    lines.push(`<strong>Type of Array:</strong> ${capitalizeWords(entry.arrayType)}`);
+  if (entry.habitat?.length)
+    lines.push(`<strong>Habitat Types:</strong> ${formatArray(entry.habitat)}`);
+  if (entry.cropType?.length)
+    lines.push(`<strong>Crop Type:</strong> ${formatArray(entry.cropType)}`);
+  if (entry.animalType?.length)
+    lines.push(`<strong>Animal Type:</strong> ${formatArray(entry.animalType)}`);
+
+  modalTitle.innerHTML = entry.url
+    ? `<a href="${entry.url}" target="_blank" rel="noopener noreferrer" class="hyperlink">
+         ${entry.name}${combinedIcon}
+       </a>`
+    : entry.name;
+
+  modalBody.querySelectorAll('.dynamic-content').forEach(el => el.remove());
+
+  const wrapper = document.createElement('div');
+  wrapper.classList.add('dynamic-content');
+
+  wrapper.innerHTML = `
+     <div class="modal-site-visual-wrapper">
+       <div class="col-md-4 float-right">
+       <figure class="modal-site-visual">
+         <img class="modal-site-thumbnail" src="${visualImg}" alt="Encoded visual of ${entry.name}" />
+         </figure>
       </div>
-   </body>
-</html>
+       <div class="modal-site-details">
+         ${lines.map(line => `<p>${line}</p>`).join('')}
+       </div>
+     </div>
+   `;
+
+  const toggleLegend = document.getElementById('toggle-legend');
+  modalBody.insertBefore(wrapper, toggleLegend);
+
+  const siteModal = new bootstrap.Modal(document.getElementById('siteModal'));
+  siteModal.show();
+}
+
+document.getElementById('toggle-legend').addEventListener('click', function () {
+   const legend = document.getElementById('encoding-legend');
+   const expanded = this.getAttribute('aria-expanded') === 'true';
+
+   legend.hidden = expanded;
+   this.setAttribute('aria-expanded', String(!expanded));
+   this.classList.toggle('collapsed', expanded);
+
+   this.firstChild.textContent = !expanded ?
+      'Hide Visual Encoding Guide' :
+      'Show Visual Encoding Guide';
+});
+
+function mouseMoved() {
+  if ('ontouchstart' in window) return;
+
+  const modalElement = document.getElementById('siteModal');
+  if (modalElement && modalElement.classList.contains('show')) {
+    hoveredEntry = null;
+    keyboardFocusedIndex = -1; // clear keyboard focus when modal open
+    cursor('default');
+    return;
+  }
+
+  let yearEntries = entriesByYear[selectedYear] || [];
+  hoveredEntry = null;
+  keyboardFocusedIndex = -1; // Clear keyboard focus if mouse moves over canvas
+
+  let hovering = false;
+  for (let i = 0; i < yearEntries.length; i++) {
+    const entry = yearEntries[i];
+    const dx = mouseX - (entry._screenX || 0);
+    const dy = mouseY - (entry._screenY || 0);
+    const r = entry._radius || 30;
+
+    if (dx * dx + dy * dy < r * r) {
+      hoveredEntry = entry;
+      hovering = true;
+      break;
+    }
+  }
+
+  cursor(hovering ? 'pointer' : 'default');
+}
+
+function mousePressed() {
+   const modalElement = document.getElementById('siteModal');
+   if (modalElement && modalElement.classList.contains('show')) {
+      return; // Prevent clicking sites while modal is open
+   }
+
+   const yearEntries = entriesByYear[selectedYear] || [];
+
+   for (let entry of yearEntries) {
+      const dx = mouseX - (entry._screenX || 0);
+      const dy = mouseY - (entry._screenY || 0);
+      const r = entry._radius || 30;
+
+      if (dx * dx + dy * dy < r * r) {
+         showModalWithEntry(entry);
+         break;
+      }
+   }
+}
+
+function keyPressed() {
+  const yearEntries = entriesByYear[selectedYear];
+  if (!yearEntries || yearEntries.length === 0) return;
+
+  const modalElement = document.getElementById('siteModal');
+  const modalVisible = modalElement.classList.contains('show');
+
+  // Close modal on ESC
+  if (keyCode === ESCAPE && modalVisible) {
+    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+    if (modalInstance) modalInstance.hide();
+    return;
+  }
+
+  // If modal is open, ignore other navigation keys
+  if (modalVisible) return;
+
+  // Navigation between years only if no site is focused
+  if (keyboardFocusedIndex === -1) {
+    if (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW) {
+      const currentYearIndex = availableYears.indexOf(selectedYear);
+      const delta = keyCode === RIGHT_ARROW ? 1 : -1;
+      const newIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
+      if (newIndex !== currentYearIndex) {
+        updateYear(availableYears[newIndex], newIndex);
+      }
+      return;
+    }
+
+    if (keyCode === HOME) {
+      updateYear(availableYears[0], 0);
+      return;
+    }
+
+    if (keyCode === END) {
+      updateYear(availableYears[availableYears.length - 1], availableYears.length - 1);
+      return;
+    }
+  }
+
+  // If sites exist, handle keyboard navigation among sites
+  if (yearEntries.length > 0) {
+    // Left/right arrows move focus among sites
+    if (keyCode === LEFT_ARROW) {
+      if (keyboardFocusedIndex === -1) keyboardFocusedIndex = 0;
+      else keyboardFocusedIndex = (keyboardFocusedIndex - 1 + yearEntries.length) % yearEntries.length;
+      hoveredEntry = yearEntries[keyboardFocusedIndex];
+      return;
+    }
+    if (keyCode === RIGHT_ARROW) {
+      if (keyboardFocusedIndex === -1) keyboardFocusedIndex = 0;
+      else keyboardFocusedIndex = (keyboardFocusedIndex + 1) % yearEntries.length;
+      hoveredEntry = yearEntries[keyboardFocusedIndex];
+      return;
+    }
+
+    // Up/down arrows move focus by row if you have a grid layout (optional)
+    if (keyCode === UP_ARROW || keyCode === DOWN_ARROW) {
+      if (keyboardFocusedIndex === -1) return;
+      const count = yearEntries.length;
+      const rows = numRows; // assuming numRows defined in your sketch
+      const cols = Math.ceil(count / rows);
+
+      let row = keyboardFocusedIndex % rows;
+      let col = Math.floor(keyboardFocusedIndex / rows);
+
+      if (keyCode === UP_ARROW) row = (row - 1 + rows) % rows;
+      else if (keyCode === DOWN_ARROW) row = (row + 1) % rows;
+
+      let newIndex = col * rows + row;
+      if (newIndex >= count) {
+        // Clamp to max index if out of bounds
+        newIndex = count - 1;
+      }
+
+      keyboardFocusedIndex = newIndex;
+      hoveredEntry = yearEntries[keyboardFocusedIndex];
+      return;
+    }
+
+    // HOME/END jump to first/last site
+    if (keyCode === HOME) {
+      keyboardFocusedIndex = 0;
+      hoveredEntry = yearEntries[keyboardFocusedIndex];
+      return;
+    }
+    if (keyCode === END) {
+      keyboardFocusedIndex = yearEntries.length - 1;
+      hoveredEntry = yearEntries[keyboardFocusedIndex];
+      return;
+    }
+
+    // Open modal with ENTER or SPACE on focused site
+    if ((keyCode === ENTER || keyCode === 32) && keyboardFocusedIndex !== -1) {
+      showModalWithEntry(yearEntries[keyboardFocusedIndex]);
+      return;
+    }
+  }
+}
+
+function updateYear(year, index) {
+   selectedYear = year;
+   hasSelectedYear = true;
+   updatePlaceholderVisibility();
+
+   updateCounters(entriesByYear[year]);
+   windowResized();
+
+   // Clear and reassign year label classes
+   document.querySelectorAll('.year-label').forEach(label => {
+      label.classList.remove('active');
+      if (label.textContent.trim() === year) {
+         label.classList.add('active');
+      }
+   });
+
+   // Update screen reader live region
+   const srLive = document.getElementById('sr-live');
+   if (srLive) srLive.textContent = `Year changed to ${year}`;
+}
+
+function drawCropEdgeStyle(cropTypes, activities, x, y, size, strokeW = 2, pg = window) {
+  if (!pg || typeof pg.push !== 'function') pg = window;
+  if (!Array.isArray(cropTypes) || cropTypes.length === 0) return;
+  if (!Array.isArray(activities) || activities.length === 0) return;
+
+  const groups = cropTypes
+    .map(crop => cropEdgeGroups[crop.trim().toLowerCase()])
+    .filter(Boolean);
+  const uniqueGroups = [...new Set(groups)];
+  if (uniqueGroups.length === 0) return;
+
+  pg.push();
+  pg.translate(x, y);
+  pg.noFill();
+
+  for (let i = 0; i < activities.length; i++) {
+    const activity = activities[i];
+    const strokeColor = getActivityColor(activity);
+    if (!strokeColor) continue;
+
+    pg.strokeWeight(strokeW);
+    pg.stroke(strokeColor);
+
+    for (let j = 0; j < uniqueGroups.length; j++) {
+      const group = uniqueGroups[j];
+      const offsetIndex = j + i;
+
+      switch (group) {
+        case 'root':
+        case 'cruciferous':
+          drawPointedEdge(size, offsetIndex, pg);
+          break;
+        case 'leafy':
+        case 'herb':
+          drawWavyEdge(size, offsetIndex, pg);
+          break;
+        case 'fruit':
+        case 'berry':
+          drawLobedEdge(size, offsetIndex, pg);
+          break;
+        case 'grain':
+        case 'legume':
+          drawLinearSpikes(size, offsetIndex, pg);
+          break;
+        case 'vine':
+          drawSpiralOverlay(size, offsetIndex, pg);
+          break;
+        case 'mixed':
+        case 'various':
+          drawDotRing(size, offsetIndex, pg);
+          break;
+      }
+    }
+  }
+
+  pg.pop();
+}
+
+function drawPointedEdge(size, offsetIndex = 0, pg = window) {
+  if (!pg || typeof pg.push !== 'function') pg = window;
+  let steps = 72;
+  let extraSpacing = offsetIndex * 6;
+  pg.push();
+  pg.rotate(pg.radians((offsetIndex * 17) % 360));
+  pg.beginShape();
+  for (let i = 0; i <= steps; i++) {
+    let angle = pg.TWO_PI * i / steps;
+    let radius = size * 0.6 + extraSpacing + (i % 2 === 0 ? 12 : -10);
+    let x = pg.cos(angle) * radius;
+    let y = pg.sin(angle) * radius;
+    pg.vertex(x, y);
+  }
+  pg.endShape(pg.CLOSE);
+  pg.pop();
+}
+
+function drawWavyEdge(size, offsetIndex = 0, pg = window) {
+  if (!pg || typeof pg.push !== 'function') pg = window;
+  let waves = 6 + offsetIndex * 2;
+  let amp = 10 + offsetIndex * 1.5;
+  let extraSpacing = offsetIndex * 6;
+  pg.push();
+  pg.rotate(pg.radians((offsetIndex * 23) % 360));
+  pg.beginShape();
+  for (let angle = 0; angle <= pg.TWO_PI + 0.05; angle += 0.05) {
+    let r = size * 0.55 + extraSpacing + amp * pg.sin(waves * angle);
+    let x = pg.cos(angle) * r;
+    let y = pg.sin(angle) * r;
+    pg.curveVertex(x, y);
+  }
+  pg.endShape(pg.CLOSE);
+  pg.pop();
+}
+
+function drawLobedEdge(size, offsetIndex = 0, pg = window) {
+  if (!pg || typeof pg.push !== 'function') pg = window;
+  let lobes = 4 + offsetIndex * 1.5;
+  let amp = 8 + offsetIndex;
+  let extraSpacing = offsetIndex * 6;
+  pg.push();
+  pg.rotate(pg.radians((offsetIndex * 31) % 360));
+  pg.beginShape();
+  for (let angle = 0; angle <= pg.TWO_PI + 0.05; angle += 0.05) {
+    let r = size * 0.55 + extraSpacing + amp * pg.sin(lobes * angle);
+    let x = pg.cos(angle) * r;
+    let y = pg.sin(angle) * r;
+    pg.curveVertex(x, y);
+  }
+  pg.endShape(pg.CLOSE);
+  pg.pop();
+}
+
+function drawLinearSpikes(size, offsetIndex = 0, pg = window) {
+  if (!pg || typeof pg.push !== 'function') pg = window;
+  let lines = 12 + offsetIndex * 2;
+  let baseRadius = size * 0.4 + offsetIndex * 5;
+  let spikeLength = size * 0.3 + offsetIndex * 3;
+
+  pg.push();
+  pg.rotate(pg.radians((offsetIndex * 15) % 360));
+  for (let i = 0; i < lines; i++) {
+    let angle = pg.TWO_PI * i / lines;
+    let x1 = pg.cos(angle) * baseRadius;
+    let y1 = pg.sin(angle) * baseRadius;
+    let x2 = pg.cos(angle) * (baseRadius + spikeLength);
+    let y2 = pg.sin(angle) * (baseRadius + spikeLength);
+    pg.line(x1, y1, x2, y2);
+  }
+  pg.pop();
+}
+
+function drawSpiralOverlay(size, offsetIndex = 0, pg = window) {
+  if (!pg || typeof pg.push !== 'function') pg = window;
+  pg.noFill();
+  let turns = 100;
+  let spacing = size * 0.005;
+  pg.push();
+  pg.rotate(pg.radians((offsetIndex * 37) % 360));
+  pg.beginShape();
+  for (let i = 0; i < turns; i++) {
+    let angle = i * 0.2;
+    let r = spacing * i + offsetIndex * 2;
+    let x = pg.cos(angle) * r;
+    let y = pg.sin(angle) * r;
+    pg.curveVertex(x, y);
+  }
+  pg.endShape();
+  pg.pop();
+}
+
+function drawDotRing(size, offsetIndex = 0, pg = window) {
+  if (!pg || typeof pg.push !== 'function') pg = window;
+  let dots = 24 + offsetIndex * 2;
+  let r = size * 0.65 + offsetIndex * 6;
+  let dotSize = 4 + offsetIndex * 0.5;
+  pg.push();
+  pg.rotate(pg.radians((offsetIndex * 19) % 360));
+  for (let i = 0; i < dots; i++) {
+    let angle = pg.TWO_PI * i / dots;
+    let x = pg.cos(angle) * r;
+    let y = pg.sin(angle) * r;
+    pg.ellipse(x, y, dotSize, dotSize);
+  }
+  pg.pop();
+}
+
+
+// Draw different line styles based on Animal Type
+function drawAnimalLine(animalType, activities, x, y, size, strokeW = 1.3, pg = window) {
+  if (!pg || typeof pg.push !== 'function') pg = window;
+  if (!animalType || !Array.isArray(activities) || activities.length === 0) return;
+
+  let style = getLineStyle(animalType);
+  if (!style) return;
+
+  pg.push();
+  pg.noFill();
+
+  const baseStrokeW = strokeW || style.weight * 1;
+  const lineLength = size * 1.5;
+  const lineSpacing = 7;
+
+  for (let i = 0; i < activities.length; i++) {
+    let strokeColor = getActivityColor(activities[i]);
+    if (!strokeColor) continue;
+
+    // Subtle shadow
+    pg.stroke(0, 80);
+    pg.strokeWeight(baseStrokeW * 1.05);
+    pg.push();
+    pg.translate(1.5, 1.5);
+    drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength, pg);
+    pg.pop();
+
+    // Main colored line
+    pg.stroke(strokeColor);
+    pg.strokeWeight(baseStrokeW);
+    drawAnimalLineShape(style.type, x, y + i * lineSpacing, lineLength, pg);
+  }
+
+  pg.pop();
+}
+
+function drawAnimalLineShape(type, x, y, length, pg = window) {
+  if (!pg || typeof pg.push !== 'function') pg = window;
+  switch (type) {
+    case 'wavy':
+      drawWavyLine(x, y, length, pg);
+      break;
+    case 'dashed':
+      drawDashedLine(x, y, length, pg);
+      break;
+    case 'bezier':
+      drawBezierLine(x, y, length, pg);
+      break;
+    case 'straight':
+      pg.line(x - length / 2, y, x + length / 2, y);
+      break;
+    case 'textured':
+      drawTexturedLine(x, y, length, pg);
+      break;
+  }
+}
+
+function getLineStyle(animalType) {
+  let typeStr = String(animalType || '').trim().toLowerCase();
+  if (!typeStr) return null;
+
+  switch (typeStr) {
+    case 'sheep': return { type: 'wavy', weight: 3 };
+    case 'llamas and alpacas': return { type: 'dashed', weight: 3 };
+    case 'horse': return { type: 'bezier', weight: 4 };
+    case 'cows': return { type: 'straight', weight: 6 };
+    case 'cattle': return { type: 'textured', weight: 4 };
+    default: return null;
+  }
+}
+
+// Enhanced Wavy line: smoother waves, higher amplitude for boldness
+function drawWavyLine(x, y, length, pg = window) {
+  if (!pg || typeof pg.push !== 'function') pg = window;
+  pg.noFill();
+  pg.beginShape();
+  let amplitude = 7;
+  let waves = 5;
+  let steps = 50;
+  for (let i = 0; i <= steps; i++) {
+    let px = x - length / 2 + (length / steps) * i;
+    let py = y + pg.sin((i / steps) * waves * pg.TWO_PI) * amplitude;
+    pg.vertex(px, py);
+  }
+  pg.endShape();
+}
+
+// Enhanced Dashed line: longer dashes, sharper gaps, crisp edges
+function drawDashedLine(x, y, length, pg = window) {
+  if (!pg || typeof pg.push !== 'function') pg = window;
+  let dashLength = 14;
+  let gapLength = 8;
+  let startX = x - length / 2;
+  let endX = x + length / 2;
+  for (let px = startX; px < endX; px += dashLength + gapLength) {
+    pg.line(px, y, px + dashLength, y);
+  }
+}
+
+// Enhanced Bezier line: stronger curvature, more elegant S shape
+function drawBezierLine(x, y, length, pg = window) {
+  if (!pg || typeof pg.push !== 'function') pg = window;
+  pg.noFill();
+  pg.strokeJoin(pg.ROUND);
+  pg.bezier(
+    x - length / 2, y,
+    x - length / 3, y - length / 2,
+    x + length / 3, y + length / 2,
+    x + length / 2, y
+  );
+}
+
+// Textured line: clean segmented lines
+function drawTexturedLine(x, y, length, pg = window) {
+  if (!pg || typeof pg.push !== 'function') pg = window;
+  let segmentLength = 8;
+  let gap = 5;
+  let startX = x - length / 2;
+  let endX = x + length / 2;
+
+  for (let px = startX; px < endX; px += segmentLength + gap) {
+    pg.line(px, y, px + segmentLength, y);
+  }
+}
+
+
+function drawHabitatShape(habitatList, x, y, size, baseColor, strokeW = 2, pg = window) {
+  if (!pg || typeof pg.push !== 'function') pg = window;
+  if (!Array.isArray(habitatList)) return;
+
+  habitatList = habitatList
+    .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
+    .filter(h => h !== '');
+
+  if (habitatList.length === 0) return;
+
+  pg.push();
+  pg.translate(x, y);
+  pg.rectMode(pg.CENTER);
+  pg.angleMode(pg.RADIANS);
+  pg.strokeWeight(strokeW);
+  pg.stroke(0, 60);
+
+  for (let i = 0; i < habitatList.length; i++) {
+    let habitat = habitatList[i];
+    let angleOffset = pg.PI / 6 * i;
+    let alpha = pg.map(i, 0, habitatList.length, 200, 60);
+    let fillColor = pg.color(
+      pg.red(baseColor),
+      pg.green(baseColor),
+      pg.blue(baseColor),
+      alpha
+    );
+
+    // Slight scaling and rotation per layer
+    let scaleFactor = 1 - i * 0.08;
+    pg.push();
+    pg.rotate(angleOffset);
+    pg.scale(scaleFactor);
+
+    // Shadow layer (deeper)
+    pg.fill(0, 30);
+    pg.translate(3, 3);
+    switch (habitat) {
+      case 'pollinator':
+        drawSolarHexagon(size * 0.5, pg);
+        break;
+      case 'native grasses':
+        pg.rect(0, 0, size * 0.3, size);
+        break;
+      case 'naturalized':
+        pg.ellipse(0, 0, size, size);
+        break;
+    }
+    pg.translate(-3, -3);
+
+    // Main filled layer
+    pg.fill(fillColor);
+    switch (habitat) {
+      case 'pollinator':
+        drawSolarHexagon(size * 0.5, pg);
+        break;
+      case 'native grasses':
+        pg.rect(0, 0, size * 0.3, size);
+        drawVerticalLines(size * 0.3, size, 5, baseColor, pg);
+        break;
+      case 'naturalized':
+        pg.ellipse(0, 0, size, size);
+        drawGlowEllipse(size, baseColor, pg);
+        break;
+    }
+
+    pg.pop();
+  }
+
+  pg.pop();
+}
+
+// Draw hexagon with inner "cell" lines to evoke solar panel cells
+function drawSolarHexagon(r, pg = window) {
+  if (!pg || typeof pg.push !== 'function') pg = window;
+  pg.stroke(255, 150);
+  pg.strokeWeight(1);
+  pg.noFill();
+  pg.beginShape();
+  for (let j = 0; j < 6; j++) {
+    let angle = pg.TWO_PI / 6 * j - pg.PI / 2;
+    pg.vertex(pg.cos(angle) * r, pg.sin(angle) * r);
+  }
+  pg.endShape(pg.CLOSE);
+
+  // Inner lines to mimic cell grid
+  for (let k = 1; k <= 2; k++) {
+    let innerR = r * (1 - k * 0.3);
+    pg.beginShape();
+    for (let j = 0; j < 6; j++) {
+      let angle = pg.TWO_PI / 6 * j - pg.PI / 2;
+      pg.vertex(pg.cos(angle) * innerR, pg.sin(angle) * innerR);
+    }
+    pg.endShape(pg.CLOSE);
+  }
+}
+
+// Draw vertical lines inside a rectangle (native grasses)
+function drawVerticalLines(w, h, count, baseColor, pg = window) {
+  if (!pg || typeof pg.push !== 'function') pg = window;
+  pg.stroke(pg.red(baseColor), pg.green(baseColor), pg.blue(baseColor), 100);
+  pg.strokeWeight(0.5);
+  for (let i = 1; i < count; i++) {
+    let x = pg.map(i, 1, count - 1, -w / 2, w / 2);
+    pg.line(x, -h / 2, x, h / 2);
+  }
+}
+
+// Draw subtle glow effect on ellipse
+function drawGlowEllipse(size, baseColor, pg = window) {
+  if (!pg || typeof pg.push !== 'function') pg = window;
+  pg.noFill();
+  pg.stroke(pg.red(baseColor), pg.green(baseColor), pg.blue(baseColor), 50);
+  pg.strokeWeight(3);
+  pg.ellipse(0, 0, size * 1.1, size * 1.1);
+  pg.strokeWeight(1);
+  pg.ellipse(0, 0, size * 1.3, size * 1.3);
+}
+
+function drawCombinedHabitatOverlay(
+  habitatList,
+  activities,
+  x,
+  y,
+  size,
+  strokeW = 1.2,
+  pg = window
+) {
+  if (!pg || typeof pg.push !== 'function') pg = window;
+  if (!Array.isArray(habitatList) || !Array.isArray(activities)) return;
+
+  const cleanedHabitats = habitatList
+    .map(h => (typeof h === 'string' ? h.trim().toLowerCase() : ''))
+    .filter(h => h !== '');
+
+  const cleanedActivities = activities
+    .map(a => (typeof a === 'string' ? a.trim().toLowerCase() : ''))
+    .filter(a => a !== '');
+
+  if (cleanedHabitats.length === 0 || cleanedActivities.length === 0) return;
+
+  const nestingCount = cleanedActivities.length;
+
+  pg.push();
+  pg.translate(x, y);
+  pg.angleMode(pg.RADIANS);
+  pg.rectMode(pg.CENTER);
+  pg.strokeWeight(strokeW);
+  pg.stroke(0, 60);
+
+  const layerStep = 0.85 / nestingCount;
+
+  for (let i = 0; i < nestingCount; i++) {
+    const habitat = cleanedHabitats[i % cleanedHabitats.length];
+    const shapeType = getHabitatShapeType(habitat);
+    const activity = cleanedActivities[i];
+    const fillCol = getActivityColor(activity);
+    if (!fillCol) continue;
+
+    const angleOffset = pg.radians(i * 12); // more offset per layer
+    const scaleFactor = 1 - i * layerStep;
+    const shapeSize = size * scaleFactor;
+
+    pg.push();
+    pg.rotate(angleOffset);
+
+    // Glow ring
+    pg.noFill();
+    pg.stroke(pg.red(fillCol), pg.green(fillCol), pg.blue(fillCol), 40);
+    pg.strokeWeight(6);
+    pg.ellipse(0, 0, shapeSize * 1.1, shapeSize * 1.1);
+    pg.strokeWeight(1);
+    pg.noStroke();
+
+    // Slight blur fill base
+    pg.fill(0, 20);
+    pg.push();
+    pg.translate(2, 2);
+    drawShapeByType(shapeType, shapeSize * 0.95, shapeSize * 0.95, pg);
+    pg.pop();
+
+    // Main layer
+    pg.fill(fillCol);
+    if (shapeType === 'rect') {
+      drawShapeByType(shapeType, shapeSize * 0.35, shapeSize * 1.1, pg);
+    } else {
+      drawShapeByType(shapeType, shapeSize, shapeSize, pg);
+    }
+
+    pg.pop();
+  }
+
+  pg.pop();
+}
+
+function getHabitatShapeType(habitat) {
+  habitat = String(habitat || '').toLowerCase();
+  if (habitat.includes('pollinator')) return 'hexagon';
+  if (habitat.includes('native grasses')) return 'rect';
+  if (habitat.includes('naturalized')) return 'ellipse';
+  return null;
+}
+
+function pointInHexagon(px, py, r) {
+  px = Math.abs(px);
+  py = Math.abs(py);
+
+  if (px > r * 0.8660254 || py > r * 0.5 + r * 0.288675) return false;
+  return r * 0.5 * r * 0.8660254 - px * r * 0.5 - py * r * 0.8660254 >= 0;
+}
+
+function drawArrayOverlay(arrayType, activities, x, y, size, strokeW = 1.2, density = 7, pg) {
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window; // fallback to main canvas context
+  }
+   if (!arrayType || !Array.isArray(activities) || activities.length === 0) return;
+
+   pg.push();
+   pg.translate(x, y);
+   pg.rectMode(CENTER);
+   pg.strokeWeight(strokeW);
+   pg.stroke(0, 60);
+   pg.noFill();
+
+   switch (arrayType?.toLowerCase()) {
+      case 'fixed':
+         drawCrosshatchGridMultiColor(activities, size, density, pg);
+         break;
+      case 'single-axis tracking':
+         drawIsometricGridMultiColor(activities, size, density, 0.9, pg);
+         break;
+      case 'dual-axis tracking':
+         drawDottedMatrixMultiColor(activities, size, density, pg);
+         break;
+   }
+
+   pg.pop();
+}
+
+function drawCrosshatchGridMultiColor(activities, size, density = 10, pg) {
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window;
+  }
+
+  let colorCount = activities.length;
+
+  pg.push();
+  pg.rotate(PI / 4); // Diamond orientation
+
+   for (let i = -size / 2, idx = 0; i <= size / 2; i += density, idx++) {
+      let col = getActivityColor(activities[idx % colorCount]);
+
+      // === Black base lines for depth ===
+      pg.stroke(0, 120); // semi-opaque black
+      pg.strokeWeight(2);
+      pg.line(i, -size / 2, i, size / 2);
+      pg.line(-size / 2, i, size / 2, i);
+
+      // === Colored lines on top ===
+      pg.stroke(col);
+      pg.strokeWeight(1.2);
+      pg.line(i, -size / 2, i, size / 2);
+      pg.line(-size / 2, i, size / 2, i);
+
+      // === Glow at grid intersections ===
+      pg.push();
+      pg.noStroke();
+      pg.fill(0, 80); // black shadow
+      pg.ellipse(i + 0.5, i + 0.5, density * 0.4);
+      pg.ellipse(i - 0.5, -i + 0.5, density * 0.4);
+      pg.fill(col.levels ? color(col.levels[0], col.levels[1], col.levels[2], 100) : col);
+      pg.ellipse(i, i, density * 0.3);
+      pg.ellipse(i, -i, density * 0.3);
+      pg.pop();
+   }
+
+   pg.pop();
+}
+
+function drawIsometricGridMultiColor(activities, size, density = 2, slope = 0.9, pg) {
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window;
+  }
+
+  let colorCount = activities.length;
+  let idx = 0;
+  let halfSize = size / 2;
+
+  pg.push();
+  pg.rotate(HALF_PI);
+
+   for (let x = -halfSize; x <= halfSize; x += density) {
+      let colA = getActivityColor(activities[idx % colorCount]);
+      let y1a = -halfSize * slope;
+      let y2a = halfSize * slope;
+
+      // === Black base stroke ===
+      pg.stroke(0, 120);
+      pg.strokeWeight(2);
+      pg.line(x, y1a, x + halfSize, y2a);
+
+      // === Colored line ===
+      pg.stroke(colA);
+      pg.strokeWeight(1.2);
+      pg.line(x, y1a, x + halfSize, y2a);
+      idx++;
+
+      let colB = getActivityColor(activities[idx % colorCount]);
+      let y1b = -halfSize * slope;
+      let y2b = halfSize * slope;
+
+      pg.stroke(0, 120);
+      pg.strokeWeight(2);
+      pg.line(x + halfSize, y1b, x, y2b);
+
+      pg.stroke(colB);
+      pg.strokeWeight(1.2);
+      pg.line(x + halfSize, y1b, x, y2b);
+      idx++;
+   }
+
+   // Highlight lines
+   pg.stroke(255, 70);
+   pg.strokeWeight(0.8);
+   for (let i = -halfSize; i <= halfSize; i += density * 5) {
+      pg.line(i, -halfSize * slope, i + halfSize, halfSize * slope);
+   }
+
+   pg.pop();
+}
+
+function drawDottedMatrixMultiColor(activities, size, density = 10, pg) {
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window;
+  }
+
+  let colorCount = activities.length;
+  let dotSize = 4;
+  let idx = 0;
+
+   for (let x = -size / 2; x < size / 2; x += density) {
+      for (let y = -size / 2; y < size / 2; y += density) {
+         let col = getActivityColor(activities[idx % colorCount]);
+
+         // === Black shadow circle ===
+         pg.noStroke();
+         pg.fill(0, 120);
+         pg.ellipse(x + 0.5, y + 0.5, dotSize + 1.5);
+
+         // === Colored dot ===
+         pg.fill(col);
+         pg.ellipse(x, y, dotSize);
+
+         // === White highlight glint ===
+         pg.fill(255, 150);
+         pg.ellipse(x - dotSize * 0.15, y - dotSize * 0.15, dotSize * 0.3);
+
+         idx++;
+      }
+   }
+}
+
+function getActivityColor(activity) {
+   switch (activity.trim().toLowerCase()) {
+      case 'crop production':
+         return color('#E4572E'); // Vivid Orange
+      case 'habitat':
+         return color('#2E8B57'); // Sea Green
+      case 'grazing':
+         return color('#005A99'); // Deep Blue
+      case 'greenhouse':
+         return color('#FFD100'); // Solar Gold
+      default:
+         return null; // No matching activity
+   }
+}
+
+function drawMinimalSite(site, pg) {
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window;
+  }
+
+  const { x, y, activity = 'habitat', systemSize = 0.1, siteSize = 0.1 } = site;
+  const baseColor = getActivityColor(activity);
+  const dotBaseSize = map(siteSize, 0, 10, 16, 60);
+  const shadowOffset = map(systemSize, 0, 10, 1, 8);
+
+  pg.push();
+  pg.translate(x, y);
+   pg.noStroke();
+
+   // Suprematist-style drop shadow (with light angle)
+   pg.fill(0, 140);
+   const lightAngle = radians(10);
+   pg.push();
+   pg.rotate(lightAngle);
+   pg.ellipse(shadowOffset, shadowOffset, dotBaseSize, dotBaseSize);
+   pg.pop();
+
+   // Glow ring
+   pg.stroke(baseColor); // Reduced opacity
+   pg.strokeWeight(dotBaseSize * 0.15); // Thinner glow
+   pg.ellipse(0, 0, dotBaseSize * 1.4);
+
+   // Add subtle linear glow overlays to mimic panel reflections
+   pg.stroke(baseColor);
+   pg.strokeWeight(1);
+   const linesCount = 5;
+   for (let i = 1; i <= linesCount; i++) {
+      let posX = map(i, 1, linesCount + 1, -dotBaseSize * 0.75, dotBaseSize * 0.75);
+      pg.line(posX, -dotBaseSize * 0.75, posX, dotBaseSize * 0.75);
+   }
+
+   // Core dot
+   pg.noStroke();
+   pg.fill(baseColor);
+   pg.ellipse(0, 0, dotBaseSize);
+
+   pg.pop();
+}
+
+function drawSuprematistOpShadowRect(baseSize, systemSize, habitat, posX, posY, glowStrength = 40, isHover = false, animalLineType = '', agrivoltaicColors = [], options = {}) {
+  let { flipped = false, pg } = options;
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window;
+  }
+   let sz = constrain(systemSize || 0.1, 0.1, 10);
+
+   let shapeType = 'diamond'; // fallback
+
+   if (Array.isArray(habitat) && habitat.length > 0) {
+      const cleaned = habitat.map(h => (h || '').trim().toLowerCase());
+      if (cleaned.includes('pollinator')) {
+         shapeType = 'hexagon';
+      } else if (cleaned.includes('naturalized')) {
+         shapeType = 'ellipse';
+      } else if (cleaned.includes('native grasses')) {
+         shapeType = 'rect';
+      }
+   } else if (animalLineType) {
+      shapeType = animalLineType.toLowerCase();
+   }
+
+   pg.push();
+   pg.translate(posX, posY);
+   pg.rectMode(CENTER);
+   pg.noStroke();
+
+   // Size & offsets based on system size
+   let offset = map(sz, 0, 10, 2, 10);
+   let shadowSize = map(sz, 0, 10, baseSize * 0.9, baseSize * 1.4);
+   let highlightSize = shadowSize * 0.95;
+
+   let widthFactor = 1;
+   let heightFactor = 1;
+   let rotateRectVertical = false;
+
+   if (shapeType === 'diamond') {
+      widthFactor = 1;
+      heightFactor = 1.15;
+   } else if (shapeType === 'rect') {
+      widthFactor = 0.55;
+      heightFactor = 1.6;
+      rotateRectVertical = true;
+   }
+
+   let shadowW = shadowSize * widthFactor;
+   let shadowH = shadowSize * heightFactor;
+   let highlightW = highlightSize * widthFactor;
+   let highlightH = highlightSize * heightFactor;
+
+   let glowW = shadowW * map(sz, 0.1, 10, 1.2, 1.6);
+   let glowH = shadowH * map(sz, 0.1, 10, 1.2, 1.6);
+
+   // Glow alpha pulsation
+   let pulse = map(sin(frameCount * 0.08), -1, 1, 0.8, 1);
+   let glowAlpha = glowStrength * pulse;
+   if (isHover) glowAlpha = min(glowAlpha * 3.5, 255);
+
+   if (agrivoltaicColors.length === 0) agrivoltaicColors = [color(255)];
+
+   // Color cycling through agrivoltaic colors
+   let colorIndex = floor(frameCount / 60) % agrivoltaicColors.length;
+   let nextIndex = (colorIndex + 1) % agrivoltaicColors.length;
+   let lerpAmt = (frameCount % 60) / 60;
+   let baseGlowColor = lerpColor(agrivoltaicColors[colorIndex], agrivoltaicColors[nextIndex], lerpAmt);
+   baseGlowColor.setAlpha(glowAlpha);
+
+   // --- Glow layers with alternating diamond and original shapes ---
+   for (let i = 3; i > 0; i--) {
+      let layerW = glowW * (1 + i * 0.05);
+      let layerH = glowH * (1 + i * 0.05);
+      let layerAlpha = glowAlpha * (0.3 / i);
+      let layerColor = lerpColor(agrivoltaicColors[colorIndex], agrivoltaicColors[nextIndex], lerpAmt);
+      layerColor.setAlpha(layerAlpha);
+      pg.fill(layerColor);
+
+      if (i % 2 === 0) {
+         pg.push();
+         pg.rotate(PI / 6); // simulate panel angle
+         drawShapeByType('diamond', layerW, layerH, pg);
+         pg.pop();
+      } else {
+         drawShapeByType(shapeType, layerW, layerH, pg);
+      }
+   }
+
+   const panelLightAngle = pg.radians(10);
+
+   // --- Shadow layers with consistent light angle ---
+   pg.fill('#0A0A0A');
+   pg.push();
+   pg.rotate(panelLightAngle);
+   pg.translate(offset, offset);
+   if (rotateRectVertical) pg.rotate(PI);
+   drawShapeByType(shapeType, shadowW, shadowH, pg);
+   pg.pop();
+
+   pg.fill(255);
+   pg.push();
+   pg.rotate(panelLightAngle - pg.radians(4));
+   pg.translate(offset * 1.4, offset * 0.8);
+   if (rotateRectVertical) pg.rotate(PI);
+   drawShapeByType(shapeType, highlightW, highlightH, pg);
+   pg.pop();
+
+   pg.fill('#0A0A0A');
+   pg.push();
+   pg.rotate(panelLightAngle - pg.radians(7));
+   pg.translate(-offset * 0.6, offset * 0.5);
+   if (rotateRectVertical) pg.rotate(PI);
+   drawShapeByType(shapeType, shadowW * 0.88, shadowH * 0.88, pg);
+   pg.pop();
+
+   // --- Sharp highlight outline for "glass panel" effect ---
+   pg.stroke(255, glowAlpha * 0.7);
+   pg.noFill();
+   pg.strokeWeight(2);
+   if (rotateRectVertical) {
+      pg.push();
+      pg.rotate(PI);
+      drawShapeByType(shapeType, shadowW * 0.75, shadowH * 0.75, pg);
+      pg.pop();
+   } else {
+      drawShapeByType(shapeType, shadowW * 0.75, shadowH * 0.75, pg);
+   }
+
+   pg.pop();
+
+   return {
+      offsetX: offset * 1.4,
+      offsetY: offset * 0.8,
+      angle: panelLightAngle - pg.radians(4),
+      size: highlightSize,
+      glowAlpha,
+   };
+}
+
+function drawShapeByType(type, w, h, pg) {
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window;
+  }
+   switch (type) {
+      case 'hexagon':
+         pg.beginShape();
+         for (let i = 0; i < 6; i++) {
+            let angle = TWO_PI / 6 * i - PI / 2;
+            pg.vertex(cos(angle) * w / 2, sin(angle) * h / 2);
+         }
+         pg.endShape(CLOSE);
+         break;
+      case 'ellipse':
+         pg.ellipse(0, 0, w, h);
+         break;
+      case 'rect':
+         pg.rect(0, 0, w, h);
+         break;
+      case 'diamond':
+      default:
+         pg.push();
+         pg.rotate(PI / 4); // Rotate square 45 degrees to get diamond
+         pg.rect(0, 0, w, h);
+         pg.pop();
+         break;
+   }
+}
+
+function pathShapeByType(type, size, pg) {
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window;
+  }
+   let r = size / 2;
+   let ctx = drawingContext;
+
+   switch (type) {
+      case 'hexagon':
+         for (let i = 0; i < 6; i++) {
+            let angle = TWO_PI / 6 * i - PI / 6;
+            let x = cos(angle) * r;
+            let y = sin(angle) * r;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+         }
+         ctx.closePath();
+         break;
+
+      case 'ellipse':
+         ctx.ellipse(0, 0, size, size, pg);
+         break;
+
+      case 'rect':
+         ctx.rect(-size * 0.275, -size * 0.5, size * 0.55, size, pg);
+         break;
+
+      case 'diamond':
+      default:
+         ctx.moveTo(0, -r);
+         ctx.lineTo(r, 0);
+         ctx.lineTo(0, r);
+         ctx.lineTo(-r, 0);
+         ctx.closePath();
+         break;
+   }
+}
+
+function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
+  if (!pg || typeof pg.push !== 'function') {
+    pg = window;
+  }
+  if (!pvTech || !activities || activities.length === 0) return;
+
+  let type = pvTech.trim().toLowerCase();
+  let warpStyle = pvWarpStyles[type];
+  if (!warpStyle) return;
+
+  // Helper for fallback color without altering activities or getActivityColor
+  function getWarpColor(idx) {
+    if (activities && activities[idx]) {
+      return getActivityColor(activities[idx]);
+    }
+    // Default fallback color (bright cyan with some alpha)
+    return color(0, 255, 255, 200);
+  }
+
+  pg.push();
+  pg.translate(x, y);
+  pg.noFill();
+  pg.blendMode(ADD);
+
+ switch (warpStyle) {
+  case 'linear':
+    {
+      const archAmplitude = size * 0.3;
+      const archWidth = size * 0.8;
+      const baseLineY = size * 0.7;
+
+      // Stronger glowing baseline with layered glow lines
+      pg.blendMode(ADD);
+      for (let glow = 5; glow >= 1; glow--) {
+        const alphaGlow = 180 - glow * 25;
+        pg.stroke(255, alphaGlow);
+        pg.strokeWeight(6 + glow * 5);
+        pg.line(-size, baseLineY + glow, size, baseLineY + glow);
+      }
+
+      // Main baseline line, more opaque
+      pg.blendMode(BLEND);
+      pg.stroke(255, 230);
+      pg.strokeWeight(3);
+      pg.line(-size, baseLineY, size, baseLineY);
+
+      // Arch lines with jitter and glow layering
+      for (let i = -size; i <= size; i += 8) {
+        // Smooth arch wave offset (sine wave)
+        let waveOffset = archAmplitude * sin((i / archWidth) * PI);
+
+        // Jitter with noise and sin for lively motion
+        let jitterX = (noise(i * 0.12, frameCount * 0.12) - 0.5) * 6 + sin(frameCount * 0.6 + i) * 2;
+        let jitterY = (noise(i * 0.24, frameCount * 0.18) - 0.5) * 6 + cos(frameCount * 0.6 + i) * 2;
+
+        let colorIndex = Math.floor((i + size) / 8) % activities.length;
+        let col = getWarpColor(colorIndex);
+
+        // Stronger fizz animation
+        let fizz = sin(frameCount * 0.3 + i * 0.15) * 0.6 + sin(frameCount * 5.5 + i) * 0.25;
+        fizz = constrain(fizz, -1, 1);
+
+        // Glow color tinted toward white with fizz
+        let glowCol = lerpColor(col, color(255), 0.5 + 0.5 * fizz);
+
+        // Glow aura with additive blending (thicker and brighter)
+        pg.blendMode(ADD);
+        for (let glow = 6; glow >= 1; glow--) {
+          let alphaGlow = 150 - glow * 20 + 70 * fizz;
+          pg.stroke(red(glowCol), green(glowCol), blue(glowCol), alphaGlow);
+          pg.strokeWeight(8 + glow * 6);
+          pg.line(
+            i + jitterX + glow,
+            waveOffset + jitterY + glow,
+            i + jitterX + glow,
+            baseLineY + jitterY + glow
+          );
+        }
+
+        // Main glowing arch line
+        let alphaMain = 240 + 30 * fizz;
+        let strokeW = 7 + fizz * 3;
+        pg.blendMode(BLEND);
+        pg.stroke(red(col), green(col), blue(col), alphaMain);
+        pg.strokeWeight(strokeW);
+        pg.line(i + jitterX, waveOffset + jitterY, i + jitterX, baseLineY + jitterY);
+      }
+    }
+    break;
+
+  case 'symmetric':
+    {
+      const centerX = 0;
+
+      for (let i = 0; i < size; i += 4) {
+        // Symmetric arches: positive and negative yOffsets (mirrored)
+        let yOffset = sin((i + frameCount) * 0.12) * 18;
+        let yOffsetMirrored = -yOffset;
+
+        // Jitter for lively motion
+        let jitterX = (noise(i * 0.1, frameCount * 0.17) - 0.5) * 7 + sin(frameCount * 0.65 + i) * 2.5;
+        let jitterY = (noise(i * 0.1, frameCount * 0.22) - 0.5) * 7 + cos(frameCount * 0.65 + i) * 2.5;
+
+        let colorIndex = Math.floor(i / 4) % activities.length;
+        let col = getWarpColor(colorIndex);
+        let baseStrokeWeight = 8 + sin(frameCount * 0.18) * 3;
+
+        // Stronger fizz animation
+        let fizz = sin(frameCount * 0.35 + i * 0.07) * 0.7 + sin(frameCount * 5.5 + i) * 0.25;
+        fizz = constrain(fizz, -1, 1);
+
+        // Glow color tinted toward white with fizz
+        let glowCol = lerpColor(col, color(255), 0.45 + 0.55 * fizz);
+
+        // Colored glow aura with additive blending (thicker and brighter)
+        pg.blendMode(ADD);
+        for (let glow = 5; glow >= 1; glow--) {
+          let alphaGlow = 140 - glow * 10 + 60 * fizz;
+          let weightGlow = baseStrokeWeight + glow * 4;
+          pg.stroke(red(glowCol), green(glowCol), blue(glowCol), alphaGlow);
+          pg.strokeWeight(weightGlow);
+          pg.line(centerX - size / 2 + i + jitterX, yOffset + jitterY, centerX - size / 2 + i + jitterX, yOffsetMirrored + jitterY);
+        }
+
+        // Main sharp vertical line
+        pg.blendMode(BLEND);
+        pg.stroke(red(col), green(col), blue(col), 255);
+        pg.strokeWeight(baseStrokeWeight);
+        pg.line(centerX - size / 2 + i + jitterX, yOffset + jitterY, centerX - size / 2 + i + jitterX, yOffsetMirrored + jitterY);
+
+        // Crossing diagonal flickering lines every 20 pixels, brighter and thicker
+        if (i % 20 === 0) {
+          pg.stroke(255, 230 + 150 * fizz);
+          pg.strokeWeight(3);
+          pg.line(centerX - size / 2 + i, yOffset + jitterY, centerX - size / 2 + i + 10, yOffsetMirrored + jitterY);
+        }
+      }
+    }
+    break;
+
+  case 'radial':
+    {
+      const centerX = 0;
+      const centerY = 0;
+
+      for (let r = 10, idx = 0; r < size; r += 10, idx++) {
+        let baseCol = getWarpColor(idx % activities.length);
+        let pulse = sin((frameCount + r * 5) * 0.12);
+
+        let jitterX = (noise(r * 0.12, frameCount * 0.18) - 0.5) * 7;
+        let jitterY = (noise(r * 0.12, frameCount * 0.22) - 0.5) * 7;
+
+        // Stronger fizz animation
+        let fizz = sin(frameCount * 0.25 + r * 0.06) * 0.6 + sin(frameCount * 6.5 + r) * 0.3;
+        fizz = constrain(fizz, -1, 1);
+
+        let glowCol = lerpColor(baseCol, color(255), 0.35 + 0.65 * fizz);
+
+        // Glow rings with additive blending (thicker, more glow)
+        pg.blendMode(ADD);
+        for (let glow = 4; glow >= 1; glow--) {
+          let alphaGlow = 150 - glow * 15 + 70 * fizz;
+          let weightGlow = 7 + glow * 5;
+          pg.stroke(red(glowCol), green(glowCol), blue(glowCol), alphaGlow);
+          pg.strokeWeight(weightGlow);
+          pg.noFill();
+          pg.ellipse(centerX + jitterX, centerY + jitterY, r * 2 + glow * 14, r * 2 + glow * 14);
+        }
+
+        // Main ellipse with pulse scale
+        pg.blendMode(BLEND);
+        pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 255);
+        pg.strokeWeight(6 + pulse * 3);
+        pg.noFill();
+        pg.ellipse(centerX + jitterX, centerY + jitterY, r * 2, r * 2);
+
+        // Flickering perimeter points (diffusion effect), brighter and bigger
+        const pointsCount = 18;
+        for (let p = 0; p < pointsCount; p++) {
+          let angle = TWO_PI * p / pointsCount + frameCount * 0.06;
+          let noiseFactor = noise(p * 0.12, frameCount * 0.06);
+          let px = centerX + cos(angle) * (r + noiseFactor * 6);
+          let py = centerY + sin(angle) * (r + noiseFactor * 6);
+
+          pg.stroke(255, 230 + 80 * fizz);
+          pg.strokeWeight(3);
+          pg.point(px, py);
+        }
+      }
+    }
+    break;
+
+    case 'noise':
+      pg.strokeWeight(2);
+      let spacing = 8; // distance between dots
+      for (let i = -size / 2; i <= size / 2; i += spacing) {
+        for (let j = -size / 2; j <= size / 2; j += spacing) {
+          let n = noise((i + x) * 0.1 + frameCount * 0.02, (j + y) * 0.1 + frameCount * 0.02);
+          let jitterX = map(n, 0, 1, -1.5, 1.5);
+          let jitterY = map(n, 0, 1, -1.5, 1.5);
+
+          let colorIndex = (Math.floor(i / spacing) + Math.floor(j / spacing)) % activities.length;
+          let col = getWarpColor(colorIndex);
+
+          // Shadow point (shifted)
+          pg.stroke(0, 0, 0, 100);
+          pg.strokeWeight(3);
+          pg.point(i + jitterX + 2, j + jitterY + 2);
+
+          // Main point
+          pg.stroke(red(col), green(col), blue(col), 180);
+          pg.strokeWeight(2);
+          pg.point(i + jitterX, j + jitterY);
+        }
+      }
+      break;
+
+    default:
+      break;
+  }
+
+  pg.pop();
+}
