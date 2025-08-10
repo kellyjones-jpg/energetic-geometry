@@ -12,6 +12,7 @@ let fadeAlpha = 255;
 let placeholderContainer;
 let modalPreviewEntry = null;
 let modalPreviewCallback = null;
+let keyboardFocusedIndex = -1;
 
 const cropEdgeGroups = {
    // Root vegetables
@@ -944,32 +945,35 @@ document.getElementById('toggle-legend').addEventListener('click', function () {
 });
 
 function mouseMoved() {
-   if ('ontouchstart' in window) return;
+  if ('ontouchstart' in window) return;
 
-   const modalElement = document.getElementById('siteModal');
-   if (modalElement && modalElement.classList.contains('show')) {
-      hoveredEntry = null;
-      cursor('default');
-      return;
-   }
+  const modalElement = document.getElementById('siteModal');
+  if (modalElement && modalElement.classList.contains('show')) {
+    hoveredEntry = null;
+    keyboardFocusedIndex = -1; // clear keyboard focus when modal open
+    cursor('default');
+    return;
+  }
 
-   let yearEntries = entriesByYear[selectedYear] || [];
-   hoveredEntry = null;
-   let hovering = false;
+  let yearEntries = entriesByYear[selectedYear] || [];
+  hoveredEntry = null;
+  keyboardFocusedIndex = -1; // Clear keyboard focus if mouse moves over canvas
 
-   for (let entry of yearEntries) {
-      const dx = mouseX - (entry._screenX || 0);
-      const dy = mouseY - (entry._screenY || 0);
-      const r = entry._radius || 30;
+  let hovering = false;
+  for (let i = 0; i < yearEntries.length; i++) {
+    const entry = yearEntries[i];
+    const dx = mouseX - (entry._screenX || 0);
+    const dy = mouseY - (entry._screenY || 0);
+    const r = entry._radius || 30;
 
-      if (dx * dx + dy * dy < r * r) {
-         hoveredEntry = entry;
-         hovering = true;
-         break;
-      }
-   }
+    if (dx * dx + dy * dy < r * r) {
+      hoveredEntry = entry;
+      hovering = true;
+      break;
+    }
+  }
 
-   cursor(hovering ? 'pointer' : 'default');
+  cursor(hovering ? 'pointer' : 'default');
 }
 
 function mousePressed() {
@@ -993,56 +997,103 @@ function mousePressed() {
 }
 
 function keyPressed() {
-   const yearEntries = entriesByYear[selectedYear];
-   if (!yearEntries || yearEntries.length === 0) return;
+  const yearEntries = entriesByYear[selectedYear];
+  if (!yearEntries || yearEntries.length === 0) return;
 
-   const modalElement = document.getElementById('siteModal');
-   const modalVisible = modalElement.classList.contains('show');
+  const modalElement = document.getElementById('siteModal');
+  const modalVisible = modalElement.classList.contains('show');
 
-   if (keyCode === ESCAPE && modalVisible) {
-      const modalInstance = bootstrap.Modal.getInstance(modalElement);
-      if (modalInstance) modalInstance.hide();
-      return;
-   }
+  // Close modal on ESC
+  if (keyCode === ESCAPE && modalVisible) {
+    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+    if (modalInstance) modalInstance.hide();
+    return;
+  }
 
-   // Global year navigation
-   if (!modalVisible && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
-      if (!hasSelectedYear) {
-         updateYear(availableYears[0], 0);
-         return;
-      }
+  // If modal is open, ignore other navigation keys
+  if (modalVisible) return;
 
-      const currentYearIndex = availableYears.indexOf(selectedYear);
-      const delta = keyCode === RIGHT_ARROW ? 1 : -1;
-      const newIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
-
-      if (newIndex !== currentYearIndex) {
-         updateYear(availableYears[newIndex], newIndex);
-      }
-      return;
-   }
-
-
-   // Global year navigation
-   if (!modalVisible && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)) {
+  // Navigation between years only if no site is focused
+  if (keyboardFocusedIndex === -1) {
+    if (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW) {
       const currentYearIndex = availableYears.indexOf(selectedYear);
       const delta = keyCode === RIGHT_ARROW ? 1 : -1;
       const newIndex = constrain(currentYearIndex + delta, 0, availableYears.length - 1);
       if (newIndex !== currentYearIndex) {
-         updateYear(availableYears[newIndex], newIndex); // Centralized logic
+        updateYear(availableYears[newIndex], newIndex);
       }
       return;
-   }
+    }
 
-   if (!modalVisible && keyCode === HOME) {
+    if (keyCode === HOME) {
       updateYear(availableYears[0], 0);
       return;
-   }
+    }
 
-   if (!modalVisible && keyCode === END) {
+    if (keyCode === END) {
       updateYear(availableYears[availableYears.length - 1], availableYears.length - 1);
       return;
-   }
+    }
+  }
+
+  // If sites exist, handle keyboard navigation among sites
+  if (yearEntries.length > 0) {
+    // Left/right arrows move focus among sites
+    if (keyCode === LEFT_ARROW) {
+      if (keyboardFocusedIndex === -1) keyboardFocusedIndex = 0;
+      else keyboardFocusedIndex = (keyboardFocusedIndex - 1 + yearEntries.length) % yearEntries.length;
+      hoveredEntry = yearEntries[keyboardFocusedIndex];
+      return;
+    }
+    if (keyCode === RIGHT_ARROW) {
+      if (keyboardFocusedIndex === -1) keyboardFocusedIndex = 0;
+      else keyboardFocusedIndex = (keyboardFocusedIndex + 1) % yearEntries.length;
+      hoveredEntry = yearEntries[keyboardFocusedIndex];
+      return;
+    }
+
+    // Up/down arrows move focus by row if you have a grid layout (optional)
+    if (keyCode === UP_ARROW || keyCode === DOWN_ARROW) {
+      if (keyboardFocusedIndex === -1) return;
+      const count = yearEntries.length;
+      const rows = numRows; // assuming numRows defined in your sketch
+      const cols = Math.ceil(count / rows);
+
+      let row = keyboardFocusedIndex % rows;
+      let col = Math.floor(keyboardFocusedIndex / rows);
+
+      if (keyCode === UP_ARROW) row = (row - 1 + rows) % rows;
+      else if (keyCode === DOWN_ARROW) row = (row + 1) % rows;
+
+      let newIndex = col * rows + row;
+      if (newIndex >= count) {
+        // Clamp to max index if out of bounds
+        newIndex = count - 1;
+      }
+
+      keyboardFocusedIndex = newIndex;
+      hoveredEntry = yearEntries[keyboardFocusedIndex];
+      return;
+    }
+
+    // HOME/END jump to first/last site
+    if (keyCode === HOME) {
+      keyboardFocusedIndex = 0;
+      hoveredEntry = yearEntries[keyboardFocusedIndex];
+      return;
+    }
+    if (keyCode === END) {
+      keyboardFocusedIndex = yearEntries.length - 1;
+      hoveredEntry = yearEntries[keyboardFocusedIndex];
+      return;
+    }
+
+    // Open modal with ENTER or SPACE on focused site
+    if ((keyCode === ENTER || keyCode === 32) && keyboardFocusedIndex !== -1) {
+      showModalWithEntry(yearEntries[keyboardFocusedIndex]);
+      return;
+    }
+  }
 }
 
 function updateYear(year, index) {
