@@ -598,6 +598,12 @@ function renderEntryVisual(entry, pg, isModal = false) {
     drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, size * 1.3, strokeW, pg);
   }
 
+  
+  if (entry.pvTech?.length > 0) {
+  const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
+  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, size, pg);
+}
+
   if (entry.animalType?.length > 0) {
     const yOffset = size * 0.25;
     const animalSize = size * 1;
@@ -605,11 +611,6 @@ function renderEntryVisual(entry, pg, isModal = false) {
     pg.strokeWeight(strokeW + 0.75);
     drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, pg);
   }
-
-  if (entry.pvTech?.length > 0) {
-  const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
-  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, size, pg);
-}
   pg.pop();
 }
 
@@ -815,6 +816,11 @@ if (entry.cropType?.length > 0) {
    drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.35, strokeW, this);
 }
 
+if (entry.pvTech?.length > 0) {
+  const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
+  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, entryShapeSize, this);
+}
+
 if (entry.animalType?.length > 0) {
    const yOffset = entryShapeSize * 0.15;
    const animalSize = entryShapeSize * 0.9;
@@ -823,11 +829,6 @@ if (entry.animalType?.length > 0) {
    drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, this);
    strokeWeight(strokeW);
    drawAnimalLine(entry.animalType, entry.activities, 0, yOffset, animalSize, strokeW, this);
-}
-
-if (entry.pvTech?.length > 0) {
-  const normalizedPvTech = normalizePvTechForLookup(entry.pvTech);
-  drawPVWarpStyle(normalizedPvTech, entry.activities, 0, 0, entryShapeSize, this);
 }
 
 pop(); // end entry group
@@ -2054,172 +2055,134 @@ function drawPVWarpStyle(pvTech, activities, x, y, size, pg) {
   pg.blendMode(ADD);
 
  switch (warpStyle) {
-  case 'linear':
-    {
-      const archAmplitude = size * 0.3;
-      const archWidth = size * 0.8;
-      const baseLineY = size * 0.7;
+case 'linear': {
+  const archAmplitude = size * 0.3;
+  const archWidth = size * 0.8;
+  const baseLineY = size * 0.7;
 
-      // Stronger glowing baseline with layered glow lines
-      pg.blendMode(ADD);
-      for (let glow = 5; glow >= 1; glow--) {
-        const alphaGlow = 180 - glow * 25;
-        pg.stroke(255, alphaGlow);
-        pg.strokeWeight(6 + glow * 5);
-        pg.line(-size, baseLineY + glow, size, baseLineY + glow);
-      }
+  // Minimal glow baseline (optional)
+  pg.blendMode(BLEND);
+  pg.stroke(255, 80);
+  pg.strokeWeight(1.5);
+  pg.line(-size, baseLineY, size, baseLineY);
 
-      // Main baseline line, more opaque
-      pg.blendMode(BLEND);
-      pg.stroke(255, 230);
-      pg.strokeWeight(3);
-      pg.line(-size, baseLineY, size, baseLineY);
+  for (let i = -size; i <= size; i += 8) {
+    let waveOffset = archAmplitude * sin((i / archWidth) * PI);
 
-      // Arch lines with jitter and glow layering
-      for (let i = -size; i <= size; i += 8) {
-        // Smooth arch wave offset (sine wave)
-        let waveOffset = archAmplitude * sin((i / archWidth) * PI);
+    let jitterX = (noise(i * 0.12, frameCount * 0.1) - 0.5) * 3;
+    let jitterY = (noise(i * 0.24, frameCount * 0.12) - 0.5) * 3;
 
-        // Jitter with noise and sin for lively motion
-        let jitterX = (noise(i * 0.12, frameCount * 0.12) - 0.5) * 6 + sin(frameCount * 0.6 + i) * 2;
-        let jitterY = (noise(i * 0.24, frameCount * 0.18) - 0.5) * 6 + cos(frameCount * 0.6 + i) * 2;
+    let colorIndex = Math.floor((i + size) / 8) % activities.length;
+    let col = getWarpColor(colorIndex);
 
-        let colorIndex = Math.floor((i + size) / 8) % activities.length;
-        let col = getWarpColor(colorIndex);
+    let alphaMain = 120;
+    let strokeW = 2;
 
-        // Stronger fizz animation
-        let fizz = sin(frameCount * 0.3 + i * 0.15) * 0.6 + sin(frameCount * 5.5 + i) * 0.25;
-        fizz = constrain(fizz, -1, 1);
+    pg.blendMode(BLEND);
+    pg.stroke(red(col), green(col), blue(col), alphaMain);
+    pg.strokeWeight(strokeW);
+    pg.line(i + jitterX, waveOffset + jitterY, i + jitterX, baseLineY + jitterY);
+  }
+}
+break;
 
-        // Glow color tinted toward white with fizz
-        let glowCol = lerpColor(col, color(255), 0.5 + 0.5 * fizz);
+case 'symmetric': {
+  const centerX = 0;
 
-        // Glow aura with additive blending (thicker and brighter)
-        pg.blendMode(ADD);
-        for (let glow = 6; glow >= 1; glow--) {
-          let alphaGlow = 150 - glow * 20 + 70 * fizz;
-          pg.stroke(red(glowCol), green(glowCol), blue(glowCol), alphaGlow);
-          pg.strokeWeight(8 + glow * 6);
-          pg.line(
-            i + jitterX + glow,
-            waveOffset + jitterY + glow,
-            i + jitterX + glow,
-            baseLineY + jitterY + glow
-          );
-        }
+  for (let i = 0; i < size; i += 4) {
+    let yOffset = sin((i + frameCount) * 0.12) * 8;          // smaller amplitude
+    let yOffsetMirrored = -yOffset;
 
-        // Main glowing arch line
-        let alphaMain = 240 + 30 * fizz;
-        let strokeW = 7 + fizz * 3;
-        pg.blendMode(BLEND);
-        pg.stroke(red(col), green(col), blue(col), alphaMain);
-        pg.strokeWeight(strokeW);
-        pg.line(i + jitterX, waveOffset + jitterY, i + jitterX, baseLineY + jitterY);
-      }
+    let jitterX = (noise(i * 0.1, frameCount * 0.1) - 0.5) * 3;
+    let jitterY = (noise(i * 0.1, frameCount * 0.12) - 0.5) * 3;
+
+    let colorIndex = Math.floor(i / 4) % activities.length;
+    let col = getWarpColor(colorIndex);
+    let baseStrokeWeight = 2 + sin(frameCount * 0.1) * 1;   // lighter stroke
+
+    // Subtle fizz animation
+    let fizz = sin(frameCount * 0.25 + i * 0.07) * 0.3;     // lower amplitude
+    fizz = constrain(fizz, -1, 1);
+
+    // Glow color tinted lightly (no pure white)
+    let glowCol = lerpColor(col, color(red(col), green(col), blue(col), 50), 0.5 + 0.5 * fizz);
+
+    // Minimal colored glow aura with low alpha additive blending
+    pg.blendMode(ADD);
+    for (let glow = 3; glow >= 1; glow--) {
+      let alphaGlow = 30 - glow * 5 + 20 * fizz;
+      let weightGlow = baseStrokeWeight + glow * 1.5;
+      pg.stroke(red(glowCol), green(glowCol), blue(glowCol), alphaGlow);
+      pg.strokeWeight(weightGlow);
+      pg.line(centerX - size / 2 + i + jitterX, yOffset + jitterY, centerX - size / 2 + i + jitterX, yOffsetMirrored + jitterY);
     }
-    break;
 
-  case 'symmetric':
-    {
-      const centerX = 0;
+    // Main sharp vertical line
+    pg.blendMode(BLEND);
+    pg.stroke(red(col), green(col), blue(col), 100 + 50 * fizz); // alpha max ~150
+    pg.strokeWeight(baseStrokeWeight);
+    pg.line(centerX - size / 2 + i + jitterX, yOffset + jitterY, centerX - size / 2 + i + jitterX, yOffsetMirrored + jitterY);
 
-      for (let i = 0; i < size; i += 4) {
-        // Symmetric arches: positive and negative yOffsets (mirrored)
-        let yOffset = sin((i + frameCount) * 0.12) * 18;
-        let yOffsetMirrored = -yOffset;
-
-        // Jitter for lively motion
-        let jitterX = (noise(i * 0.1, frameCount * 0.17) - 0.5) * 7 + sin(frameCount * 0.65 + i) * 2.5;
-        let jitterY = (noise(i * 0.1, frameCount * 0.22) - 0.5) * 7 + cos(frameCount * 0.65 + i) * 2.5;
-
-        let colorIndex = Math.floor(i / 4) % activities.length;
-        let col = getWarpColor(colorIndex);
-        let baseStrokeWeight = 8 + sin(frameCount * 0.18) * 3;
-
-        // Stronger fizz animation
-        let fizz = sin(frameCount * 0.35 + i * 0.07) * 0.7 + sin(frameCount * 5.5 + i) * 0.25;
-        fizz = constrain(fizz, -1, 1);
-
-        // Glow color tinted toward white with fizz
-        let glowCol = lerpColor(col, color(255), 0.45 + 0.55 * fizz);
-
-        // Colored glow aura with additive blending (thicker and brighter)
-        pg.blendMode(ADD);
-        for (let glow = 5; glow >= 1; glow--) {
-          let alphaGlow = 140 - glow * 10 + 60 * fizz;
-          let weightGlow = baseStrokeWeight + glow * 4;
-          pg.stroke(red(glowCol), green(glowCol), blue(glowCol), alphaGlow);
-          pg.strokeWeight(weightGlow);
-          pg.line(centerX - size / 2 + i + jitterX, yOffset + jitterY, centerX - size / 2 + i + jitterX, yOffsetMirrored + jitterY);
-        }
-
-        // Main sharp vertical line
-        pg.blendMode(BLEND);
-        pg.stroke(red(col), green(col), blue(col), 255);
-        pg.strokeWeight(baseStrokeWeight);
-        pg.line(centerX - size / 2 + i + jitterX, yOffset + jitterY, centerX - size / 2 + i + jitterX, yOffsetMirrored + jitterY);
-
-        // Crossing diagonal flickering lines every 20 pixels, brighter and thicker
-        if (i % 20 === 0) {
-          pg.stroke(255, 230 + 150 * fizz);
-          pg.strokeWeight(3);
-          pg.line(centerX - size / 2 + i, yOffset + jitterY, centerX - size / 2 + i + 10, yOffsetMirrored + jitterY);
-        }
-      }
+    // Optional: very subtle crossing diagonal flicker, very low alpha
+    if (i % 20 === 0) {
+      pg.stroke(red(col), green(col), blue(col), 50 + 40 * fizz);
+      pg.strokeWeight(1.5);
+      pg.line(centerX - size / 2 + i, yOffset + jitterY, centerX - size / 2 + i + 10, yOffsetMirrored + jitterY);
     }
-    break;
+  }
+}
+break;
 
-  case 'radial':
-    {
-      const centerX = 0;
-      const centerY = 0;
+case 'radial': {
+  const centerX = 0;
+  const centerY = 0;
 
-      for (let r = 10, idx = 0; r < size; r += 10, idx++) {
-        let baseCol = getWarpColor(idx % activities.length);
-        let pulse = sin((frameCount + r * 5) * 0.12);
+  for (let r = 10, idx = 0; r < size; r += 10, idx++) {
+    let baseCol = getWarpColor(idx % activities.length);
+    let pulse = sin((frameCount + r * 5) * 0.1) * 0.3;  // reduced pulse amplitude
 
-        let jitterX = (noise(r * 0.12, frameCount * 0.18) - 0.5) * 7;
-        let jitterY = (noise(r * 0.12, frameCount * 0.22) - 0.5) * 7;
+    let jitterX = (noise(r * 0.12, frameCount * 0.1) - 0.5) * 3;
+    let jitterY = (noise(r * 0.12, frameCount * 0.12) - 0.5) * 3;
 
-        // Stronger fizz animation
-        let fizz = sin(frameCount * 0.25 + r * 0.06) * 0.6 + sin(frameCount * 6.5 + r) * 0.3;
-        fizz = constrain(fizz, -1, 1);
+    let fizz = sin(frameCount * 0.2 + r * 0.04) * 0.4;    // subtle fizz
+    fizz = constrain(fizz, -1, 1);
 
-        let glowCol = lerpColor(baseCol, color(255), 0.35 + 0.65 * fizz);
+    // Glow color tinted lightly (no white, just more transparent)
+    let glowCol = lerpColor(baseCol, color(red(baseCol), green(baseCol), blue(baseCol), 50), 0.4 + 0.6 * fizz);
 
-        // Glow rings with additive blending (thicker, more glow)
-        pg.blendMode(ADD);
-        for (let glow = 4; glow >= 1; glow--) {
-          let alphaGlow = 150 - glow * 15 + 70 * fizz;
-          let weightGlow = 7 + glow * 5;
-          pg.stroke(red(glowCol), green(glowCol), blue(glowCol), alphaGlow);
-          pg.strokeWeight(weightGlow);
-          pg.noFill();
-          pg.ellipse(centerX + jitterX, centerY + jitterY, r * 2 + glow * 14, r * 2 + glow * 14);
-        }
-
-        // Main ellipse with pulse scale
-        pg.blendMode(BLEND);
-        pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 255);
-        pg.strokeWeight(6 + pulse * 3);
-        pg.noFill();
-        pg.ellipse(centerX + jitterX, centerY + jitterY, r * 2, r * 2);
-
-        // Flickering perimeter points (diffusion effect), brighter and bigger
-        const pointsCount = 18;
-        for (let p = 0; p < pointsCount; p++) {
-          let angle = TWO_PI * p / pointsCount + frameCount * 0.06;
-          let noiseFactor = noise(p * 0.12, frameCount * 0.06);
-          let px = centerX + cos(angle) * (r + noiseFactor * 6);
-          let py = centerY + sin(angle) * (r + noiseFactor * 6);
-
-          pg.stroke(255, 230 + 80 * fizz);
-          pg.strokeWeight(3);
-          pg.point(px, py);
-        }
-      }
+    // Glow rings with additive blending, low alpha and weight
+    pg.blendMode(ADD);
+    for (let glow = 3; glow >= 1; glow--) {
+      let alphaGlow = 40 - glow * 10 + 25 * fizz;
+      let weightGlow = 3 + glow * 2;
+      pg.stroke(red(glowCol), green(glowCol), blue(glowCol), alphaGlow);
+      pg.strokeWeight(weightGlow);
+      pg.noFill();
+      pg.ellipse(centerX + jitterX, centerY + jitterY, r * 2 + glow * 6, r * 2 + glow * 6);
     }
-    break;
+
+    // Main ellipse with subtle pulse scale
+    pg.blendMode(BLEND);
+    pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 120 + 60 * pulse);
+    pg.strokeWeight(2 + pulse);
+    pg.noFill();
+    pg.ellipse(centerX + jitterX, centerY + jitterY, r * 2, r * 2);
+
+    // Flickering perimeter points with low alpha and small stroke weight
+    const pointsCount = 12;
+    for (let p = 0; p < pointsCount; p++) {
+      let angle = TWO_PI * p / pointsCount + frameCount * 0.04;
+      let noiseFactor = noise(p * 0.12, frameCount * 0.04);
+      let px = centerX + cos(angle) * (r + noiseFactor * 3);
+      let py = centerY + sin(angle) * (r + noiseFactor * 3);
+
+      pg.stroke(red(baseCol), green(baseCol), blue(baseCol), 80 + 40 * fizz);
+      pg.strokeWeight(1.5);
+      pg.point(px, py);
+    }
+  }
+}
+break;
 
     case 'noise':
       pg.strokeWeight(2);
