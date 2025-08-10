@@ -195,7 +195,7 @@ const combinedIcon = `
 `;
 
 function preload() {
-   table = loadTable('data/inspire-agrivoltaics-20250810.csv', 'csv', 'header');
+   table = loadTable('data/inspire-agrivoltaics-20250809.csv', 'csv', 'header');
    bgImg = loadImage('images/pexels-tomfisk-19117245.jpg');
 }
 
@@ -510,7 +510,7 @@ function renderEntryVisual(entry, pg, isModal = false) {
 
   const size = 140;
   const strokeW = 3;
-  const scaleFactor = 1.25;
+  const scaleFactor = 1.20;
   const offset = size * (scaleFactor - 1) / 2;
 
   pg.translate(offset, offset);
