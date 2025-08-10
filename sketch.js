@@ -2060,12 +2060,6 @@ case 'linear': {
   const archWidth = size * 0.8;
   const baseLineY = size * 0.7;
 
-  // Minimal glow baseline (optional)
-  pg.blendMode(BLEND);
-  pg.stroke(255, 80);
-  pg.strokeWeight(1.5);
-  pg.line(-size, baseLineY, size, baseLineY);
-
   for (let i = -size; i <= size; i += 8) {
     let waveOffset = archAmplitude * sin((i / archWidth) * PI);
 
