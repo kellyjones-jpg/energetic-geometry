@@ -142,10 +142,10 @@ const cropEdgeGroups = {
 };
 
 const pvWarpStyles = {
-   'monofacial': 'linear',
-   'bifacial': 'symmetric',
-   'translucent': 'radial',
-   'other': 'noise'
+  'monofacial PV': 'linear',
+  'bifacial PV': 'symmetric',
+  'translucent PV': 'radial',
+  'other': 'noise'
 };
 
 const combinedIcon = `
