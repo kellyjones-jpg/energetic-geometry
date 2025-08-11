@@ -298,7 +298,7 @@ function setup() {
    updateCounters([]);
 
    let canvasWidth = windowWidth * 0.9;
-   let canvasHeight = min(705, windowHeight);
+   let canvasHeight = min(725, windowHeight);
    cnv = createCanvas(canvasWidth, canvasHeight);
    cnv.parent('sketch-container');
 
