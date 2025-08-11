@@ -298,7 +298,7 @@ function setup() {
    updateCounters([]);
 
    let canvasWidth = windowWidth * 0.9;
-   let canvasHeight = min(850, windowHeight);
+   let canvasHeight = min(705, windowHeight);
    cnv = createCanvas(canvasWidth, canvasHeight);
    cnv.parent('sketch-container');
 
@@ -462,7 +462,7 @@ function changeYear(direction) {
    windowResized();
 }
 
-function updateLayout(lockedHeight = 850) {
+function updateLayout(lockedHeight = 705) {
   const yearEntries = entriesByYear[selectedYear] || [];
   const count = yearEntries.length;
 
@@ -515,12 +515,12 @@ function windowResized() {
   let targetHeight;
 
   if (!hasSelectedYear) {
-    targetHeight = 850;
+    targetHeight = 705;
     updateLayout(targetHeight);
   } else if (isMobile) {
     targetHeight = updateLayout(10000);  // large height for scroll on mobile
   } else {
-    targetHeight = 850;  // fixed height desktop
+    targetHeight = 705;  // fixed height desktop
     updateLayout(targetHeight);
   }
 
