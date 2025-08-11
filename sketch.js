@@ -458,45 +458,81 @@ function changeYear(direction) {
 }
 
 function updateLayout(lockedHeight = 850) {
-   const yearEntries = entriesByYear[selectedYear] || [];
-   const count = yearEntries.length;
+  const yearEntries = entriesByYear[selectedYear] || [];
+  const count = yearEntries.length;
 
-   startY = 130;
-   padding = 40;
+  startY = 130;
 
-   const availableWidth = windowWidth * 0.7;
-   const maxShapeSize = 125;
-   const minShapeSize = 20;
+  const isMobile = windowWidth <= 768; // mobile breakpoint
+  padding = isMobile ? 20 : 40;        // less padding on mobile
+  const availableWidth = isMobile ? windowWidth * 0.95 : windowWidth * 0.7;
 
-   // Shape sizes from largest to smallest
-   for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
-      const tentativeNumCols = max(floor((availableWidth + padding) / (s + padding)), 1);
-      const tentativeNumRows = ceil(count / tentativeNumCols);
-      const totalHeight = startY + tentativeNumRows * (s + padding) + 100;
+  const maxShapeSize = isMobile ? 60 : 125;  // smaller shapes on mobile
+  const minShapeSize = 20;
 
-      // Prioritize fitting within locked height first
-      if (totalHeight <= lockedHeight) {
-         shapeSize = s;
-         numCols = tentativeNumCols;
-         numRows = tentativeNumRows;
-         return lockedHeight;
-      }
-   }
+  // On mobile, allow more columns to better fill horizontal space
+  const maxColsMobile = isMobile ? 4 : 6; 
 
-   // Fallback: minimum shape size
-   shapeSize = minShapeSize;
-   numCols = max(floor((availableWidth + padding) / (shapeSize + padding)), 1);
-   numRows = ceil(count / numCols);
-   return lockedHeight;
+  // Shape sizes from largest to smallest
+  for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
+    let tentativeNumCols = max(floor((availableWidth + padding) / (s + padding)), 1);
+
+    // Limit columns on mobile to maxColsMobile
+    if (tentativeNumCols > maxColsMobile) tentativeNumCols = maxColsMobile;
+
+    const tentativeNumRows = ceil(count / tentativeNumCols);
+    const totalHeight = startY + tentativeNumRows * (s + padding) + 100;
+
+    // On mobile, don't limit to lockedHeight, allow taller canvas for vertical scroll
+    if (!isMobile && totalHeight <= lockedHeight) {
+      shapeSize = s;
+      numCols = tentativeNumCols;
+      numRows = tentativeNumRows;
+      return lockedHeight;
+    }
+    else if (isMobile) {
+      // For mobile, pick the first size and break so we can allow scrolling
+      shapeSize = s;
+      numCols = tentativeNumCols;
+      numRows = tentativeNumRows;
+      return totalHeight;  // return total height needed for scrolling
+    }
+  }
+
+  // Fallback: minimum shape size
+  shapeSize = minShapeSize;
+  numCols = max(floor((availableWidth + padding) / (shapeSize + padding)), 1);
+  numRows = ceil(count / numCols);
+
+  // For mobile allow scrolling
+  return isMobile ? (startY + numRows * (shapeSize + padding) + 100) : lockedHeight;
 }
 
 function windowResized() {
-   let canvasWidth = windowWidth * 0.9;
-   let targetHeight = windowHeight < 855 ? windowHeight : 850;
+  let canvasWidth = windowWidth * 0.9;
 
-   updateLayout(targetHeight);
-   resizeCanvas(canvasWidth, targetHeight);
-   redraw();
+  const isMobile = windowWidth <= 768;
+
+  let targetHeight;
+  if (isMobile) {
+    targetHeight = updateLayout(10000); 
+  } else {
+    targetHeight = min(windowHeight, 850);
+    updateLayout(targetHeight);
+  }
+
+  resizeCanvas(canvasWidth, targetHeight);
+
+  const container = document.getElementById('sketch-container');
+  if (isMobile) {
+    container.style.height = targetHeight + 'px';
+    container.style.overflowY = 'auto'; // allow vertical scroll
+  } else {
+    container.style.height = '';
+    container.style.overflowY = '';
+  }
+
+  redraw();
 }
 
 function capitalizeLastWordPV(str) {
