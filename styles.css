@@ -1093,10 +1093,6 @@ a.hyperlink:focus {
 }
 
 @media (max-width: 768px) {	
-	#sketch-container {
-		overflow-y: auto;
-	}
-
 	#placeholder-container .placeholder-text {
 	font-size: 1.25rem;
 	font-weight: 600;
