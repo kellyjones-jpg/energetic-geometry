@@ -298,7 +298,7 @@ function setup() {
    updateCounters([]);
 
    let canvasWidth = windowWidth * 0.9;
-   let canvasHeight = min(850, windowHeight);
+   let canvasHeight = min(705, windowHeight);
    cnv = createCanvas(canvasWidth, canvasHeight);
    cnv.parent('sketch-container');
 
@@ -462,7 +462,7 @@ function changeYear(direction) {
    windowResized();
 }
 
-function updateLayout(lockedHeight = 850, entryCountOverride = null) {
+function updateLayout(lockedHeight = 705, entryCountOverride = null) {
   const yearEntries = entriesByYear[selectedYear] || [];
   const count = entryCountOverride !== null ? entryCountOverride : yearEntries.length;
 
