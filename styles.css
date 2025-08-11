@@ -1100,8 +1100,12 @@ a.hyperlink:focus {
 }
 
 @media (max-width: 768px) {
+	#sketch-container {
+    min-height: 600px;
+	 }
+	
 	h4 {
-	font-size: 1rem;
+	font-size: 1.05rem;
 	line-height: 1.2;
 	margin-bottom: 1.5rem;
 	text-shadow:
