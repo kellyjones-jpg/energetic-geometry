@@ -1101,7 +1101,7 @@ a.hyperlink:focus {
 
 @media (max-width: 768px) {
 	#sketch-container {
-    min-height: 600px;
+    min-height: 900px;
 	 }
 	
 	h4 {
