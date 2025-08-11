@@ -611,14 +611,14 @@ function renderEntryVisual(entry, pg, isModal = false) {
 
    if (entry.habitat?.length) {
       pg.stroke(0, 80);
-      pg.strokeWeight(strokeW + 1);
+      pg.strokeWeight(strokeW + 1.5);
       drawHabitatShape(entry.habitat, 0, 0, size, baseColor, strokeW, pg);
    }
 
    if (entry.activities && entry.habitat) {
       pg.stroke(0, 80);
-      pg.strokeWeight(strokeW + 1);
-      drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, size, 1.5, pg);
+      pg.strokeWeight(strokeW + 1.5);
+      drawCombinedHabitatOverlay(entry.habitat, entry.activities, 0, 0, size, 2, pg);
    }
 
    if (entry.pvTech?.length > 0) {
@@ -631,21 +631,20 @@ function renderEntryVisual(entry, pg, isModal = false) {
       pg.translate(-shadowInfo.offsetX, -shadowInfo.offsetY);
       pg.rotate(-shadowInfo.angle);
       pg.stroke(0, 80);
-      pg.strokeWeight(strokeW + 1);
+      pg.strokeWeight(strokeW + 1.5);
 
       // Adjust grid density for modal thumbnails
-      const gridDensity = isModal ? 21 : 7;
-
+      const gridDensity = isModal ? 7 : 7;
       drawArrayOverlay(entry.arrayType, entry.activities, 0, 0, shadowInfo.size, strokeW + 1, gridDensity, pg);
       pg.pop();
    }
 
    if (entry.cropType?.length > 0) {
-      drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, size * 1.3, strokeW, pg);
+      drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, size * 1.31, strokeW, pg);
    }
 
    if (entry.animalType?.length > 0) {
-      const yOffset = size * 0.25;
+      const yOffset = size * 0.15;
       const animalSize = size * 1;
       pg.stroke(0, 80);
       pg.strokeWeight(strokeW + 0.75);
@@ -850,7 +849,7 @@ function draw() {
       }
 
       if (entry.cropType?.length > 0) {
-         drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.35, strokeW, this);
+         drawCropEdgeStyle(entry.cropType, entry.activities, 0, 0, entryShapeSize * 1.33, strokeW, this);
       }
 
       if (entry.animalType?.length > 0) {
