@@ -1093,6 +1093,11 @@ a.hyperlink:focus {
 }
 
 @media (max-width: 768px) {	
+	#sketch-container {
+		height: 90vh;
+		overflow-y: auto;
+	}
+	
 	h4 {
 	font-size: 1.05rem;
 	line-height: 1.2;
