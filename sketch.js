@@ -458,62 +458,45 @@ function changeYear(direction) {
 }
 
 function updateLayout(lockedHeight = 850) {
-  const isMobile = windowWidth <= 768;  // mobile breakpoint
-  const yearEntries = entriesByYear[selectedYear] || [];
-  const count = yearEntries.length;
+   const yearEntries = entriesByYear[selectedYear] || [];
+   const count = yearEntries.length;
 
-  startY = 130;
-  padding = isMobile ? 50 : 40;
+   startY = 130;
+   padding = 40;
 
-  const availableWidth = isMobile ? windowWidth * 0.9 : windowWidth * 0.7;
-  const maxShapeSize = isMobile ? 60 : 125;  // smaller shapes on mobile
-  const minShapeSize = 20;
+   const availableWidth = windowWidth * 0.7;
+   const maxShapeSize = 125;
+   const minShapeSize = 20;
 
-  // On mobile, limit max columns to prevent squishing
-  const maxColsMobile = 2;
-  
-  for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
-    let tentativeNumCols = max(floor((availableWidth + padding) / (s + padding)), 1);
+   // Shape sizes from largest to smallest
+   for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
+      const tentativeNumCols = max(floor((availableWidth + padding) / (s + padding)), 1);
+      const tentativeNumRows = ceil(count / tentativeNumCols);
+      const totalHeight = startY + tentativeNumRows * (s + padding) + 100;
 
-    if (isMobile) {
-      tentativeNumCols = min(tentativeNumCols, maxColsMobile);
-    }
+      // Prioritize fitting within locked height first
+      if (totalHeight <= lockedHeight) {
+         shapeSize = s;
+         numCols = tentativeNumCols;
+         numRows = tentativeNumRows;
+         return lockedHeight;
+      }
+   }
 
-    const tentativeNumRows = ceil(count / tentativeNumCols);
-    const totalHeight = startY + tentativeNumRows * (s + padding) + 100;
-
-    if (totalHeight <= lockedHeight) {
-      shapeSize = s;
-      numCols = tentativeNumCols;
-      numRows = tentativeNumRows;
-      return lockedHeight;
-    }
-  }
-
-  // Fallback minimum size
-  shapeSize = minShapeSize;
-  numCols = max(floor((availableWidth + padding) / (shapeSize + padding)), 1);
-  if (isMobile) {
-    numCols = min(numCols, maxColsMobile);
-  }
-  numRows = ceil(count / numCols);
-  return lockedHeight;
+   // Fallback: minimum shape size
+   shapeSize = minShapeSize;
+   numCols = max(floor((availableWidth + padding) / (shapeSize + padding)), 1);
+   numRows = ceil(count / numCols);
+   return lockedHeight;
 }
 
 function windowResized() {
-  let canvasWidth = windowWidth * 0.9;
+   let canvasWidth = windowWidth * 0.9;
+   let targetHeight = windowHeight < 855 ? windowHeight : 850;
 
-  // On mobile, allow taller canvas for better vertical stacking
-  let targetHeight;
-  if (windowWidth <= 768) {
-    targetHeight = max(windowHeight, 1100);
-  } else {
-    targetHeight = windowHeight < 855 ? windowHeight : 850;
-  }
-
-  updateLayout(targetHeight);
-  resizeCanvas(canvasWidth, targetHeight);
-  redraw();
+   updateLayout(targetHeight);
+   resizeCanvas(canvasWidth, targetHeight);
+   redraw();
 }
 
 function capitalizeLastWordPV(str) {
