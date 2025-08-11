@@ -1096,6 +1096,16 @@ a.hyperlink:focus {
 	#sketch-container {
 		overflow-y: auto;
 	}
+
+	#placeholder-container .placeholder-text {
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: white;
+	margin-top: -1.5px;
+	line-height: 1.2;
+	text-shadow:
+		2.5px -2.5px 0 #0A0A0A;
+	}
 	
 	h4 {
 	font-size: 1.05rem;
