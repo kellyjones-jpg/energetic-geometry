@@ -440,21 +440,26 @@ function setupArrows() {
 }
 
 function changeYear(direction) {
-   let currentIndex = availableYears.indexOf(selectedYear);
+  let currentIndex = availableYears.indexOf(selectedYear);
 
-   // If no year has been selected yet, select the first one and return
    if (!hasSelectedYear) {
-      updateYear(availableYears[0], 0);
+      selectedYear = availableYears[0];
+      hasSelectedYear = true;
+      updateYear(selectedYear, 0);
+      updatePlaceholderVisibility();
+      windowResized();
       return;
    }
 
    let nextIndex = currentIndex + direction;
-
    if (nextIndex < 0) nextIndex = availableYears.length - 1;
    else if (nextIndex >= availableYears.length) nextIndex = 0;
 
    selectedYear = availableYears[nextIndex];
+   hasSelectedYear = true;
    updateYear(selectedYear, nextIndex);
+   updatePlaceholderVisibility();
+   windowResized();
 }
 
 function updateLayout(lockedHeight = 850) {
@@ -470,20 +475,15 @@ function updateLayout(lockedHeight = 850) {
   const maxShapeSize = isMobile ? 60 : 125;  // smaller shapes on mobile
   const minShapeSize = 20;
 
-  // On mobile, allow more columns to better fill horizontal space
   const maxColsMobile = isMobile ? 4 : 6; 
-
-  // Shape sizes from largest to smallest
   for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
     let tentativeNumCols = max(floor((availableWidth + padding) / (s + padding)), 1);
 
-    // Limit columns on mobile to maxColsMobile
     if (tentativeNumCols > maxColsMobile) tentativeNumCols = maxColsMobile;
 
     const tentativeNumRows = ceil(count / tentativeNumCols);
     const totalHeight = startY + tentativeNumRows * (s + padding) + 100;
 
-    // On mobile, don't limit to lockedHeight, allow taller canvas for vertical scroll
     if (!isMobile && totalHeight <= lockedHeight) {
       shapeSize = s;
       numCols = tentativeNumCols;
@@ -491,11 +491,11 @@ function updateLayout(lockedHeight = 850) {
       return lockedHeight;
     }
     else if (isMobile) {
-      // For mobile, pick the first size and break so we can allow scrolling
+   
       shapeSize = s;
       numCols = tentativeNumCols;
       numRows = tentativeNumRows;
-      return totalHeight;  // return total height needed for scrolling
+      return totalHeight;
     }
   }
 
@@ -510,13 +510,18 @@ function updateLayout(lockedHeight = 850) {
 
 function windowResized() {
   let canvasWidth = windowWidth * 0.9;
-
   const isMobile = windowWidth <= 768;
 
   let targetHeight;
-  if (isMobile) {
-    targetHeight = updateLayout(10000); 
+
+  if (!hasSelectedYear) {
+    targetHeight = 850;
+    updateLayout(targetHeight); 
+  } else if (isMobile) {
+    // Mobile & year selected: dynamic height for scrolling
+    targetHeight = updateLayout(10000);
   } else {
+    // Desktop & year selected: fit canvas within window height or 850 max
     targetHeight = min(windowHeight, 850);
     updateLayout(targetHeight);
   }
@@ -524,7 +529,7 @@ function windowResized() {
   resizeCanvas(canvasWidth, targetHeight);
 
   const container = document.getElementById('sketch-container');
-  if (isMobile) {
+  if (isMobile || !hasSelectedYear) {
     container.style.height = targetHeight + 'px';
     container.style.overflowY = 'auto'; // allow vertical scroll
   } else {
