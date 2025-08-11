@@ -1092,14 +1092,16 @@ a.hyperlink:focus {
 		3px -3px 0 #0A0A0A;
 }
 
-/* Media Queries */
-@media (min-width: 768px) {
-	#sketch-and-totals {
-		flex-direction: column-reverse;
-	}
-}
-
 @media (max-width: 768px) {	
+#sketch-container {
+    height: 900px; /* increase height */
+    padding: 20px 10px;
+  }
+	
+  #sketch-container canvas {
+    height: 100%; /* fill container height */
+  }
+	
 	h4 {
 	font-size: 1.05rem;
 	line-height: 1.2;
