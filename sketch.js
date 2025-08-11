@@ -462,7 +462,7 @@ function changeYear(direction) {
    windowResized();
 }
 
-function updateLayout(lockedHeight = 705) {
+function updateLayout(lockedHeight = 725) {
   const yearEntries = entriesByYear[selectedYear] || [];
   const count = yearEntries.length;
 
@@ -515,12 +515,12 @@ function windowResized() {
   let targetHeight;
 
   if (!hasSelectedYear) {
-    targetHeight = 705;
+    targetHeight = 725;
     updateLayout(targetHeight);
   } else if (isMobile) {
     targetHeight = updateLayout(10000);  // large height for scroll on mobile
   } else {
-    targetHeight = 705;  // fixed height desktop
+    targetHeight = 725;  // fixed height desktop
     updateLayout(targetHeight);
   }
 
