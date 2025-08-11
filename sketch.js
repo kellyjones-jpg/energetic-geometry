@@ -468,30 +468,31 @@ function updateLayout(lockedHeight = 850) {
 
   startY = 130;
 
-  const isMobile = windowWidth <= 768; // mobile breakpoint
-  padding = isMobile ? 20 : 40;        // less padding on mobile
+  const isMobile = windowWidth <= 768;
+  padding = isMobile ? 20 : 40;
   const availableWidth = isMobile ? windowWidth * 0.95 : windowWidth * 0.7;
 
-  const maxShapeSize = isMobile ? 60 : 125;  // smaller shapes on mobile
+  const maxShapeSize = isMobile ? 60 : 125;
   const minShapeSize = 20;
+  const maxCols = isMobile ? 4 : 12; 
 
-  const maxColsMobile = isMobile ? 4 : 6; 
   for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
     let tentativeNumCols = max(floor((availableWidth + padding) / (s + padding)), 1);
 
-    if (tentativeNumCols > maxColsMobile) tentativeNumCols = maxColsMobile;
+    if (tentativeNumCols > maxCols) tentativeNumCols = maxCols;
 
     const tentativeNumRows = ceil(count / tentativeNumCols);
     const totalHeight = startY + tentativeNumRows * (s + padding) + 100;
 
-    if (!isMobile && totalHeight <= lockedHeight) {
-      shapeSize = s;
-      numCols = tentativeNumCols;
-      numRows = tentativeNumRows;
-      return lockedHeight;
-    }
-    else if (isMobile) {
-   
+    if (!isMobile) {
+      // On desktop, enforce lockedHeight: only accept layouts that fit within lockedHeight
+      if (totalHeight <= lockedHeight) {
+        shapeSize = s;
+        numCols = tentativeNumCols;
+        numRows = tentativeNumRows;
+        return lockedHeight;  // fixed canvas height
+      }
+    } else {
       shapeSize = s;
       numCols = tentativeNumCols;
       numRows = tentativeNumRows;
@@ -499,12 +500,11 @@ function updateLayout(lockedHeight = 850) {
     }
   }
 
-  // Fallback: minimum shape size
+  // Fallback minimum size:
   shapeSize = minShapeSize;
   numCols = max(floor((availableWidth + padding) / (shapeSize + padding)), 1);
   numRows = ceil(count / numCols);
 
-  // For mobile allow scrolling
   return isMobile ? (startY + numRows * (shapeSize + padding) + 100) : lockedHeight;
 }
 
@@ -516,25 +516,23 @@ function windowResized() {
 
   if (!hasSelectedYear) {
     targetHeight = 850;
-    updateLayout(targetHeight); 
+    updateLayout(targetHeight);
   } else if (isMobile) {
-    // Mobile & year selected: dynamic height for scrolling
-    targetHeight = updateLayout(10000);
+    targetHeight = updateLayout(10000);  // large height for scroll on mobile
   } else {
-    // Desktop & year selected: fit canvas within window height or 850 max
-    targetHeight = min(windowHeight, 850);
+    targetHeight = 850;  // fixed height desktop
     updateLayout(targetHeight);
   }
 
   resizeCanvas(canvasWidth, targetHeight);
 
   const container = document.getElementById('sketch-container');
-  if (isMobile || !hasSelectedYear) {
+  if (isMobile) {
     container.style.height = targetHeight + 'px';
-    container.style.overflowY = 'auto'; // allow vertical scroll
+    container.style.overflowY = 'auto';
   } else {
-    container.style.height = '';
-    container.style.overflowY = '';
+    container.style.height = targetHeight + 'px';
+    container.style.overflowY = 'hidden'; // prevent scroll on desktop
   }
 
   redraw();
