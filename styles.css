@@ -1093,13 +1093,10 @@ a.hyperlink:focus {
 }
 
 @media (max-width: 768px) {	
-#sketch-container {
-    height: 900px; /* increase height */
+ #sketch-container {
+    max-height: 1100px;
+    overflow-y: auto;
     padding: 20px 10px;
-  }
-	
-  #sketch-container canvas {
-    height: 100%; /* fill container height */
   }
 	
 	h4 {
