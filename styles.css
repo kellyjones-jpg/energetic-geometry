@@ -1100,6 +1100,39 @@ a.hyperlink:focus {
 }
 
 @media (max-width: 768px) {
+	h4 {
+	font-size: 1rem;
+	line-height: 1.2;
+	margin-bottom: 1.5rem;
+	text-shadow:
+		1px -1px 0 #0A0A0A;
+	}
+	
+	h3 {
+		font-size: 1.25rem;
+		margin-top: 1.5rem;
+		font-weight: bold;
+		line-height: 1.2;
+		text-shadow:
+			1px -1px 0 #0A0A0A;
+	}
+	
+	h2 {
+		font-size: 1.5rem;
+		line-height: 1.2;
+		text-shadow:
+			1.5px -1.5px 0 #0A0A0A;
+	}
+	
+	h1 {
+		font-size: 1.75rem;
+		line-height: 1.1;
+		text-decoration: none;
+		color: #ffffff;
+		text-shadow:
+			2px -2px 0 #0A0A0A;
+	}
+	
 	#timeline {
 		display: none !important;
 	}
