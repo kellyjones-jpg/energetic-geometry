@@ -462,50 +462,27 @@ function changeYear(direction) {
    windowResized();
 }
 
-function updateLayout(lockedHeight = 850) {
-  const yearEntries = entriesByYear[selectedYear] || [];
-  const count = yearEntries.length;
-
-  startY = 130;
-
+function windowResized() {
+  let canvasWidth = windowWidth * 0.9;
   const isMobile = windowWidth <= 768;
-  padding = isMobile ? 20 : 40;
-  const availableWidth = isMobile ? windowWidth * 0.95 : windowWidth * 0.7;
 
-  const maxShapeSize = isMobile ? 60 : 125;
-  const minShapeSize = 20;
-  const maxCols = isMobile ? 4 : 12; 
-
-  for (let s = maxShapeSize; s >= minShapeSize; s -= 2) {
-    let tentativeNumCols = max(floor((availableWidth + padding) / (s + padding)), 1);
-
-    if (tentativeNumCols > maxCols) tentativeNumCols = maxCols;
-
-    const tentativeNumRows = ceil(count / tentativeNumCols);
-    const totalHeight = startY + tentativeNumRows * (s + padding) + 100;
-
-    if (!isMobile) {
-      // On desktop, enforce lockedHeight: only accept layouts that fit within lockedHeight
-      if (totalHeight <= lockedHeight) {
-        shapeSize = s;
-        numCols = tentativeNumCols;
-        numRows = tentativeNumRows;
-        return lockedHeight;  // fixed canvas height
-      }
-    } else {
-      shapeSize = s;
-      numCols = tentativeNumCols;
-      numRows = tentativeNumRows;
-      return totalHeight;
-    }
+  let targetHeight;
+  if (!hasSelectedYear) {
+    const maxCount = Math.max(...Object.values(entriesByYear).map(arr => arr.length));
+    targetHeight = isMobile ? updateLayout(10000, maxCount) : updateLayout(850, maxCount);
+  } else if (isMobile) {
+    targetHeight = updateLayout(10000);
+  } else {
+    targetHeight = updateLayout(850);
   }
 
-  // Fallback minimum size:
-  shapeSize = minShapeSize;
-  numCols = max(floor((availableWidth + padding) / (shapeSize + padding)), 1);
-  numRows = ceil(count / numCols);
+  resizeCanvas(canvasWidth, targetHeight);
 
-  return isMobile ? (startY + numRows * (shapeSize + padding) + 100) : lockedHeight;
+  const container = document.getElementById('sketch-container');
+  container.style.height = targetHeight + 'px';
+  container.style.overflowY = isMobile ? 'auto' : 'hidden';
+
+  redraw();
 }
 
 function windowResized() {
@@ -513,27 +490,20 @@ function windowResized() {
   const isMobile = windowWidth <= 768;
 
   let targetHeight;
-
   if (!hasSelectedYear) {
-    targetHeight = 850;
-    updateLayout(targetHeight);
+    const maxCount = Math.max(...Object.values(entriesByYear).map(arr => arr.length));
+    targetHeight = isMobile ? updateLayout(10000, maxCount) : updateLayout(850, maxCount);
   } else if (isMobile) {
-    targetHeight = updateLayout(10000);  // large height for scroll on mobile
+    targetHeight = updateLayout(10000);
   } else {
-    targetHeight = 850;  // fixed height desktop
-    updateLayout(targetHeight);
+    targetHeight = updateLayout(850);
   }
 
   resizeCanvas(canvasWidth, targetHeight);
 
   const container = document.getElementById('sketch-container');
-  if (isMobile) {
-    container.style.height = targetHeight + 'px';
-    container.style.overflowY = 'auto';
-  } else {
-    container.style.height = targetHeight + 'px';
-    container.style.overflowY = 'hidden'; // prevent scroll on desktop
-  }
+  container.style.height = targetHeight + 'px';
+  container.style.overflowY = isMobile ? 'auto' : 'hidden';
 
   redraw();
 }
