@@ -1094,7 +1094,6 @@ a.hyperlink:focus {
 
 @media (max-width: 768px) {	
 	#sketch-container {
-		height: 90vh;
 		overflow-y: auto;
 	}
 	
