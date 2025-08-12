@@ -1,4 +1,3 @@
-
 let table;
 let entries = [];
 let entriesByYear = {};
@@ -463,7 +462,7 @@ function changeYear(direction) {
    windowResized();
 }
 
-function updateLayout(lockedHeight = 705, entryCountOverride = null, lockMobileHeight = false) {
+function updateLayout(lockedHeight = 705, entryCountOverride = null) {
   const yearEntries = entriesByYear[selectedYear] || [];
   const count = entryCountOverride !== null ? entryCountOverride : yearEntries.length;
 
@@ -484,7 +483,7 @@ function updateLayout(lockedHeight = 705, entryCountOverride = null, lockMobileH
     const tentativeNumRows = ceil(count / tentativeNumCols);
     const totalHeight = startY + tentativeNumRows * (s + padding) + 100;
 
-    if (!isMobile || lockMobileHeight) {
+    if (!isMobile) {
       if (totalHeight <= lockedHeight) {
         shapeSize = s;
         numCols = tentativeNumCols;
@@ -503,7 +502,7 @@ function updateLayout(lockedHeight = 705, entryCountOverride = null, lockMobileH
   numCols = max(floor((availableWidth + padding) / (shapeSize + padding)), 1);
   numRows = ceil(count / numCols);
 
-  return (isMobile && !lockMobileHeight)
+  return isMobile
     ? (startY + numRows * (shapeSize + padding) + 100)
     : lockedHeight;
 }
@@ -513,16 +512,14 @@ function windowResized() {
   const isMobile = windowWidth <= 768;
 
   let targetHeight;
-   if (!hasSelectedYear) {
-   const maxCount = Math.max(...Object.values(entriesByYear).map(arr => arr.length));
-
-   if (isMobile) {
-      targetHeight = window.innerHeight; // lock to current viewport height
-      updateLayout(targetHeight, maxCount); // still sets numCols, numRows, shapeSize for later
-   } else {
-      targetHeight = updateLayout(850, maxCount);
-   }
-   }
+  if (!hasSelectedYear) {
+    const maxCount = Math.max(...Object.values(entriesByYear).map(arr => arr.length));
+    targetHeight = isMobile ? updateLayout(10000, maxCount) : updateLayout(850, maxCount);
+  } else if (isMobile) {
+    targetHeight = updateLayout(10000);
+  } else {
+    targetHeight = updateLayout(850);
+  }
 
   resizeCanvas(canvasWidth, targetHeight);
 
