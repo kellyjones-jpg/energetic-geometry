@@ -512,20 +512,21 @@ function windowResized() {
   const isMobile = windowWidth <= 768;
 
   let targetHeight;
+
   if (!hasSelectedYear) {
-    const maxCount = Math.max(...Object.values(entriesByYear).map(arr => arr.length));
-    targetHeight = isMobile ? updateLayout(10000, maxCount) : updateLayout(850, maxCount);
+    // For placeholder screen, always fixed height
+    targetHeight = isMobile ? 705 : 850; 
+    updateLayout(targetHeight, 0); // force 0 entries so it doesn't grow
   } else if (isMobile) {
-    targetHeight = updateLayout(10000);
+    targetHeight = updateLayout(10000); // allow scroll on mobile for actual data
   } else {
-    targetHeight = updateLayout(850);
+    targetHeight = updateLayout(850); // fixed on desktop
   }
 
   resizeCanvas(canvasWidth, targetHeight);
 
   const container = document.getElementById('sketch-container');
   container.style.height = targetHeight + 'px';
-  container.style.overflowY = isMobile ? 'auto' : 'hidden';
 
   redraw();
 }
