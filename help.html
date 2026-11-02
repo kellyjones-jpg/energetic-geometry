@@ -419,7 +419,7 @@
                </div>
             </div>
          </div>
-      <div class="accordion-item my-4">
+<div class="accordion-item my-4">
             <h3 class="accordion-header" id="headingCrop">
                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCrop" aria-expanded="true" aria-controls="collapseCrop">
                Crop Types — Edge Style/Curvature
@@ -604,7 +604,7 @@
                               <td>Sharp zigzag line</td>
                               <td>
                                  <svg class="animal-line line-zigzag" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M5 5 L12 15 L19 5 L26 15 L33 5 L40 15 L47 5 L55 15" />
+                                    <path d="M5 5 L12 15 L19 5 L26 15 L33 5 L40 15 L47 5 L55 15" style="fill:none;stroke:#fff;stroke-width:2;stroke-linejoin:miter" />
                                  </svg>
                               </td>
                               <td>Agile, angular, sure-footed</td>
@@ -613,8 +613,14 @@
                               <td>Poultry (chickens, pasture-raised poultry)</td>
                               <td>Dotted line</td>
                               <td>
-                                 <svg class="animal-line line-dotted" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M5 10 L55 10" stroke-dasharray="0.5 7" stroke-linecap="round" />
+                                 <svg class="animal-line line-dotted" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg" style="fill:#fff;stroke:none">
+                                    <circle cx="5" cy="10" r="1.6" />
+                                    <circle cx="13" cy="10" r="1.6" />
+                                    <circle cx="21" cy="10" r="1.6" />
+                                    <circle cx="29" cy="10" r="1.6" />
+                                    <circle cx="37" cy="10" r="1.6" />
+                                    <circle cx="45" cy="10" r="1.6" />
+                                    <circle cx="53" cy="10" r="1.6" />
                                  </svg>
                               </td>
                               <td>Scattered, pecking, free-ranging</td>
