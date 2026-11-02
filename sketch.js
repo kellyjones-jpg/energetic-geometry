@@ -1350,12 +1350,21 @@ function drawAnimalLineShape(type, x, y, length, pg = window) {
       case 'textured':
          drawTexturedLine(x, y, length, pg);
          break;
+      case 'zigzag':
+         drawZigzagLine(x, y, length, pg);
+         break;
+      case 'dotted':
+         drawDottedLine(x, y, length, pg);
+         break;
    }
 }
 
 function getLineStyle(animalType) {
    let typeStr = String(animalType || '').trim().toLowerCase();
    if (!typeStr) return null;
+
+   // Variants such as "Sheep (yearling lambs)" share the sheep style
+   if (typeStr.startsWith('sheep')) typeStr = 'sheep';
 
    switch (typeStr) {
       case 'sheep':
@@ -1377,6 +1386,15 @@ function getLineStyle(animalType) {
       case 'cattle':
          return {
             type: 'textured', weight: 4
+         };
+      case 'goats':
+         return {
+            type: 'zigzag', weight: 3
+         };
+      case 'chickens':
+      case 'organic pasture-raised poultry':
+         return {
+            type: 'dotted', weight: 3
          };
       default:
          return null;
@@ -1437,6 +1455,35 @@ function drawTexturedLine(x, y, length, pg = window) {
    }
 }
 
+// Zigzag line: sharp triangle wave (goats)
+function drawZigzagLine(x, y, length, pg = window) {
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   pg.noFill();
+   pg.strokeJoin(pg.MITER);
+   let amplitude = 6;
+   let segments = 14;
+   let startX = x - length / 2;
+   pg.beginShape();
+   for (let i = 0; i <= segments; i++) {
+      let px = startX + (length / segments) * i;
+      let py = y + (i % 2 === 0 ? -amplitude : amplitude);
+      pg.vertex(px, py);
+   }
+   pg.endShape();
+}
+
+// Dotted line: very short dashes with round caps read as dots (poultry)
+function drawDottedLine(x, y, length, pg = window) {
+   if (!pg || typeof pg.push !== 'function') pg = window;
+   pg.strokeCap(pg.ROUND);
+   let dotLength = 0.5;
+   let gapLength = 7;
+   let startX = x - length / 2;
+   let endX = x + length / 2;
+   for (let px = startX; px < endX; px += dotLength + gapLength) {
+      pg.line(px, y, px + dotLength, y);
+   }
+}
 
 function drawHabitatShape(habitatList, x, y, size, baseColor, strokeW = 2, pg = window) {
    if (!pg || typeof pg.push !== 'function') pg = window;
